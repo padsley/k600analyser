@@ -1,0 +1,34 @@
+#ifndef W1_h
+#define W1_h 1
+
+/* Header file for the code sorting W1 data into something reasonable and sensible. 
+ * Author: Phil Adsley
+ * August 2014
+ * padsley@gmail.com for queries/comments
+ */
+
+#include <TCutG.h>
+#include <vector>
+#include <TFile.h>
+#include <TTree.h>
+#include <vector>
+#include <TROOT.h>
+#include "multiTDC.h"
+
+SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+
+bool W1SuppressChannel(int Channel);
+double W1EnergyCalc(int Channel, double ADCValue);
+double W1ThetaCalc(int Channel);
+double W1PhiCalc(int Channel);
+bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si);
+bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel);
+
+void W1Init();
+void W1LoadCuts(SiliconData *si);
+
+int DetHitNumber(int FrontChannel, int BackChannel);
+
+
+
+#endif

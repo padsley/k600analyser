@@ -1,0 +1,50 @@
+#ifndef __multiTDC__
+#define __multiTDC__ 1
+
+/* This header file defines the 'multiTDC' class. This is a class used to store the information about TDC values for ancillary detectors in K600 experiments, given that the V1190 TDCs can (and do!) run in multihit mode.
+ * 
+ * * Author: Philip Adsley, July 2014
+ * E-mail: padsley@gmail.com
+ * 
+ * Please contact me if you find errors or have useful suggestions
+ * 
+ */
+
+#include <vector>
+#include <stdio.h>
+
+double PulseLimits[2] = {0,10000};
+
+class multiTDC
+{
+public :
+  multiTDC();
+  multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import);
+  virtual ~multiTDC();
+  
+  private :
+  //The actual members of the class
+  int TDChits;
+  
+  std::vector<int> TDCchannels;
+  std::vector<double> TDCvalues;
+  
+public :
+  //Setters - set the physical values for each physical event
+  void SetHits(int hits)		{TDChits = hits;}
+  void SetChannel(int channel)		{TDCchannels.push_back(channel);}
+  void SetValue(int value)		{TDCvalues.push_back(value);}
+  
+  //Getters
+  int GetSize()				{return SizeOfEvent();}
+  int GetChannel(int i)			{return TDCchannels.at(i);}
+  double GetValue(int i)		{return TDCvalues.at(i);}
+  
+  void PrintEvent();
+  bool TestEvent();
+  void ClearEvent();
+  
+  unsigned int SizeOfEvent();
+};
+
+#endif
