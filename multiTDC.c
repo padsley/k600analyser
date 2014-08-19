@@ -11,8 +11,6 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
   for(int i=0;i<896;i++){GoodChannelCounter[i]=0;}
   for(int n=0;n<ntdc;n++)
   {
-//     if(TDC_channel_import[n]>0 && TDC_channel_import[n]<7*128)printf("n: %d\n",n);
-//     if(TDC_channel_import[n]>0 && TDC_channel_import[n]<7*128)printf("Channel: %d\n",TDC_channel_import[n]);
     if(TDC_channel_import[n]>0 && TDC_channel_import[n]<7*128)ChannelCounter[TDC_channel_import[n]]+=1;
     if(TDC_channel_import[n]>0 && TDC_channel_import[n]<7*128 && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1])GoodChannelCounter[TDC_channel_import[n]]+=1;
   }
@@ -30,11 +28,9 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
       else if(ChannelCounter[TDC_channel_import[n]]==1)//Only store events from the last TDC -> These are the ancillary detector events
     {
       //The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
-      //       printf("L19\n");
       SetChannel(TDC_channel_import[n]);
       SetValue(TDC_value_import[n]);
       TDChits++;
-      //     printf("L22\n");
     }
 //     else if(ChannelCounter[TDC_channel_import[n]]>1)
 //     {
@@ -45,8 +41,6 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
 //     }
     }
   }
-  
-  //   printf("L29\n");
   SetHits(TDChits);
   delete ChannelCounter;
   delete GoodChannelCounter;
@@ -54,7 +48,6 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
 
 multiTDC::~multiTDC()
 {
-//   printf("mTDC destructor called");
 }
 
 void multiTDC::PrintEvent()

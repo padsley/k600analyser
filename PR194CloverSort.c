@@ -3,7 +3,7 @@
 
 int ADCsize = 32;
 
-const double gain[4] = {0.0047450, 0.0044951, 0.0045365, 0.0037823};
+const double gain[4] = {0.0047450, 0.0044951, 0.0045365, 0.0037823};//These are gains and offsets for the clovers in this experiment. Should probably rename them and move them somewhere more helpful but I haven't got around to that yet.
 const double offset[4] = {-0.664321, -0.6179, -0.6484, -0.5685};
 
 CloverData *PR194CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)

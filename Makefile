@@ -58,7 +58,7 @@ SRC_DIR   = $(MIDASSYS)/src
 #-------------------------------------------------------------------
 # List of analyzer modules
 #
-MODULES   = adc.o qdc.o scaler.o SiliconData.o multiTDC.o MMM.o W1.o CloverData.o PR194CloverSort.o f-plane.o
+MODULES   = adc.o qdc.o scaler.o SiliconData.o Parameters.o multiTDC.o MMM.o W1.o CloverData.o PR194CloverSort.o f-plane.o
 
 #-------------------------------------------------------------------
 # Hardware driver can be (camacnul, kcs2926, kcs2927, hyt1331)

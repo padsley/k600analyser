@@ -18,8 +18,6 @@
 #include "multiTDC.h"
 #include "CloverData.h"
 
-// void PR194CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, CloverData *clov);
-
 CloverData *PR194CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
 
 double GermaniumEnergyCalc(int Channel, double ADCValue);

@@ -13,7 +13,7 @@
 #include <vector>
 #include <stdio.h>
 
-double PulseLimits[2] = {0,10000};
+extern double PulseLimits[2];
 
 class multiTDC
 {
