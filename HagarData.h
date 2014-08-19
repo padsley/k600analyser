@@ -1,3 +1,6 @@
+#ifndef Hagar_h
+#define Hagar_h 1
+
 /*
  * 
  * This is a header file defining the data structure for HAGAR events for K600 analysis.
@@ -8,3 +11,17 @@
  * Please contact me if you find errors or have useful suggestions
  * 
  */
+
+
+class HagarData
+{
+  
+  
+  
+  
+  
+};
+
+
+
+#endif
