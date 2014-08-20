@@ -72,7 +72,7 @@ public :
   void SetTDCValueBack(int chan)	{TDCValueBack.push_back(chan);}
   void SetEnergyFront(double ener)	{EnergyFront.push_back(ener);}
   void SetEnergyBack(double ener)	{EnergyBack.push_back(ener);}
-//   void SetFrontBackEnergyCut(TCutG *cut) {printf("Set cut\n");mFrontBackEnergyCut = cut;}
+  void SetMult(int mult)		{TDCChannelMultiplicity.push_back(mult);}
   
   //Getters - return the value of the private member - shouldn't have them visible to the user
   double GetEnergy(int i)		{return SiliconEnergy.at(i);}
@@ -80,7 +80,7 @@ public :
   double GetPhi(int i)			{return SiliconPhi.at(i);}
   double GetTime(int i)			{return SiliconTime.at(i);}  
   
-//   TCutG *GetFrontBackEnergyCut() 	{return mFrontBackEnergyCut;}
+  //Should add Getters for the diagnostic values in case people want to use them to test events themselves under certain conditions
   
   void PrintEvent();
   bool TestEvent();

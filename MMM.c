@@ -80,6 +80,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		si->SetEnergyFront(energyi);
 		si->SetEnergyBack(energyj);
 // 		printf("TEST81\n");
+		si->SetMult(mTDC->GetMult(k));
 	      }
 	    }
 	  }
