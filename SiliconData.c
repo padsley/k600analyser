@@ -1,6 +1,5 @@
 #include "SiliconData.h"
 
-
 SiliconData::SiliconData()
 {  
 }

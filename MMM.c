@@ -35,7 +35,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 //   printf("ntdc: %d\n",ntdc);
 //   printf("L35\n");
   multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);
-//   printf("L37\n");
+//    printf("L37\n");
   for(int k=0;k<mTDC->GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
   {
 //     if(TDC_channel_import[k]>6*128)//This limits the code to only consider TDC values in the last TDC module, which is the one that deals with the silicon timing values
@@ -192,6 +192,9 @@ bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to
 
 double MMMEnergyCalc(int Channel, double ADCValue)
 {
+  //define the silicon calibration parameters
+  extern double silicon_offset[128];
+  extern double silicon_gain[128];
   double result = silicon_offset[Channel] + silicon_gain[Channel]*ADCValue;
   //   if(Channel<64 || Channel>=80 && Channel<112)printf("EnergyCalc: %g\n",result);
   return result;

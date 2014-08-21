@@ -27,7 +27,7 @@ bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel);
 void W1Init();
 void W1LoadCuts(SiliconData *si);
 
-int DetHitNumber(int FrontChannel, int BackChannel);
+int W1DetHitNumber(int FrontChannel, int BackChannel);
 
 
 

@@ -16,11 +16,6 @@
 #include <stdio.h>
 #include <TCutG.h>
 
-
-//define the silicon calibration parameters
-extern double silicon_offset[128];
-extern double silicon_gain[128];
-
 class SiliconData
 {
 public :

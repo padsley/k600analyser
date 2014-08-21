@@ -25,7 +25,52 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
     
     for(int k=0;k<mTDC->GetSize();k++)
     {
-      
+      for(int i=0;i<ADCsize;i++)
+      {
+	//Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
+	if(W1ADCTDCChannelTest(i,mTDC->GetChannel(k)) && ADC_import[i]>300)
+	{
+	  for(int j=0;j<ADCsize;j++)
+	  {
+	    if(ADC_import[j]>300)
+	    {
+	      double energyi = W1EnergyCalc(i,ADC_import[i]);
+	      double energyj = W1EnergyCalc(j,ADC_import[j]);
+	      
+	      //Test whether the hits are in the front and back of the same detector and whether the energies are good
+	      if(W1FrontBackTest(i,j,energyi,energyj,si))
+	      {
+// 		printf("TEST57\n");
+		si->SetEnergy(0.5*(energyi+energyj));
+		si->SetTheta(W1ThetaCalc(i));
+		si->SetPhi(W1PhiCalc(i));
+		si->SetTime(mTDC->GetValue(k));
+// 		si->SetTime(TDC_value_import[k]);
+		// 		si->SetTime(0);
+		
+		si->SetDetectorHit(W1DetHitNumber(i,j));
+		si->SetADCChannelFront(i);
+		si->SetADCChannelBack(j);
+		si->SetTDCChannelFront(mTDC->GetChannel(k));
+// 		si->SetTDCChannelFront(TDC_channel_import[k]);
+		// 		si->SetTDCChannelFront(-1);
+		si->SetTDCChannelBack(-1);
+		si->SetADCValueFront(ADC_import[i]);
+		si->SetADCValueBack(ADC_import[j]);
+		
+		si->SetTDCValueFront(mTDC->GetValue(k));
+// 		si->SetTDCValueFront(TDC_value_import[k]);
+		// 		si->SetTDCValueFront(-1);
+		si->SetTDCValueBack(-1);
+		si->SetEnergyFront(energyi);
+		si->SetEnergyBack(energyj);
+// 		printf("TEST81\n");
+		si->SetMult(mTDC->GetMult(k));
+	      }
+	    }
+	  }
+	}
+      }
     }
   return si;
 }
@@ -112,6 +157,9 @@ bool W1SuppressChannel(int Channel)//If the ADC channel is one which we wish to 
 
 double W1EnergyCalc(int Channel, double ADCValue)
 {
+  //define the silicon calibration parameters
+  extern double silicon_offset[128];
+  extern double silicon_gain[128];
   double result = silicon_offset[Channel] + silicon_gain[Channel]*ADCValue;
   //   if(Channel<64 || Channel>=80 && Channel<112)printf("EnergyCalc: %g\n",result);
   return result;

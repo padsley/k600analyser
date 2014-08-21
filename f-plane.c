@@ -55,8 +55,8 @@
 //Uncomment for silicon analysis
 #define _SILICONDATA 
   
-// #define _MMM
-#define _W1
+ #define _MMM
+// #define _W1
 //Uncomment for clover analysis
  //#define _CLOVERDATA 
  
