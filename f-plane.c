@@ -3111,6 +3111,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 //   printf("L3073\n");
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 //#ifdef _SILICONDATA
+#ifdef _RAWDATA
+  for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
+  if(raw)
+  {
+    raw = RawDataDump(ADC_export,ntdc,TDC_channel_export, TDC_value_export);
+  }
+#endif
+  
 #ifdef _MMM
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
