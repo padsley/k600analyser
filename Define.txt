@@ -1,0 +1,22 @@
+%Lines which begin with '%' will be ignored. They're useful for comments so that you can work out what you did previously.
+
+ADCModules 
+4
+TDCModules
+6
+
+PulseLimits
+1800
+2400
+
+MMM
+1	ADC	Front	0	15
+1	ADC	Back	80	87
+1	TDC	Front	816	831
+2	ADC	Front	16	31
+2	ADC	Back	88	95
+2	TDC	Front	832	847
+
+
+ADCGains	Gains.dat
+ADCOffsets	Offsets.dat
