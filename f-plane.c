@@ -43,6 +43,8 @@
 
 #include "CloverData.h"
 #include "PR194CloverSort.h"
+
+#include "RawData.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
 //#define _MOVIE
@@ -60,6 +62,7 @@
 //Uncomment for clover analysis
  //#define _CLOVERDATA 
  
+#define _RAWDATA
  
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -227,6 +230,10 @@ SiliconData *si;
 
 #ifdef _CLOVERDATA
 CloverData *clov;
+#endif
+
+#ifdef _RAWDATA
+RawData *raw;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -2129,6 +2136,11 @@ INT focal_init(void)
 #ifdef _CLOVERDATA
   gROOT->ProcessLine(".L CloverData.c+");
   t1->Branch("CloverInfo","CloverData",&clov);
+#endif
+  
+#ifdef _RAWDATA
+  gROOT->ProcessLine(".L RawData.c+");
+  t1->Branch("RawInfo","RawData",&raw);
 #endif
    return SUCCESS;
 }
