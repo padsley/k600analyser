@@ -3179,6 +3179,10 @@ for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
    clov->ClearEvent();//See comment above about SiliconData::ClearEvent()
    delete clov;//See comment above about deleting *si
 #endif
+#ifdef _RAWDATA
+  delete raw;
+#endif
+  
    delete TDC_channel_export;
    delete TDC_value_export;
    return SUCCESS;
