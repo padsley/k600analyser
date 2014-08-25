@@ -49,7 +49,7 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-//#define _PRINTTOSCREEN
+#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
