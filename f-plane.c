@@ -2489,7 +2489,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       channel = (0x7F&((ptdc[i])>>19));      // channel is per TDC; i.e. 0-127
       time = 0x7FFFF&(ptdc[i]);
 
-      if(tdcmodule<0 && tdcmodule>7){
+      if(tdcmodule<0 || tdcmodule>7){
 	printf("bad tdc module nr %d\n",tdcmodule);   // error condition
       }
 
