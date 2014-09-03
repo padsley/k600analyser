@@ -28,17 +28,18 @@ public :
   
   std::vector<int> TDCchannels;
   std::vector<double> TDCvalues;
-  
+  std::vector<int> TDCmults;//multiplicities of each TDC event in that original channel -- added as a diagnostic thing
 public :
   //Setters - set the physical values for each physical event
   void SetHits(int hits)		{TDChits = hits;}
   void SetChannel(int channel)		{TDCchannels.push_back(channel);}
   void SetValue(int value)		{TDCvalues.push_back(value);}
-  
+  void SetMult(int mult)		{TDCmults.push_back(mult);}
   //Getters
   int GetSize()				{return SizeOfEvent();}
   int GetChannel(int i)			{return TDCchannels.at(i);}
   double GetValue(int i)		{return TDCvalues.at(i);}
+  int GetMult(int i)			{return TDCmults.at(i);}
   
   void PrintEvent();
   bool TestEvent();

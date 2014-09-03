@@ -22,25 +22,42 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
     {
       if(ChannelCounter[TDC_channel_import[n]]==0)
       {
-	printf("Something has gone wrong - the number of counts for channel %d is expected to be zero but something is seen.\n",TDC_channel_import[n]);
+	// 	printf("Something has gone wrong - the number of counts for channel %d is expected to be zero but something is seen.\n",TDC_channel_import[n]);
+	//Removed this condition as it clashes with one of the sort things from further down in the code. Should probably put it back at some point.
 	
       }
       else if(ChannelCounter[TDC_channel_import[n]]==1)//Only store events from the last TDC -> These are the ancillary detector events
-    {
-      //The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
-      SetChannel(TDC_channel_import[n]);
-      SetValue(TDC_value_import[n]);
-      TDChits++;
-    }
-//     else if(ChannelCounter[TDC_channel_import[n]]>1)
-//     {
-//       //How do we do this? The easiest thing is probably to do something like store which tdc input events correspond to the multiple hits in the same channel and then to work out which one we would prefer to accept based on where it falls within the event
-// //       printf("More than one TDC hit found in channel %d\n",TDC_channel_import[n]);
-//     
-// 
-//     }
+      {
+	//The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
+	SetChannel(TDC_channel_import[n]);
+	SetValue(TDC_value_import[n]);
+	SetMult(ChannelCounter[TDC_channel_import[n]]);
+	TDChits++;
+      }
+      else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==1 && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1])
+      {
+	SetChannel(TDC_channel_import[n]);
+	SetValue(TDC_value_import[n]);
+	SetMult(ChannelCounter[TDC_channel_import[n]]);
+	TDChits++;
+      }
+//       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==2
+      else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]>1)
+      {
+	printf("The number of TDC hits within the user-defined 'good pulse' is greater than 1; the number of hits is %d. The code currently doesn't deal with this.\n",GoodChannelCounter[TDC_channel_import[n]]);
+      }
+      else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==0)
+      {
+	SetChannel(TDC_channel_import[n]);
+	SetValue(TDC_value_import[n]);
+	TDChits++;
+	SetMult(ChannelCounter[TDC_channel_import[n]]);
+	//Take the first TDC event for a channel where nothing falls within the good beampulse
+	ChannelCounter[TDC_channel_import[n]]=0;//Now set the ChannelCounter for the channel to zero as we don't want to take any more of these events - this forces the change above in the first part of the if chain. Need to fix at some point.
+      }
     }
   }
+  
   SetHits(TDChits);
   delete ChannelCounter;
   delete GoodChannelCounter;

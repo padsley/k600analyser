@@ -43,6 +43,8 @@
 
 #include "CloverData.h"
 #include "PR194CloverSort.h"
+
+#include "RawData.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
 //#define _MOVIE
@@ -55,11 +57,12 @@
 //Uncomment for silicon analysis
 #define _SILICONDATA 
   
-// #define _MMM
-#define _W1
+ #define _MMM
+// #define _W1
 //Uncomment for clover analysis
  //#define _CLOVERDATA 
  
+#define _RAWDATA
  
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -227,6 +230,10 @@ SiliconData *si;
 
 #ifdef _CLOVERDATA
 CloverData *clov;
+#endif
+
+#ifdef _RAWDATA
+RawData *raw;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -2130,6 +2137,11 @@ INT focal_init(void)
   gROOT->ProcessLine(".L CloverData.c+");
   t1->Branch("CloverInfo","CloverData",&clov);
 #endif
+  
+#ifdef _RAWDATA
+  gROOT->ProcessLine(".L RawData.c+");
+  t1->Branch("RawInfo","RawData",&raw);
+#endif
    return SUCCESS;
 }
 
@@ -3111,6 +3123,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 //   printf("L3073\n");
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 //#ifdef _SILICONDATA
+#ifdef _RAWDATA
+  for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
+  if(raw)
+  {
+    raw = RawDataDump(ADC_export,ntdc,TDC_channel_export, TDC_value_export);
+  }
+#endif
+  
 #ifdef _MMM
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
@@ -3159,6 +3179,10 @@ for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
    clov->ClearEvent();//See comment above about SiliconData::ClearEvent()
    delete clov;//See comment above about deleting *si
 #endif
+#ifdef _RAWDATA
+  delete raw;
+#endif
+  
    delete TDC_channel_export;
    delete TDC_value_export;
    return SUCCESS;
