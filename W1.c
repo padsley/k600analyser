@@ -19,59 +19,66 @@ TCutG *W1FrontBackEnergyCut;
 
 SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
-    SiliconData *si = new SiliconData();
-  
-    multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);	
-    
-    for(int k=0;k<mTDC->GetSize();k++)
+  W1Init();
+  //printf("22\n");
+  SiliconData *si = new SiliconData();
+  //printf("23\n");
+  multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);	
+  //printf("25\n");
+  for(int k=0;k<mTDC->GetSize();k++)
     {
       for(int i=0;i<ADCsize;i++)
-      {
-	//Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
-	if(W1ADCTDCChannelTest(i,mTDC->GetChannel(k)) && ADC_import[i]>300)
 	{
-	  for(int j=0;j<ADCsize;j++)
-	  {
-	    if(ADC_import[j]>300)
+	  //Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
+	  //printf("31\n");
+	  if(W1ADCTDCChannelTest(i,mTDC->GetChannel(k)) && ADC_import[i]>300)
 	    {
-	      double energyi = W1EnergyCalc(i,ADC_import[i]);
-	      double energyj = W1EnergyCalc(j,ADC_import[j]);
-	      
-	      //Test whether the hits are in the front and back of the same detector and whether the energies are good
-	      if(W1FrontBackTest(i,j,energyi,energyj,si))
-	      {
-// 		printf("TEST57\n");
-		si->SetEnergy(0.5*(energyi+energyj));
-		si->SetTheta(W1ThetaCalc(i));
-		si->SetPhi(W1PhiCalc(i));
-		si->SetTime(mTDC->GetValue(k));
-// 		si->SetTime(TDC_value_import[k]);
-		// 		si->SetTime(0);
+	      //printf("34\n");
+	      for(int j=0;j<ADCsize;j++)
+		{
+		  //printf("37\n");
+		  if(ADC_import[j]>300)
+		    {
+		      //printf("40\n");
+		      double energyi = W1EnergyCalc(i,ADC_import[i]);
+		      double energyj = W1EnergyCalc(j,ADC_import[j]);
+		      //printf("39\n");
+		      //Test whether the hits are in the front and back of the same detector and whether the energies are good
+		      if(W1FrontBackTest(i,j,energyi,energyj,si))
+			{
+			  // 		printf("TEST57\n");
+			  si->SetEnergy(0.5*(energyi+energyj));
+			  si->SetTheta(W1ThetaCalc(i));
+			  si->SetPhi(W1PhiCalc(i));
+			  si->SetTime(mTDC->GetValue(k));
+			  // 		si->SetTime(TDC_value_import[k]);
+			  // 		si->SetTime(0);
 		
-		si->SetDetectorHit(W1DetHitNumber(i,j));
-		si->SetADCChannelFront(i);
-		si->SetADCChannelBack(j);
-		si->SetTDCChannelFront(mTDC->GetChannel(k));
-// 		si->SetTDCChannelFront(TDC_channel_import[k]);
-		// 		si->SetTDCChannelFront(-1);
-		si->SetTDCChannelBack(-1);
-		si->SetADCValueFront(ADC_import[i]);
-		si->SetADCValueBack(ADC_import[j]);
+			  si->SetDetectorHit(W1DetHitNumber(i,j));
+			  si->SetADCChannelFront(i);
+			  si->SetADCChannelBack(j);
+			  si->SetTDCChannelFront(mTDC->GetChannel(k));
+			  // 		si->SetTDCChannelFront(TDC_channel_import[k]);
+			  // 		si->SetTDCChannelFront(-1);
+			  si->SetTDCChannelBack(-1);
+			  si->SetADCValueFront(ADC_import[i]);
+			  si->SetADCValueBack(ADC_import[j]);
 		
-		si->SetTDCValueFront(mTDC->GetValue(k));
-// 		si->SetTDCValueFront(TDC_value_import[k]);
-		// 		si->SetTDCValueFront(-1);
-		si->SetTDCValueBack(-1);
-		si->SetEnergyFront(energyi);
-		si->SetEnergyBack(energyj);
-// 		printf("TEST81\n");
-		si->SetMult(mTDC->GetMult(k));
-	      }
+			  si->SetTDCValueFront(mTDC->GetValue(k));
+			  // 		si->SetTDCValueFront(TDC_value_import[k]);
+			  // 		si->SetTDCValueFront(-1);
+			  si->SetTDCValueBack(-1);
+			  si->SetEnergyFront(energyi);
+			  si->SetEnergyBack(energyj);
+			  // 		printf("TEST81\n");
+			  si->SetMult(mTDC->GetMult(k));
+			}
+		    }
+		}
 	    }
-	  }
 	}
-      }
     }
+  printf("75\n");
   return si;
 }
 
@@ -100,39 +107,39 @@ void W1Init()//Initialise function which gets the information on the DAQ channel
   //The user needs to change the channel limits given below depending on what their DAQ setup is.
   W1ADCChannelLimits = new int*[NumberOfDetectors];
   for(int i=0;i<NumberOfDetectors;i++)
-  {
-    W1ADCChannelLimits[i] = new int[4];
-  }
+    {
+      W1ADCChannelLimits[i] = new int[4];
+    }
   //   
   //   //I set the channel address limits manually. I could do it with an automatic script but it's actually simpler this way. Get back to work!
   //   
   W1ADCChannelLimits[0][0] = 0;//First channel of the front of the first detector
   W1ADCChannelLimits[0][1] = 15;//Last channel of the front of the first detector
-  W1ADCChannelLimits[0][2] = 80;//First channel of the back of the first detector
-  W1ADCChannelLimits[0][3] = 87;//Last channel of the back of the first detector
+  W1ADCChannelLimits[0][2] = 64;//First channel of the back of the first detector
+  W1ADCChannelLimits[0][3] = 79;//Last channel of the back of the first detector
   //   
   W1ADCChannelLimits[1][0] = 16;
   W1ADCChannelLimits[1][1] = 31;
-  W1ADCChannelLimits[1][2] = 88;
+  W1ADCChannelLimits[1][2] = 80;
   W1ADCChannelLimits[1][3] = 95;
   //   
   W1ADCChannelLimits[2][0] = 32;
   W1ADCChannelLimits[2][1] = 47;
   W1ADCChannelLimits[2][2] = 96;
-  W1ADCChannelLimits[2][3] = 103;
+  W1ADCChannelLimits[2][3] = 111;
   //   
   W1ADCChannelLimits[3][0] = 48;
   W1ADCChannelLimits[3][1] = 63;
-  W1ADCChannelLimits[3][2] = 104;
-  W1ADCChannelLimits[3][3] = 111;
+  W1ADCChannelLimits[3][2] = 112;
+  W1ADCChannelLimits[3][3] = 127;
   //   
   //   //Currently, the TDCs only exist for the fronts so we shall limit ourself to having an array size of 2 for these. If TDC fronts and backs are instrumented, this will need to change to something that looks like what is above
   //   
   W1TDCChannelLimits = new int*[NumberOfDetectors];
   for(int i=0;i<NumberOfDetectors;i++)
-  {
-    W1TDCChannelLimits[i] = new int[2];
-  }
+    {
+      W1TDCChannelLimits[i] = new int[2];
+    }
   
   W1TDCChannelLimits[0][0] = 128*6+48;
   W1TDCChannelLimits[0][1] = 128*6+48+15;
@@ -184,16 +191,16 @@ bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, doub
   //   gROOT->ProcessLine(".x FrontBackEnergyCut.C");
   
   for(int i=0;i<NumberOfDetectors;i++)
-  {
-    if(FrontChannel>=W1ADCChannelLimits[i][0] && FrontChannel<=W1ADCChannelLimits[i][1] && BackChannel>=W1ADCChannelLimits[i][2] && BackChannel<=W1ADCChannelLimits[i][3])//If the two hits are part of the front and back of the same detector, then consider that the event might be good - make sure that hit 'i' in the main loop in the sort is always the front. Then we don't get any double-counting
-      {
-	if(W1FrontBackEnergyCut->IsInside(BackEnergy,FrontEnergy))//Check to see if the front and back energies are approximately equal
-	  {
-	    // 	    printf("Tust\n");
-	    result = true;//They are -> it's a good event
-	  }
-      }
-  }
+    {
+      if(FrontChannel>=W1ADCChannelLimits[i][0] && FrontChannel<=W1ADCChannelLimits[i][1] && BackChannel>=W1ADCChannelLimits[i][2] && BackChannel<=W1ADCChannelLimits[i][3])//If the two hits are part of the front and back of the same detector, then consider that the event might be good - make sure that hit 'i' in the main loop in the sort is always the front. Then we don't get any double-counting
+	{
+	  if(W1FrontBackEnergyCut->IsInside(BackEnergy,FrontEnergy))//Check to see if the front and back energies are approximately equal
+	    {
+	      // 	    printf("Tust\n");
+	      result = true;//They are -> it's a good event
+	    }
+	}
+    }
   //   printf("FrontBackTest End");
   return result;
 }
@@ -203,31 +210,39 @@ int W1DetHitNumber(int FrontChannel, int BackChannel)
 {
   int result = 0;
   for(int i=0;i<NumberOfDetectors;i++)
-  {
-    if(FrontChannel>=W1ADCChannelLimits[i][0] && FrontChannel<=W1ADCChannelLimits[i][1] && BackChannel>=W1ADCChannelLimits[i][2] && BackChannel<=W1ADCChannelLimits[i][3])//If the two hits are part of the front and back of the same detector, then consider that the event might be good - make sure that hit 'i' in the main loop in the sort is always the front. Then we don't get any double-counting
-      {
-	result = i+1;
-      }
-  }
+    {
+      if(FrontChannel>=W1ADCChannelLimits[i][0] && FrontChannel<=W1ADCChannelLimits[i][1] && BackChannel>=W1ADCChannelLimits[i][2] && BackChannel<=W1ADCChannelLimits[i][3])//If the two hits are part of the front and back of the same detector, then consider that the event might be good - make sure that hit 'i' in the main loop in the sort is always the front. Then we don't get any double-counting
+	{
+	  result = i+1;
+	}
+    }
   return result;
 }
 
 bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel)
 {
   bool result = false;
-//   printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+  printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
   for(int i=0;i<NumberOfDetectors;i++)
-  {
-    if(ADCChannel>=W1ADCChannelLimits[i][0] && ADCChannel<=W1ADCChannelLimits[i][1] && TDCChannel>=W1TDCChannelLimits[i][0] && TDCChannel<=W1TDCChannelLimits[i][1])//Check to see if the ADC/TDC events are in the same detector
-   {
-     if(TDCChannel<816)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
-     if(ADCChannel%16==TDCChannel%16)
-     {
-//        printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
-       result = true;
-     }
-   }
-  }
+    {
+      //printf("Test\n");
+      //printf("W1ADCChannelLimits[%d][0]: %d\n",i,W1ADCChannelLimits[i][0]);
+      //printf("W1ADCChannelLimits[%d][1]: %d\n",i,W1ADCChannelLimits[i][1]);
+      //printf("W1TDCChannelLimits[%d][0]: %d\n",i,W1TDCChannelLimits[i][0]);
+      //printf("W1TDCChannelLimits[%d][1]: %d\n",i,W1TDCChannelLimits[i][1]);
+      //printf("EndTest\n");
+      if(ADCChannel>=W1ADCChannelLimits[i][0] && ADCChannel<=W1ADCChannelLimits[i][1] && TDCChannel>=W1TDCChannelLimits[i][0] && TDCChannel<=W1TDCChannelLimits[i][1])//Check to see if the ADC/TDC events are in the same detector
+	{
+	  //printf("Test2\n");
+	  if(TDCChannel<816)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+	  if(ADCChannel%16==TDCChannel%16)
+	    {
+	      //        printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+	      result = true;
+	    }
+	}
+    }
+  //printf("W1ADCTDCChannelTest return");
   return result;
 }
 
