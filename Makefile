@@ -25,7 +25,7 @@ OSFLAGS = -DOS_LINUX -Dextname
 CFLAGS = -Wno-cpp -lrt
 # add to compile in 32-bit mode
 # OSFLAGS += -m32
-LIBS = -lm -lz -lutil -lnsl -lpthread -lrt -lgsl -lgslcblas #-lvme
+LIBS = -lm -lz -lutil -lnsl -lpthread -lrt #-lgsl -lgslcblas #-lvme
 
 #-----------------------------------------
 # ROOT flags and libs
