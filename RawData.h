@@ -13,12 +13,16 @@ private :
   int ADCValues[128];
   int TDCChannels[128*6];
   int TDCValues[128*6];
+  int TDCMultiplicity;
+  int SiliconTDCMultiplicity;
   
 public :
   //Setters
   void SetADC(int channel, int value)	{ADCValues[channel] = value;}
   void SetTDCChannel(int entry, int channel)	{TDCChannels[entry] = channel;}
   void SetTDCValue(int entry, int value)	{TDCValues[entry] = value;}
+  void SetTDCMultiplicity(int mult)		{TDCMultiplicity = mult;}
+  void SetSiliconTDCMultiplicity(int mult)	{SiliconTDCMultiplicity = mult;}
   
   //Getters
   int GetADC(int channel)	{return ADCValues[channel];}
