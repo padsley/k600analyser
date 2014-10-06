@@ -236,6 +236,10 @@ CloverData *clov;
 RawData *raw;
 #endif
 
+#ifdef _HAGARDATA
+HagarData *hag;
+#endif
+
 Int_t t_pulser=0;    // a pattern register equivalent
 
 #ifdef _POLARIZATION  
@@ -2183,14 +2187,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
 
    //
-   float ADC_export[128];
+   float ADC_export[160];
    int *TDC_channel_export;
    float *TDC_value_export;				//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
-
-   //Pointer to SiliconData class initialised.
-#ifdef _SILICONDATA
-//    si = new SiliconData();
-#endif
    
    #ifdef _MISALIGNTIME
    if (runtime>misaligntime) {
@@ -3124,7 +3123,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 //#ifdef _SILICONDATA
 #ifdef _RAWDATA
-  for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
+  for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
   if(raw)
   {
     raw = RawDataDump(ADC_export,ntdc,TDC_channel_export, TDC_value_export);
@@ -3140,7 +3139,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #endif
 
 #ifdef _W1
-for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
+for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
       si = W1SiliconSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
@@ -3154,6 +3153,14 @@ for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
   {
     clov = PR194CloverSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
   }
+#endif
+
+#ifdef _HAGARDATA
+    for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
+    if(hag)
+    {
+      hag = HagarDataSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+    }
 #endif
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
@@ -3181,6 +3188,9 @@ for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
 #endif
 #ifdef _RAWDATA
   delete raw;
+#endif
+#ifdef _HAGARDATA
+  delete hag;
 #endif
   
    delete TDC_channel_export;
