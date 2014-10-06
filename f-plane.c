@@ -44,6 +44,8 @@
 #include "CloverData.h"
 #include "PR194CloverSort.h"
 
+#include "HagarData.h"
+
 #include "RawData.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION

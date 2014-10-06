@@ -47,6 +47,8 @@ public :
   void PrintEvent();
 };
 
-
+HagarData* HagarDataSort(float *ADC_import, int ntdc, int *TDC_channel_import,  float *TDC_value_import);
 
 #endif
+
+
