@@ -63,7 +63,7 @@
  //#define _CLOVERDATA 
  
 #define _RAWDATA
- 
+#define _HAGARDATA
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
