@@ -9,40 +9,33 @@
 #include "SiliconData.h"
 #include "W1.h"
 
-const int ADCsize = 128;
+const int ADCsize = 160;
 const int NumberOfDetectors = 4;
 
-int **W1ADCChannelLimits;
-int **W1TDCChannelLimits;
+extern int W1ADCChannelLimits[4][4];
+extern int W1TDCChannelLimits[4][4];
 
 TCutG *W1FrontBackEnergyCut;
 
 SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   W1Init();
-  //printf("22\n");
   SiliconData *si = new SiliconData();
-  //printf("23\n");
   multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);	
-  //printf("25\n");
   for(int k=0;k<mTDC->GetSize();k++)
     {
       for(int i=0;i<64;i++)
 	{
 	  //Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
-	  //printf("31\n");
 	  if(W1ADCTDCChannelTest(i,mTDC->GetChannel(k)) && ADC_import[i]>300)
 	    {
 	      //if(i==0)
 	      for(int j=64;j<ADCsize;j++)
 		{
-		  //printf("37\n");
 		  if(ADC_import[j]>300)
 		    {
-		      //printf("40\n");
 		      double energyi = W1EnergyCalc(i,ADC_import[i]);
 		      double energyj = W1EnergyCalc(j,ADC_import[j]);
-		      //printf("45\n");
 		      //Test whether the hits are in the front and back of the same detector and whether the energies are good
 		      if(W1FrontBackTest(i,j,energyi,energyj,si))
 			{
@@ -74,7 +67,6 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
 	    }
 	}
     }
-  //printf("75\n");
   si->SetHits(si->SizeOfEvent());
   if(!si->TestEvent())si->ClearEvent();
   //si->PrintEvent();
@@ -103,54 +95,7 @@ void W1LoadCuts(SiliconData *si)
 
 void W1Init()//Initialise function which gets the information on the DAQ channels->Physical channels
 { 
-  //The user needs to change the channel limits given below depending on what their DAQ setup is.
-  W1ADCChannelLimits = new int*[NumberOfDetectors];
-  for(int i=0;i<NumberOfDetectors;i++)
-    {
-      W1ADCChannelLimits[i] = new int[4];
-    }
-  //   
-  //   //I set the channel address limits manually. I could do it with an automatic script but it's actually simpler this way. Get back to work!
-  //   
-  W1ADCChannelLimits[0][0] = 0;//First channel of the front of the first detector
-  W1ADCChannelLimits[0][1] = 15;//Last channel of the front of the first detector
-  W1ADCChannelLimits[0][2] = 64;//First channel of the back of the first detector
-  W1ADCChannelLimits[0][3] = 79;//Last channel of the back of the first detector
-  //   
-  W1ADCChannelLimits[1][0] = 16;
-  W1ADCChannelLimits[1][1] = 31;
-  W1ADCChannelLimits[1][2] = 80;
-  W1ADCChannelLimits[1][3] = 95;
-  //   
-  W1ADCChannelLimits[2][0] = 32;
-  W1ADCChannelLimits[2][1] = 47;
-  W1ADCChannelLimits[2][2] = 96;
-  W1ADCChannelLimits[2][3] = 111;
-  //   
-  W1ADCChannelLimits[3][0] = 48;
-  W1ADCChannelLimits[3][1] = 63;
-  W1ADCChannelLimits[3][2] = 112;
-  W1ADCChannelLimits[3][3] = 127;
-  //   
-  //   //Currently, the TDCs only exist for the fronts so we shall limit ourself to having an array size of 2 for these. If TDC fronts and backs are instrumented, this will need to change to something that looks like what is above for the ADCChannelLimits
-  //   
-  W1TDCChannelLimits = new int*[NumberOfDetectors];
-  for(int i=0;i<NumberOfDetectors;i++)
-    {
-      W1TDCChannelLimits[i] = new int[2];
-    }
-  
-  W1TDCChannelLimits[1][0] = 128*6+64;
-  W1TDCChannelLimits[1][1] = 128*6+64+15;
-  
-  W1TDCChannelLimits[0][0] = 128*6+64+16;
-  W1TDCChannelLimits[0][1] = 128*6+64+31;
-  
-  W1TDCChannelLimits[3][0] = 128*6+64+32;
-  W1TDCChannelLimits[3][1] = 128*6+64+47;
-  
-  W1TDCChannelLimits[2][0] = 128*6+64+48;
-  W1TDCChannelLimits[2][1] = 128*6+64+63;
+
 }
 
 bool W1SuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
@@ -164,10 +109,9 @@ bool W1SuppressChannel(int Channel)//If the ADC channel is one which we wish to 
 double W1EnergyCalc(int Channel, double ADCValue)
 {
   //define the silicon calibration parameters
-  extern double silicon_offset[128];
-  extern double silicon_gain[128];
-  double result = silicon_offset[Channel] + silicon_gain[Channel]*ADCValue;
-  //   if(Channel<64 || Channel>=80 && Channel<112)printf("EnergyCalc: %g\n",result);
+  extern double SiliconOffset[128];
+  extern double SiliconGain[128];
+  double result = SiliconOffset[Channel] + SiliconGain[Channel]*ADCValue;
   return result;
 }
 

@@ -1,6 +1,7 @@
 #include "HagarData.h"
 
-const int ADCsize = 160;
+//const int ADCsize = 160;
+extern int ADCsize;
 extern int HagarADCChannels[7];
 extern int HagarTDCChannels[7];
 
@@ -50,13 +51,13 @@ HagarData* HagarDataSort(float *ADC_import, int ntdc, int *TDC_channel_import,  
   }
   hag->SetADCValues(ADCs);
  
-  for(int i=0;i<ntdc;i++)
+  for(int i=0;i<mTDC->GetSize();i++)
   {
     for(int j=0;j<7;j++)
     {
-      if(TDC_channel_import[i] == HagarTDCChannels[j])
+      if(mTDC->GetChannel(i) == HagarTDCChannels[j])
       {
-	TDCs[j] = TDC_value_import[i];
+	TDCs[j] = mTDC->GetValue(i);
       }
     }
   }

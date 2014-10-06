@@ -1,10 +1,12 @@
 #include "multiTDC.h"
 
+extern int TDCModules;
+
 multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   TDChits = 0;
-  int *ChannelCounter = new int[896];
-  int *GoodChannelCounter = new int[896];
+  int *ChannelCounter = new int[128*TDCModules];
+  int *GoodChannelCounter = new int[128*TDCModules];
   
   //printf("L7\n");
   for(int i=0;i<896;i++){ChannelCounter[i]=0;}
