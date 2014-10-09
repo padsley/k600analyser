@@ -18,7 +18,7 @@ int HagarTDCChannels[7] = {0,0,0,0,0,0,0};
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
 
-int PulseLimits[2] = {-1e10, 1e10};
+int PulseLimits[2] = {-1e6, 1e6};
 
 double SiliconOffset[128] = {
 0	,
