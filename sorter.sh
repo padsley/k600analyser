@@ -39,10 +39,10 @@ do
   then
       if [ ! -e $FILE2 ]
 	  then
-	  #./analyzer -i /k600user/PR231/data/run000"$COUNT".mid.gz
-	  ./analyzer -i $FILE
-	  #mv output.root /k600user/PR231/data/sorted000$COUNT.root
-	  mv output.root $FILE2
+	  ./analyzer -i /k600user/PR231/data/run000"$COUNT".mid.gz
+	  #./analyzer -i $FILE
+	  mv output.root /k600user/PR231/data/sorted000$COUNT.root
+	  #mv output.root $FILE2
       fi
   fi
 done
