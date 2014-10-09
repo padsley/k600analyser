@@ -21,6 +21,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <vector>
 
 /* midas includes */
 #include "midas.h"
@@ -59,8 +60,8 @@
 //Uncomment for silicon analysis
 #define _SILICONDATA 
   
- #define _MMM
-// #define _W1
+//#define _MMM
+ #define _W1
 //Uncomment for clover analysis
  //#define _CLOVERDATA 
  
@@ -2192,6 +2193,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    float ADC_export[160];
    int *TDC_channel_export;
    float *TDC_value_export;				//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
+
+   std::vector<int> TDCChannelExportStore;
+   std::vector<float> TDCValueExportStore;
    
    #ifdef _MISALIGNTIME
    if (runtime>misaligntime) {
@@ -2350,8 +2354,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    // loop through all the TDC datawords===================================================================================================
    //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event 
    
-   TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
-   TDC_value_export = new float[ntdc];
+   //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
+   //TDC_value_export = new float[ntdc];
    
    for(int i = 0; i < ntdc; i++) {
       if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
@@ -2419,40 +2423,43 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	
 	
 	
-	#ifdef _ADC
+#ifdef _ADC
 	if(tdcmodule==6){
-		if(channel>47 && channel<64){
-			t_Si1RingsTDC[channel-48]=ref_time;
-		}
-		if(channel>63 && channel<80){
-			t_Si1RingsTDC[channel-64]=ref_time;
-		}
-		if(channel>79 && channel<96){
-			t_Si1RingsTDC[channel-80]=ref_time;
-		}
-		if(channel>95 && channel<112){
-			t_Si1RingsTDC[channel-96]=ref_time;
-		}
-		if(channel>111 && channel<128){
-			t_Si1RingsTDC[channel-112]=ref_time;
-		}
+	  if(channel>47 && channel<64){
+	    t_Si1RingsTDC[channel-48]=ref_time;
+	  }
+	  if(channel>63 && channel<80){
+	    t_Si1RingsTDC[channel-64]=ref_time;
+	  }
+	  if(channel>79 && channel<96){
+	    t_Si1RingsTDC[channel-80]=ref_time;
+	  }
+	  if(channel>95 && channel<112){
+	    t_Si1RingsTDC[channel-96]=ref_time;
+	  }
+	  if(channel>111 && channel<128){
+	    t_Si1RingsTDC[channel-112]=ref_time;
+	  }
 
 	}
 	if(tdcmodule==5){
-		if(channel>15 && channel<24){
-			t_NaITDC[channel-16]=ref_time;
-		}
+	  if(channel>15 && channel<24){
+	    t_NaITDC[channel-16]=ref_time;
+	  }
 	}
-	#endif
+#endif
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
       
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
-      TDC_channel_export[i] = channel;
-      TDC_value_export[i] = offset_time;
-      
+      //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
+      //TDC_channel_export[i] = channel;
+      //TDC_value_export[i] = offset_time;
+      TDCChannelExportStore.push_back(channel);
+      TDCValueExportStore.push_back(offset_time);
+
       switch(channel){
 		case 3:  t_k600=1; break;
 		case 9:  pad1hipt=ref_time;t_pad1hiPT=pad1hipt; break;
@@ -3025,14 +3032,25 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    if(X1flag==0 && U1flag==0 && X2flag==0){
      hEventID2->Fill(ev_id_X1U1X2);
    }
-//   printf("L3073\n");
+
+   TDC_channel_export = new int[TDCChannelExportStore.size()];
+   TDC_value_export = new float[TDCValueExportStore.size()];
+
+   //printf("TDCChannelExportStore.size(): %d \t TDCValueExportStore.size(): %d\n",TDCChannelExportStore.size(),TDCValueExportStore.size());
+
+   int TDCHits = 0;
+   if(TDCChannelExportStore.size()==TDCValueExportStore.size())TDCHits = TDCValueExportStore.size();
+   else{TDCHits = 0; printf("TDC Channel/Value mismatch - not going to process external data");}
+
+   for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
+   for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 //#ifdef _SILICONDATA
 #ifdef _RAWDATA
   for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
   if(raw)
   {
-    raw = RawDataDump(ADC_export,ntdc,TDC_channel_export, TDC_value_export);
+    raw = RawDataDump(ADC_export,TDCHits,TDC_channel_export, TDC_value_export);
   }
 #endif
   
@@ -3040,7 +3058,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = MMMSiliconSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+      si = MMMSiliconSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
@@ -3048,7 +3066,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = W1SiliconSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+      si = W1SiliconSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
@@ -3057,7 +3075,7 @@ for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
   if(clov)
   {
-    clov = PR194CloverSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+    clov = PR194CloverSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
   }
 #endif
 
@@ -3065,7 +3083,7 @@ for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
     for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
     if(hag)
     {
-      hag = HagarDataSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+      hag = HagarDataSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
    //--------------------------------------------------------------------------------------------------------
@@ -3101,6 +3119,8 @@ for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
   
    delete TDC_channel_export;
    delete TDC_value_export;
+   TDCChannelExportStore.clear();
+   TDCValueExportStore.clear();
    return SUCCESS;
 }
 

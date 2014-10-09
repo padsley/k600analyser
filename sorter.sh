@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for COUNT in {0..200}
+for COUNT in {0..1}
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
