@@ -49,6 +49,8 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
 			  si->SetADCChannelFront(i);
 			  si->SetADCChannelBack(j);
 			  si->SetTDCChannelFront(mTDC->GetChannel(k));
+			  si->SetStripFront(W1StripFront(i));
+			  si->SetStripBack(W1StripBack(j));
 
 			  si->SetTDCChannelBack(-1);
 			  si->SetADCValueFront(ADC_import[i]);
@@ -165,32 +167,39 @@ int W1DetHitNumber(int FrontChannel, int BackChannel)
   return result;
 }
 
+int W1StripFront(int FrontChannel)//The strip number runs 1->16 on each detector. i.e. there will be 4 strip 1s if there are 4 detectors. Use the detector hit quantity from above if you need to localise to one detector
+{
+  //This one is just reversed.
+  int result = 0;
+  result = FrontChannel%16;//Gives the number relative to the start of each detector. 0,16,32... return 0, 1, 17, 33 return 1 etc.
+  result = 16-result;//Want to start the channel numbering at 1 for consistency with the Micron documentation
+  return result;
+}
+
+int W1StripBack(int BackChannel)//Again, for the W1, this runs from 1->16.
+{
+  int result = 0;
+  int chan = BackChannel%16;
+  if(chan>=8)result = chan - 7; //(actually -8+1 because we want to shift 8->15 to 0->7 and then 1->8)
+  else if(chan<=7)result = chan + 8 + 1;
+  return result;
+}
+
 bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel)
 {
   bool result = false;
-  //printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
   for(int i=0;i<NumberOfDetectors;i++)
     {
-      //printf("Test\n");
-      //printf("W1ADCChannelLimits[%d][0]: %d\n",i,W1ADCChannelLimits[i][0]);
-      //printf("W1ADCChannelLimits[%d][1]: %d\n",i,W1ADCChannelLimits[i][1]);
-      //printf("W1TDCChannelLimits[%d][0]: %d\n",i,W1TDCChannelLimits[i][0]);
-      //printf("W1TDCChannelLimits[%d][1]: %d\n",i,W1TDCChannelLimits[i][1]);
-      //printf("EndTest\n");
       if(ADCChannel>=W1ADCChannelLimits[i][0] && ADCChannel<=W1ADCChannelLimits[i][1] && TDCChannel>=W1TDCChannelLimits[i][0] && TDCChannel<=W1TDCChannelLimits[i][1])//Check to see if the ADC/TDC events are in the same detector
 	{
-	  //printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
-	  //printf("Test2\n");
 	  if(TDCChannel<816)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
 	  if(ADCChannel%16==TDCChannel%16)
 	    {
-	      //        printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+
 	      result = true;
 	    }
 	}
     }
-  //printf("W1ADCTDCChannelTest return\n");
-  //printf("space\n");
   return result;
 }
 

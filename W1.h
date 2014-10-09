@@ -29,6 +29,7 @@ void W1LoadCuts(SiliconData *si);
 
 int W1DetHitNumber(int FrontChannel, int BackChannel);
 
-
+int W1StripFront(int FrontChannel);
+int W1StripBack(int BackChannel);
 
 #endif

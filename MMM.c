@@ -61,6 +61,8 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		si->SetDetectorHit(MMMDetHitNumber(i,j));
 		si->SetADCChannelFront(i);
 		si->SetADCChannelBack(j);
+		si->SetStripFront(MMMStripFront(i));
+		si->SetStripBack(MMMStripBack(j));
 		si->SetTDCChannelFront(mTDC->GetChannel(k));
 // 		si->SetTDCChannelFront(TDC_channel_import[k]);
 		// 		si->SetTDCChannelFront(-1);
@@ -203,3 +205,17 @@ bool MMMADCTDCChannelTest(int ADCChannel, int TDCChannel)
   return result;
 }
 
+
+int MMMStripFront(int FrontChannel)
+{
+  int result = 0;
+  result = FrontChannel%16;
+  return result;
+}
+
+int MMMStripBack(int BackChannel)
+{
+  int result = 0;
+  result = BackChannel%8;
+  return result;
+}
