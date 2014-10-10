@@ -9,7 +9,7 @@
 #include "SiliconData.h"
 #include "W1.h"
 
-const int ADCsize = 160;
+const int ADCsize = 128;
 const int NumberOfDetectors = 4;
 
 extern int W1ADCChannelLimits[4][4];
@@ -27,20 +27,23 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
       for(int i=0;i<64;i++)
 	{
 	  //Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
-	  if(W1ADCTDCChannelTest(i,mTDC->GetChannel(k)) && ADC_import[i]>300)
+	  if(W1ADCTDCChannelTest(i,mTDC->GetChannel(k)) && ADC_import[i]>250)
 	    {
+	      //printf("through ADC TDC channel test\n");
 	      //if(i==0)
+	      //printf("pside %i   \n",i);
 	      for(int j=64;j<ADCsize;j++)
 		{
-		  if(ADC_import[j]>300)
+		  if(ADC_import[j]>250)
 		    {
 		      double energyi = W1EnergyCalc(i,ADC_import[i]);
 		      double energyj = W1EnergyCalc(j,ADC_import[j]);
 		      //Test whether the hits are in the front and back of the same detector and whether the energies are good
 		      if(W1FrontBackTest(i,j,energyi,energyj,si))
 			{
+	                  //printf("through front-back test\n");
 			  //si->SetEnergy(0.5*(energyi+energyj));
-			  si->SetEnergy(energyi);//Just use front energy because the back energy resolution is bloody terrible
+			  si->SetEnergy(energyi);          //Just use front energy because the back energy resolution is bloody terrible
 			  si->SetTheta(W1ThetaCalc(i,j));
 			  si->SetPhi(W1PhiCalc(i,j));
 			  si->SetTime(mTDC->GetValue(k));
@@ -48,6 +51,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
 			  si->SetDetectorHit(W1DetHitNumber(i,j));
 			  si->SetADCChannelFront(i);
 			  si->SetADCChannelBack(j);
+			  //printf("pside %i    nside %i  \n",i,j);
 			  si->SetTDCChannelFront(mTDC->GetChannel(k));
 			  si->SetStripFront(W1StripFront(i));
 			  si->SetStripBack(W1StripBack(j));
@@ -192,10 +196,9 @@ bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel)
     {
       if(ADCChannel>=W1ADCChannelLimits[i][0] && ADCChannel<=W1ADCChannelLimits[i][1] && TDCChannel>=W1TDCChannelLimits[i][0] && TDCChannel<=W1TDCChannelLimits[i][1])//Check to see if the ADC/TDC events are in the same detector
 	{
-	  if(TDCChannel<816)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
-	  if(ADCChannel%16==TDCChannel%16)
+	  if(TDCChannel<832)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+	  if(ADCChannel%16==(TDCChannel-832)%16)
 	    {
-
 	      result = true;
 	    }
 	}

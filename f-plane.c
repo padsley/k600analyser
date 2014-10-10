@@ -209,22 +209,19 @@ Double_t t_NaI[7];
 Double_t t_NaIE[7];
 Double_t t_NaIEtot;
 //Double_t t_Plastic[8];
-Double_t t_Si1Rings[16];
-Double_t t_Si2Rings[16];
-Double_t t_Si3Rings[16];
-Double_t t_Si4Rings[16];
-Double_t t_Si5Rings[16];
-Double_t t_Si1Sectors[8];
-Double_t t_Si2Sectors[8];
-Double_t t_Si3Sectors[8];
-Double_t t_Si4Sectors[8];
-Double_t t_Si5Sectors[8];
+Double_t t_SiPside1[16];
+Double_t t_SiPside2[16];
+Double_t t_SiPside3[16];
+Double_t t_SiPside4[16];
+Double_t t_SiNside1[16];
+Double_t t_SiNside2[16];
+Double_t t_SiNside3[16];
+Double_t t_SiNside4[16];
 Double_t t_NaITDC[7];
-Double_t t_Si1RingsTDC[16];
-Double_t t_Si2RingsTDC[16];
-Double_t t_Si3RingsTDC[16];
-Double_t t_Si4RingsTDC[16];
-Double_t t_Si5RingsTDC[16];
+Double_t t_SiPside1TDC[16];
+Double_t t_SiPside2TDC[16];
+Double_t t_SiPside3TDC[16];
+Double_t t_SiPside4TDC[16];
 #endif
 
 #ifdef _SILICONDATA
@@ -1015,10 +1012,10 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
       t_NaI[i]=0.; t_NaIE[i]=0.; //t_Plastic[i]=0.;
    }
    for(int i = 0; i < 16 ; i++) { 
-      t_Si1Rings[i]=0.; t_Si2Rings[i]=0.; t_Si3Rings[i]=0.; t_Si4Rings[i]=0.; t_Si5Rings[i]=0.;
+      t_SiPside1[i]=-1.; t_SiPside2[i]=-1.; t_SiPside3[i]=-1.; t_SiPside4[i]=-1.;
    }
-   for(int i = 0; i < 8 ; i++) { 
-      t_Si1Sectors[i]=0.; t_Si2Sectors[i]=0.; t_Si3Sectors[i]=0.; t_Si4Sectors[i]=0.; t_Si5Sectors[i]=0.;
+   for(int i = 0; i < 16 ; i++) { 
+      t_SiNside1[i]=-1.; t_SiNside2[i]=-1.; t_SiNside3[i]=-1.; t_SiNside4[i]=-1.; 
    }
    t_NaIEtot=0.;
    #endif
@@ -2080,22 +2077,19 @@ INT focal_init(void)
   t1->Branch("NaI",&t_NaI,"t_NaI[7]/D");
   t1->Branch("NaIE",&t_NaIE,"t_NaIE[7]/D");
   t1->Branch("NaIEtot",&t_NaIEtot,"t_NaIEtot/D");
-  t1->Branch("Si1Rings",&t_Si1Rings,"t_Si1Rings[16]/D");
-  t1->Branch("Si2Rings",&t_Si2Rings,"t_Si2Rings[16]/D");
-  t1->Branch("Si3Rings",&t_Si3Rings,"t_Si3Rings[16]/D");
-  t1->Branch("Si4Rings",&t_Si4Rings,"t_Si4Rings[16]/D");
-  t1->Branch("Si5Rings",&t_Si5Rings,"t_Si5Rings[16]/D");
-  t1->Branch("Si1Sectors",&t_Si1Sectors,"t_Si1Sectors[8]/D");
-  t1->Branch("Si2Sectors",&t_Si2Sectors,"t_Si2Sectors[8]/D");
-  t1->Branch("Si3Sectors",&t_Si3Sectors,"t_Si3Sectors[8]/D");
-  t1->Branch("Si4Sectors",&t_Si4Sectors,"t_Si4Sectors[8]/D");
-  t1->Branch("Si5Sectors",&t_Si5Sectors,"t_Si5Sectors[8]/D");
+  t1->Branch("SiPside1",&t_SiPside1,"t_SiPside1[16]/D");
+  t1->Branch("SiPside2",&t_SiPside2,"t_SiPside2[16]/D");
+  t1->Branch("SiPside3",&t_SiPside3,"t_SiPside3[16]/D");
+  t1->Branch("SiPside4",&t_SiPside4,"t_SiPside4[16]/D");
+  t1->Branch("SiNside1",&t_SiNside1,"t_SiNside1[16]/D");
+  t1->Branch("SiNside2",&t_SiNside2,"t_SiNside2[16]/D");
+  t1->Branch("SiNside3",&t_SiNside3,"t_SiNside3[16]/D");
+  t1->Branch("SiNside4",&t_SiNside4,"t_SiNside4[16]/D");
   t1->Branch("NaITDC",&t_NaITDC,"t_NaITDC[7]/D");
-  t1->Branch("Si1RingsTDC",&t_Si1RingsTDC,"t_Si1RingsTDC[16]/D");
-  t1->Branch("Si2RingsTDC",&t_Si2RingsTDC,"t_Si2RingsTDC[16]/D");
-  t1->Branch("Si3RingsTDC",&t_Si3RingsTDC,"t_Si3RingsTDC[16]/D");
-  t1->Branch("Si4RingsTDC",&t_Si4RingsTDC,"t_Si4RingsTDC[16]/D");
-  t1->Branch("Si5RingsTDC",&t_Si5RingsTDC,"t_Si5RingsTDC[16]/D");
+  t1->Branch("SiPside1TDC",&t_SiPside1TDC,"t_SiPside1TDC[16]/D");
+  t1->Branch("SiPside2TDC",&t_SiPside2TDC,"t_SiPside2TDC[16]/D");
+  t1->Branch("SiPside3TDC",&t_SiPside3TDC,"t_SiPside3TDC[16]/D");
+  t1->Branch("SiPside4TDC",&t_SiPside4TDC,"t_SiPside4TDC[16]/D");
   #endif
  
   #ifdef _POLARIZATION
@@ -2170,13 +2164,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcevtcount;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
-   float RingsTDC[80];
+   float PsideTDC[80];
 
    extern float ADC[128];         			// defined, declared and used in adc.c     
    extern float NaI[8];					// defined, declared and used in adc.c  
-   extern float Sectors[40],Rings[80];			// defined, declared and used in adc.c  
-   extern float Ring1[16],Ring2[16],Ring3[16],Ring4[16],Ring5[16];	// defined, declared and used in adc.c  
-   extern float Sector1[8],Sector2[8],Sector3[8],Sector4[8],Sector5[8]; // defined, declared and used in adc.c  
+   extern float Nside[80],Pside[80];			// defined, declared and used in adc.c  
+   extern float Pside1[16],Pside2[16],Pside3[16],Pside4[16];	// defined, declared and used in adc.c  
+   extern float Nside1[16],Nside2[16],Nside3[16],Nside4[16]; // defined, declared and used in adc.c  
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
    extern float pad1hip,pad1lowp,pad2hip,pad2lowp;    // defined, declared and used in qdc.c
    extern int qdcevtcount;   			      // defined, declared and used in qdc.c
@@ -2269,31 +2263,27 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    #ifdef _ADC
 
  
-   Int_t Ring1Pedestal[16]={350,300,300,300,300,300,300,300,300,320,360,360,360,360,360,360};
-   Int_t Ring2Pedestal[16]={250,280,280,280,280,280,280,280,300,220,300,300,300,300,300,300};
-   Int_t Ring3Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
-   Int_t Ring4Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
-   Int_t Ring5Pedestal[16]={280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280};
+   Int_t Pside1Pedestal[16]={350,300,300,300,300,300,300,300,300,320,360,360,360,360,360,360};
+   Int_t Pside2Pedestal[16]={250,280,280,280,280,280,280,280,300,220,300,300,300,300,300,300};
+   Int_t Pside3Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
+   Int_t Pside4Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
 
-   Int_t Sector1Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector2Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector3Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector4Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector5Pedestal[16]={300,300,300,300,300,300,300,300};
+   Int_t Nside1Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside2Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside3Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside4Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
 
    for(int i = 0; i < 16 ; i++) { 
-      if(Ring1[i]>Ring1Pedestal[i]) t_Si1Rings[i]=Ring1[i];		
-      if(Ring2[i]>Ring2Pedestal[i]) t_Si2Rings[i]=Ring2[i];		
-      if(Ring3[i]>Ring3Pedestal[i]) t_Si3Rings[i]=Ring3[i];		
-      if(Ring4[i]>Ring4Pedestal[i]) t_Si4Rings[i]=Ring4[i];		
-      if(Ring5[i]>Ring5Pedestal[i]) t_Si5Rings[i]=Ring5[i];		
+      if(Pside1[i]>Pside1Pedestal[i]) t_SiPside1[i]=Pside1[i];		
+      if(Pside2[i]>Pside2Pedestal[i]) t_SiPside2[i]=Pside2[i];		
+      if(Pside3[i]>Pside3Pedestal[i]) t_SiPside3[i]=Pside3[i];		
+      if(Pside4[i]>Pside4Pedestal[i]) t_SiPside4[i]=Pside4[i];		
    }
-   for(int i = 0; i < 8 ; i++) {  //funny ribbon cables to caen invert order of Si chan, but we fixed it in ECL/NIM breakout board
-      if(Sector2[i]>Sector2Pedestal[i]) t_Si1Sectors[i]=Sector2[i];  // in the exp Sector 1 mistakenly swapped with Sector 2 input
-      if(Sector1[i]>Sector1Pedestal[i]) t_Si2Sectors[i]=Sector1[i];  // in the exp Sector 2 mistakenly swapped with Sector 1 input
-      if(Sector3[i]>Sector3Pedestal[i]) t_Si3Sectors[i]=Sector3[i];		 
-      if(Sector4[i]>Sector4Pedestal[i]) t_Si4Sectors[i]=Sector4[i];		 
-      if(Sector5[i]>Sector5Pedestal[i]) t_Si5Sectors[i]=Sector5[i];		 
+   for(int i = 0; i < 16 ; i++) {  //funny ribbon cables to caen invert order of Si chan, but we fixed it in ECL/NIM breakout board
+      if(Nside1[i]>Nside1Pedestal[i]) t_SiNside1[i]=Nside1[i];  
+      if(Nside2[i]>Nside2Pedestal[i]) t_SiNside2[i]=Nside2[i];  
+      if(Nside3[i]>Nside3Pedestal[i]) t_SiNside3[i]=Nside3[i];		 
+      if(Nside4[i]>Nside4Pedestal[i]) t_SiNside4[i]=Nside4[i];		 
    }
    for(int i = 0; i < 8 ; i++) { 
       t_NaI[i]=NaI[i];
@@ -2425,26 +2415,22 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	
 #ifdef _ADC
 	if(tdcmodule==6){
-	  if(channel>47 && channel<64){
-	    t_Si1RingsTDC[channel-48]=ref_time;
-	  }
 	  if(channel>63 && channel<80){
-	    t_Si1RingsTDC[channel-64]=ref_time;
+	    t_SiPside1TDC[channel-64]=ref_time;
 	  }
 	  if(channel>79 && channel<96){
-	    t_Si1RingsTDC[channel-80]=ref_time;
+	    t_SiPside2TDC[channel-80]=ref_time;
 	  }
 	  if(channel>95 && channel<112){
-	    t_Si1RingsTDC[channel-96]=ref_time;
+	    t_SiPside3TDC[channel-96]=ref_time;
 	  }
 	  if(channel>111 && channel<128){
-	    t_Si1RingsTDC[channel-112]=ref_time;
+	    t_SiPside4TDC[channel-112]=ref_time;
 	  }
-
 	}
 	if(tdcmodule==5){
-	  if(channel>15 && channel<24){
-	    t_NaITDC[channel-16]=ref_time;
+	  if(channel>24 && channel<31){
+	    t_NaITDC[channel-25]=ref_time;
 	  }
 	}
 #endif
