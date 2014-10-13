@@ -96,26 +96,6 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   return si;
 }
 
-void MMMLoadCuts(SiliconData *si)
-{
-  printf("Load MMM Front-Back Energy cut\n");
-  TCutG *cutg = new TCutG("FrontBackEnergyCut",8);
-  cutg->SetVarX("EnergyBack");
-  cutg->SetVarY("EnergyFront");
-  cutg->SetTitle("Graph");
-  cutg->SetFillColor(1);
-  cutg->SetPoint(0,8625.54,9448.89);
-  cutg->SetPoint(1,9436.42,9393.27);
-  cutg->SetPoint(2,9398.71,8336.6);
-  cutg->SetPoint(3,8512.39,8253.18);
-  cutg->SetPoint(4,610.991,300.318);
-  cutg->SetPoint(5,516.703,912.076);
-  cutg->SetPoint(6,8625.54,9143.01);
-  cutg->SetPoint(7,8625.54,9448.89);
-  
-  MMMFrontBackEnergyCut = cutg;
-}
-
 void MMMInit()//Initialise function which gets the information on the DAQ channels->Physical channels
 { 
 //This bit is currently doing nowt but may be called at the beginning of each 'event' to set up useful things for other bits of the code.

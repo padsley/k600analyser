@@ -23,7 +23,6 @@ bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, dou
 bool MMMADCTDCChannelTest(int ADCChannel, int TDCChannel);
 
 void MMMInit();
-void MMMLoadCuts(SiliconData *si);
 
 int MMMDetHitNumber(int FrontChannel, int BackChannel);
 

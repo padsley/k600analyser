@@ -66,7 +66,7 @@
  //#define _CLOVERDATA 
  
 #define _RAWDATA
-#define _HAGARDATA
+//#define _HAGARDATA
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -2131,7 +2131,6 @@ INT focal_init(void)
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
-  MMMLoadCuts(si);
 #endif
 
 #ifdef _CLOVERDATA
