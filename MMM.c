@@ -10,17 +10,13 @@
 
 #include "SiliconData.h"
 #include "MMM.h"
-// 
-//const int ADCsize = 128;
+
 extern int ADCModules;
-int ADCsize = 32*ADCModules;
-extern int NumberOfMMM ;
+extern int ADCsize;
+extern int NumberOfMMM;
 
 extern int MMMADCChannelLimits[4][4];
 extern int MMMTDCChannelLimits[4][4];
-
-// int MMMADCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
-// int MMMTDCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
 
 TCutG *MMMFrontBackEnergyCut;
 
@@ -65,6 +61,8 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		si->SetDetectorHit(MMMDetHitNumber(i,j));
 		si->SetADCChannelFront(i);
 		si->SetADCChannelBack(j);
+		si->SetStripFront(MMMStripFront(i));
+		si->SetStripBack(MMMStripBack(j));
 		si->SetTDCChannelFront(mTDC->GetChannel(k));
 // 		si->SetTDCChannelFront(TDC_channel_import[k]);
 		// 		si->SetTDCChannelFront(-1);
@@ -78,7 +76,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		si->SetTDCValueBack(-1);
 		si->SetEnergyFront(energyi);
 		si->SetEnergyBack(energyj);
-// 		printf("TEST81\n");
+
 		si->SetMult(mTDC->GetMult(k));
 	      }
 	    }
@@ -88,7 +86,6 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
     }
   }
   
-//      printf("L90\n");
   si->SetHits(si->SizeOfEvent());
   if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
 
@@ -96,21 +93,11 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   
   delete mTDC;
   
-//   for(int i=0;i<NumberOfDetectors;i++)
-//   {
-//     delete MMMADCChannelLimits[i];
-//     delete MMMTDCChannelLimits[i];
-//   }
-//   delete MMMADCChannelLimits;
-//   delete MMMTDCChannelLimits;
-  
   return si;
 }
 
 void MMMLoadCuts(SiliconData *si)
 {
-  //  gROOT->ProcessLine(".x FrontBackEnergyCut.C");
-  //  si->SetFrontBackEnergyCut((TCutG*)gROOT->FindObjectAny("FrontBackEnergyCut"));
   printf("Load MMM Front-Back Energy cut\n");
   TCutG *cutg = new TCutG("FrontBackEnergyCut",8);
   cutg->SetVarX("EnergyBack");
@@ -131,54 +118,7 @@ void MMMLoadCuts(SiliconData *si)
 
 void MMMInit()//Initialise function which gets the information on the DAQ channels->Physical channels
 { 
-  //   printf("Start Init\n");
-//   MMMADCChannelLimits = new int*[NumberOfDetectors];
-//   for(int i=0;i<NumberOfDetectors;i++)
-//   {
-//     MMMADCChannelLimits[i] = new int[4];
-//   }
-//   //   
-//   //   //I set the channel address limits manually. I could do it with an automatic script but it's actually simpler this way. Get back to work!
-//   //   
-//   MMMADCChannelLimits[0][0] = 0;//First channel of the front of the first detector
-//   MMMADCChannelLimits[0][1] = 15;//Last channel of the front of the first detector
-//   MMMADCChannelLimits[0][2] = 80;//First channel of the back of the first detector
-//   MMMADCChannelLimits[0][3] = 87;//Last channel of the back of the first detector
-//   //   
-//   MMMADCChannelLimits[1][0] = 16;
-//   MMMADCChannelLimits[1][1] = 31;
-//   MMMADCChannelLimits[1][2] = 88;
-//   MMMADCChannelLimits[1][3] = 95;
-//   //   
-//   MMMADCChannelLimits[2][0] = 32;
-//   MMMADCChannelLimits[2][1] = 47;
-//   MMMADCChannelLimits[2][2] = 96;
-//   MMMADCChannelLimits[2][3] = 103;
-//   //   
-//   MMMADCChannelLimits[3][0] = 48;
-//   MMMADCChannelLimits[3][1] = 63;
-//   MMMADCChannelLimits[3][2] = 104;
-//   MMMADCChannelLimits[3][3] = 111;
-//   //   
-//   //   //Currently, the TDCs only exist for the fronts so we shall limit ourself to having an array size of 2 for these. If TDC fronts and backs are instrumented, this will need to change to something that looks like what is above
-//   //   
-//   MMMTDCChannelLimits = new int*[NumberOfDetectors];
-//   for(int i=0;i<NumberOfDetectors;i++)
-//   {
-//     MMMTDCChannelLimits[i] = new int[2];
-//   }
-//   
-//   MMMTDCChannelLimits[0][0] = 128*6+48;
-//   MMMTDCChannelLimits[0][1] = 128*6+48+15;
-//   
-//   MMMTDCChannelLimits[1][0] = 128*6+48+16;
-//   MMMTDCChannelLimits[1][1] = 128*6+48+31;
-//   
-//   MMMTDCChannelLimits[2][0] = 128*6+48+32;
-//   MMMTDCChannelLimits[2][1] = 128*6+48+47;
-//   
-//   MMMTDCChannelLimits[3][0] = 128*6+48+48;
-//   MMMTDCChannelLimits[3][1] = 128*6+48+63;
+//This bit is currently doing nowt but may be called at the beginning of each 'event' to set up useful things for other bits of the code.
 }
 
 bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
@@ -192,9 +132,9 @@ bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to
 double MMMEnergyCalc(int Channel, double ADCValue)
 {
   //define the silicon calibration parameters
-  extern double silicon_offset[128];
-  extern double silicon_gain[128];
-  double result = silicon_offset[Channel] + silicon_gain[Channel]*ADCValue;
+  extern double SiliconOffset[128];
+  extern double SiliconGain[128];
+  double result = SiliconOffset[Channel] + SiliconGain[Channel]*ADCValue;
   //   if(Channel<64 || Channel>=80 && Channel<112)printf("EnergyCalc: %g\n",result);
   return result;
 }
@@ -265,3 +205,17 @@ bool MMMADCTDCChannelTest(int ADCChannel, int TDCChannel)
   return result;
 }
 
+
+int MMMStripFront(int FrontChannel)
+{
+  int result = 0;
+  result = FrontChannel%16;
+  return result;
+}
+
+int MMMStripBack(int BackChannel)
+{
+  int result = 0;
+  result = BackChannel%8;
+  return result;
+}

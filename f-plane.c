@@ -21,6 +21,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <vector>
 
 /* midas includes */
 #include "midas.h"
@@ -44,6 +45,8 @@
 #include "CloverData.h"
 #include "PR194CloverSort.h"
 
+#include "HagarData.h"
+
 #include "RawData.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
@@ -57,13 +60,13 @@
 //Uncomment for silicon analysis
 #define _SILICONDATA 
   
- #define _MMM
-// #define _W1
+//#define _MMM
+ #define _W1
 //Uncomment for clover analysis
  //#define _CLOVERDATA 
  
 #define _RAWDATA
- 
+#define _HAGARDATA
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -206,22 +209,19 @@ Double_t t_NaI[7];
 Double_t t_NaIE[7];
 Double_t t_NaIEtot;
 //Double_t t_Plastic[8];
-Double_t t_Si1Rings[16];
-Double_t t_Si2Rings[16];
-Double_t t_Si3Rings[16];
-Double_t t_Si4Rings[16];
-Double_t t_Si5Rings[16];
-Double_t t_Si1Sectors[8];
-Double_t t_Si2Sectors[8];
-Double_t t_Si3Sectors[8];
-Double_t t_Si4Sectors[8];
-Double_t t_Si5Sectors[8];
+Double_t t_SiPside1[16];
+Double_t t_SiPside2[16];
+Double_t t_SiPside3[16];
+Double_t t_SiPside4[16];
+Double_t t_SiNside1[16];
+Double_t t_SiNside2[16];
+Double_t t_SiNside3[16];
+Double_t t_SiNside4[16];
 Double_t t_NaITDC[7];
-Double_t t_Si1RingsTDC[16];
-Double_t t_Si2RingsTDC[16];
-Double_t t_Si3RingsTDC[16];
-Double_t t_Si4RingsTDC[16];
-Double_t t_Si5RingsTDC[16];
+Double_t t_SiPside1TDC[16];
+Double_t t_SiPside2TDC[16];
+Double_t t_SiPside3TDC[16];
+Double_t t_SiPside4TDC[16];
 #endif
 
 #ifdef _SILICONDATA
@@ -234,6 +234,10 @@ CloverData *clov;
 
 #ifdef _RAWDATA
 RawData *raw;
+#endif
+
+#ifdef _HAGARDATA
+HagarData *hag;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -1008,10 +1012,10 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
       t_NaI[i]=0.; t_NaIE[i]=0.; //t_Plastic[i]=0.;
    }
    for(int i = 0; i < 16 ; i++) { 
-      t_Si1Rings[i]=0.; t_Si2Rings[i]=0.; t_Si3Rings[i]=0.; t_Si4Rings[i]=0.; t_Si5Rings[i]=0.;
+      t_SiPside1[i]=-1.; t_SiPside2[i]=-1.; t_SiPside3[i]=-1.; t_SiPside4[i]=-1.;
    }
-   for(int i = 0; i < 8 ; i++) { 
-      t_Si1Sectors[i]=0.; t_Si2Sectors[i]=0.; t_Si3Sectors[i]=0.; t_Si4Sectors[i]=0.; t_Si5Sectors[i]=0.;
+   for(int i = 0; i < 16 ; i++) { 
+      t_SiNside1[i]=-1.; t_SiNside2[i]=-1.; t_SiNside3[i]=-1.; t_SiNside4[i]=-1.; 
    }
    t_NaIEtot=0.;
    #endif
@@ -2073,22 +2077,19 @@ INT focal_init(void)
   t1->Branch("NaI",&t_NaI,"t_NaI[7]/D");
   t1->Branch("NaIE",&t_NaIE,"t_NaIE[7]/D");
   t1->Branch("NaIEtot",&t_NaIEtot,"t_NaIEtot/D");
-  t1->Branch("Si1Rings",&t_Si1Rings,"t_Si1Rings[16]/D");
-  t1->Branch("Si2Rings",&t_Si2Rings,"t_Si2Rings[16]/D");
-  t1->Branch("Si3Rings",&t_Si3Rings,"t_Si3Rings[16]/D");
-  t1->Branch("Si4Rings",&t_Si4Rings,"t_Si4Rings[16]/D");
-  t1->Branch("Si5Rings",&t_Si5Rings,"t_Si5Rings[16]/D");
-  t1->Branch("Si1Sectors",&t_Si1Sectors,"t_Si1Sectors[8]/D");
-  t1->Branch("Si2Sectors",&t_Si2Sectors,"t_Si2Sectors[8]/D");
-  t1->Branch("Si3Sectors",&t_Si3Sectors,"t_Si3Sectors[8]/D");
-  t1->Branch("Si4Sectors",&t_Si4Sectors,"t_Si4Sectors[8]/D");
-  t1->Branch("Si5Sectors",&t_Si5Sectors,"t_Si5Sectors[8]/D");
+  t1->Branch("SiPside1",&t_SiPside1,"t_SiPside1[16]/D");
+  t1->Branch("SiPside2",&t_SiPside2,"t_SiPside2[16]/D");
+  t1->Branch("SiPside3",&t_SiPside3,"t_SiPside3[16]/D");
+  t1->Branch("SiPside4",&t_SiPside4,"t_SiPside4[16]/D");
+  t1->Branch("SiNside1",&t_SiNside1,"t_SiNside1[16]/D");
+  t1->Branch("SiNside2",&t_SiNside2,"t_SiNside2[16]/D");
+  t1->Branch("SiNside3",&t_SiNside3,"t_SiNside3[16]/D");
+  t1->Branch("SiNside4",&t_SiNside4,"t_SiNside4[16]/D");
   t1->Branch("NaITDC",&t_NaITDC,"t_NaITDC[7]/D");
-  t1->Branch("Si1RingsTDC",&t_Si1RingsTDC,"t_Si1RingsTDC[16]/D");
-  t1->Branch("Si2RingsTDC",&t_Si2RingsTDC,"t_Si2RingsTDC[16]/D");
-  t1->Branch("Si3RingsTDC",&t_Si3RingsTDC,"t_Si3RingsTDC[16]/D");
-  t1->Branch("Si4RingsTDC",&t_Si4RingsTDC,"t_Si4RingsTDC[16]/D");
-  t1->Branch("Si5RingsTDC",&t_Si5RingsTDC,"t_Si5RingsTDC[16]/D");
+  t1->Branch("SiPside1TDC",&t_SiPside1TDC,"t_SiPside1TDC[16]/D");
+  t1->Branch("SiPside2TDC",&t_SiPside2TDC,"t_SiPside2TDC[16]/D");
+  t1->Branch("SiPside3TDC",&t_SiPside3TDC,"t_SiPside3TDC[16]/D");
+  t1->Branch("SiPside4TDC",&t_SiPside4TDC,"t_SiPside4TDC[16]/D");
   #endif
  
   #ifdef _POLARIZATION
@@ -2163,13 +2164,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcevtcount;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
-   float RingsTDC[80];
+   float PsideTDC[80];
 
    extern float ADC[128];         			// defined, declared and used in adc.c     
    extern float NaI[8];					// defined, declared and used in adc.c  
-   extern float Sectors[40],Rings[80];			// defined, declared and used in adc.c  
-   extern float Ring1[16],Ring2[16],Ring3[16],Ring4[16],Ring5[16];	// defined, declared and used in adc.c  
-   extern float Sector1[8],Sector2[8],Sector3[8],Sector4[8],Sector5[8]; // defined, declared and used in adc.c  
+   extern float Nside[80],Pside[80];			// defined, declared and used in adc.c  
+   extern float Pside1[16],Pside2[16],Pside3[16],Pside4[16];	// defined, declared and used in adc.c  
+   extern float Nside1[16],Nside2[16],Nside3[16],Nside4[16]; // defined, declared and used in adc.c  
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
    extern float pad1hip,pad1lowp,pad2hip,pad2lowp;    // defined, declared and used in qdc.c
    extern int qdcevtcount;   			      // defined, declared and used in qdc.c
@@ -2183,14 +2184,12 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
 
    //
-   float ADC_export[128];
+   float ADC_export[160];
    int *TDC_channel_export;
    float *TDC_value_export;				//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
-   //Pointer to SiliconData class initialised.
-#ifdef _SILICONDATA
-//    si = new SiliconData();
-#endif
+   std::vector<int> TDCChannelExportStore;
+   std::vector<float> TDCValueExportStore;
    
    #ifdef _MISALIGNTIME
    if (runtime>misaligntime) {
@@ -2264,131 +2263,31 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    #ifdef _ADC
 
  
-   Int_t Ring1Pedestal[16]={350,300,300,300,300,300,300,300,300,320,360,360,360,360,360,360};
-   Int_t Ring2Pedestal[16]={250,280,280,280,280,280,280,280,300,220,300,300,300,300,300,300};
-   Int_t Ring3Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
-   Int_t Ring4Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
-   Int_t Ring5Pedestal[16]={280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280};
+   Int_t Pside1Pedestal[16]={350,300,300,300,300,300,300,300,300,320,360,360,360,360,360,360};
+   Int_t Pside2Pedestal[16]={250,280,280,280,280,280,280,280,300,220,300,300,300,300,300,300};
+   Int_t Pside3Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
+   Int_t Pside4Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
 
-   Int_t Sector1Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector2Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector3Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector4Pedestal[16]={300,300,300,300,300,300,300,300};
-   Int_t Sector5Pedestal[16]={300,300,300,300,300,300,300,300};
+   Int_t Nside1Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside2Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside3Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside4Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
 
    for(int i = 0; i < 16 ; i++) { 
-      if(Ring1[i]>Ring1Pedestal[i]) t_Si1Rings[i]=Ring1[i];		
-      if(Ring2[i]>Ring2Pedestal[i]) t_Si2Rings[i]=Ring2[i];		
-      if(Ring3[i]>Ring3Pedestal[i]) t_Si3Rings[i]=Ring3[i];		
-      if(Ring4[i]>Ring4Pedestal[i]) t_Si4Rings[i]=Ring4[i];		
-      if(Ring5[i]>Ring5Pedestal[i]) t_Si5Rings[i]=Ring5[i];		
+      if(Pside1[i]>Pside1Pedestal[i]) t_SiPside1[i]=Pside1[i];		
+      if(Pside2[i]>Pside2Pedestal[i]) t_SiPside2[i]=Pside2[i];		
+      if(Pside3[i]>Pside3Pedestal[i]) t_SiPside3[i]=Pside3[i];		
+      if(Pside4[i]>Pside4Pedestal[i]) t_SiPside4[i]=Pside4[i];		
    }
-   for(int i = 0; i < 8 ; i++) {  //funny ribbon cables to caen invert order of Si chan, but we fixed it in ECL/NIM breakout board
-      if(Sector2[i]>Sector2Pedestal[i]) t_Si1Sectors[i]=Sector2[i];  // in the exp Sector 1 mistakenly swapped with Sector 2 input
-      if(Sector1[i]>Sector1Pedestal[i]) t_Si2Sectors[i]=Sector1[i];  // in the exp Sector 2 mistakenly swapped with Sector 1 input
-      if(Sector3[i]>Sector3Pedestal[i]) t_Si3Sectors[i]=Sector3[i];		 
-      if(Sector4[i]>Sector4Pedestal[i]) t_Si4Sectors[i]=Sector4[i];		 
-      if(Sector5[i]>Sector5Pedestal[i]) t_Si5Sectors[i]=Sector5[i];		 
+   for(int i = 0; i < 16 ; i++) {  //funny ribbon cables to caen invert order of Si chan, but we fixed it in ECL/NIM breakout board
+      if(Nside1[i]>Nside1Pedestal[i]) t_SiNside1[i]=Nside1[i];  
+      if(Nside2[i]>Nside2Pedestal[i]) t_SiNside2[i]=Nside2[i];  
+      if(Nside3[i]>Nside3Pedestal[i]) t_SiNside3[i]=Nside3[i];		 
+      if(Nside4[i]>Nside4Pedestal[i]) t_SiNside4[i]=Nside4[i];		 
    }
    for(int i = 0; i < 8 ; i++) { 
       t_NaI[i]=NaI[i];
     }
-
-/*
-   Int_t RingRPedestal[16]={200,200,200,200,200,200,200,300,200,220,200,200,200,200,200,200};
-   Int_t RingLPedestal[16]={200,300,200,260,200,300,200,300,200,200,200,250,200,250,200,350};
-   Int_t SectorRPedestal[8]={120,140,130,120,130,130,140,130};
-   Int_t SectorLPedestal[8]={130,130,120,130,130,150,140,150};
-
-   TRandom3* r1 = new TRandom3();
-   Double_t SectorR_offset[8] ={-0.200926,-0.319511,-0.26206,-0.218661,-0.30613,-0.257322,-0.318165,-0.266481};
-   Double_t SectorL_offset[8] ={-0.244249,-0.304432,-0.169152,-0.234211,-0.237218,-0.33474,-0.223182,-0.286058};
-   Double_t SectorR_slope[8] ={0.00470356,0.00474297,0.00477432,0.00479283,0.00487084,0.00475182,0.00481407,0.00494551};
-   Double_t SectorL_slope[8] ={0.00483739,0.00497575,0.00474463,0.00450275,0.00470199,0.00475343,0.00481567,0.00488981};
-
-   Double_t RingR_slope[16] ={0.00494976,0.00498765,0.0050594,0.00477212,0.00481546,0.00508992,0.00493868,0.00484661,0.00494618,0.00488034,0.00494303,0.00495276,0.00484658,0.0048793,0.00535383,0.00477027};
-   Double_t RingL_slope[16] ={0.00481168,0.00495841,0.00466419,0.00472523,0.00503597,0.00485113,0.0047442,0.00451013,0.00476426,0.00513512,0.00506631,0.00417152,0.00506729,0.00499743,0.00487291,0.00481883};
-   Double_t RingR_offset[16] ={-0.241443,-0.322683,-0.287817,-0.353394,-0.23516,0.0456764,-0.359606,0.0520551,-0.265305,-0.264809,-0.153556,-0.182552,-0.24572,-0.0901242,-0.244486,-0.140921};
-   Double_t RingL_offset[16] ={-0.289717,-0.111442,-0.285748,-0.182732,-0.304055,-0.169917,-0.207318,0.0124615,-0.18045,-0.270751,-0.221983,-0.00530724,-0.209878,-0.179938,-0.171775,-0.0458674};
-
-   //Double_t si_th_com[16] ={35.852253,43.354206,51.212646,59.453606,68.105721,77.200523,86.772911,96.861488,107.50918,118.76381,130.67876,143.31392,156.73657,171.02280,186.25867,202.54208};
-   Double_t si_th_com[16] ={22.,24.,26.,28.,30.,32.,34.,36.,38.,40.,42.,44.,46.,48.,50.,52.};
-
-   Double_t r ;
-   r = r1->Rndm();
-
-   for(int i = 0; i < 8 ; i++) { 
-      //r = r1->Rndm();
-      t_SectorRE[i] = t_SectorR[i]*SectorR_slope[i] + SectorR_offset[i];
-      t_SectorLE[i] = t_SectorL[i]*SectorL_slope[i] + SectorL_offset[i];
-   }
-   for(int i = 0; i < 16 ; i++) { 
-      t_RingRE[i] = t_RingR[i]*RingR_slope[i] + RingR_offset[i];
-      t_RingLE[i] = t_RingL[i]*RingL_slope[i] + RingL_offset[i];
-   }
-
-   for(int i = 0; i < 16 ; i++) { 
-	hSiRingR->Fill(t_RingR[i],i);
-	if(t_RingR[i]>RingRPedestal[i]) { 
-		hSiRingRHit->Fill(i); 
-		t_thRingR[i]=si_th_com[i];
-	}
-	hSiRingL->Fill(t_RingL[i],i);
-	if(t_RingL[i]>RingLPedestal[i]) { 
-		hSiRingLHit->Fill(i); 
-		t_thRingL[i]=si_th_com[i];
-	}
-   }
-   for(int i = 0; i < 8 ; i++) { 
-	hSiSectorR->Fill(t_SectorR[i],i);
-	if(t_SectorR[i]>SectorRPedestal[i]) hSiSectorRHit->Fill(i);
-	hSiSectorL->Fill(t_SectorL[i],i);
-	if(t_SectorL[i]>SectorLPedestal[i]) hSiSectorLHit->Fill(i);
-   }
-
-   for(int i = 0; i < 16 ; i++) { 
-	if(t_RingR[i]>RingRPedestal[i]) { 
-	   	for(int i = 0; i < 8 ; i++) { 
-			if(t_SectorR[i]>SectorRPedestal[i])  {   
-				t_RingREg[i] = t_RingR[i]*RingR_slope[i] + RingR_offset[i];
-			}
-		}
-	}
-	if(t_RingL[i]>RingLPedestal[i]) { 
-	   	for(int i = 0; i < 8 ; i++) { 
-			if(t_SectorL[i]>SectorLPedestal[i])   {  
-				t_RingLEg[i] = t_RingL[i]*RingL_slope[i] + RingL_offset[i];
-			}
-		}
-	}
-
-   }
-
-   Double_t slopeHAGAR  = 3.1396;  
-   Double_t offsetHAGAR = 334.3;
-
-   for(int i = 0; i < 6 ; i++) { 
-      //if(t_NaI[i]>40. && i!=4 ) t_NaIE = t_NaIE + t_NaI[i];
-      if(t_NaI[i]>40. && t_NaI[i]<4094.) t_NaIE = t_NaIE + t_NaI[i];
-   }
-   t_NaIE= t_NaIE/6;
-   t_NaIE=slopeHAGAR*t_NaIE + offsetHAGAR;
-
-   //Double_t offset1[4]={-93.000,4.056,-41.182,74.722};       //rough calibration from 60Co run 100
-   //Double_t slope1[4]={3.000,2.944,2.891,2.944};
-   Double_t slope1[4] ={2.994,2.896,2.879,3.0296};		//rough calibration from 56Co run 500
-   Double_t offset1[4]={-91.15,25.067,-39.751,42.57};
-   //printf("RNG %f \n",rand()/((double)RAND_MAX +1));
-   Double_t slope2[4]={ 2.61, 2.74, 2.74, 2.79};       
-   Double_t offset2[4]={ -59.9, -33.21, -55.14, 18.16};
-
-   for(int i = 0; i < 4 ; i++) { 
-      r = r1->Rndm();
-      t_Clover1E[i]=slope1[i]*(rand()/((double)RAND_MAX +1) + (Double_t) t_Clover1[i]) + offset1[i];
-      if(t_Clover1E[i]>80. && t_Clover1E[i]<11800.) t_Clover1Etot= t_Clover1Etot + t_Clover1E[i];
-   }
-
-*/
 
    #endif
 
@@ -2445,8 +2344,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    // loop through all the TDC datawords===================================================================================================
    //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event 
    
-   TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
-   TDC_value_export = new float[ntdc];
+   //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
+   //TDC_value_export = new float[ntdc];
    
    for(int i = 0; i < ntdc; i++) {
       if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
@@ -2514,40 +2413,39 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	
 	
 	
-	#ifdef _ADC
+#ifdef _ADC
 	if(tdcmodule==6){
-		if(channel>47 && channel<64){
-			t_Si1RingsTDC[channel-48]=ref_time;
-		}
-		if(channel>63 && channel<80){
-			t_Si1RingsTDC[channel-64]=ref_time;
-		}
-		if(channel>79 && channel<96){
-			t_Si1RingsTDC[channel-80]=ref_time;
-		}
-		if(channel>95 && channel<112){
-			t_Si1RingsTDC[channel-96]=ref_time;
-		}
-		if(channel>111 && channel<128){
-			t_Si1RingsTDC[channel-112]=ref_time;
-		}
-
+	  if(channel>63 && channel<80){
+	    t_SiPside1TDC[channel-64]=ref_time;
+	  }
+	  if(channel>79 && channel<96){
+	    t_SiPside2TDC[channel-80]=ref_time;
+	  }
+	  if(channel>95 && channel<112){
+	    t_SiPside3TDC[channel-96]=ref_time;
+	  }
+	  if(channel>111 && channel<128){
+	    t_SiPside4TDC[channel-112]=ref_time;
+	  }
 	}
 	if(tdcmodule==5){
-		if(channel>15 && channel<24){
-			t_NaITDC[channel-16]=ref_time;
-		}
+	  if(channel>24 && channel<31){
+	    t_NaITDC[channel-25]=ref_time;
+	  }
 	}
-	#endif
+#endif
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
       
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
-      TDC_channel_export[i] = channel;
-      TDC_value_export[i] = offset_time;
-      
+      //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
+      //TDC_channel_export[i] = channel;
+      //TDC_value_export[i] = offset_time;
+      TDCChannelExportStore.push_back(channel);
+      TDCValueExportStore.push_back(offset_time);
+
       switch(channel){
 		case 3:  t_k600=1; break;
 		case 9:  pad1hipt=ref_time;t_pad1hiPT=pad1hipt; break;
@@ -3120,14 +3018,25 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    if(X1flag==0 && U1flag==0 && X2flag==0){
      hEventID2->Fill(ev_id_X1U1X2);
    }
-//   printf("L3073\n");
+
+   TDC_channel_export = new int[TDCChannelExportStore.size()];
+   TDC_value_export = new float[TDCValueExportStore.size()];
+
+   //printf("TDCChannelExportStore.size(): %d \t TDCValueExportStore.size(): %d\n",TDCChannelExportStore.size(),TDCValueExportStore.size());
+
+   int TDCHits = 0;
+   if(TDCChannelExportStore.size()==TDCValueExportStore.size())TDCHits = TDCValueExportStore.size();
+   else{TDCHits = 0; printf("TDC Channel/Value mismatch - not going to process external data");}
+
+   for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
+   for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 //#ifdef _SILICONDATA
 #ifdef _RAWDATA
-  for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
+  for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
   if(raw)
   {
-    raw = RawDataDump(ADC_export,ntdc,TDC_channel_export, TDC_value_export);
+    raw = RawDataDump(ADC_export,TDCHits,TDC_channel_export, TDC_value_export);
   }
 #endif
   
@@ -3135,15 +3044,15 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = MMMSiliconSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+      si = MMMSiliconSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
 #ifdef _W1
-for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
+for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = W1SiliconSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+      si = W1SiliconSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
@@ -3152,8 +3061,16 @@ for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
   if(clov)
   {
-    clov = PR194CloverSort(ADC_export, ntdc, TDC_channel_export, TDC_value_export);
+    clov = PR194CloverSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
   }
+#endif
+
+#ifdef _HAGARDATA
+    for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
+    if(hag)
+    {
+      hag = HagarDataSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
+    }
 #endif
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
@@ -3182,9 +3099,14 @@ for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
 #ifdef _RAWDATA
   delete raw;
 #endif
+#ifdef _HAGARDATA
+  delete hag;
+#endif
   
    delete TDC_channel_export;
    delete TDC_value_export;
+   TDCChannelExportStore.clear();
+   TDCValueExportStore.clear();
    return SUCCESS;
 }
 

@@ -48,6 +48,8 @@ bool SiliconData::TestEvent()
   if(ADCValueBack.size() != hits){printf("Mismatched size: ADCValueBack\n"); result = false;}
   if(TDCValueFront.size() != hits){printf("Mismatched size: TDCValueFront\n"); result = false;}
   if(TDCValueBack.size() != hits){printf("Mismatched size: TDCValueBack\n"); result = false;}
+  if(StripFront.size() != hits){printf("Mismatched size: StripFront\n"); result = false;}
+   if(StripBack.size() != hits){printf("Mismatched size: StripBack\n"); result = false;}
   if(EnergyFront.size() != hits){printf("Mismatched size: EnergyFront\n"); result = false;}
   if(EnergyBack.size() != hits){printf("Mismatched size: EnergyBack\n"); result = false;}
   
@@ -72,6 +74,8 @@ void SiliconData::ClearEvent()
   ADCValueBack.clear();
   TDCValueFront.clear();
   TDCValueBack.clear();
+  StripFront.clear();
+  StripBack.clear();
   EnergyFront.clear();
   EnergyBack.clear();
 }

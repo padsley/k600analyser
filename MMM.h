@@ -27,4 +27,7 @@ void MMMLoadCuts(SiliconData *si);
 
 int MMMDetHitNumber(int FrontChannel, int BackChannel);
 
+int MMMStripFront(int FrontChannel);
+int MMMStripBack(int BackChannel);
+
 #endif

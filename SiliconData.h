@@ -42,6 +42,8 @@ public :
   std::vector<int> ADCValueBack;
   std::vector<int> TDCValueFront;
   std::vector<int> TDCValueBack;
+  std::vector<int> StripFront;
+  std::vector<int> StripBack;
   std::vector<double> EnergyFront;
   std::vector<double> EnergyBack;
   
@@ -65,6 +67,8 @@ public :
   void SetADCValueBack(int chan)	{ADCValueBack.push_back(chan);}
   void SetTDCValueFront(int chan)	{TDCValueFront.push_back(chan);}
   void SetTDCValueBack(int chan)	{TDCValueBack.push_back(chan);}
+  void SetStripFront(int strip)         {StripFront.push_back(strip);}
+  void SetStripBack(int strip)          {StripBack.push_back(strip);}
   void SetEnergyFront(double ener)	{EnergyFront.push_back(ener);}
   void SetEnergyBack(double ener)	{EnergyBack.push_back(ener);}
   void SetMult(int mult)		{TDCChannelMultiplicity.push_back(mult);}
