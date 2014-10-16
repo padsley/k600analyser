@@ -39,13 +39,13 @@
 #include <TRandom3.h>   
 
 #include "SiliconData.h"
-#include "MMM.h"
+//#include "MMM.h"
 #include "W1.h"
 
-#include "CloverData.h"
-#include "PR194CloverSort.h"
+//#include "CloverData.h"
+//include "PR194CloverSort.h"
 
-#include "HagarData.h"
+//#include "HagarData.h"
 
 #include "RawData.h"
 /*------------definitions to change analysis------------------------*/
@@ -66,7 +66,7 @@
  //#define _CLOVERDATA 
  
 #define _RAWDATA
-#define _HAGARDATA
+//#define _HAGARDATA
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -1784,7 +1784,8 @@ INT focal_init(void)
    char name[256];
    char title[256];
 
-   setupchannel2wireXUXU();    
+   //setupchannel2wireXUXU();    
+   setupchannel2wireXoldXold();
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
@@ -2131,7 +2132,7 @@ INT focal_init(void)
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
-  MMMLoadCuts(si);
+  //MMMLoadCuts(si);
 #endif
 
 #ifdef _CLOVERDATA
