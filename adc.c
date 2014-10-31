@@ -27,7 +27,9 @@
 
 
 /*-- variables to be used in f-plane.c as extern variables----------*/
-float ADC[128];
+//float ADC[128];
+extern float *ADC;
+extern int ADCModules;
 int adcevtcount;
 float NaI[8];//, Plastic[8];
 float Nside[80],Pside[80];
@@ -152,7 +154,8 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 {
    INT i, nwords;
    DWORD *padc;
-   float adc[160];  
+   float *adc = new float[32*ADCModules];  
+//    printf("adc initialisation: %d\n",32*ADCModules);
    int adcchan,adcnr;
    extern int adc_counter1, adc_counter2;   // defined; declared in analyzer.c
  
@@ -179,7 +182,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
       adc_counter2++;
       return 1;
    }
-        
+//    printf("L185\n");     
    for (i = 0; i < nwords; i++){
         //printf("-------raw data 0x%08x  Nr of words %d \n",padc[i],nwords); 
         if(((padc[i]>>24)&0xff) ==0xfd) {
@@ -233,14 +236,15 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
    }
    //adcevtcount=padc[33]&0xfffff;  // take event counter in the trailer, the 34th word, to 
   				    // f-plane to compare to TDC counter 
-
+// printf("L239\n");
    /* fill variables for tree */
    //for (i = 0; i < 32; i++){
      for(i=0; i<128;i++){
+       ADC[i] = 0;//Clear out the ADC values - should always be resetting the values because we have pedestals but it's worth being proper about it.
      if (adc[i] > 0.0)                   // if ( adc[i] > (float) adc_param.histogram_threshold )
          ADC[i]=adc[i];     
    }  
-
+// printf("L246\n");
 
 	for(int i=0; i<80; i++)//Loop over pside
 	{
@@ -263,7 +267,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 
 
 
- 
+//   printf("Got to SUCCESS in adc.c\n");
    return SUCCESS;
 }
 

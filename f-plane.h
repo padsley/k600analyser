@@ -2,6 +2,7 @@
 INT focal_init(void)
 //-----Initialise memory space for histograms--------
 {
+  printf("focal_init : L5\n");
    char name[256];
    char title[256];
    Int_t  i =0;

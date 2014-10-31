@@ -57,6 +57,8 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _ADC
+float *ADC;
+extern int ADCModules;
 //Uncomment for silicon analysis
 #define _SILICONDATA 
   
@@ -2074,6 +2076,8 @@ INT focal_init(void)
   #endif
 
   #ifdef _ADC
+  ADC = new float[32*ADCModules];
+  
   t1->Branch("NaI",&t_NaI,"t_NaI[7]/D");
   t1->Branch("NaIE",&t_NaIE,"t_NaIE[7]/D");
   t1->Branch("NaIEtot",&t_NaIEtot,"t_NaIEtot/D");
@@ -2090,6 +2094,8 @@ INT focal_init(void)
   t1->Branch("SiPside2TDC",&t_SiPside2TDC,"t_SiPside2TDC[16]/D");
   t1->Branch("SiPside3TDC",&t_SiPside3TDC,"t_SiPside3TDC[16]/D");
   t1->Branch("SiPside4TDC",&t_SiPside4TDC,"t_SiPside4TDC[16]/D");
+  
+  
   #endif
  
   #ifdef _POLARIZATION
@@ -2166,7 +2172,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
    float PsideTDC[80];
 
-   extern float ADC[128];         			// defined, declared and used in adc.c     
+//    extern float ADC[128];         			// defined, declared and used in adc.c     
+//    printf("f-plane: ADC initialiation: %d\n",32*ADCModules);
    extern float NaI[8];					// defined, declared and used in adc.c  
    extern float Nside[80],Pside[80];			// defined, declared and used in adc.c  
    extern float Pside1[16],Pside2[16],Pside3[16],Pside4[16];	// defined, declared and used in adc.c  
@@ -3102,6 +3109,8 @@ for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
 #ifdef _HAGARDATA
   delete hag;
 #endif
+  
+   //delete ADC;
   
    delete TDC_channel_export;
    delete TDC_value_export;
