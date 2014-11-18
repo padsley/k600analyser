@@ -15,8 +15,8 @@ extern int ADCModules;
 extern int ADCsize;
 extern int NumberOfMMM;
 
-extern int MMMADCChannelLimits[4][4];
-extern int MMMTDCChannelLimits[4][4];
+extern int **MMMADCChannelLimits;
+extern int **MMMTDCChannelLimits;
 
 TCutG *MMMFrontBackEnergyCut;
 

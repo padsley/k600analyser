@@ -1,5 +1,7 @@
 #include "RawData.h"
 
+extern int ADCsize;
+extern int TDCsize;
 
 RawData::RawData()
 {
@@ -13,9 +15,12 @@ RawData::~RawData()
 
 void RawData::Init(RawData *raw)
 {
-    for(int i=0;i<128;i++)raw->SetADC(i,0);
+  ADCValues = new int[ADCsize];
+  TDCChannels = new int[TDCsize];
+  TDCValues = new int[TDCsize];
+    for(int i=0;i<ADCsize;i++)raw->SetADC(i,0);
     
-    for(int i=0;i<6*128;i++)
+    for(int i=0;i<TDCsize;i++)
     {
       raw->SetTDCChannel(i,-1);
       raw->SetTDCValue(i,0);

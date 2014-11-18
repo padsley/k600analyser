@@ -38,6 +38,8 @@
 #include <TFile.h>
 #include <TRandom3.h>   
 
+#include "Parameters.h"
+
 #include "SiliconData.h"
 #include "MMM.h"
 #include "W1.h"
@@ -62,8 +64,8 @@ extern int ADCModules;
 //Uncomment for silicon analysis
 #define _SILICONDATA 
   
-//#define _MMM
- #define _W1
+#define _MMM
+//  #define _W1
 //Uncomment for clover analysis
  //#define _CLOVERDATA 
  
@@ -2134,18 +2136,22 @@ INT focal_init(void)
   
 #ifdef _SILICONDATA
 //   printf("L2108\n");
+  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
+  ParameterInit();
   MMMLoadCuts(si);
 #endif
 
 #ifdef _CLOVERDATA
+  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L CloverData.c+");
   t1->Branch("CloverInfo","CloverData",&clov);
 #endif
   
 #ifdef _RAWDATA
+  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif

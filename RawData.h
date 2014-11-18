@@ -10,9 +10,9 @@ public :
   virtual ~RawData();
   
 private :
-  int ADCValues[128];
-  int TDCChannels[128*6];
-  int TDCValues[128*6];
+  int *ADCValues;//[128];//Need to set the sizes of these in a better fashion
+  int *TDCChannels;//[128*7];
+  int *TDCValues;//[128*7];
   
 public :
   //Setters
