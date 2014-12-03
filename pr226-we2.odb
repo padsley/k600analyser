@@ -175,7 +175,7 @@ Write Data? = LINK : [19] /Logger/Write Data
 MAX_EVENT_SIZE = DWORD : 4194304
 
 [/Logger]
-Data dir = STRING : [256] /home/neveling/K600/PR226-Retief-16O/ANALYSIS/
+Data dir = STRING : [256] /scratch/data/SiDetectorTests/
 Message file = STRING : [256] midas.log
 Write data = BOOL : y
 Auto restart = BOOL : n

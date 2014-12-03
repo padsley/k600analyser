@@ -52,7 +52,8 @@ VMEDRV_DIR   = $(MIDASSYS)/drivers/vme
 # this is for vme modules driver directory.
 MODULES_DIR= $(MIDASSYS)/drivers/vme
 INC_DIR   = $(MIDASSYS)/include
-LIB_DIR   = $(MIDASSYS)/$(OS_DIR)/lib
+#LIB_DIR   = $(MIDASSYS)/$(OS_DIR)/lib
+LIB_DIR = $(MIDASSYS)/lib
 SRC_DIR   = $(MIDASSYS)/src
 
 #-------------------------------------------------------------------

@@ -10,7 +10,7 @@
 #include "W1.h"
 
 const int ADCsize = 128;
-const int NumberOfDetectors = 4;
+const int NumberOfDetectors = 2;
 
 extern int W1ADCChannelLimits[4][4];
 extern int W1TDCChannelLimits[4][4];
@@ -21,7 +21,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
 {
   W1Init();
   SiliconData *si = new SiliconData();
-  multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);	
+  multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);printf("\n W1.c:L24 \n");
   for(int k=0;k<mTDC->GetSize();k++)
     {
       for(int i=0;i<64;i++)
@@ -101,7 +101,7 @@ void W1LoadCuts(SiliconData *si)
 
 void W1Init()//Initialise function which gets the information on the DAQ channels->Physical channels
 { 
-
+  printf("\n W1Init\n");
 }
 
 bool W1SuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
@@ -136,7 +136,7 @@ double W1PhiCalc(int FrontChannel, int BackChannel)
 bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si)
 {
   bool result = false;
-  //printf("FrontBackTest Start\n");
+  printf("FrontBackTest Start\n");
   //   gROOT->ProcessLine(".x FrontBackEnergyCut.C");
   
   for(int i=0;i<NumberOfDetectors;i++)
@@ -153,7 +153,7 @@ bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, doub
 	    }
 	}
     }
-  //   printf("FrontBackTest End");
+  printf("FrontBackTest End");
   return result;
 }
 
@@ -192,6 +192,7 @@ int W1StripBack(int BackChannel)//Again, for the W1, this runs from 1->16.
 bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel)
 {
   bool result = false;
+  //printf("\n W1ADCTDCChannelTest start: %d %d\n",ADCChannel,TDCChannel);
   for(int i=0;i<NumberOfDetectors;i++)
     {
       if(ADCChannel>=W1ADCChannelLimits[i][0] && ADCChannel<=W1ADCChannelLimits[i][1] && TDCChannel>=W1TDCChannelLimits[i][0] && TDCChannel<=W1TDCChannelLimits[i][1])//Check to see if the ADC/TDC events are in the same detector
@@ -203,6 +204,7 @@ bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel)
 	    }
 	}
     }
+  //printf("W1ADCTDCChannelTest stop: %d %d",ADCChannel,TDCChannel);
   return result;
 }
 
