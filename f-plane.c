@@ -1786,7 +1786,7 @@ INT focal_init(void)
    char name[256];
    char title[256];
 
-   setupchannel2wireXUXU();    
+   setupchannel2wireXoldXold();    
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
