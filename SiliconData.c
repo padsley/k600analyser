@@ -7,6 +7,7 @@ SiliconData::SiliconData()
 SiliconData::~SiliconData()
 {
 //   printf("Destructor called for SiliconData");
+  ClearEvent();
 }
 
 void SiliconData::PrintEvent()//Print out the 'proper' information about an event

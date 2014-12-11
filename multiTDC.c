@@ -73,8 +73,8 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
   }
   
   SetHits(TDChits);
-  delete ChannelCounter;
-  delete GoodChannelCounter;
+  delete [] ChannelCounter;
+  delete [] GoodChannelCounter;
 }
 
 multiTDC::~multiTDC()

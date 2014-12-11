@@ -1,8 +1,10 @@
 #include "Parameters.h"
 
-int ADCModules = 4;
+int ADCModules = 5;
 
 int ADCsize = 32*ADCModules;
+
+float *ADC;
 
 int TDCModules = 7;//This was set to 6 which, I think, is the number of FP TDCs - PA
 
@@ -15,6 +17,8 @@ int NumberOfMMM = 4;
 
 int **MMMADCChannelLimits;
 int **MMMTDCChannelLimits;
+
+int NumberofW1 = 0;
 
 int W1ADCChannelLimits[4][4] = {{0,15,64,79},{0+16,15+16,64+16,79+16},{0+32,15+32,64+32,79+32},{0+48,15+48,64+48,79+48}};
 int W1TDCChannelLimits[4][4] = {{6*128+64,6*128+64+15},{6*128+64+16,6*128+64+15+16},{6*128+64+32,6*128+64+15+32},{6*128+64+48,6*128+64+15+48}};
@@ -36,9 +40,13 @@ double SiliconGain[128] = {3.93867,3.98941,3.95779,3.9394,3.98771,3.89926,3.9682
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
-  MMMParameterInit();
+  
+  if(NumberOfMMM>0)MMMParameterInit();
+  if(NumberofW1>0)W1ParameterInit();
   
   PulseLimitsInit();
+  
+  ADCInit();
 }
 
 void MMMParameterInit()
@@ -116,6 +124,11 @@ void MMMParameterInit()
 //     {{6*128+48,128*6+48+15},{128*6+48+16,128*6+48+31},{128*6+48+32,128*6+48+47},{128*6+48+48,128*6+48+63}};
 }
 
+void W1ParameterInit()
+{
+  printf("\nW1ParameterInit\n");
+}
+
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
@@ -132,4 +145,21 @@ void CalibrationParametersInit()
   
   
   
+}
+
+void ADCInit()
+{
+  ADC = new float[32*ADCModules];
+  
+  if(32*ADCModules != ADCsize)printf("Parameters.c: 154 - bollocks");
+  
+  ADCClear();
+}
+
+void ADCClear()
+{
+  for(int i=0;i<ADCsize;i++)
+  {
+    ADC[i] = 0;
+  }
 }

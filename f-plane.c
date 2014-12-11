@@ -59,17 +59,15 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _ADC
-float *ADC;
+extern float *ADC;
+
 extern int ADCModules;
-//Uncomment for silicon analysis
+
+// #define _RAWDATA
 #define _SILICONDATA 
-  
 #define _MMM
 //  #define _W1
-//Uncomment for clover analysis
- //#define _CLOVERDATA 
- 
-#define _RAWDATA
+//#define _CLOVERDATA 
 #define _HAGARDATA
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -3116,10 +3114,12 @@ for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC 
   delete hag;
 #endif
   
-   //delete ADC;
+#ifdef _ADC
+    ADCClear();
+#endif
   
-   delete TDC_channel_export;
-   delete TDC_value_export;
+   delete [] TDC_channel_export;
+   delete [] TDC_value_export;
    TDCChannelExportStore.clear();
    TDCValueExportStore.clear();
    return SUCCESS;
