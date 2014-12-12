@@ -132,9 +132,9 @@ bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to
 double MMMEnergyCalc(int Channel, double ADCValue)
 {
   //define the silicon calibration parameters
-  extern double SiliconOffset[128];
-  extern double SiliconGain[128];
-  double result = SiliconOffset[Channel] + SiliconGain[Channel]*ADCValue;
+  extern double ADCOffsets[128];
+  extern double ADCGains[128];
+  double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
   //   if(Channel<64 || Channel>=80 && Channel<112)printf("EnergyCalc: %g\n",result);
   return result;
 }

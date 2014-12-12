@@ -115,9 +115,9 @@ bool W1SuppressChannel(int Channel)//If the ADC channel is one which we wish to 
 double W1EnergyCalc(int Channel, double ADCValue)
 {
   //define the silicon calibration parameters
-  extern double SiliconOffset[128];
-  extern double SiliconGain[128];
-  double result = SiliconOffset[Channel] + SiliconGain[Channel]*ADCValue;
+  extern double ADCOffsets[128];
+  extern double ADCGains[128];
+  double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
   return result;
 }
 
