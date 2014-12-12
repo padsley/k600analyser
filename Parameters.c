@@ -1,21 +1,17 @@
 #include "Parameters.h"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
-#include <limits>
 
-int ADCModules = 5;
 
-int ADCsize = 32*ADCModules;
+int ADCModules;// = 5;
+
+int ADCsize;// = 32*ADCModules;
 
 float *ADC;
 
-int TDCModules = 7;//This was set to 6 which, I think, is the number of FP TDCs - PA
+int TDCModules;// = 7;//This was set to 6 which, I think, is the number of FP TDCs - PA
 
-int TDCsize = TDCModules*128;
+int TDCsize;// = TDCModules*128;
 
-int NumberOfMMM = 4;
+int NumberOfMMM;
 
 // int MMMADCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
 //  int MMMTDCChannelLimits[4][2] = {{6*128+48,128*6+48+15},{128*6+48+16,128*6+48+31},{128*6+48+32,128*6+48+47},{128*6+48+48,128*6+48+63}};
@@ -23,7 +19,7 @@ int NumberOfMMM = 4;
 int **MMMADCChannelLimits;
 int **MMMTDCChannelLimits;
 
-int NumberofW1 = 0;
+int NumberOfW1;// = 0;
 
 int **W1ADCChannelLimits;
 int **W1TDCChannelLimits;
@@ -52,18 +48,22 @@ double *ADCGains;
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
+  ReadConfiguration();
   
-  if(NumberOfMMM>0)MMMParameterInit();
-  if(NumberofW1>0)W1ParameterInit();
+  ADCsize = 32*ADCModules;
+  TDCsize = 128*TDCModules;
+  
+//   if(NumberOfMMM>0)MMMParameterInit();
+//   if(NumberofW1>0)W1ParameterInit();
   
   PulseLimitsInit();
   
   ADCInit();
 }
 
-void MMMParameterInit()
+void MMMNumberInit()//This is called after the number of MMM detectors is found from the config file
 {
-  printf("\n MMMParameterInit\n");
+  printf("\n MMMNumberInit\n");
   
   MMMADCChannelLimits = new int*[NumberOfMMM];
   
@@ -76,29 +76,9 @@ void MMMParameterInit()
   {
     for(int j=0;j<4;j++)
     {
-      MMMADCChannelLimits[i][j] = 0;
+      MMMADCChannelLimits[i][j] = -1;
     }
   }
-  
-  MMMADCChannelLimits[0][0] = 0;
-  MMMADCChannelLimits[0][1] = 15;
-  MMMADCChannelLimits[0][2] = 80;
-  MMMADCChannelLimits[0][3] = 87;
-  
-  MMMADCChannelLimits[1][0] = 0+16;
-  MMMADCChannelLimits[1][1] = 15+16;
-  MMMADCChannelLimits[1][2] = 80+8;
-  MMMADCChannelLimits[1][3] = 87+8;
-  
-  MMMADCChannelLimits[2][0] = 0+32;
-  MMMADCChannelLimits[2][1] = 15+32;
-  MMMADCChannelLimits[2][2] = 80+16;
-  MMMADCChannelLimits[2][3] = 87+16;
-  
-  MMMADCChannelLimits[3][0] = 0+48;
-  MMMADCChannelLimits[3][1] = 15+48;
-  MMMADCChannelLimits[3][2] = 80+24;
-  MMMADCChannelLimits[3][3] = 87+24;
   
   MMMTDCChannelLimits = new int*[NumberOfMMM];
   for(int i=0;i<NumberOfMMM;i++)
@@ -110,30 +90,39 @@ void MMMParameterInit()
   {
     for(int j=0;j<4;j++)
     {
-      MMMTDCChannelLimits[i][j] = 0;
+      MMMTDCChannelLimits[i][j] = -1;
     }
   }
-  
-  MMMTDCChannelLimits[0][0] = 6*128+48;
-  MMMTDCChannelLimits[0][1] = 128*6+48+15;
-  MMMTDCChannelLimits[0][2] = 0;
-  MMMTDCChannelLimits[0][3] = 0;
-  
-  MMMTDCChannelLimits[1][0] = 6*128+48+16;
-  MMMTDCChannelLimits[1][1] = 128*6+48+15+16;
-  MMMTDCChannelLimits[1][2] = 0;
-  MMMTDCChannelLimits[1][3] = 0;
-  
-  MMMTDCChannelLimits[2][0] = 6*128+48+32;
-  MMMTDCChannelLimits[2][1] = 128*6+48+15+32;
-  MMMTDCChannelLimits[2][2] = 0;
-  MMMTDCChannelLimits[2][3] = 0;
-  
-  MMMTDCChannelLimits[3][0] = 6*128+48+48;
-  MMMTDCChannelLimits[3][1] = 128*6+48+15+48;
-  MMMTDCChannelLimits[3][2] = 0;
-  MMMTDCChannelLimits[3][3] = 0;
-  //     {{6*128+48,128*6+48+15},{128*6+48+16,128*6+48+31},{128*6+48+32,128*6+48+47},{128*6+48+48,128*6+48+63}};
+}
+
+void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  printf("Start MMMADCChannelsInit\n");
+ if(side.compare(0,5,"pside")==0)
+ {
+   MMMADCChannelLimits[det-1][0] = start;
+   MMMADCChannelLimits[det-1][1] = stop;
+ }
+ else if(side.compare(0,5,"nside")==0)
+ {
+   MMMADCChannelLimits[det-1][2] = start;
+   MMMADCChannelLimits[det-1][3] = stop;
+ }
+}
+
+void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  printf("Start MMMTDCChannelsInit\n");
+ if(side.compare(0,5,"pside")==0)
+ {
+   MMMTDCChannelLimits[det-1][0] = start;
+   MMMTDCChannelLimits[det-1][1] = stop;
+ }
+ else if(side.compare(0,5,"nside")==0)
+ {
+   MMMTDCChannelLimits[det-1][2] = start;
+   MMMTDCChannelLimits[det-1][3] = stop;
+ }
 }
 
 void W1ParameterInit()
@@ -164,13 +153,48 @@ void CalibrationParametersInit()
   }
 }
 
+void ReadCalibrationParameters(std::string CalibFile)
+{
+  printf("ReadCalibrationParameters\n");
+  
+  std::ifstream input;
+  if(CalibFile.compare(0,6,"ignore") != 0)
+  {
+    input.open(CalibFile.c_str());
+    
+    if(input.is_open())
+    {
+      while(!input.eof())
+      {
+	std::string LineBuffer;
+	int channel = -1;
+	double offset = 0, gain = 1;
+	input >> LineBuffer;
+	channel = atoi(LineBuffer.c_str());
+	input >> LineBuffer;
+	offset = atoi(LineBuffer.c_str());
+	input >> LineBuffer;
+	gain = atoi(LineBuffer.c_str());
+	
+	if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
+      }
+    }
+  }
+}
+
+void SetADCChannelCalibration(int channel, double offset, double gain)
+{
+  ADCOffsets[channel] = offset;
+  ADCGains[channel]   = gain;
+}
+
 void ADCInit()
 {
   ADC = new float[32*ADCModules];
   
-  if(32*ADCModules != ADCsize)printf("Parameters.c: 154 - bollocks");
+  if(32*ADCModules != ADCsize)printf("Parameters.c: ADC size mismatch");
 				     
-				     ADCClear();
+  ADCClear();
 }
 
 void ADCClear()
@@ -183,6 +207,9 @@ void ADCClear()
 
 void ReadConfiguration()
 {
+  bool MMMADCChannelRead = false;
+  bool MMMTDCChannelRead = false;
+  
   std::ifstream input;
   input.open("config.cfg");
   
@@ -192,14 +219,84 @@ void ReadConfiguration()
     {
       std::string LineBuffer;
       input >> LineBuffer;
-      printf(LineBuffer.c_str());
       
-      if(LineBuffer.compare(0,1,"%") == 0){input.ignore ( std::numeric_limits<std::streamsize>::max(), '\n' );}
-      else if(LineBuffer.compare(0,11,"NumberOfMMM"))
+      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
+      else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
       {
 	input >> LineBuffer;
-	printf(LineBuffer.c_str());
 	NumberOfMMM = atoi(LineBuffer.c_str());
+	MMMNumberInit();
+      }
+      else if(LineBuffer.compare(0,10,"NumberOfW1") == 0)
+      {
+	input >> LineBuffer;
+	NumberOfW1 = atoi(LineBuffer.c_str());
+// 	W1NumberInit();
+      }
+      else if(LineBuffer.compare(0,10,"ADCModules") == 0)
+      {
+	input >> LineBuffer;
+	ADCModules = atoi(LineBuffer.c_str());
+      }
+      else if(LineBuffer.compare(0,10,"TDCModules") == 0)
+      {
+	input >> LineBuffer;
+	TDCModules = atoi(LineBuffer.c_str());
+      }
+      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
+      {
+	if(MMMADCChannelRead==false)MMMADCChannelRead = true;
+	else if(MMMADCChannelRead==true)MMMADCChannelRead = false;
+      }
+      else if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
+      {
+	if(MMMTDCChannelRead==false)MMMTDCChannelRead = true;
+	else if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
+      }
+      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
+      {
+	input >> LineBuffer;
+	ReadCalibrationParameters(LineBuffer);
+      }
+      
+      if(MMMADCChannelRead)
+      {
+	int num = 0, start = -1, stop = -1;
+	std::string side = "";
+	input >> LineBuffer;
+	printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+	num = atoi(LineBuffer.c_str());
+	input>> LineBuffer;
+	printf("Side: %s\t",LineBuffer.c_str());
+	side = LineBuffer;
+	input >> LineBuffer;
+	printf("Start: %d\t",atoi(LineBuffer.c_str()));
+	start = atoi(LineBuffer.c_str());
+	input >> LineBuffer;
+	printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+	stop = atoi(LineBuffer.c_str());
+	
+	MMMADCChannelsInit(num, side, start, stop);
+      }
+      
+      if(MMMTDCChannelRead)
+      {
+	int num = 0, start = -1, stop = -1;
+	std::string side = "";
+	input >> LineBuffer;
+	printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+	num = atoi(LineBuffer.c_str());
+	input>> LineBuffer;
+	printf("Side: %s\t",LineBuffer.c_str());
+	side = LineBuffer;
+	input >> LineBuffer;
+	printf("Start: %d\t",atoi(LineBuffer.c_str()));
+	start = atoi(LineBuffer.c_str());
+	input >> LineBuffer;
+	printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+	stop = atoi(LineBuffer.c_str());
+	
+	MMMTDCChannelsInit(num, side, start, stop);
       }
     }
   }
