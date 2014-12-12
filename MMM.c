@@ -23,7 +23,8 @@ TCutG *MMMFrontBackEnergyCut;
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   SiliconData *si = new SiliconData();
-  MMMInit();
+//   printf("MMM.c: L26\n");
+  //MMMInit();
   //Loop over ADC and TDC events and do the following:
   
   //Check whether there are front-back coincidences for a detector and test the energies
