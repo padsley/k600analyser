@@ -72,9 +72,9 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
       }
     }
   }
-  printf("\n multiTDC.c:L74 \n");
-  SetHits(TDChits);printf("\n multiTDC.c:L75 \n");
-  delete ChannelCounter;printf("\n multiTDC.c:L76 \n");
+//   printf("\n multiTDC.c:L74 \n");
+  SetHits(TDChits);//printf("\n multiTDC.c:L75 \n");
+  delete ChannelCounter;//printf("\n multiTDC.c:L76 \n");
   //delete GoodChannelCounter;printf("\n multiTDC.c:L77 \n");
 }
 
