@@ -30,6 +30,7 @@
 //float ADC[128];
 extern float *ADC;
 extern int ADCModules;
+extern int ADCsize;
 int adcevtcount;
 float NaI[8];//, Plastic[8];
 float Nside[80],Pside[80];
@@ -86,7 +87,7 @@ INT adc_init(void)
    char title[256];
    int i;
 
-   for(int counter=0;counter<5;counter++){
+   for(int counter=0;counter<ADCModules;counter++){
 	  sprintf(name,"hADC2DModule%d",counter);
 	  sprintf(title,"hADC2DModule %d ",counter);
           hADC2DModule[counter]=H2_BOOK(name,title,4100,0,4100,32,0,32);
@@ -239,7 +240,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 // printf("L239\n");
    /* fill variables for tree */
    //for (i = 0; i < 32; i++){
-     for(i=0; i<128;i++){
+     for(i=0; i<ADCsize;i++){
        ADC[i] = 0;//Clear out the ADC values - should always be resetting the values because we have pedestals but it's worth being proper about it.
      if (adc[i] > 0.0)                   // if ( adc[i] > (float) adc_param.histogram_threshold )
          ADC[i]=adc[i];     
