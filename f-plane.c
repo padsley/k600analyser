@@ -2191,7 +2191,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
 
    //
-   float ADC_export[160];
+//    float ADC_export[160];
    int *TDC_channel_export;
    float *TDC_value_export;				//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
@@ -3040,43 +3040,43 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 //#ifdef _SILICONDATA
 #ifdef _RAWDATA
-  for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
+//   for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
   if(raw)
   {
-    raw = RawDataDump(ADC_export,TDCHits,TDC_channel_export, TDC_value_export);
+    raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export);
   }
 #endif
   
 #ifdef _MMM
-   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
+//    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = MMMSiliconSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
+      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
 #ifdef _W1
-for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
+// for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = W1SiliconSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
+      si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
 #ifdef _CLOVERDATA
 //   clov = new CloverData();
-  for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
+//   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
   if(clov)
   {
-    clov = PR194CloverSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
+    clov = PR194CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
   }
 #endif
 
 #ifdef _HAGARDATA
-    for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
+//     for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
     if(hag)
     {
-      hag = HagarDataSort(ADC_export, TDCHits, TDC_channel_export, TDC_value_export);
+      hag = HagarDataSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
    //--------------------------------------------------------------------------------------------------------
