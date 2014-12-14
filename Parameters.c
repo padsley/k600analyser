@@ -84,15 +84,22 @@ void MMMNumberInit()//This is called after the number of MMM detectors is found 
 
 void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
-  if(side.compare(0,5,"pside")==0)
+  if(det<=NumberOfMMM)
   {
-    MMMADCChannelLimits[det-1][0] = start;
-    MMMADCChannelLimits[det-1][1] = stop;
+    if(side.compare(0,5,"pside")==0)
+    {
+      MMMADCChannelLimits[det-1][0] = start;
+      MMMADCChannelLimits[det-1][1] = stop;
+    }
+    else if(side.compare(0,5,"nside")==0)
+    {
+      MMMADCChannelLimits[det-1][2] = start;
+      MMMADCChannelLimits[det-1][3] = stop;
+    }
   }
-  else if(side.compare(0,5,"nside")==0)
+  else
   {
-    MMMADCChannelLimits[det-1][2] = start;
-    MMMADCChannelLimits[det-1][3] = stop;
+    printf("Detector number is higher than the number of MMM detectors - skipped enabling this detector\n");
   }
 }
 
