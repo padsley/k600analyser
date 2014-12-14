@@ -43,9 +43,7 @@ void ParameterInit()
   printf("\n ParameterInit\n");
   CalibrationParametersInit();
   ReadConfiguration();
-  printf("L46\n");
   PulseLimitsInit();
-  printf("L48\n");
   ADCInit();
   printf("Finished initialising parameters - to the sorting!\n");
 }
