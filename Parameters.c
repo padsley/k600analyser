@@ -1,15 +1,15 @@
 #include "Parameters.h"
 
 
-int ADCModules;// = 5;
+int ADCModules;
 
-int ADCsize;// = 32*ADCModules;
+int ADCsize;
 
 float *ADC;
 
-int TDCModules;// = 7;//This was set to 6 which, I think, is the number of FP TDCs - PA
+int TDCModules;
 
-int TDCsize;// = TDCModules*128;
+int TDCsize;
 
 int NumberOfMMM;
 
@@ -19,7 +19,7 @@ int NumberOfMMM;
 int **MMMADCChannelLimits;
 int **MMMTDCChannelLimits;
 
-int NumberOfW1;// = 0;
+int NumberOfW1;
 
 int **W1ADCChannelLimits;
 int **W1TDCChannelLimits;
@@ -43,10 +43,9 @@ void ParameterInit()
   printf("\n ParameterInit\n");
   CalibrationParametersInit();
   ReadConfiguration();
-  printf("L46\n");
   PulseLimitsInit();
-  printf("L48\n");
   ADCInit();
+  PrintParameters();
   printf("Finished initialising parameters - to the sorting!\n");
 }
 
@@ -330,4 +329,12 @@ void ReadConfiguration()
     }
   }
   printf("Finished ReadConfiguration\n");
+}
+
+void PrintParameters()
+{
+  printf("ADCModules: %d\n",ADCModules);
+  printf("ADCsize: %d\n",ADCsize);
+  printf("TDCModules: %d\n",TDCModules);
+  printf("TDCsize: %d\n",TDCsize);
 }
