@@ -61,7 +61,7 @@
 #define _ADC
 extern float *ADC;
 extern int ADCModules;
-// #define _RAWDATA
+//#define _RAWDATA
 #define _SILICONDATA 
 #define _MMM
 //  #define _W1
@@ -1784,7 +1784,8 @@ INT focal_init(void)
    char name[256];
    char title[256];
 
-   setupchannel2wireXUXU();    
+//    setupchannel2wireXUXU();    
+   setupchannel2wireXoldXold();
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
@@ -3051,7 +3052,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 //    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);//printf("f-plane.c: L3054\n");
     }
 #endif
 
@@ -3094,7 +3095,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    t1->Fill();    // fill the tree t1
    t2->Fill();    // fill the tree t2 - PA
-//    si->PrintEvent();
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine

@@ -21,7 +21,8 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
 {
   W1Init();
   SiliconData *si = new SiliconData();
-  multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);	
+  multiTDC *mTDC = new multiTDC;
+  mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);	
   for(int k=0;k<mTDC->GetSize();k++)
     {
       for(int i=0;i<64;i++)

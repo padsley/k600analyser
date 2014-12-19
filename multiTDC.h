@@ -19,7 +19,7 @@ class multiTDC
 {
 public :
   multiTDC();
-  multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import);
+  void multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_import);
   virtual ~multiTDC();
   
   private :

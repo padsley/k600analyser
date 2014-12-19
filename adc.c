@@ -31,6 +31,7 @@
 extern float *ADC;
 extern int ADCModules;
 extern int ADCsize;
+extern double *ADCOffsets, *ADCGains;
 int adcevtcount;
 float NaI[8];//, Plastic[8];
 float Nside[80],Pside[80];
@@ -87,10 +88,12 @@ INT adc_init(void)
    char title[256];
    int i;
 
-   for(int counter=0;counter<ADCModules;counter++){
+//    hADC2DModule = new TH2F*[ADCModules];
+   
+   for(int counter=0;counter<5;counter++){
 	  sprintf(name,"hADC2DModule%d",counter);
 	  sprintf(title,"hADC2DModule %d ",counter);
-          hADC2DModule[counter]=H2_BOOK(name,title,4100,0,4100,32,0,32);
+          hADC2DModule[counter]=H2_BOOK(name,title,4096,0,16384,32,0,32);
    }
 
    hSiFBHitPattern = H2_BOOK("hSiFBHitPattern","", 48,0,48,24,0.,24.);
@@ -187,11 +190,11 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
    for (i = 0; i < nwords; i++){
         //printf("-------raw data 0x%08x  Nr of words %d \n",padc[i],nwords); 
         if(((padc[i]>>24)&0xff) ==0xfd) {
-           if((padc[i]&0xf) ==0) adcnr=0;
-           if((padc[i]&0xf) ==1) adcnr=1;
-           if((padc[i]&0xf) ==2) adcnr=2;  //printf(" adc nr 2 \n"); 
-           if((padc[i]&0xf) ==3) adcnr=3;  //printf(" adc nr 3 \n");
-           if((padc[i]&0xf) ==4) adcnr=4;  //printf(" adc nr 4 \n");
+           if((padc[i]&0xf) ==0) adcnr=0;  //printf(" adc nr 0 \n");}
+           if((padc[i]&0xf) ==1) adcnr=1; // printf(" adc nr 1 \n");}
+           if((padc[i]&0xf) ==2) adcnr=2;  //printf(" adc nr 2 \n");} 
+           if((padc[i]&0xf) ==3) adcnr=3; // printf(" adc nr 3 \n");}
+           if((padc[i]&0xf) ==4) adcnr=4;  //printf(" adc nr 4 \n");}
 	   //printf("-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
 	}
 	if(((padc[i]>>24)&0x7) ==0){     // if not then they are not data but header words.
@@ -204,14 +207,14 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 //       printf("adc.c: L204\n");
            if(adcchan<32) 
 	     {
-// 		hADC2DModule[0]->Fill(adc[adcchan],adcchan);
+		hADC2DModule[0]->Fill(ADCOffsets[adcchan]+adc[adcchan]*ADCGains[adcchan],adcchan);
 // 		Pside[adcchan]=adc[adcchan];
 // 		if(adcchan<16) Pside1[adcchan]=adc[adcchan];	
 // 		else  Pside2[adcchan-16]=adc[adcchan];	
 	     }  
            else if(adcchan<64) 
 	     {
-// 		hADC2DModule[1]->Fill(adc[adcchan],adcchan-32);
+		hADC2DModule[1]->Fill(ADCOffsets[adcchan]+adc[adcchan]*ADCGains[adcchan],adcchan-32);
 // 		Pside[adcchan]=adc[adcchan];
 // 		if(adcchan<48) Pside3[adcchan-32]=adc[adcchan];	
 // 		else  Pside4[adcchan-48]=adc[adcchan];	

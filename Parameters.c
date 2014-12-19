@@ -38,10 +38,13 @@ int *PulseLimits;//[2] = {-1e6, 1e6};
 double *ADCOffsets;
 double *ADCGains;
 
+int *ChannelCounter;
+int *GoodChannelCounter;
+
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
-  CalibrationParametersInit();
+//   CalibrationParametersInit();
   ReadConfiguration();
   PulseLimitsInit();
   ADCInit();
@@ -134,8 +137,8 @@ void CalibrationParametersInit()
   
   for(int i=0;i<32*ADCModules;i++)
   {
-    ADCOffsets[i] = 0;
-    ADCGains[i] = 1;
+    ADCOffsets[i] = 0;//printf("ADCOffsets[%d]: %f\n",i,ADCOffsets[i]);
+    ADCGains[i] = 1;//printf("ADCGains[%d]: %f\n",i,ADCGains[i]);
   }
 }
 
@@ -149,6 +152,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   if(CalibFile.compare(0,6,"ignore") == 0)
   {
     printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
+    for(int i=0;i<32*ADCModules;i++)printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
   }
   else
   {
@@ -170,10 +174,10 @@ void ReadCalibrationParameters(std::string CalibFile)
 	{
 	  channel = atoi(LineBuffer.c_str());
 	  CalibInput >> LineBuffer;
-	  offset = atoi(LineBuffer.c_str());
+	  offset = atof(LineBuffer.c_str());
 	  CalibInput >> LineBuffer;
-	  gain = atoi(LineBuffer.c_str());
-	  
+	  gain = atof(LineBuffer.c_str());
+	  printf("Channel: %d\tOffset: %f\tGain: %f\n",channel,offset,gain);
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
 	}
       }
@@ -243,12 +247,15 @@ void ReadConfiguration()
 	  input >> LineBuffer;
 	  ADCModules = atoi(LineBuffer.c_str());
 	  ADCsize = 32*ADCModules;
+	  CalibrationParametersInit();
 	}
 	else if(LineBuffer.compare(0,10,"TDCModules") == 0)
 	{
 	  input >> LineBuffer;
 	  TDCModules = atoi(LineBuffer.c_str());
 	  TDCsize = 128*TDCModules;
+	  ChannelCounter = new int[128*TDCModules];
+	  GoodChannelCounter = new int[128*TDCModules];
 	}
 	else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
 	{
