@@ -34,7 +34,8 @@ void HagarData::SetEnergy(float ADCs[7])
 HagarData* HagarDataSort(float *ADC_import, int ntdc, int *TDC_channel_import,  float *TDC_value_import)
 {
   HagarData *hag = new HagarData();
-  multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);
+  multiTDC *mTDC = new multiTDC;
+  mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
   
   float ADCs[7] = {0,0,0,0,0,0,0};
   float TDCs[7] = {0,0,0,0,0,0,0};

@@ -1,20 +1,18 @@
 #include "multiTDC.h"
 
 extern int TDCModules;
+extern float *ADC;
+extern int *ChannelCounter;
+extern int *GoodChannelCounter;
 
 //This code is mainly dealing with TDC data in ancillary detector channels, not with the main focal plane TDC stuff which is dealt with in f-plane.c and was written by Retief. I (Phil) know very little about how that bit works and so will try to avoid doing anything here to break that.
 
-multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
+void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
-  //printf("Number of TDC channels: %d\n",128*TDCModules);
   TDChits = 0;
-  int *ChannelCounter = new int[128*TDCModules];
-  int *GoodChannelCounter = new int[128*TDCModules];
-  
-  //printf("L7\n");
   for(int i=0;i<128*TDCModules;i++)ChannelCounter[i]=0;
   for(int i=0;i<128*TDCModules;i++)GoodChannelCounter[i]=0;
-  //printf("***\n");
+
   for(int n=0;n<ntdc;n++)
   {
     //printf("n: %d \t TDC_channel_import: %d \t TDC_value_import: %d \n",n,TDC_channel_import[n],TDC_value_import[n]);
@@ -71,12 +69,19 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
   }
   
   SetHits(TDChits);
-  delete [] ChannelCounter;
-  delete [] GoodChannelCounter;
+  //delete [] ChannelCounter;
+  //delete [] GoodChannelCounter;
+//   printf("mTDC: L76\n");
+}
+
+multiTDC::multiTDC()
+{
+//   printf("multiTDC\n");
 }
 
 multiTDC::~multiTDC()
 {
+//   printf("~multiTDC()\n");
 }
 
 void multiTDC::PrintEvent()

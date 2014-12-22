@@ -44,7 +44,7 @@ bool SiliconData::TestEvent()
   if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
   if(ADCChannelBack.size() != hits){printf("Mismatched size: ADCChannelBack\n"); result = false;}
   if(TDCChannelFront.size() != hits){printf("Mismatched size: TDCChannelFront\n"); result = false;}
-  if(TDCChannelBack.size() != hits){printf("Mismatched size: TDCChannelBack: %u\tHits: %u\t\n",TDCChannelBack.size(),hits); result = false;}
+  if(TDCChannelBack.size() != hits){printf("Mismatched size: TDCChannelBack\n"); result = false;}
   if(ADCValueFront.size() != hits){printf("Mismatched size: ADCValueFront\n"); result = false;}
   if(ADCValueBack.size() != hits){printf("Mismatched size: ADCValueBack\n"); result = false;}
   if(TDCValueFront.size() != hits){printf("Mismatched size: TDCValueFront\n"); result = false;}
