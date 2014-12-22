@@ -34,11 +34,9 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
       {
 	printf("Something has gone wrong - the number of counts for channel %d is expected to be zero but something (%d) is seen.\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
 	for(int nn=0;nn<ntdc;nn++){printf("Dump: \t ntdc: %d \t n: %d \t TDC_channel_import[n]: %d \t ChannelCounter[TDC_channel_import[n]]: %d \t TDC_value_import[n]: %f \n",
-					  ntdc,nn,TDC_channel_import[nn],ChannelCounter[TDC_channel_import[nn]],TDC_value_import[nn]);}
-	//Removed this condition as it clashes with one of the sort things from further down in the code. Should probably put it back at some point.
-	
+					  ntdc,nn,TDC_channel_import[nn],ChannelCounter[TDC_channel_import[nn]],TDC_value_import[nn]);}	
       }
-      else if(ChannelCounter[TDC_channel_import[n]]==1)//Only store events from the last TDC -> These are the ancillary detector events
+      else if(ChannelCounter[TDC_channel_import[n]]==1)
       {
 	//The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
 	SetChannel(TDC_channel_import[n]);

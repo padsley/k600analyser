@@ -26,7 +26,7 @@ TCutG *MMMFrontBackEnergyCut;
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   SiliconData *si = new SiliconData();
-//   printf("MMM.c: L26\n");
+
   //Loop over ADC and TDC events and do the following:
   
   //Check whether there are front-back coincidences for a detector and test the energies
@@ -34,49 +34,43 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   //Calculate the theta and phi for the valid events
   multiTDC mTDC;// = new multiTDC();
   mTDC.multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
-// printf("TDC size: %d\n",mTDC.GetSize());
+
   for(int k=0;k<mTDC.GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
-  {//printf("MMM.c: L37\n");
-//     if(TDC_channel_import[k]>6*128)//This limits the code to only consider TDC values in the last TDC module, which is the one that deals with the silicon timing values
-    {
+  {
+
       for(int i=0;i<ADCsize;i++)
-      {//printf("MMM.c: L41\n");
+      {
 	//Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
 	if(MMMADCTDCChannelTestFront(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
-	{//printf("MMM.c: L44\n");
+	{
 	  for(int j=0;j<ADCsize;j++)
 	  {
 	    if(ADC_import[j]>0)
-	    {//printf("MMM.c: L48\n");
+	    {
 	      double energyi = MMMEnergyCalc(i,ADC_import[i]);
 	      double energyj = MMMEnergyCalc(j,ADC_import[j]);
 	      
 	      //Test whether the hits are in the front and back of the same detector and whether the energies are good
 	      if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestBack(j,mTDC.GetChannel(k)))
 	      {
-// 		printf("TEST57\n");
 		si->SetEnergy(0.5*(energyi+energyj));
 		si->SetTheta(MMMThetaCalc(i));
 		si->SetPhi(MMMPhiCalc(i));
+
 		si->SetTime(mTDC.GetValue(k));
-// 		si->SetTime(TDC_value_import[k]);
-		// 		si->SetTime(0);
 		
 		si->SetDetectorHit(MMMDetHitNumber(i,j));
 		si->SetADCChannelFront(i);
 		si->SetADCChannelBack(j);
 		si->SetStripFront(MMMStripFront(i));
 		si->SetStripBack(MMMStripBack(j));
+
 		si->SetTDCChannelFront(mTDC.GetChannel(k));
-// 		si->SetTDCChannelFront(TDC_channel_import[k]);
-		// 		si->SetTDCChannelFront(-1);
 		si->SetTDCChannelBack(-1);
 		si->SetADCValueFront(ADC_import[i]);
 		si->SetADCValueBack(ADC_import[j]);
 		
 		si->SetTDCValueFront(mTDC.GetValue(k));
-// 		si->SetTDCValueFront(TDC_value_import[k]);
-		// 		si->SetTDCValueFront(-1);
 		si->SetTDCValueBack(-1);
 		si->SetEnergyFront(energyi);
 		si->SetEnergyBack(energyj);
@@ -88,15 +82,11 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 	}
       }
     }
-  }
   
   si->SetHits(si->SizeOfEvent());
   if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
 
   mTDC.ClearEvent();
-//   printf("MMM.c: L94\n");
-//   delete mTDC;
-//   printf("MMM.c: L96\n");
   return si;
 }
 
@@ -168,7 +158,6 @@ bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, dou
 	  if(diff<0)diff*=-1;
 	  if(diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal
 	  {
-	    // 	    printf("Tust\n");
 	    result = true;//They are -> it's a good event
 	  }
       }
