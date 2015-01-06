@@ -15,10 +15,10 @@ void RawData::Init(RawData *raw)
 {
     for(int i=0;i<128;i++)raw->SetADC(i,0);
     
-    for(int i=0;i<6*128;i++)
+    for(int i=0;i<7*128;i++)
     {
       raw->SetTDCChannel(i,-1);
-      raw->SetTDCValue(i,0);
+      raw->SetTDCValue(i,-20000);
     }
 }
 
@@ -26,7 +26,7 @@ RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float
 {
   RawData *raw = new RawData();
   raw->Init(raw);
-  for(int i=0;i<128;i++)raw->SetADC(i,ADC_import[i]);
+  for(int i=0;i<128;i++) raw->SetADC(i,ADC_import[i]);
   
   for(int n=0;n<ntdc;n++)
   {
@@ -34,5 +34,10 @@ RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float
     raw->SetTDCValue(n,TDC_value_import[n]);
   }
   
+  // I want to know how many times the Si TDC channels had multiple events.
+  //
+
+
+
   return raw;
 }

@@ -11,44 +11,17 @@
  * Please contact me if you find errors or have useful suggestions
  * 
  */
-#include "multiTDC.h"
+
 
 class HagarData
 {
-  public :
-    HagarData();
-    virtual ~HagarData();
-
- private :
-  int ADCValues[7];
-  int TDCValues[7];
   
-  double HagarEnergy;
   
-public :
-  void SetADCValues(float ADCs[7])
-  {
-    for(int i=0;i<7;i++)
-    {
-      ADCValues[i] = ADCs[i];
-    }
-  }
   
-  void SetTDCValues(float TDCs[7])
-  {
-    for(int i=0;i<7;i++)
-    {
-      TDCValues[i] = TDCs[i];
-    }
-  }
   
-  void SetEnergy(float ADCs[7]);
   
-  void PrintEvent();
 };
 
-HagarData* HagarDataSort(float *ADC_import, int ntdc, int *TDC_channel_import,  float *TDC_value_import);
+
 
 #endif
-
-

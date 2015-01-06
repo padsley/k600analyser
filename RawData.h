@@ -11,8 +11,8 @@ public :
   
 private :
   int ADCValues[128];
-  int TDCChannels[128*6];
-  int TDCValues[128*6];
+  int TDCChannels[128*7];  // this is just some upper limit. Since the index has nothing to do with nr of tdcs
+  int TDCValues[128*7];
   
 public :
   //Setters

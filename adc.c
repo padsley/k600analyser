@@ -30,10 +30,10 @@
 float ADC[128];
 int adcevtcount;
 float NaI[8];//, Plastic[8];
-float Nside[80],Pside[80];
-//float PsideTDC[80];
-float Pside1[16],Pside2[16],Pside3[16],Pside4[16];
-float Nside1[16],Nside2[16],Nside3[16],Nside4[16];
+float Sectors[40],Rings[80];
+//float RingsTDC[80];
+float Ring1[16],Ring2[16],Ring3[16],Ring4[16],Ring5[16];
+float Sector1[8],Sector2[8],Sector3[8],Sector4[8],Sector5[8];
 
 
 /*-- For ODB: from /Analyzer/Parameters/----------------------------*/
@@ -158,16 +158,18 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
  
 
    for(int i = 0; i < 16 ; i++) { 
-     Pside1[i]=0;
-     Pside2[i]=0;
-     Pside3[i]=0;
-     Pside4[i]=0;
+     Ring1[i]=0;
+     Ring2[i]=0;
+     Ring3[i]=0;
+     Ring4[i]=0;
+     Ring5[i]=0;
    }
-   for(int i = 0; i < 16 ; i++) { 
-     Nside1[i]=0;
-     Nside2[i]=0;
-     Nside3[i]=0;
-     Nside4[i]=0;
+   for(int i = 0; i < 8 ; i++) { 
+     Sector1[i]=0;
+     Sector2[i]=0;
+     Sector3[i]=0;
+     Sector4[i]=0;
+     Sector5[i]=0;
      NaI[i]=0;
    }
 
@@ -201,32 +203,53 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
            if(adcchan<32) 
 	     {
 		hADC2DModule[0]->Fill(adc[adcchan],adcchan);
-		Pside[adcchan]=adc[adcchan];
-		if(adcchan<16) Pside1[adcchan]=adc[adcchan];	
-		else  Pside2[adcchan-16]=adc[adcchan];	
+		Rings[adcchan]=adc[adcchan];
+		if(adcchan<16) Ring1[adcchan]=adc[adcchan];	
+		else  Ring2[adcchan-16]=adc[adcchan];	
 	     }  
            else if(adcchan<64) 
 	     {
 		hADC2DModule[1]->Fill(adc[adcchan],adcchan-32);
-		Pside[adcchan]=adc[adcchan];
-		if(adcchan<48) Pside3[adcchan-32]=adc[adcchan];	
-		else  Pside4[adcchan-48]=adc[adcchan];	
+		Rings[adcchan]=adc[adcchan];
+		if(adcchan<48) Ring3[adcchan-32]=adc[adcchan];	
+		else  Ring4[adcchan-48]=adc[adcchan];	
 	     }
            else if(adcchan<96) 
 	     {
 		hADC2DModule[2]->Fill(adc[adcchan],adcchan-64);
-		Nside[adcchan-64]=adc[adcchan];
-		if(adcchan<80) Nside1[adcchan-64]=adc[adcchan];	
-		else  Nside2[adcchan-80]=adc[adcchan];	
+		if(adcchan<80) {
+			Ring5[adcchan-64]=adc[adcchan];	
+			Rings[adcchan]=adc[adcchan];
+		}
+		else if (adcchan<88) {
+			Sector1[adcchan-80]=adc[adcchan];	
+			Sectors[adcchan-80]=adc[adcchan];	
+			}
+		else if (adcchan<96) {
+			Sector2[adcchan-88]=adc[adcchan];	
+			Sectors[adcchan-80]=adc[adcchan];	
+			}
 	     }
            else if(adcchan<128) 
 	     {
 		hADC2DModule[3]->Fill(adc[adcchan],adcchan-96);
-		Nside[adcchan-96]=adc[adcchan];
-		if(adcchan<112) Nside3[adcchan-96]=adc[adcchan];	
-		else  Nside4[adcchan-112]=adc[adcchan];	
+		if(adcchan<104) {
+			Sector3[adcchan-96]=adc[adcchan];	
+			Sectors[adcchan-80]=adc[adcchan];	
+			}
+		else if (adcchan<112) {
+			Sector4[adcchan-104]=adc[adcchan];	
+			Sectors[adcchan-80]=adc[adcchan];	
+			}
+		else if (adcchan<120) {
+			Sector5[adcchan-112]=adc[adcchan];	
+			Sectors[adcchan-80]=adc[adcchan];	
+			}
+		else if (adcchan<128) NaI[adcchan-120]=adc[adcchan];	
+
 	     }
            else if(adcchan<160) hADC2DModule[4]->Fill(adc[adcchan],adcchan-128);   
+
 
 	}
 
@@ -242,21 +265,21 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
    }  
 
 
-	for(int i=0; i<80; i++)//Loop over pside
+	for(int i=0; i<80; i++)//Loop over rings
 	{
-		//if(i<48)GetK600vsSiPA()->Fill(X1pos,Pside[i]);
+		//if(i<48)GetK600vsSiPA()->Fill(X1pos,Rings[i]);
 		for(int j=0;j<40;j++)//Loop over sectors
 		{
-		  if(Pside[i]>200 && Nside[j]>250) hSiFBHitPattern->Fill(i,j);
-		  //if(i<48 && j<24)GetSiFBADC()->Fill(Pside[i],Nside[j]);
+		  if(Rings[i]>200 && Sectors[j]>250) hSiFBHitPattern->Fill(i,j);
+		  //if(i<48 && j<24)GetSiFBADC()->Fill(Rings[i],Sectors[j]);
 		}
 		/*
-		for(int j=0;j<80;j++)//Loop over psides
+		for(int j=0;j<80;j++)//Loop over rings
 		{
-		  if(Pside[i]>200)GetSiADCTDCHitPattern()->Fill(i,j);
-		  if(i<48 && Pside[i]>200)GetSiADCTDCValues()->Fill(Psides[i],PsidesTDC[j]);
+		  if(Rings[i]>200)GetSiADCTDCHitPattern()->Fill(i,j);
+		  if(i<48 && Rings[i]>200)GetSiADCTDCValues()->Fill(Rings[i],RingsTDC[j]);
 
-		  if(i>=48 && i<64 && j>=64 && Pside[i]>200 && Psides[j]>200)GetSidE_EADC()->Fill(Psides[i],Psides[j]);
+		  if(i>=48 && i<64 && j>=64 && Rings[i]>200 && Rings[j]>200)GetSidE_EADC()->Fill(Rings[i],Rings[j]);
 		}
 		*/
 	}

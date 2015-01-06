@@ -17,8 +17,11 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 
 bool MMMSuppressChannel(int Channel);
 double MMMEnergyCalc(int Channel, double ADCValue);
-double MMMThetaCalc(int Channel);
-double MMMPhiCalc(int Channel);
+double MMMThetaCalc(int FrontChannel, int BackChannel);
+//(int Channel);
+double MMMPhiCalc(int FrontChannel, int BackChannel);
+//(int Channel);
+double MMMSACalc(int FrontChannel, int BackChannel);
 bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si);
 bool MMMADCTDCChannelTest(int ADCChannel, int TDCChannel);
 
@@ -27,7 +30,8 @@ void MMMLoadCuts(SiliconData *si);
 
 int MMMDetHitNumber(int FrontChannel, int BackChannel);
 
-int MMMStripFront(int FrontChannel);
-int MMMStripBack(int BackChannel);
+int MMMRingCalc(int FrontChannel);
+int MMMSectorCalc(int BackChannel);
+
 
 #endif
