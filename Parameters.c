@@ -100,22 +100,29 @@ void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If ther
   }
   else
   {
-    printf("Detector number is higher than the number of MMM detectors - skipped enabling this detector\n");
+    printf("ADC: Detector number is higher than the number of MMM detectors - skipped enabling this detector\n");
   }
 }
 
 void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
-  if(side.compare(0,5,"pside")==0)
-  {
-    MMMTDCChannelLimits[det-1][0] = start;
-    MMMTDCChannelLimits[det-1][1] = stop;
-  }
-  else if(side.compare(0,5,"nside")==0)
-  {
-    MMMTDCChannelLimits[det-1][2] = start;
-    MMMTDCChannelLimits[det-1][3] = stop;
-  }
+  if(det<=NumberOfMMM)
+    {
+      if(side.compare(0,5,"pside")==0)
+	{
+	  MMMTDCChannelLimits[det-1][0] = start;
+	  MMMTDCChannelLimits[det-1][1] = stop;
+	}
+      else if(side.compare(0,5,"nside")==0)
+	{
+	  MMMTDCChannelLimits[det-1][2] = start;
+	  MMMTDCChannelLimits[det-1][3] = stop;
+	}
+    }
+  else
+    {
+      printf("ADC: Detector number is higher than the number of MMM detectors - skipped enabling this detector\n");
+    }
 }
 
 void W1ParameterInit()
