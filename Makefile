@@ -18,7 +18,8 @@ missmidas::
 	@echo "...";
 endif
 
-
+ARCH := $(shell uname)
+ifeq ($(ARCH),Linux)
 OS_DIR = linux
 OSFLAGS = -DOS_LINUX -Dextname
 #CFLAGS = -Wall -lrt
@@ -26,6 +27,14 @@ CFLAGS = -Wno-cpp -lrt
 # add to compile in 32-bit mode
 # OSFLAGS += -m32
 LIBS = -lm -lz -lutil -lnsl -lpthread -lrt #-lgsl -lgslcblas #-lvme
+endif
+
+ifeq ($(ARCH),Darwin)
+OS_DIR = darwin
+OSFLAGS = -DOS_LINUX -Dextname
+CFLAGS = -Wno-cpp -lrt
+LIBS = -lm -lz -lutil
+endif
 
 #-----------------------------------------
 # ROOT flags and libs
