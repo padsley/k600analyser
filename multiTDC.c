@@ -10,19 +10,21 @@ multiTDC::multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import)
   for(int i=0;i<896;i++)  {GoodChannelCounter[i]=0;}
 
   for(int n=0;n<ntdc;n++){
-    //Only store events from the last TDC, i.e. the ancillary detector events
-    if(TDC_channel_import[n]>=6*128+48 && TDC_channel_import[n]<7*128){
+    if(TDC_channel_import[n]>=0 && TDC_channel_import[n]<7*128){   
+    //if(TDC_channel_import[n]>=6*128+48 && TDC_channel_import[n]<7*128){   //Only store events from the last TDC, i.e. the ancillary detector events
 	ChannelCounter[TDC_channel_import[n]]+=1;
 	//printf("counter= %i for TDC channel %i \n",ChannelCounter[TDC_channel_import[n]],TDC_channel_import[n]);
     }	
-    if(TDC_channel_import[n]>=6*128+48 && TDC_channel_import[n]<7*128 && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1]){
+    if(TDC_channel_import[n]>=0 && TDC_channel_import[n]<7*128 && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1]){
+    //if(TDC_channel_import[n]>=6*128+48 && TDC_channel_import[n]<7*128 && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1]){
 	GoodChannelCounter[TDC_channel_import[n]]+=1;
 	//printf("Good channel counter= %i for TDC channel %i \n",GoodChannelCounter[TDC_channel_import[n]],TDC_channel_import[n]);
     }
   }
 
   for(int n=0;n<ntdc;n++){
-    if(TDC_channel_import[n]>=6*128+48 && TDC_channel_import[n]<7*128){
+    if(TDC_channel_import[n]>=0 && TDC_channel_import[n]<7*128){
+    //if(TDC_channel_import[n]>=6*128+48 && TDC_channel_import[n]<7*128){
       if(ChannelCounter[TDC_channel_import[n]]==0){
 	// this condition should never be met as we set everthing to non-zero value a few lines earlier....RN
       }

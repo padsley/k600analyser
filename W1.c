@@ -48,7 +48,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import,
 // 		si->SetTime(TDC_value_import[k]);
 		// 		si->SetTime(0);
 		
-		si->SetDetectorHit(W1DetHitNumber(i,j));
+		si->SetDetector(W1DetHitNumber(i,j));
 		si->SetADCChannelFront(i);
 		si->SetADCChannelBack(j);
 		si->SetTDCChannelFront(mTDC->GetChannel(k));

@@ -1,7 +1,5 @@
 int ADCModules = 4;
-
 int TDCModules = 6;
-
 int NumberOfMMM = 4;
 
 double pi=3.14159265359;
@@ -9,6 +7,13 @@ double pi=3.14159265359;
 int MMMADCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
 //int MMMTDCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
 int MMMTDCChannelLimits[4][4] = {{816, 831, 80, 87},{816+16, 831+16, 80+8, 87+8},{816+32, 831+32, 80+16, 87+16},{816+48, 831+48, 80+24, 87+24}};
+
+//int HagarADCChannels[7] = {128+9,129+9,130+9,131+9,132+9,133+9,134+9};
+int HagarADCChannels[7] = {95+25,95+26,95+27,95+28,95+29,95+30,95+31};
+int HagarTDCChannels[7] = {656,657,658,659,660,661,662};
+double HagarGain[7]   = {1,1,1,1,1,1,1};
+double HagarOffset[7] = {0,0,0,0,0,0,0};
+
 
 //   This is how ADC limits look like effectively
 //   //   

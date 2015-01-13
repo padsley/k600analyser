@@ -107,8 +107,8 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   for(int k=0;k<mTDC->SizeOfEvent();k++){
 //  for(int k=0;k<ntdc;k++)//Loop over all TDC values - should only be a small number relative to the ADC values
 //  {
-//    if(TDC_channel_import[k]>815)//This limits the code to only deal with the silicon timing values
-//    {
+    if(TDC_channel_import[k]>815)//This limits the code to only deal with the silicon timing values
+    {
       //printf("  TDC selection for TDC channel %d \n", TDC_channel_import[k]);
       //printf("  TDC selection for TDC channel %d \n", mTDC->GetChannel(k));
       for(int i=0;i<ADCsize;i++)
@@ -169,7 +169,7 @@ si->SetTime(mTDC->GetValue(k));
 	}
       }
     }
-  //}
+  }
   
 
   si->SetHits(si->SizeOfEvent());              // here the number of hits per event are set! See SiliconData.h  
