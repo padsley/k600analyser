@@ -44,7 +44,8 @@
 #include "CloverData.h"
 #include "PR194CloverSort.h"
 #include "RawData.h"
-#include "HagarData.h"
+#include "GammaData.h"
+#include "HagarSort.h"
 
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
@@ -59,7 +60,7 @@
 //#define _W1	       //Uncomment for W1 analysis 	
 //#define _CLOVERDATA  //Uncomment for clover analysis 
 //#define _RAWDATA     //Uncomment if you want raw data	
-#define _HAGARDATA     //Uncomment for HAGAR analysis
+#define _GAMMADATA     //Uncomment for GAMMA analysis
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -214,8 +215,8 @@ RawData *raw;
 #endif
 
 Double_t t_hagaradc[7];
-#ifdef _HAGARDATA
-HagarData *hag;
+#ifdef _GAMMADATA
+GammaData *gammy;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -2333,10 +2334,10 @@ INT focal_init(void)
 
 
   t1->Branch("hagaradc",&t_hagaradc,"t_hagaradc[7]/D");
-#ifdef _HAGARDATA
-  gROOT->ProcessLine("#include \"HagarData.h\"");
-  gROOT->ProcessLine(".L HagarData.c+");           // this line means to compile it into a shared library
-  t1->Branch("HagarInfo","HagarData",&hag);
+#ifdef _GAMMADATA
+  gROOT->ProcessLine("#include \"GammaData.h\"");
+  gROOT->ProcessLine(".L GammaData.c+");           // this line means to compile it into a shared library
+  t1->Branch("GammaInfo","GammaData",&gammy);
 #endif
 
 
@@ -3309,9 +3310,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
 #ifdef _HAGARDATA
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
-   if(hag)
+   if(gammy)
    {
-      hag = HagarDataSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
+      gammy = HagarDataSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
    }
 #endif
 
