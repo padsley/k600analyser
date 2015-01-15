@@ -61,6 +61,7 @@
 //#define _CLOVERDATA  //Uncomment for clover analysis 
 //#define _RAWDATA     //Uncomment if you want raw data	
 #define _GAMMADATA     //Uncomment for GAMMA analysis
+#define _HAGAR
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -3308,11 +3309,11 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    }
 #endif
 
-#ifdef _HAGARDATA
+#ifdef _HAGAR
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
    if(gammy)
    {
-      gammy = HagarDataSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
+      gammy = HagarSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
    }
 #endif
 
@@ -3343,9 +3344,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _RAWDATA
   delete raw;
 #endif
-#ifdef _HAGARDATA
+#ifdef _HAGAR
   //hag->ClearEvent();
-  delete hag;
+  delete gammy;
 #endif
   
    delete TDC_channel_export;
