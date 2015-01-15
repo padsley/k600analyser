@@ -15,7 +15,8 @@
 GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   GammaData *gammy = new GammaData();
-  multiTDC *mTDC = new multiTDC(ntdc,TDC_channel_import,TDC_value_import);
+  multiTDC *mTDC;
+mTDC->multiTDCSort(ntdc,TDC_channel_import,TDC_value_import);
 
   //Need to implement the sort algorithm here
   return gammy;

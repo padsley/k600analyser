@@ -47,7 +47,8 @@
 #include "CloverData.h"
 #include "PR194CloverSort.h"
 
-#include "HagarData.h"
+#include "GammaData.h"
+#include "HagarSort.h"
 
 #include "RawData.h"
 /*------------definitions to change analysis------------------------*/
@@ -66,7 +67,8 @@ extern int ADCModules;
 #define _MMM
 //  #define _W1
 //#define _CLOVERDATA 
-#define _HAGARDATA
+#define _GAMMADATA
+#define _HAGAR
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -236,8 +238,8 @@ CloverData *clov;
 RawData *raw;
 #endif
 
-#ifdef _HAGARDATA
-HagarData *hag;
+#ifdef _GAMMADATA
+GammaData *gammy;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -3073,11 +3075,11 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
   }
 #endif
 
-#ifdef _HAGARDATA
+#ifdef _HAGAR
 //     for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
-    if(hag)
+    if(gammy)
     {
-      hag = HagarDataSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
    //--------------------------------------------------------------------------------------------------------
@@ -3106,8 +3108,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _RAWDATA
   delete raw;
 #endif
-#ifdef _HAGARDATA
-  delete hag;
+#ifdef _GAMMADATA
+  delete gammy;
 #endif
   
 #ifdef _ADC
