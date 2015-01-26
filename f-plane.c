@@ -2171,7 +2171,7 @@ INT focal_init(void)
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
 
-  MMMLoadCuts(si);
+  //  MMMLoadCuts(si);
 #endif
 
 #ifdef _CLOVERDATA
@@ -3125,20 +3125,25 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
         t_nU2wires=U2hits;
    }
    #endif
-
+   printf("L3128\n");
    t1->Fill();    // fill the tree t1
-   t2->Fill();    // fill the tree t2 - PA
+   //t2->Fill();    // fill the tree t2 - PA
+   printf("L3131\n");
+
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
+
 #ifdef _CLOVERDATA
    clov->ClearEvent();//See comment above about SiliconData::ClearEvent()
    delete clov;//See comment above about deleting *si
 #endif
+
 #ifdef _RAWDATA
   delete raw;
 #endif
+
 #ifdef _GAMMADATA
   delete gammy;
 #endif

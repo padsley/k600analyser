@@ -127,9 +127,81 @@ void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there
     }
 }
 
-void W1ParameterInit()
+void W1NumberInit()
 {
   printf("\nW1ParameterInit\n");
+  
+  W1ADCChannelLimits = new int*[NumberOfW1];
+  
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    W1ADCChannelLimits[i] = new int[4];
+  }
+  
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      W1ADCChannelLimits[i][j] = -1;
+    }
+  }
+  
+  W1TDCChannelLimits = new int*[NumberOfW1];
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    W1TDCChannelLimits[i] = new int[4];
+  }
+  
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      W1TDCChannelLimits[i][j] = -1;
+    }
+  }
+  printf("\nW1ParameterInit - end\n");
+}
+
+void W1ADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  if(det<=NumberOfW1)
+  {
+    if(side.compare(0,5,"pside")==0)
+    {
+      W1ADCChannelLimits[det-1][0] = start;
+      W1ADCChannelLimits[det-1][1] = stop;
+    }
+    else if(side.compare(0,5,"nside")==0)
+    {
+      W1ADCChannelLimits[det-1][2] = start;
+      W1ADCChannelLimits[det-1][3] = stop;
+    }
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+  }
+}
+
+void W1TDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  if(det<=NumberOfW1)
+    {
+      if(side.compare(0,5,"pside")==0)
+	{
+	  W1TDCChannelLimits[det-1][0] = start;
+	  W1TDCChannelLimits[det-1][1] = stop;
+	}
+      else if(side.compare(0,5,"nside")==0)
+	{
+	  W1TDCChannelLimits[det-1][2] = start;
+	  W1TDCChannelLimits[det-1][3] = stop;
+	}
+    }
+  else
+    {
+      printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+    }
 }
 
 void PulseLimitsInit()
@@ -229,158 +301,225 @@ void ReadConfiguration()
   bool ConfigRead = true;
   bool MMMADCChannelRead = false;
   bool MMMTDCChannelRead = false;
-  
+  bool W1ADCChannelRead = false;
+  bool W1TDCChannelRead = false;
+
   std::ifstream input;
   input.open("config.cfg");
   
   if(input.is_open())
-  {
-    while(ConfigRead)
     {
-      std::string LineBuffer;
-      if(!MMMADCChannelRead && !MMMTDCChannelRead)
-      {
-	input >> LineBuffer;
+      while(ConfigRead)
+	{
+	  std::string LineBuffer;
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead)
+	    {
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
+	      else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfMMM = atoi(LineBuffer.c_str());
+		  MMMNumberInit();
+		}
+	      else if(LineBuffer.compare(0,10,"NumberOfW1") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfW1 = atoi(LineBuffer.c_str());
+		  W1NumberInit();
+		}
+	      else if(LineBuffer.compare(0,10,"ADCModules") == 0)
+		{
+		  input >> LineBuffer;
+		  ADCModules = atoi(LineBuffer.c_str());
+		  ADCsize = 32*ADCModules;
+		  CalibrationParametersInit();
+		}
+	      else if(LineBuffer.compare(0,10,"TDCModules") == 0)
+		{
+		  input >> LineBuffer;
+		  TDCModules = atoi(LineBuffer.c_str());
+		  TDCsize = 128*TDCModules;
+		  ChannelCounter = new int[128*TDCModules];
+		  GoodChannelCounter = new int[128*TDCModules];
+		}
+	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
+		{
+		  if(MMMADCChannelRead==false)MMMADCChannelRead = true;
+		  else if(MMMADCChannelRead==true)MMMADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
+		{
+		  if(MMMTDCChannelRead==false)MMMTDCChannelRead = true;
+		  else if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,13,"W1ADCChannels") == 0)
+		{
+		  if(W1ADCChannelRead==false)W1ADCChannelRead = true;
+		  else if(W1ADCChannelRead==true)W1ADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,13,"W1TDCChannels") == 0)
+		{
+		  if(W1TDCChannelRead==false)W1TDCChannelRead = true;
+		  else if(W1TDCChannelRead==true)W1TDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,4,"VDC1") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"new") == 0)
+		    {
+		      printf("VDC1 is a new-type wire chamber\n");
+		      VDC1_new = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"old") == 0)
+		    {
+		      printf("VDC1 is an old-type wire chamber\n");
+		      VDC1_new = false;
+		    }
+		}
+	      else if(LineBuffer.compare(0,4,"VDC2") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"new") == 0)
+		    {
+		      printf("VDC2 is a new-type wire chamber\n");
+		      VDC2_new = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"old") == 0)
+		    {
+		      printf("VDC2 is an old-type wire chamber\n");
+		      VDC2_new = false;
+		    }
+		}
+	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using calibration file: %s\n",LineBuffer.c_str());
+		  ReadCalibrationParameters(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
+		{
+		  printf("ConfigEnd\n");
+		  ConfigRead = false;
+		}
+	      else
+		{
+		  printf("Line not recognised by ReadConfiguration\n");
+		  printf("%s\n",LineBuffer.c_str());
+		}
+	    }
+      
+	  if(MMMADCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
+		{
+		  if(MMMADCChannelRead==true)MMMADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  MMMADCChannelsInit(num, side, start, stop);
+		}
+	    }
+      
+	  if(MMMTDCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
+		{
+		  if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  MMMTDCChannelsInit(num, side, start, stop);
+		}
+	    }
+
+	  if(W1ADCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,13,"W1ADCChannels") == 0)
+		{
+		  if(W1ADCChannelRead==true)W1ADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  W1ADCChannelsInit(num, side, start, stop);
+		}
+	    }
 	
-	if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
-	else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
-	{
-	  input >> LineBuffer;
-	  NumberOfMMM = atoi(LineBuffer.c_str());
-	  MMMNumberInit();
-	}
-	else if(LineBuffer.compare(0,10,"NumberOfW1") == 0)
-	{
-	  input >> LineBuffer;
-	  NumberOfW1 = atoi(LineBuffer.c_str());
-	  // 	W1NumberInit();
-	}
-	else if(LineBuffer.compare(0,10,"ADCModules") == 0)
-	{
-	  input >> LineBuffer;
-	  ADCModules = atoi(LineBuffer.c_str());
-	  ADCsize = 32*ADCModules;
-	  CalibrationParametersInit();
-	}
-	else if(LineBuffer.compare(0,10,"TDCModules") == 0)
-	{
-	  input >> LineBuffer;
-	  TDCModules = atoi(LineBuffer.c_str());
-	  TDCsize = 128*TDCModules;
-	  ChannelCounter = new int[128*TDCModules];
-	  GoodChannelCounter = new int[128*TDCModules];
-	}
-	else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
-	{
-	  if(MMMADCChannelRead==false)MMMADCChannelRead = true;
-	  else if(MMMADCChannelRead==true)MMMADCChannelRead = false;
-	}
-	else if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
-	{
-	  if(MMMTDCChannelRead==false)MMMTDCChannelRead = true;
-	  else if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
-	}
-	else if(LineBuffer.compare(0,4,"VDC1") == 0)
-	  {
-	    input >> LineBuffer;
-	    if(LineBuffer.compare(0,3,"new") == 0)
-	      {
-		printf("VDC1 is a new-type wire chamber\n");
-		VDC1_new = true;
-	      }
-	    else if(LineBuffer.compare(0,3,"old") == 0)
-	      {
-		printf("VDC1 is an old-type wire chamber\n");
-		VDC1_new = false;
-	      }
-	  }
-	else if(LineBuffer.compare(0,4,"VDC2") == 0)
-	  {
-	    input >> LineBuffer;
-	    if(LineBuffer.compare(0,3,"new") == 0)
-	      {
-		printf("VDC2 is a new-type wire chamber\n");
-		VDC2_new = true;
-	      }
-	    else if(LineBuffer.compare(0,3,"old") == 0)
-	      {
-		printf("VDC2 is an old-type wire chamber\n");
-		VDC2_new = false;
-	      }
-	  }
-	else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
-	{
-	  input >> LineBuffer;
-	  printf("Using calibration file: %s\n",LineBuffer.c_str());
-	  ReadCalibrationParameters(LineBuffer);
-	}
-	else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
-	{
-	  printf("ConfigEnd\n");
-	  ConfigRead = false;
-	}
-	else
-	  {
-	    printf("Line not recognised by ReadConfiguration\n");
-	    printf("LineBuffer\n");
-	  }
-      }
-      
-      if(MMMADCChannelRead)
-      {
-	int num = 0, start = -1, stop = -1;
-	std::string side = "";
-	input >> LineBuffer;
-	if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
-	{
-	  if(MMMADCChannelRead==true)MMMADCChannelRead = false;
-	}
-	else
-	{
-	  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
-	  num = atoi(LineBuffer.c_str());
-	  input>> LineBuffer;
-	  printf("Side: %s\t",LineBuffer.c_str());
-	  side = LineBuffer;
-	  input >> LineBuffer;
-	  printf("Start: %d\t",atoi(LineBuffer.c_str()));
-	  start = atoi(LineBuffer.c_str());
-	  input >> LineBuffer;
-	  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
-	  stop = atoi(LineBuffer.c_str());
+	  if(W1TDCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,14,"W1TDCChannels") == 0)
+		{
+		  if(W1TDCChannelRead==true)W1TDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
 	  
-	  MMMADCChannelsInit(num, side, start, stop);
+		  W1TDCChannelsInit(num, side, start, stop);
+		}
+	    }
 	}
-      }
-      
-      if(MMMTDCChannelRead)
-      {
-	int num = 0, start = -1, stop = -1;
-	std::string side = "";
-	input >> LineBuffer;
-	if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
-	{
-	  if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
-	}
-	else
-	{
-	  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
-	  num = atoi(LineBuffer.c_str());
-	  input>> LineBuffer;
-	  printf("Side: %s\t",LineBuffer.c_str());
-	  side = LineBuffer;
-	  input >> LineBuffer;
-	  printf("Start: %d\t",atoi(LineBuffer.c_str()));
-	  start = atoi(LineBuffer.c_str());
-	  input >> LineBuffer;
-	  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
-	  stop = atoi(LineBuffer.c_str());
-	  
-	  MMMTDCChannelsInit(num, side, start, stop);
-	}
-      }
     }
-  }
   printf("Finished ReadConfiguration\n");
 }
 
