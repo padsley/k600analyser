@@ -59,13 +59,13 @@
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _ADC
+//#define _ADC
 extern float *ADC;
 extern int ADCModules;
 //#define _RAWDATA
-#define _SILICONDATA 
+//#define _SILICONDATA 
 //#define _MMM
-#define _W1
+//#define _W1
 //#define _CLOVERDATA 
 //#define _GAMMADATA
 //#define _HAGAR
@@ -529,6 +529,7 @@ void setupchannel2wireXoldXold()
 // chan 500-707 = X wires VDC2
 //
 {
+   printf("setupchannel2wireXoldXold()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -606,6 +607,7 @@ void setupchannel2wireXoldXU()
 // Mapping of wires to channels when using 1 old VDC and 1 new VDC (placed with first wireplane being the X-wires)
 // See camac-vme-cabling.xls
 {
+  printf("setupchannel2wireXoldXU()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -712,6 +714,7 @@ void setupchannel2wireXUXU()
 // This is due to design mistakes on the PCB's
 //
 {
+   printf("setupchannel2wireXUXU()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -821,6 +824,7 @@ void setupchannel2wire()
 // chan 800-943 = U wires VDC2
 
 {
+   printf("setupchannel2wire() - UXUX\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -1787,7 +1791,34 @@ INT focal_init(void)
    char title[256];
 
 //    setupchannel2wireXUXU();    
-   setupchannel2wireXoldXold();
+   //setupchannel2wireXoldXold();
+
+   ParameterInit();
+
+   extern bool VDC1_new, VDC2_new;
+
+   if(VDC1_new)
+     {
+       if(VDC2_new)
+	 {
+	   setupchannel2wire();
+	 }
+       else
+	 {
+	   printf("Probably not implemented");
+	 }
+     }
+   else
+     {
+       if(VDC2_new)
+	 {
+	   setupchannel2wireXoldXU();
+	 }
+       else
+	 {
+	   setupchannel2wireXoldXold();
+	 }
+     }
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
@@ -2132,14 +2163,14 @@ INT focal_init(void)
   //t2->Branch("Clover1TDC",&t_Clover1TDC,"t_Clover1TDC[4]/D");
   //t2->Branch("Clover2TDC",&t_Clover2TDC,"t_Clover2TDC[4]/D");
   #endif
-  
+
 #ifdef _SILICONDATA
 //   printf("L2108\n");
   gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
-  ParameterInit();
+
   MMMLoadCuts(si);
 #endif
 

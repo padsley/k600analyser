@@ -38,6 +38,8 @@ double *ADCGains;
 int *ChannelCounter;
 int *GoodChannelCounter;
 
+bool VDC1_new, VDC2_new;
+
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
@@ -278,6 +280,34 @@ void ReadConfiguration()
 	  if(MMMTDCChannelRead==false)MMMTDCChannelRead = true;
 	  else if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
 	}
+	else if(LineBuffer.compare(0,4,"VDC1") == 0)
+	  {
+	    input >> LineBuffer;
+	    if(LineBuffer.compare(0,3,"new") == 0)
+	      {
+		printf("VDC1 is a new-type wire chamber\n");
+		VDC1_new = true;
+	      }
+	    else if(LineBuffer.compare(0,3,"old") == 0)
+	      {
+		printf("VDC1 is an old-type wire chamber\n");
+		VDC1_new = false;
+	      }
+	  }
+	else if(LineBuffer.compare(0,4,"VDC2") == 0)
+	  {
+	    input >> LineBuffer;
+	    if(LineBuffer.compare(0,3,"new") == 0)
+	      {
+		printf("VDC2 is a new-type wire chamber\n");
+		VDC2_new = true;
+	      }
+	    else if(LineBuffer.compare(0,3,"old") == 0)
+	      {
+		printf("VDC2 is an old-type wire chamber\n");
+		VDC2_new = false;
+	      }
+	  }
 	else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 	{
 	  input >> LineBuffer;
