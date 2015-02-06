@@ -24,7 +24,7 @@ void SiliconData::PrintEvent()//Print out the 'proper' information about an even
 
 bool SiliconData::TestEvent()
 {
-  printf("SiliconData: TestEvent()\n");
+//   printf("SiliconData: TestEvent()\n");
   bool result = true;
 //  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good and shizzle like that 
  unsigned int hits = SiliconEnergy.size();
@@ -62,7 +62,7 @@ bool SiliconData::TestEvent()
 
 void SiliconData::ClearEvent()
 {
-  printf("SiliconData: ClearEvent()\n");
+//   printf("SiliconData: ClearEvent()\n");
   SiliconEnergy.clear();
   SiliconTheta.clear();
   SiliconPhi.clear();

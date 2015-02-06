@@ -2,6 +2,7 @@
 #define _RAWDATA_ 1
 
 #include <TTree.h>
+#include <vector>
 
 class RawData
 {
@@ -10,22 +11,24 @@ public :
   virtual ~RawData();
   
 private :
-  int *ADCValues;//[ADCsize];//Need to set the sizes of these in a better fashion
-//   int TDChits;
-  int *TDCChannels;//[TDCsize];
-  int *TDCValues;//[TDCsize];
+  std::vector<int> ADCValues;
+  std::vector<int> TDCChannels;
+  std::vector<int> TDCValues;
   
 public :
   //Setters
-  void SetADC(int channel, int value)	{ADCValues[channel] = value;}
-  void SetTDCChannel(int entry, int channel)	{TDCChannels[entry] = channel;}
-  void SetTDCValue(int entry, int value)	{TDCValues[entry] = value;}
+  void SetADC(int channel, int value)	{ADCValues.at(channel) = value;}
+  void SetTDCChannel(int entry, int channel)	{TDCChannels.at(entry) = channel;}
+  void SetTDCValue(int entry, int value)	{TDCValues.at(entry) = value;}
   
   //Getters
   int GetADC(int channel)	{return ADCValues[channel];}
   int GetTDCChannel(int n)	{return TDCChannels[n];}
   int GetTDCValue(int n)	{return TDCValues[n];}
 //int GetTDC(int channel)	{return TDCValues[channel];}
+
+  void SetADCSize(RawData *raw, int asize);
+  void SetTDCSize(RawData *raw, int tsize);
 
   void Init(RawData *raw);
 
