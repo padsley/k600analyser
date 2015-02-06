@@ -62,10 +62,10 @@
 //#define _ADC
 extern float *ADC;
 extern int ADCModules;
-//#define _RAWDATA
-//#define _SILICONDATA 
+#define _RAWDATA
+#define _SILICONDATA 
 //#define _MMM
-//#define _W1
+#define _W1
 //#define _CLOVERDATA 
 //#define _GAMMADATA
 //#define _HAGAR
@@ -585,7 +585,7 @@ void setupchannel2wireXoldXold()
 		  Channel2Wire[431]=507;			
 		  for(int i=424;i<432;i++){
 		    tdcchan=i;
-                    printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
+//                     printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
                     //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, Channel2Wire[tdcchan]);
                   }
 		}
@@ -593,7 +593,7 @@ void setupchannel2wireXoldXold()
 		  for(int i=channelstart;i<channelstart+16;i++){
 		    tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
 		    Channel2Wire[tdcchan]=i;
-                    printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
+//                     printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
 		  }
 		}
 	   }
@@ -1797,11 +1797,13 @@ INT focal_init(void)
 
    extern bool VDC1_new, VDC2_new;
 
+   setupchannel2wireXoldXold();
+   
    if(VDC1_new)
      {
        if(VDC2_new)
 	 {
-	   setupchannel2wire();
+// 	   setupchannel2wire();
 	 }
        else
 	 {
@@ -1812,11 +1814,11 @@ INT focal_init(void)
      {
        if(VDC2_new)
 	 {
-	   setupchannel2wireXoldXU();
+// 	   setupchannel2wireXoldXU();
 	 }
        else
 	 {
-	   setupchannel2wireXoldXold();
+// 	   setupchannel2wireXoldXold();
 	 }
      }
 
@@ -3125,10 +3127,11 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
         t_nU2wires=U2hits;
    }
    #endif
-   printf("L3128\n");
+   
+//    printf("L3128\n");
    t1->Fill();    // fill the tree t1
    //t2->Fill();    // fill the tree t2 - PA
-   printf("L3131\n");
+//    printf("L3131\n");
 
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks

@@ -305,7 +305,7 @@ void ReadConfiguration()
   bool W1TDCChannelRead = false;
 
   std::ifstream input;
-  input.open("config.cfg");
+  input.open("configPR227.cfg");
   
   if(input.is_open())
     {
