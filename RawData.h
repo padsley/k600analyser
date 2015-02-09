@@ -14,17 +14,20 @@ private :
   std::vector<int> ADCValues;
   std::vector<int> TDCChannels;
   std::vector<int> TDCValues;
+  std::vector<double> ADCCalibratedValues;
   
 public :
   //Setters
-  void SetADC(int channel, int value)	{ADCValues.at(channel) = value;}
+  void SetADCValue(int channel, int value)	{ADCValues.at(channel) = value;}
   void SetTDCChannel(int entry, int channel)	{TDCChannels.at(entry) = channel;}
   void SetTDCValue(int entry, int value)	{TDCValues.at(entry) = value;}
+  void SetADCCalibratedValue(int channel, double value) {ADCCalibratedValues.at(channel) = value;}
   
   //Getters
   int GetADC(int channel)	{return ADCValues[channel];}
   int GetTDCChannel(int n)	{return TDCChannels[n];}
   int GetTDCValue(int n)	{return TDCValues[n];}
+  int GetADCCalibratedValue(int channel) {return ADCCalibratedValues.at(channel);}
 //int GetTDC(int channel)	{return TDCValues[channel];}
 
   void SetADCSize(RawData *raw, int asize);
