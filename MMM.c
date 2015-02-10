@@ -41,7 +41,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
       for(int i=0;i<ADCsize;i++)
       {
 	//Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
-	if(MMMADCTDCChannelTestFront(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
+	if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 	{
 	  for(int j=0;j<ADCsize;j++)
 	  {
@@ -51,7 +51,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 	      double energyj = MMMEnergyCalc(j,ADC_import[j]);
 	      
 	      //Test whether the hits are in the front and back of the same detector and whether the energies are good
-	      if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestBack(j,mTDC.GetChannel(k)))
+	      if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(k)))
 	      {
 		si->SetEnergy(0.5*(energyi+energyj));
 		si->SetTheta(MMMThetaCalc(i));
@@ -180,7 +180,7 @@ int MMMDetHitNumber(int FrontChannel, int BackChannel)
   return result;
 }
 
-bool MMMADCTDCChannelTestFront(int ADCChannel, int TDCChannel)
+bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
 { 
   bool result = false;
 //   printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
@@ -202,7 +202,7 @@ bool MMMADCTDCChannelTestFront(int ADCChannel, int TDCChannel)
   return result;
 }
 
-bool MMMADCTDCChannelTestBack(int ADCChannel, int TDCChannel)
+bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel)
 { 
   bool result = false;
 //   printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);

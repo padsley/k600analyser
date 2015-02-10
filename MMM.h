@@ -20,8 +20,8 @@ double MMMEnergyCalc(int Channel, double ADCValue);
 double MMMThetaCalc(int Channel);
 double MMMPhiCalc(int Channel);
 bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si);
-bool MMMADCTDCChannelTestFront(int ADCChannel, int TDCChannel);
-bool MMMADCTDCChannelTestBack(int ADCChannel, int TDCChannel);
+bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel);
+bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel);
 
 
 void MMMInit();

@@ -66,7 +66,6 @@ extern int ADCModules;
 #define _SILICONDATA 
 //#define _MMM
 #define _W1
-//#define _CLOVERDATA 
 //#define _GAMMADATA
 //#define _HAGAR
 
