@@ -62,6 +62,7 @@
 //#define _ADC
 extern float *ADC;
 extern int ADCModules;
+extern float *QDC;
 #define _RAWDATA
 #define _SILICONDATA 
 //#define _MMM
@@ -3073,25 +3074,22 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
    for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
-//#ifdef _SILICONDATA
+
 #ifdef _RAWDATA
-//   for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
   if(raw)
   {
-    raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export);
+    raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export, QDC);
   }
 #endif
   
 #ifdef _MMM
-//    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
-      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);//printf("f-plane.c: L3054\n");
+      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
 
 #ifdef _W1
-// for(int p=0;p<160;p++)ADC_export[p] = ADC[p];//Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
     if(si)
     {
       si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
@@ -3099,8 +3097,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #endif
 
 #ifdef _CLOVERDATA
-//   clov = new CloverData();
-//   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
   if(clov)
   {
     clov = PR194CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
@@ -3108,7 +3104,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #endif
 
 #ifdef _HAGAR
-//     for(int p=0;p<160;p++)ADC_export[p] = ADC[p];
     if(gammy)
     {
       gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
@@ -3127,10 +3122,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    }
    #endif
    
-//    printf("L3128\n");
    t1->Fill();    // fill the tree t1
    //t2->Fill();    // fill the tree t2 - PA
-//    printf("L3131\n");
 
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks

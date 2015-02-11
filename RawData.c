@@ -2,6 +2,7 @@
 
 extern int ADCsize;
 extern int TDCsize;
+extern int QDCsize;
 
 extern double *ADCOffsets;
 extern double *ADCGains;
@@ -20,6 +21,7 @@ void RawData::Init(RawData *raw)
 {
     raw->SetADCSize(raw, ADCsize);
     raw->SetTDCSize(raw, TDCsize);
+    raw->SetQDCSize(raw, QDCsize);
     for(int i=0;i<ADCsize;i++)raw->SetADCValue(i,0);
     for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,0);
     
@@ -27,6 +29,11 @@ void RawData::Init(RawData *raw)
     {
       raw->SetTDCChannel(i,-1);
       raw->SetTDCValue(i,0);
+    }
+    
+    for(int i=0;i<QDCsize;i++)
+    {
+      raw->SetQDCValue(i,0);
     }
 }
 
@@ -42,9 +49,12 @@ void RawData::SetTDCSize(RawData *raw, int tsize)
   raw->TDCChannels.resize(tsize);
 }
 
-// void RawData::SetADCCalibratedValue(int channel, int 
+void RawData::SetQDCSize(RawData *raw, int qsize)
+{
+  raw->QDCValues.resize(qsize);
+}
 
-RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, float *QDC_import)
 {
   RawData *raw = new RawData();
   raw->Init(raw);
@@ -57,5 +67,6 @@ RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float
     raw->SetTDCValue(n,TDC_value_import[n]);
   }
   
+  for(int i=0;i<QDCsize;i++)raw->SetQDCValue(i,QDC_import[i]);
   return raw;
 }

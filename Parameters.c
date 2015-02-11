@@ -11,6 +11,9 @@ int TDCModules;
 
 int TDCsize;
 
+int QDCsize = 32;
+float *QDC;
+
 int NumberOfMMM;
 
 int **MMMADCChannelLimits;
@@ -47,6 +50,7 @@ void ParameterInit()
   ReadConfiguration();
   PulseLimitsInit();
   ADCInit();
+  QDCInit();
   PrintParameters();
   printf("Finished initialising parameters - to the sorting!\n");
 }
@@ -293,6 +297,21 @@ void ADCClear()
   for(int i=0;i<ADCsize;i++)
   {
     ADC[i] = 0;
+  }
+}
+
+void QDCInit()
+{
+  printf("QDCInit\n");
+  QDC = new float[QDCsize];
+  QDCClear();
+}
+
+void QDCClear()
+{
+  for(int i=0;i<QDCsize;i++)
+  {
+    QDC[i] = 0;
   }
 }
 

@@ -19,6 +19,8 @@ void PulseLimitsInit();
 void ADCInit();
 void SetADCChannelCalibration(int channel, double offset, double gain);
 void ADCClear();
+void QDCInit();
+void QDCClear();
 void PrintParameters();
 
 void ReadConfiguration();
