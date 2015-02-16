@@ -24,11 +24,8 @@ int NumberOfW1;
 int **W1ADCChannelLimits;
 int **W1TDCChannelLimits;
 
-//int HagarADCChannels[7] = {128+9,129+9,130+9,131+9,132+9,133+9,134+9};
-//int HagarTDCChannels[7] = {0,0,0,0,0,0,0};
-
-int *HagarADCChannels;
-int *HagarTDCChannels;
+int *HagarADCChannelLimits;
+int *HagarTDCChannelLimits;
 
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
@@ -208,6 +205,24 @@ void W1TDCChannelsInit(int det, std::string side,int start, int stop)//If there 
     }
 }
 
+void HagarInit()
+{
+  HagarADCChannelLimits = new int[2];
+  HagarTDCChannelLimits = new int[2];
+}
+
+void HagarADCChannelsInit(int start, int stop)
+{
+  HagarADCChannelLimits[0] = start;
+  HagarADCChannelLimits[1] = stop;
+}
+
+void HagarTDCChannelsInit(int start, int stop)
+{
+  HagarTDCChannelLimits[0] = start;
+  HagarTDCChannelLimits[1] = stop;
+}
+
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
@@ -322,6 +337,8 @@ void ReadConfiguration()
   bool MMMTDCChannelRead = false;
   bool W1ADCChannelRead = false;
   bool W1TDCChannelRead = false;
+  bool HagarADCChannelRead = false;
+  bool HagarTDCChannelRead = false;
 
   std::ifstream input;
   input.open("configPR227.cfg");
@@ -381,6 +398,20 @@ void ReadConfiguration()
 		{
 		  if(W1TDCChannelRead==false)W1TDCChannelRead = true;
 		  else if(W1TDCChannelRead==true)W1TDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,9,"HagarUsed") == 0)
+		{
+		  HagarInit();
+		}
+	      else if(LineBuffer.compare(0,16,"HagarADCChannels") == 0)
+		{
+		  if(HagarADCChannelRead==false)HagarADCChannelRead = true;
+		  else if(HagarADCChannelRead==true)HagarADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,16,"HagarTDCChannels") == 0)
+		{
+		  if(HagarTDCChannelRead==false)HagarTDCChannelRead = true;
+		  else if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
 		}
 	      else if(LineBuffer.compare(0,4,"VDC1") == 0)
 		{
@@ -535,6 +566,44 @@ void ReadConfiguration()
 		  stop = atoi(LineBuffer.c_str());
 	  
 		  W1TDCChannelsInit(num, side, start, stop);
+		}
+	    }
+
+	  if(HagarADCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,14,"HagarADCChannels") == 0)
+		{
+		  if(HagarADCChannelRead==true)HagarADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  HagarADCChannelsInit(start, stop);
+		}
+	    }
+
+	  if(HagarTDCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,14,"HagarTDCChannels") == 0)
+		{
+		  if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  HagarTDCChannelsInit(start, stop);
 		}
 	    }
 	}
