@@ -60,7 +60,7 @@
 float *ADC;
 extern int ADCModules;
 //Uncomment for silicon analysis
-#define _SILICONDATA 
+//#define _SILICONDATA 
   
 //#define _MMM
 //  #define _W1
@@ -68,7 +68,7 @@ extern int ADCModules;
  //#define _CLOVERDATA 
  
 #define _RAWDATA
-#define _HAGARDATA
+//#define _HAGARDATA
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -3027,7 +3027,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    }
 
    TDC_channel_export = new int[TDCChannelExportStore.size()];
-   TDC_value_export = new float[TDCValueExportStore.size()];printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
+   TDC_value_export = new float[TDCValueExportStore.size()];
+   //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
 
    //printf("TDCChannelExportStore.size(): %d \t TDCValueExportStore.size(): %d\n",TDCChannelExportStore.size(),TDCValueExportStore.size());
 
