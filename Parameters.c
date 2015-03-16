@@ -341,7 +341,7 @@ void ReadConfiguration()
   bool HagarTDCChannelRead = false;
 
   std::ifstream input;
-  input.open("configPR227.cfg");
+  input.open("config.cfg");
   
   if(input.is_open())
     {
