@@ -9,6 +9,7 @@ SiliconData::~SiliconData()
 //   printf("Destructor called for SiliconData");
 }
 
+//=============================================
 void SiliconData::PrintEvent()//Print out the 'proper' information about an event
 {
   //Want to print out the number of valid silicon hits
@@ -21,6 +22,7 @@ void SiliconData::PrintEvent()//Print out the 'proper' information about an even
   }
 }
 
+//=============================================
 bool SiliconData::TestEvent()
 {
   bool result = true;
@@ -58,6 +60,7 @@ bool SiliconData::TestEvent()
 
 
 
+//=============================================
 void SiliconData::ClearEvent()
 {
   SiliconEnergy.clear();
@@ -80,9 +83,12 @@ void SiliconData::ClearEvent()
   RelativeTheta.clear();
   Ring.clear();
   Sector.clear();
+  RingMultipleHit.clear();
+  SectorMultipleHit.clear();
 
 }
 
+//=============================================
 unsigned int SiliconData::SizeOfEvent()
 {
   unsigned int result = SiliconEnergy.size();

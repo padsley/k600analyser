@@ -55,13 +55,14 @@
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _SILICONDATA   //Uncomment for silicon analysis, which should be coupled to MMM or W1
+#define _SILICONDATA   //Uncomment for any silicon analysis, which should be coupled to MMM or W1
 #define _MMM	       //Uncomment for MMM analysis	
 //#define _W1	       //Uncomment for W1 analysis 	
 //#define _CLOVERDATA  //Uncomment for clover analysis 
 //#define _RAWDATA     //Uncomment if you want raw data	
-#define _GAMMADATA     //Uncomment for GAMMA analysis
-#define _HAGAR
+#define _GAMMADATA     //Uncomment for any GAMMA analysis, such as HAGAR or CLOVER
+#define _HAGAR	       //Uncomment for HAGAR analysis
+
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -215,9 +216,9 @@ CloverData *clov;
 RawData *raw;
 #endif
 
-Double_t t_hagaradc[7];
+//Double_t t_hagaradc[7];
 #ifdef _GAMMADATA
-GammaData *gammy;
+GammaData *gam;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -1010,10 +1011,11 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_polu=0; t_pold=0;
    #endif
 
+/*
    for(int i =0; i < 7; i++) {	   
 	t_hagaradc[i]=-1;
    }
-
+*/
 
 }
 
@@ -1833,7 +1835,35 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 void CalcEx(Double_t X, Double_t *Ex)
 //simple excitation energy calibration
 {
-   *Ex= gates.exoff  + gates.exlin*X + gates.exquad*X*X;
+
+   //  *Ex= gates.exoff  + gates.exlin*X + gates.exquad*X*X;
+ 
+   //----------- This half uses the calibration of X to P, then back to E and Ex
+   Double_t KE0=198.08;
+   Double_t theta=0.;
+   Double_t m0=3727.37924; // 2015 nist mass in MeV for alpha particle
+   Double_t m1=15.99491461956 * 931.494061;      // nist 2015 relative atomic mass  x u
+   Double_t m2=m0;
+   Double_t m3=m1;
+   Double_t E0,E1,E2,E3,P0,P1,P2,Qval,KE2;
+   Double_t a=-0.00000658483    ;//-0.00000651439;
+   Double_t b= 0.114966   ;//0.11524;
+   Double_t c= 1123.36   ;//1123.17;
+
+   P2 = a*X*X + b*X + c;
+   KE2 = sqrt(m2*m2 + P2*P2)-m2;
+  
+   E0 = KE0 + m0;
+   E1 = 0.  + m1;		// particle 1 is stationary in lab frame
+   E2 = KE2 + m2;
+   P0 = sqrt(E0*E0-m0*m0);
+   P1 = sqrt(E1*E1-m1*m1);
+   E3=sqrt( P0*P0 + P2*P2 - 2*P0*P2*cos(theta/57.2957) + m3*m3 );
+   Qval = m0+m1-m2-m3;    
+
+   *Ex = E0 + m1 - E2 - E3;
+
+
 }
 //30.7314 - 0.02812*X1posC -0.000003376*X1posC^2
 
@@ -2334,11 +2364,11 @@ INT focal_init(void)
 #endif
 
 
-  t1->Branch("hagaradc",&t_hagaradc,"t_hagaradc[7]/D");
+//  t1->Branch("hagaradc",&t_hagaradc,"t_hagaradc[7]/D");
 #ifdef _GAMMADATA
   gROOT->ProcessLine("#include \"GammaData.h\"");
   gROOT->ProcessLine(".L GammaData.c+");           // this line means to compile it into a shared library
-  t1->Branch("GammaInfo","GammaData",&gammy);
+  t1->Branch("GammaInfo","GammaData",&gam);
 #endif
 
 
@@ -2468,7 +2498,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_runtime=runtime;
    t_trigdivci=trigdivci;
 
-
+/*
    t_hagaradc[0] = ADC[120];    // temporary measure until I get issue of HagarData shared library sorted out
    t_hagaradc[1] = ADC[121];
    t_hagaradc[2] = ADC[122];
@@ -2476,6 +2506,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_hagaradc[4] = ADC[124];
    t_hagaradc[5] = ADC[125];
    t_hagaradc[6] = ADC[126];
+*/
+
    //for(int i=0;i<7;i++){
    //	 printf("ADC info supposedly for HAGAR:  HAGARchan %i   %f \n",i,t_hagaradc[i]);
    //   }
@@ -2758,7 +2790,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	//  X2hits_dt++;
 	//}
       }    
-      else if ((channelnew >= globals.u2_1st_wire_chan) && (channelnew < globals.u2_last_wire_chan)) {    //only for U2 wireplane 
+      else if ((channelnew >= globals.u2_1st_wire_chan+16) && (channelnew < globals.u2_last_wire_chan)) {    //only for U2 wireplane 
 	//if(channelnew >= globals.u2_1st_wire_chan+15) t_U2effall=1;  // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_U2effall=1;  
 	#ifdef _FULLANALYSIS
@@ -3311,9 +3343,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
 #ifdef _HAGAR
    for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
-   if(gammy)
+   if(gam)
    {
-      gammy = HagarSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
+      gam = HagarGammaSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
    }
 #endif
 
@@ -3326,7 +3358,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
         t_nX1wires=X1hits;
         t_nU1wires=U1hits;
         t_nX2wires=X2hits;
-        t_nU2wires=U2hits;
+        t_nU2wires=U2hits
    }
    #endif
 
@@ -3344,9 +3376,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _RAWDATA
   delete raw;
 #endif
-#ifdef _HAGAR
-  //hag->ClearEvent();
-  delete gammy;
+#ifdef _GAMMADATA
+  gam->ClearEvent();
+  delete gam;
 #endif
   
    delete TDC_channel_export;

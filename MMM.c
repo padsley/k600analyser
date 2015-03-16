@@ -31,19 +31,35 @@ TCutG *MMMFrontBackEnergyCut;
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   // PLEASE NOTE: ntdc is the number of TDC channels with data; not the nr of data words in the TDC bank
-  SiliconData *si = new SiliconData();
-  //MMMInit();
-  double theta1,theta2,phi1,phi2,thetarel;
-  //int flaghit;
 
-  //flaghit=0;
-
-  //Loop over ADC and relevant TDC data and do the following:
+  //Loop relevant TDC data, then loop over all ADC data (twice)
   //Check to see whether there's a TDC event for the same channel as the front hit ADC - worry about multihits ??
   //Only use ADC info above ADC pedestal
   //Do energy calibration for each channel 
   //Check whether there are front-back coincidences for a detector, and coincidences is inside energy cut
   //Calculate the theta and phi for the valid events
+
+  SiliconData *si = new SiliconData();
+  //MMMInit();
+  double theta1,theta2,phi1,phi2,thetarel;
+  //int flaghit;  flaghit=0;
+
+  int ring[5][10]; //[si->SizeOfEvent()];    // I do not give size of array dynamically: simply assume 10 is highest nr of hits per event
+  int sector[5][10];// [si->SizeOfEvent()];   // det nr 0 means not detector!!!!!!!
+  int detector, ringtemp, sectortemp;
+  int counterring=0;
+  int countersector=0;
+  int ringflag=0;
+  int sectorflag=0;
+
+  for(int i=0;i<5;i++)
+  {
+     for(int j=0;j<10;j++)
+     {
+	ring[i][j]=-1;
+	sector[i][j]=-1;
+     }
+  }
 
   multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);
 
@@ -81,7 +97,6 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   }
 */
 
-
 /*
   printf("ntdc value where MMMSiliconSort is coded %i \n",ntdc);
   for(int i=0;i<ntdc;i++)
@@ -103,66 +118,94 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 */
 
   //printf("Loop over TDCs channels > 815 starts:\n");
-
-  for(int k=0;k<mTDC->SizeOfEvent();k++){
-//  for(int k=0;k<ntdc;k++)//Loop over all TDC values - should only be a small number relative to the ADC values
-//  {
+  for(int k=0;k<mTDC->SizeOfEvent();k++)
+  //for(int k=0;k<ntdc;k++)     //Loop over all TDC values - should only be a small number relative to the ADC values
+  {
     if(TDC_channel_import[k]>815)//This limits the code to only deal with the silicon timing values
     {
       //printf("  TDC selection for TDC channel %d \n", TDC_channel_import[k]);
       //printf("  TDC selection for TDC channel %d \n", mTDC->GetChannel(k));
       for(int i=0;i<ADCsize;i++)
       {
-	if(ADC_import[i]>220)   // a rough pedestal test for rings
+	if(ADC_import[i]>230)   // a rough pedestal test for rings
 	{
-	  //printf("      ADC chan %i  ADC value %f : now on to ADCTDC test\n",i,ADC_import[i]);
-	  //MMMADCTDCChannelTest(i,TDC_channel_import[k]);
-        
-	  // Check to see that we have TDC data for MMM rings
-	  // Here we effectively pin down 'i' as an MMM ring as only these have TDC values
-//	  if( MMMADCTDCChannelTest(i,TDC_channel_import[k]))    
-	  if( MMMADCTDCChannelTest(i,mTDC->GetChannel(k)))    
+	  //printf("      ADC chan %i  ADC value %f : now on to ADCTDC test\n",i,ADC_import[i]); 
+	  //if( MMMADCTDCChannelTest(i,TDC_channel_import[k]))    
+	  if( MMMADCTDCChannelTest(i,mTDC->GetChannel(k)))    // Check to see that we have TDC data for MMM rings
 	  {
 	    for(int j=0;j<ADCsize;j++)
 	    {
-	      if(ADC_import[j]>220)	//temporary pedestal for sectors: improve for channel dependence ...
+	      if(ADC_import[j]>230)	//temporary pedestal for sectors: improve for channel dependence ...
 	      {
 	        double energyi = MMMEnergyCalc(i,ADC_import[i]);
 	        double energyj = MMMEnergyCalc(j,ADC_import[j]);
-	      
 	        //Test whether the hits are in the front/ring/i and back/sector/j of same detector and if energies are good
+	        //printf("      	     TDC data ok: ADC chan %i  ADC value %f    Now on to frontback test\n",j,ADC_import[j]);
 	        if(MMMFrontBackTest(i,j,energyi,energyj,si))  // here i is locked in as 'front' and j as 'back'.
 	        {
 		  //flaghit++; 
 		  //si->SetEnergy(0.5*(energyi+energyj));
+	          //printf("      	        GOOD front back test\n");
 		  si->SetEnergy(energyi);
 		  si->SetTheta(MMMThetaCalc(i,j));    //PR226: effectively i is ring, j is sector
-		  si->SetPhi(MMMPhiCalc(i,j));        //
-//		  si->SetTime(TDC_value_import[k]);	
-si->SetTime(mTDC->GetValue(k));
+		  si->SetPhi(MMMPhiCalc(i,j));        
+		  //si->SetTime(TDC_value_import[k]);	
+		  si->SetTime(mTDC->GetValue(k));
 		  si->SetSA(MMMSACalc(i,j));        //
                   //printf("theta = %d : phi = %d,  time = %d \n",MMMThetaCalc(i,j),MMMPhiCalc(i,j),mTDC->GetValue(k));
-
 		  si->SetDetector(MMMDetHitNumber(i,j));    //which detector was hit
 		  si->SetADCChannelFront(i);
 		  si->SetADCChannelBack(j); 
-// 		  si->SetTDCChannelFront(TDC_channel_import[k]); 
- si->SetTDCChannelFront(mTDC->GetChannel(k));
+ 		  //si->SetTDCChannelFront(TDC_channel_import[k]); 
+ 		  si->SetTDCChannelFront(mTDC->GetChannel(k));
 	 	  si->SetTDCChannelBack(-1);               	 // no TDCs connected to sectors during PR226
-// 		  si->SetTDCValueFront(TDC_value_import[k]);     
- si->SetTDCValueFront(mTDC->GetValue(k));
+ 		  //si->SetTDCValueFront(TDC_value_import[k]);     
+ 	 	  si->SetTDCValueFront(mTDC->GetValue(k));
 		  si->SetTDCValueBack(-1);
-
 		  si->SetADCValueFront(ADC_import[i]);
 		  si->SetADCValueBack(ADC_import[j]);
 		  si->SetEnergyFront(energyi);
 		  si->SetEnergyBack(energyj);
-         	  si->SetRing(MMMRingCalc(i));
+   	       	  si->SetRing(MMMRingCalc(i));
 		  si->SetSector(MMMSectorCalc(j));
-
-  		  si->SetMult(mTDC->GetMult(k));      // at present this multiplicity value only helps to gauge size of problem with double TDC hits
-
+  		  si->SetMult(mTDC->GetMult(k));    // this multiplicity value only to gauge size of problem with double TDC hits
 	        }
+		//else
+		//{
+		// ok, lets say we have an event where the same ring and 2 different sectors was hit. How to deal with that?
+		// I only try to deal with these if I cannot make the FrontBack test due to energy signal in
+	          //printf("      	           :  ADC chan %i  ADC value %f \n",j,ADC_import[j]);
+	          detector = MMMDetHitNumber(i,j);   
+		  if (detector>4) 
+		  { 
+			printf("BAD detector nr:  %d \n",detector);
+		  }
+		  else if (detector>0)
+		  {
+		     if (counterring<10 ) 
+	  	     {
+ 	       	  	ringtemp = MMMRingCalc(i);
+		  	sectortemp = MMMSectorCalc(j);
+		  	//printf("		detector %d   ring %d  sector %d   counter %d\n",detector,ringtemp,sectortemp,counterring);
+		  	if(ringtemp<16)
+		  	{ 
+				ring[detector][counterring]=ringtemp;
+				//printf("++++    detector %d, ring %d  counter %d\n",detector,ring[detector][counterring],counterring);
+				counterring++;
+                 	}
+		     }
+		     if (countersector<10 ) 
+	  	     {
+ 	       	  	ringtemp = MMMRingCalc(i);
+		  	sectortemp = MMMSectorCalc(j);
+		  	if(sectortemp<8) 
+			{
+				sector[detector][countersector]=sectortemp;
+		 		countersector++;
+			}
+		     }
+		  }
+		//}
 	      }
 	    }
 	  }
@@ -173,6 +216,55 @@ si->SetTime(mTDC->GetValue(k));
   
 
   si->SetHits(si->SizeOfEvent());              // here the number of hits per event are set! See SiliconData.h  
+
+
+
+  for(int i=1;i<5;i++)
+  {
+     if(counterring>1 && counterring<10)  // for an event where you have 2 rings, counterring=2 since it is incremented after decision
+     {
+       for(int j=0;j<counterring;j++)
+       {
+	  if(ring[i][j]>0) //printf("** Inside decider: detector %d     ring %d \n", i, ring[i][j]);
+          for(int k=0;k<counterring;k++)
+          {
+	    if(j!=k && ring[i][j]!=-1)
+	    {
+		if(ring[i][j]==ring[i][k] && ringflag!=ring[i][j])
+                {
+		   //printf("	** detector nr %d    double ring hit in ring %d \n", i, ring[i][k]);
+		   si->SetRingMultipleHit(ring[i][j]);
+		   ringflag=ring[i][j]; 
+		}
+	    }
+	  }
+        }         
+     }
+     if(countersector>1 && countersector<10)  
+     {
+       for(int j=0;j<countersector;j++)
+       {
+	  if(sector[i][j]>0) //printf("** Inside decider: detector %d     sector %d \n", i, sector[i][j]);
+          for(int k=0;k<countersector;k++)
+          {
+	    if(j!=k && sector[i][j]!=-1)
+	    {
+		if(sector[i][j]==sector[i][k] && sectorflag!=sector[i][j])
+                {
+		   //printf("	** detector nr %d    double sector hit in sector %d \n", i, sector[i][k]);
+		   si->SetSectorMultipleHit(sector[i][j]);
+		   sectorflag=sector[i][j]; 
+		}
+	    }
+	  }
+        }         
+     }
+  }
+  counterring==0;
+  countersector==0;
+
+ 
+  //printf("--------------------------------------------- \n");
 
 
 /*
@@ -577,6 +669,8 @@ int MMMRingCalc(int FrontChannel)
 	detectori=3;
 	ring=FrontChannel-48;
   }
+  
+  if(ring>16 || ring<0) ring=20;
 
   //printf("detectori = %i : ring = %i,  sector = %i  theta = %f \n",detectori, ring, sector,GA_TIARA[detectori][ring][sector][0]);
   return ring; 
@@ -605,6 +699,7 @@ int MMMSectorCalc(int BackChannel)
 	detectorj=3;
 	sector=BackChannel-104;
   }
+  if(sector>8 || sector<0) sector=20;
 
   //printf("detectori = %i : ring = %i,  sector = %i  theta = %f \n",detectori, ring, sector,GA_TIARA[detectori][ring][sector][0]);
   return sector; 

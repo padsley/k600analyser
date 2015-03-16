@@ -11,8 +11,9 @@ int MMMTDCChannelLimits[4][4] = {{816, 831, 80, 87},{816+16, 831+16, 80+8, 87+8}
 //int HagarADCChannels[7] = {128+9,129+9,130+9,131+9,132+9,133+9,134+9};
 int HagarADCChannels[7] = {95+25,95+26,95+27,95+28,95+29,95+30,95+31};
 int HagarTDCChannels[7] = {656,657,658,659,660,661,662};
-double HagarGain[7]   = {1,1,1,1,1,1,1};
-double HagarOffset[7] = {0,0,0,0,0,0,0};
+double HagarGain[7]   = {0.00461,0.00555,0.00342,0.00529,0.00453,0.00573,0.00633};
+double HagarOffset[7] = {-2.8247,-2.9538,-2.7439,-3.1096,-3.5149,-2.5631,-2.8721};
+double HagarPedestal[7] = {50,50,200,50,50,50,50};
 
 
 //   This is how ADC limits look like effectively
