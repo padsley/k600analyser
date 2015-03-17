@@ -44,9 +44,6 @@
 #include "MMM.h"
 #include "W1.h"
 
-#include "CloverData.h"
-#include "PR194CloverSort.h"
-
 #include "GammaData.h"
 #include "HagarSort.h"
 
@@ -3094,13 +3091,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
     {
       si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
-#endif
-
-#ifdef _CLOVERDATA
-  if(clov)
-  {
-    clov = PR194CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
-  }
 #endif
 
 #ifdef _HAGAR
