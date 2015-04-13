@@ -341,7 +341,7 @@ void ReadConfiguration()
   bool HagarTDCChannelRead = false;
 
   std::ifstream input;
-  input.open("config.cfg");
+  input.open("configPR227.cfg");
   
   if(input.is_open())
     {
@@ -607,6 +607,10 @@ void ReadConfiguration()
 		}
 	    }
 	}
+    }
+  else
+    {
+      if(ConfigRead)printf("Configuration file not found - you're going to crash\n");
     }
   printf("Finished ReadConfiguration\n");
 }

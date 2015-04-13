@@ -36,7 +36,8 @@
 #include <TH2F.h>     
 #include <TTree.h>
 #include <TFile.h>
-#include <TRandom3.h>   
+#include <TRandom3.h>
+#include <TMath.h>
 
 #include "Parameters.h"
 
@@ -60,10 +61,10 @@
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-#define _RAWDATA
-#define _SILICONDATA 
+//#define _RAWDATA
+//#define _SILICONDATA 
 //#define _MMM
-#define _W1
+//#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
 
@@ -167,6 +168,7 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posC=-100.0;
+double t_Ex = -0.;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -974,6 +976,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posC=-100.;
+   t_Ex=-1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
    t_X1flag=-100;   t_X2flag=-100;   t_U1flag=-100;   t_U2flag=-100;
    t_X1effID=-100.; t_X2effID=-100.; t_U1effID=-100.; t_U2effID=-100.;   
@@ -1674,11 +1677,72 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
    //C3=gates.c0xcorr + gates.c1xcorr*X1 + gates.c2xcorr*X1*X1 ;   
    //C4=gates.d0xcorr + gates.d1xcorr*X1 + gates.d2xcorr*X1*X1 ;   
    //*X1corr=X1-C1*ThetaSCAT-C2*ThetaSCAT*ThetaSCAT-C3*ThetaSCAT*ThetaSCAT*ThetaSCAT-C4*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT;
-   *Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
+   //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
+  //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
+  //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
+  *Xcorr = X - 2.38982*ThetaSCAT - 0.607534*ThetaSCAT*ThetaSCAT;
 }
 
+double CalcQBrho(double Xcorr)
+{
+  double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
+  //std::cout << "rig: " << rig << std::endl;
+  return rig;
+}
+
+double CalcT3(double Xcorr, double m3)
+{
+  double T3 = 0;
+
+  double rig = CalcQBrho(Xcorr);
+
+  double p3 = rig * TMath::C()/1e6;
+  //std::cout << "p3: " << p3 << std::endl;
+  T3 = sqrt(pow(p3,2.) + pow(m3,2.)) - m3;
+  //std::cout << "T3: " << T3 << std::endl;
+  return T3;
+}
+
+double CalcEx(double Xcorr)
+{
+  double exE = 0;
+  double T1 = 200, T2 = 0, T3 = 0, T4 = 0; //Energies in MeV
+
+  double p1, p2, p3, p4;
+  double m1, m2, m3, m4;
+
+  m1 = 3728.400952; //4He
+  m2 = 22341.92265; //24Mg
+
+  double theta3 = 0, theta4 = 0;
+
+  bool inelastic = true;
+  if(inelastic)
+    {
+      m3 = m1;
+      m4 = m2;
+    }
+
+  p1 = sqrt(T1 * ( T1 + 2*m1));
+  p2 = 0;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  //std::cout << "p3: " << p3 << std::endl;
+  T3 = CalcT3(Xcorr,m3);
+
+  if(theta3 == 0)
+    {
+      theta4 = 0;
+      
+      p4 = p1 - p3;
+      T4 = sqrt(p4*p4 + m4*m4) - m4;
+      //std::cout << "T4: " << T4 << std::endl;
+      exE = T1 - T3 - T4;
+    }
+  //std::cout << "exE: " << exE << std::endl;
+  if(exE<0)exE=0;
+  if(Xcorr>800)exE=0;
+  return exE;
+}
 
 //--------------------------------------------------------------------------------------
 
@@ -1794,13 +1858,13 @@ INT focal_init(void)
 
    extern bool VDC1_new, VDC2_new;
 
-   setupchannel2wireXoldXold();
+   //setupchannel2wireXoldXold();
    
    if(VDC1_new)
      {
        if(VDC2_new)
 	 {
-// 	   setupchannel2wire();
+ 	   setupchannel2wireXUXU();
 	 }
        else
 	 {
@@ -2101,6 +2165,7 @@ INT focal_init(void)
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+  t1->Branch("Ex",&t_Ex,"t_Ex/D");
 
   #ifdef _FULLANALYSIS
   t1->Branch("PhiSCAT",&t_PhiSCAT,"t_PhiSCAT/D");
@@ -3019,6 +3084,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    CalcCorrX(X1pos-x1offset, (Y2+10), ThSCAT, &Xcorr);
    t_X1posC=Xcorr;
+
+   t_Ex = CalcEx(Xcorr);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
