@@ -475,6 +475,7 @@ void ReadConfiguration()
 		  if(LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
 		  else if(LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
 		  else TestInelastic = true;
+		  if(TestInelatic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
 		}
 	      else if(LineBuffer.compare(0,5,"mass1") == 0)
 		{
