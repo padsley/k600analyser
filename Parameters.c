@@ -40,6 +40,9 @@ int *GoodChannelCounter;
 
 bool VDC1_new, VDC2_new;
 
+int rigThCTs;//Number of terms to correct the X1 position with ThSCAT
+double *rigThetaCorr;//pointer array to store the terms from above
+
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
@@ -48,8 +51,14 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
+  //CorrectionInit();
   PrintParameters();
   printf("Finished initialising parameters - to the sorting!\n");
+}
+
+void CorrectionInit()
+{
+  rigThetaCorr = new double[rigThCTs];
 }
 
 void MMMNumberInit()//This is called after the number of MMM detectors is found from the config file
@@ -339,16 +348,17 @@ void ReadConfiguration()
   bool W1TDCChannelRead = false;
   bool HagarADCChannelRead = false;
   bool HagarTDCChannelRead = false;
+  bool ThSCATCorrectionParametersRead = false;
 
   std::ifstream input;
-  input.open("configPR227.cfg");
+  input.open("config.cfg");
   
   if(input.is_open())
     {
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead)
 	    {
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
@@ -447,6 +457,14 @@ void ReadConfiguration()
 		  printf("Using calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
 		}
+	      else if(LineBuffer.compare(0,21,"ThSCATCorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for the ThSCAT position correction\n",atoi(LineBuffer.c_str()));
+		  rigThCTs = atoi(LineBuffer.c_str());
+		  rigThetaCorr = new double[rigThCTs];
+		  ThSCATCorrectionParametersRead = true;
+		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
 		  printf("ConfigEnd\n");
@@ -459,6 +477,23 @@ void ReadConfiguration()
 		}
 	    }
       
+	  if(ThSCATCorrectionParametersRead)
+	    {
+	      int npar = -1, valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead)ThSCATCorrectionParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %f\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  rigThetaCorr[npar] = valpar;
+		}
+	    }
+			 
+
 	  if(MMMADCChannelRead)
 	    {
 	      int num = 0, start = -1, stop = -1;

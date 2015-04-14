@@ -1680,13 +1680,25 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
    //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
   //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
   //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
-  *Xcorr = X - 2.38982*ThetaSCAT - 0.607534*ThetaSCAT*ThetaSCAT;
+  //*Xcorr = X - 2.38982*ThetaSCAT - 0.607534*ThetaSCAT*ThetaSCAT;
+
+  extern int rigThCTs;
+  extern double *rigThetaCorr;
+  *Xcorr = 0;
+  for(int i=0;i<rigThCTs;i++)
+    {
+      if(i==0)*Xcorr = X;
+      if(i>0)*Xcorr += rigThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
+      //printf("Xcorr: %f\n",*Xcorr);
+    }
 }
 
 double CalcQBrho(double Xcorr)
 {
   double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
+  //double rig = 3.78562 + 0.000351737*Xcorr - 1.95361e-10*Xcorr*Xcorr;
   //std::cout << "rig: " << rig << std::endl;
+
   return rig;
 }
 
@@ -1712,7 +1724,10 @@ double CalcEx(double Xcorr)
   double m1, m2, m3, m4;
 
   m1 = 3728.400952; //4He
-  m2 = 22341.92265; //24Mg
+  //m2 = 22341.92265; //24Mg
+  //m2 = 26060.33946; //28Si
+  m2 = 24202.62965; //26Mg
+  m2 = 25133.14158; //27Al
 
   double theta3 = 0, theta4 = 0;
 
