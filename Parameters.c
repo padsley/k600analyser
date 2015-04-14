@@ -43,15 +43,19 @@ bool VDC1_new, VDC2_new;
 int rigThCTs;//Number of terms to correct the X1 position with ThSCAT
 double *rigThetaCorr;//pointer array to store the terms from above
 
+bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
+double *masses;
+double T1;
+double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
+
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
-//   CalibrationParametersInit();
+  masses = new double[4];
   ReadConfiguration();
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-  //CorrectionInit();
   PrintParameters();
   printf("Finished initialising parameters - to the sorting!\n");
 }
@@ -464,6 +468,49 @@ void ReadConfiguration()
 		  rigThCTs = atoi(LineBuffer.c_str());
 		  rigThetaCorr = new double[rigThCTs];
 		  ThSCATCorrectionParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
+		  else if(LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
+		  else TestInelastic = true;
+		}
+	      else if(LineBuffer.compare(0,5,"mass1") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass1: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[0] = atof(LineBuffer.c_str());//Be careful... the index number is different to the particle number...
+		}
+	      else if(LineBuffer.compare(0,5,"mass2") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass2: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[1] = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,5,"mass3") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass3: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[2] = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,5,"mass4") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass4: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[3] = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,10,"BeamEnergy")==0)
+		{
+		  input >> LineBuffer;
+		  printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
+		  T1 = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,15,"ScatteringAngle")==0)
+		{
+		  input >> LineBuffer;
+		  printf("Scattering Angle: %f degrees\n",atof(LineBuffer.c_str()));
+		  theta3 = atof(LineBuffer.c_str());
 		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{

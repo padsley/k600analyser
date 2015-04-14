@@ -1718,38 +1718,41 @@ double CalcT3(double Xcorr, double m3)
 double CalcEx(double Xcorr)
 {
   double exE = 0;
-  double T1 = 200, T2 = 0, T3 = 0, T4 = 0; //Energies in MeV
+  extern double T1;
+  double  T2 = 0, T3 = 0, T4 = 0;//Energies in MeV
 
-  double p1, p2, p3, p4;
-  double m1, m2, m3, m4;
+  double p1, p2, p3, p4; //Momenta for each particle
 
-  m1 = 3728.400952; //4He
+  extern double *masses;//This is a pointer array containing the information on the particle masses involved in the reaction
+
+  //m1 = 3728.400952; //4He
   //m2 = 22341.92265; //24Mg
   //m2 = 26060.33946; //28Si
-  m2 = 24202.62965; //26Mg
-  m2 = 25133.14158; //27Al
+  //m2 = 24202.62965; //26Mg
+  //m2 = 25133.14158; //27Al
 
-  double theta3 = 0, theta4 = 0;
+  extern double theta3;
+  double theta4 = 0;
 
-  bool inelastic = true;
-  if(inelastic)
+  extern bool TestInelastic;
+  if(TestInelastic)
     {
-      m3 = m1;
-      m4 = m2;
+      masses[2] = masses[0];
+      masses[3] = masses[1];
     }
 
-  p1 = sqrt(T1 * ( T1 + 2*m1));
+  p1 = sqrt(T1 * ( T1 + 2*masses[0]));
   p2 = 0;
   p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
   //std::cout << "p3: " << p3 << std::endl;
-  T3 = CalcT3(Xcorr,m3);
+  T3 = CalcT3(Xcorr,masses[2]);
 
   if(theta3 == 0)
     {
       theta4 = 0;
       
       p4 = p1 - p3;
-      T4 = sqrt(p4*p4 + m4*m4) - m4;
+      T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
       //std::cout << "T4: " << T4 << std::endl;
       exE = T1 - T3 - T4;
     }
