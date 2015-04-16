@@ -40,8 +40,13 @@ int *GoodChannelCounter;
 
 bool VDC1_new, VDC2_new;
 
-int rigThCTs;//Number of terms to correct the X1 position with ThSCAT
-double *rigThetaCorr;//pointer array to store the terms from above
+int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
+double *XThetaCorr;//pointer array to store the terms from above
+int NXY1Corr;
+double *XY1Corr;
+
+int NXRigidityPars;
+double *XRigidityPars;
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -58,11 +63,6 @@ void ParameterInit()
   QDCInit();
   PrintParameters();
   printf("Finished initialising parameters - to the sorting!\n");
-}
-
-void CorrectionInit()
-{
-  rigThetaCorr = new double[rigThCTs];
 }
 
 void MMMNumberInit()//This is called after the number of MMM detectors is found from the config file
@@ -353,16 +353,19 @@ void ReadConfiguration()
   bool HagarADCChannelRead = false;
   bool HagarTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
+  bool XRigidityParametersRead = false;
+  bool Y1CorrectionParametersRead = false;
 
   std::ifstream input;
-  input.open("config.cfg");
-  
+  //input.open("config.cfg");//This is the line to change in order to change the configuration file
+  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
+
   if(input.is_open())
     {
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
 	    {
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
@@ -465,8 +468,9 @@ void ReadConfiguration()
 		{
 		  input >> LineBuffer;
 		  printf("Using %d terms for the ThSCAT position correction\n",atoi(LineBuffer.c_str()));
-		  rigThCTs = atoi(LineBuffer.c_str());
-		  rigThetaCorr = new double[rigThCTs];
+		  NXThetaCorr = atoi(LineBuffer.c_str());
+		  XThetaCorr = new double[NXThetaCorr];
+		  for(int c=0;c<NXThetaCorr;c++)XThetaCorr[c] = 0;
 		  ThSCATCorrectionParametersRead = true;
 		}
 	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
@@ -475,7 +479,7 @@ void ReadConfiguration()
 		  if(LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
 		  else if(LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
 		  else TestInelastic = true;
-		  if(TestInelatic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
+		  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
 		}
 	      else if(LineBuffer.compare(0,5,"mass1") == 0)
 		{
@@ -501,17 +505,35 @@ void ReadConfiguration()
 		  printf("mass4: %f MeV/c**2\n",atof(LineBuffer.c_str()));
 		  masses[3] = atof(LineBuffer.c_str());
 		}
-	      else if(LineBuffer.compare(0,10,"BeamEnergy")==0)
+	      else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
 		{
 		  input >> LineBuffer;
 		  printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
 		  T1 = atof(LineBuffer.c_str());
 		}
-	      else if(LineBuffer.compare(0,15,"ScatteringAngle")==0)
+	      else if(LineBuffer.compare(0,15,"ScatteringAngle") == 0)
 		{
 		  input >> LineBuffer;
 		  printf("Scattering Angle: %f degrees\n",atof(LineBuffer.c_str()));
 		  theta3 = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,19,"RigidityCalibration") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d parameters for the correction X position -> Rigidity calibration\n",atoi(LineBuffer.c_str()));
+		  NXRigidityPars = atoi(LineBuffer.c_str());
+		  XRigidityPars = new double[NXRigidityPars];
+		  for(int c=0;c<NXRigidityPars;c++)XRigidityPars[c] = 0;
+		  XRigidityParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for the ThSCAT position correction\n",atoi(LineBuffer.c_str()));
+		  NXY1Corr = atoi(LineBuffer.c_str());
+		  XY1Corr = new double[NXY1Corr];
+		  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
+		  Y1CorrectionParametersRead = true;
 		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
@@ -527,7 +549,8 @@ void ReadConfiguration()
       
 	  if(ThSCATCorrectionParametersRead)
 	    {
-	      int npar = -1, valpar = 0;
+	      int npar = -1;
+	      double valpar = 0;
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead)ThSCATCorrectionParametersRead = false;
 	      else
@@ -535,12 +558,46 @@ void ReadConfiguration()
 		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
 		  npar = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;
-		  printf("Parameter value: %f\n",atof(LineBuffer.c_str()));
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
 		  valpar = atof(LineBuffer.c_str());
-		  rigThetaCorr[npar] = valpar;
+		  XThetaCorr[npar] = valpar;
 		}
 	    }
-			 
+		
+	  if(Y1CorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,20,"EndY1CorrectionTerms") == 0 && Y1CorrectionParametersRead)Y1CorrectionParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XY1Corr[npar] = valpar;
+		}
+	    }
+	
+	  if(XRigidityParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,22,"EndRigidityCalibration") == 0 && XRigidityParametersRead)XRigidityParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());//Line is actually pointless... I should tidy this up
+		  XRigidityPars[npar] = atof(LineBuffer.c_str());
+		  printf("Check XRigidityPars[%d]: %e\n",npar,XRigidityPars[npar]);
+		}
+	    }
 
 	  if(MMMADCChannelRead)
 	    {

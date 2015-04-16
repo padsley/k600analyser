@@ -1682,37 +1682,73 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
   //*Xcorr = X - 2.38982*ThetaSCAT - 0.607534*ThetaSCAT*ThetaSCAT;
 
-  extern int rigThCTs;
-  extern double *rigThetaCorr;
+  double result = 0;
+  extern int NXThetaCorr;
+  extern double *XThetaCorr;
+  extern int NXY1Corr;
+  extern double *XY1Corr;
+
   *Xcorr = 0;
-  for(int i=0;i<rigThCTs;i++)
+  for(int i=0;i<NXThetaCorr;i++)
     {
-      if(i==0)*Xcorr = X;
-      if(i>0)*Xcorr += rigThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
+      if(i==0)result = X;
+      if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
       //printf("Xcorr: %f\n",*Xcorr);
     }
+
+  //I do this by calculating the ThSCAT correction and then the correction from Y1
+  for(int i=0;i<NXY1Corr;i++)
+    {
+      //if(i==0)result = result;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+    }
+  *Xcorr = result;
 }
 
 double CalcQBrho(double Xcorr)
 {
-  double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
+  //double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
   //double rig = 3.78562 + 0.000351737*Xcorr - 1.95361e-10*Xcorr*Xcorr;
   //std::cout << "rig: " << rig << std::endl;
 
+  extern int NXRigidityPars;
+  extern double *XRigidityPars;
+
+  double rig = 0;
+  for(int i=0;i<NXRigidityPars;i++)
+    {
+      //printf("XRigidityPars[%d]: %e\n",i,XRigidityPars[i]);
+      rig += XRigidityPars[i] * pow(Xcorr,(double)i);
+    }
+  //std::cout << "rig: " << rig << std::endl;
   return rig;
 }
 
-double CalcT3(double Xcorr, double m3)
+double CalcTfromXcorr(double Xcorr, double mass)
 {
-  double T3 = 0;
+  double T = 0;
 
   double rig = CalcQBrho(Xcorr);
 
-  double p3 = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e6;
   //std::cout << "p3: " << p3 << std::endl;
-  T3 = sqrt(pow(p3,2.) + pow(m3,2.)) - m3;
+  T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T3 << std::endl;
-  return T3;
+  return T;
+}
+
+double CalcTfromRigidity(double rig, double mass)
+{
+  double T = 0;
+
+  double p = rig * TMath::C()/1e6;
+  T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+}
+
+double CalcTfromP(double p, double mass)
+{
+  double T = 0;
+  T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
 double CalcEx(double Xcorr)
@@ -1741,12 +1777,12 @@ double CalcEx(double Xcorr)
       masses[3] = masses[1];
     }
 
-  p1 = sqrt(T1 * ( T1 + 2*masses[0]));
+  p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
   p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
   //std::cout << "p3: " << p3 << std::endl;
-  T3 = CalcT3(Xcorr,masses[2]);
-
+  T3 = CalcTfromXcorr(Xcorr,masses[2]);
+  //std::cout << "T3: " << T3 << std::endl;
   if(theta3 == 0)
     {
       theta4 = 0;
@@ -3100,7 +3136,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    CalcPhiFP(X1pos,Y1,X2pos,Y2,ThFP,&PhiFP);
    t_PhiFP=PhiFP;
 
-   CalcCorrX(X1pos-x1offset, (Y2+10), ThSCAT, &Xcorr);
+   //CalcCorrX(X1pos-x1offset, (Y2+10), ThSCAT, &Xcorr);
+   CalcCorrX(X1pos-x1offset, Y1, ThSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
    t_Ex = CalcEx(Xcorr);
