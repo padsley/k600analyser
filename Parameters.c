@@ -358,7 +358,8 @@ void ReadConfiguration()
 
   std::ifstream input;
   //input.open("config.cfg");//This is the line to change in order to change the configuration file
-  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
+  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg24/configMg24PR236WE4.cfg");
 
   if(input.is_open())
     {
