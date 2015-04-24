@@ -350,6 +350,7 @@ void ReadConfiguration()
   bool MMMTDCChannelRead = false;
   bool W1ADCChannelRead = false;
   bool W1TDCChannelRead = false;
+  bool HagarUsed = false;
   bool HagarADCChannelRead = false;
   bool HagarTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
@@ -359,7 +360,8 @@ void ReadConfiguration()
   std::ifstream input;
   //input.open("config.cfg");//This is the line to change in order to change the configuration file
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
-  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg24/configMg24PR236WE4.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
+  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
 
   if(input.is_open())
     {
@@ -419,7 +421,20 @@ void ReadConfiguration()
 		}
 	      else if(LineBuffer.compare(0,9,"HagarUsed") == 0)
 		{
-		  HagarInit();
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"yes") == 0)
+		    {
+		      HagarInit();
+		      HagarUsed = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"no") == 0)
+		    {
+		      HagarUsed = false;
+		    }
+		  else
+		    {
+		      printf("Hagar usage option not recognised\n");
+		    }
 		}
 	      else if(LineBuffer.compare(0,16,"HagarADCChannels") == 0)
 		{
@@ -530,7 +545,7 @@ void ReadConfiguration()
 	      else if(LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
 		{
 		  input >> LineBuffer;
-		  printf("Using %d terms for the ThSCAT position correction\n",atoi(LineBuffer.c_str()));
+		  printf("Using %d terms for the Y1 position correction\n",atoi(LineBuffer.c_str()));
 		  NXY1Corr = atoi(LineBuffer.c_str());
 		  XY1Corr = new double[NXY1Corr];
 		  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
@@ -714,12 +729,13 @@ void ReadConfiguration()
 	    {
 	      int start = -1, stop = -1;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,14,"HagarADCChannels") == 0)
+	      if(LineBuffer.compare(0,16,"HagarADCChannels") == 0)
 		{
 		  if(HagarADCChannelRead==true)HagarADCChannelRead = false;
 		}
 	      else
 		{
+		  printf("HagarADCChannelRead: \t");
 		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
 		  start = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;
@@ -733,12 +749,13 @@ void ReadConfiguration()
 	    {
 	      int start = -1, stop = -1;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,14,"HagarTDCChannels") == 0)
+	      if(LineBuffer.compare(0,16,"HagarTDCChannels") == 0)
 		{
 		  if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
 		}
 	      else
 		{
+		  printf("HagarTDCChannelRead: \t");
 		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
 		  start = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;

@@ -61,12 +61,12 @@
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-//#define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _RAWDATA
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
-//#define _GAMMADATA
-//#define _HAGAR
+#define _GAMMADATA
+#define _HAGAR
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -169,6 +169,8 @@ Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posC=-100.0;
 double t_Ex = -0.;
+double t_T3 = -0.;
+double t_rigidity3 = -0.;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -1690,18 +1692,22 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 
   *Xcorr = 0;
   for(int i=0;i<NXThetaCorr;i++)
-    {
-      if(i==0)result = X;
-      if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
+  {
+    if(i==0)result = X;
+    if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
       //printf("Xcorr: %f\n",*Xcorr);
-    }
+  }
+
+  //double par1 = 6.31548 - 0.0273686*X + 5.9541e-5*X*X - 3.99997e-8*X*X*X;
+  //double par2 = -30.3446 + 0.1655*X - 0.000295033*X*X + 1.75109e-7*X*X*X;
+  //result = X - par1*ThetaSCAT - par2*ThetaSCAT*ThetaSCAT;
 
   //I do this by calculating the ThSCAT correction and then the correction from Y1
-  for(int i=0;i<NXY1Corr;i++)
-    {
+  //for(int i=0;i<NXY1Corr;i++)
+  //{
       //if(i==0)result = result;
-      if(i>0)result += XY1Corr[i] * pow(Y,i);
-    }
+      //if(i>0)result += XY1Corr[i] * pow(Y,i);
+  //}
   *Xcorr = result;
 }
 
@@ -1733,7 +1739,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
   double p = rig * TMath::C()/1e6;
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
-  //std::cout << "T3: " << T3 << std::endl;
+  //std::cout << "T3: " << T << std::endl;
   return T;
 }
 
@@ -1761,12 +1767,6 @@ double CalcEx(double Xcorr)
 
   extern double *masses;//This is a pointer array containing the information on the particle masses involved in the reaction
 
-  //m1 = 3728.400952; //4He
-  //m2 = 22341.92265; //24Mg
-  //m2 = 26060.33946; //28Si
-  //m2 = 24202.62965; //26Mg
-  //m2 = 25133.14158; //27Al
-
   extern double theta3;
   double theta4 = 0;
 
@@ -1789,6 +1789,14 @@ double CalcEx(double Xcorr)
       
       p4 = p1 - p3;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
+      exE = T1 - T3 - T4;
+    }
+  else
+    {
+      theta4 = 180./TMath::Pi()*atan(sin(theta3*TMath::Pi()/180.)/(p1/p3 - cos(theta3*TMath::Pi()/180.)));
+      //std::cout << "theta4: " << theta4 << std::endl;
+      p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
+      T4 = CalcTfromP(p4,masses[3]);
       //std::cout << "T4: " << T4 << std::endl;
       exE = T1 - T3 - T4;
     }
@@ -2220,6 +2228,8 @@ INT focal_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
+  t1->Branch("T3",&t_T3,"t_T3/D");
+  t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
 
   #ifdef _FULLANALYSIS
   t1->Branch("PhiSCAT",&t_PhiSCAT,"t_PhiSCAT/D");
@@ -3141,6 +3151,12 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_X1posC=Xcorr;
 
    t_Ex = CalcEx(Xcorr);
+
+   extern double *masses;
+
+   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
+
+   t_rigidity3 = CalcQBrho(Xcorr);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
