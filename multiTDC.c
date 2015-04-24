@@ -81,7 +81,7 @@ multiTDC::multiTDC()
 
 multiTDC::~multiTDC()
 {
-   printf("~multiTDC()\n");
+  //printf("~multiTDC()\n");
 }
 
 void multiTDC::PrintEvent()
