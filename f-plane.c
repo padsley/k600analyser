@@ -57,16 +57,16 @@
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-//#define _ADC
+#define _ADC
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-#define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
+//#define _RAWDATA
+//#define _SILICONDATA 
+//#define _MMM
 //#define _W1
-#define _GAMMADATA
-#define _HAGAR
+//#define _GAMMADATA
+//#define _HAGAR
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -2331,7 +2331,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Int_t reftimes[7]; 
    Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
-   Int_t tdcevtcount;
+   Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
    float PsideTDC[80];
@@ -2465,11 +2465,23 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    // look for TDC0 bank 
 
    ntdc = bk_locate(pevent, "TDC0", &ptdc);  // TDC bank in analyzer.c defined as TDC0. ntdc is nr of values in the bank
-   //printf(" nr of TDC datawords:                    %d words\n",ntdc);
+   //printf("nr of TDC datawords:                    %d words\n",ntdc);
    tdc_counter++;
    hTDCPerEventRaw->Fill(ntdc);    
    t_tdcsperevent=ntdc;
-   tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
+   if (ntdc == 0){                      // events with no TDC data. Ignore the event
+        //hEmptyTDCBankRaw->Fill(2);
+	#ifdef _PRINTTOSCREEN
+        printf("Event with no TDC datawords. Data ignored:  %i \n",empty_tdc_counter);
+	#endif
+        hEventID->Fill(ev_id_noTDC);          
+	empty_tdc_counter++;
+	//return 1;
+   }
+   else
+     {
+       tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
+     }
 
    // test for misaligned events in the MIDAS bank. The QDC and TDC event nr must agree. --> there are problems with QDC evtcounter from board?!
    //printf("tdc event nr from trailer:  %i\n",(ptdc[1]>>5)&0xfffff); 
