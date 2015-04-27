@@ -2469,19 +2469,19 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    tdc_counter++;
    hTDCPerEventRaw->Fill(ntdc);    
    t_tdcsperevent=ntdc;
-   if (ntdc == 0){                      // events with no TDC data. Ignore the event
+   //if (ntdc == 0){                      // events with no TDC data. Ignore the event
         //hEmptyTDCBankRaw->Fill(2);
-	#ifdef _PRINTTOSCREEN
-        printf("Event with no TDC datawords. Data ignored:  %i \n",empty_tdc_counter);
-	#endif
-        hEventID->Fill(ev_id_noTDC);          
-	empty_tdc_counter++;
+   //	#ifdef _PRINTTOSCREEN
+     //   printf("Event with no TDC datawords. Data ignored:  %i \n",empty_tdc_counter);
+   //	#endif
+     //   hEventID->Fill(ev_id_noTDC);          
+   //	empty_tdc_counter++;
 	//return 1;
-   }
-   else
-     {
+   //}
+   //else
+   //{
        tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
-     }
+       //}
 
    // test for misaligned events in the MIDAS bank. The QDC and TDC event nr must agree. --> there are problems with QDC evtcounter from board?!
    //printf("tdc event nr from trailer:  %i\n",(ptdc[1]>>5)&0xfffff); 
