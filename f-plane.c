@@ -61,9 +61,9 @@
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-//#define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _RAWDATA
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
