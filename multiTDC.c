@@ -15,7 +15,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 
   for(int n=0;n<ntdc;n++)
   {
-    //printf("n: %d \t TDC_channel_import: %d \t TDC_value_import: %d \n",n,TDC_channel_import[n],TDC_value_import[n]);
+    printf("n: %d \t TDC_channel_import: %d \t TDC_value_import: %d \n",n,TDC_channel_import[n],TDC_value_import[n]);
 
     //if(TDC_channel_import[n]==845)printf("1: TDC_channel_import[n]: %d \t ChannelCounter: %d\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
     ChannelCounter[TDC_channel_import[n]]++;
@@ -39,6 +39,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
       else if(ChannelCounter[TDC_channel_import[n]]==1)
       {
 	//The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
+	printf("\n ChannelCounter[%d]==1 \n",TDC_channel_import[n]);
 	SetChannel(TDC_channel_import[n]);
 	SetValue(TDC_value_import[n]);
 	SetMult(ChannelCounter[TDC_channel_import[n]]);
@@ -77,6 +78,10 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 multiTDC::multiTDC()
 {
 //   printf("multiTDC\n");
+//   printf("\n multiTDC.c:L74 \n");
+  SetHits(TDChits);//printf("\n multiTDC.c:L75 \n");
+  delete ChannelCounter;//printf("\n multiTDC.c:L76 \n");
+  //delete GoodChannelCounter;printf("\n multiTDC.c:L77 \n");
 }
 
 multiTDC::~multiTDC()

@@ -225,8 +225,7 @@ double MMMPhiCalc(int Channel)
       phi = 0;
       printf("Phi value not found - you doggone fucked up, lad\n");
     }
-  
-  return result;
+  return phi;
 }
 
 bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si)

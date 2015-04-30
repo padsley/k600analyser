@@ -68,6 +68,7 @@ extern float *QDC;
 //#define _GAMMADATA
 //#define _HAGAR
 
+
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
 GLOBAL_PARAM globals;
@@ -1945,6 +1946,7 @@ INT focal_init(void)
 	 }
      }
 
+
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
    printf("== Misalignment time cutoff (sec): %i ==\n",misaligntime);
@@ -3211,6 +3213,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];
+   //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
 
    //printf("TDCChannelExportStore.size(): %d \t TDCValueExportStore.size(): %d\n",TDCChannelExportStore.size(),TDCValueExportStore.size());
 
@@ -3219,7 +3222,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    else{TDCHits = 0; printf("TDC Channel/Value mismatch - not going to process external data");}
 
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
-   for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
+//    for(unsigned int p=0;p<TDCValueExportStore.size();p++){TDC_value_export[p] = TDCValueExportStore[p];printf("\n TDC_value_export[%d]: %d\n",p,TDC_value_export[p]);}
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 
 #ifdef _RAWDATA

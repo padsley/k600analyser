@@ -9,9 +9,6 @@
 #include "SiliconData.h"
 #include "W1.h"
 
-//const int ADCsize = 128;
-//const int NumberOfDetectors = 4;
-
 extern int ADCModules;
 extern int ADCsize;
 extern int NumberOfW1;
@@ -27,8 +24,10 @@ TCutG *W1FrontBackEnergyCut;
 SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   SiliconData *si = new SiliconData();
+
   multiTDC *mTDC = new multiTDC;
   mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);	
+
   for(int k=0;k<mTDC->GetSize();k++)
   {
     for(int i=0;i<ADCsize;i++)
@@ -114,7 +113,7 @@ void W1LoadCuts(SiliconData *si)
 
 void W1Init()//Initialise function which gets the information on the DAQ channels->Physical channels
 { 
-  
+
 }
 
 bool W1SuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
@@ -148,7 +147,7 @@ double W1PhiCalc(int FrontChannel, int BackChannel)
 bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si)
 {
   bool result = false;
-  //   printf("FrontBackTest Start\n");
+
   //   gROOT->ProcessLine(".x FrontBackEnergyCut.C");
   
   for(int i=0;i<NumberOfW1;i++)
@@ -174,6 +173,7 @@ bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, doub
   //     printf("FrontBackTest End\n");
   //if(result)printf("True\n");
   //else if(!result)printf("False\n");
+
   return result;
 }
 
@@ -228,6 +228,8 @@ bool W1ADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
 	  if(W1ADCChannelLimits[i][1]==-1)result = true;
 	  
   }
+    
+  //printf("W1ADCTDCChannelTest stop: %d %d",ADCChannel,TDCChannel);
   return result;
 }
 
