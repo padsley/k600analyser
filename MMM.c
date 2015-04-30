@@ -28,7 +28,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   SiliconData *si = new SiliconData();
 
   //Loop over ADC and TDC events and do the following:
-  
+    //printf("MMM.c L31\n");
   //Check whether there are front-back coincidences for a detector and test the energies
   //Check to see whether there's a TDC event for the same channel as the front hit ADC - TDCs are apparently in single-hit mode. Don't need to worry about multihits
   //Calculate the theta and phi for the valid events
@@ -55,7 +55,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 	      {
 		si->SetEnergy(0.5*(energyi+energyj));
 		si->SetTheta(MMMThetaCalc(i));
-		si->SetPhi(MMMPhiCalc(i));
+		si->SetPhi(MMMPhiCalc(j));
 
 		si->SetTime(mTDC.GetValue(k));
 		
@@ -85,7 +85,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   
   si->SetHits(si->SizeOfEvent());
   if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
-
+  //printf("MMM.c L88");
   //MMMGhostBuster(SiliconData *si);
 
   mTDC.ClearEvent();
@@ -225,7 +225,7 @@ double MMMPhiCalc(int Channel)
       break;
     default : 
       phi = 0;
-      printf("Phi value not found - you doggone fucked up, lad\n");
+      printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
     }
   return phi;
 }
