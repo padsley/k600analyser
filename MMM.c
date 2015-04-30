@@ -86,6 +86,8 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   si->SetHits(si->SizeOfEvent());
   if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
 
+  //MMMGhostBuster(SiliconData *si);
+
   mTDC.ClearEvent();
   return si;
 }
@@ -237,3 +239,10 @@ int MMMStripBack(int BackChannel)
   result = BackChannel%8;
   return result;
 }
+
+//void MMMGhostBuster(SiliconData *si)
+//{
+  
+
+
+//}
