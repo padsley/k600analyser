@@ -134,13 +134,98 @@ double MMMEnergyCalc(int Channel, double ADCValue)
 
 double MMMThetaCalc(int Channel)
 {
-  double result = 180;
-  return result;
+  double theta = 180;
+  switch (Channel%16)//The MMM detectors run 0->15, 16->31 etc. If this changes, this theta calculation section will also be forced to change
+    {
+    case 0:
+      theta = 164.425240;
+      break;
+    case 1:
+      theta = 161.351428;
+      break;
+    case 2:
+      theta = 161.351428;
+      break;
+    case 3:
+      theta = 154.813167;
+      break;
+    case 4:
+      theta = 151.386395;
+      break;
+    case 5:
+      theta = 147.883131;
+      break;
+    case 6:
+      theta = 144.311153;
+      break;
+    case 7:
+      theta = 140.718818;
+      break;
+    case 8:
+      theta = 137.129755;
+      break;
+    case 9:
+      theta = 133.555311;
+      break;
+    case 10:
+      theta = 130.039133;
+      break;
+    case 11:
+      theta = 126.603074;
+      break;
+    case 12:
+      theta = 123.265031;
+      break;
+    case 13:
+      theta = 120.040891;
+      break;
+    case 14:
+      theta = 116.950276;
+      break;
+    case 15:
+      theta = 113.998884;
+      break;
+    default :
+      theta = 0;
+      printf("Theta value not found - you doggone fucked up, lad\n");
+    }
+  return theta;
 }
 
 double MMMPhiCalc(int Channel)
 {
-  double result = 0;
+  double phi = 0;
+  switch ((Channel-80)%8)
+    {
+    case 0:
+      phi = 26.270786;
+      break;
+    case 1:
+      phi = 34.409036;
+      break;
+    case 2:
+      phi = 42.881504;
+      break;
+    case 3:
+      phi = 51.563195;
+      break;
+    case 4:
+      phi = 60.289173;
+      break;
+    case 5:
+      phi = 68.896820;
+      break;
+    case 6:
+      phi = 77.234830;
+      break;
+    case 7:
+      phi = 85.188565;
+      break;
+    default : 
+      phi = 0;
+      printf("Phi value not found - you doggone fucked up, lad\n");
+    }
+  
   return result;
 }
 
