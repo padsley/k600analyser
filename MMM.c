@@ -23,6 +23,8 @@ extern double *ADCGains;
 
 TCutG *MMMFrontBackEnergyCut;
 
+const double sigma = 30;//keV - silicon energy resolution - used for the front-back energy cut condition
+
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
   SiliconData *si = new SiliconData();
@@ -242,7 +244,8 @@ bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, dou
       {
 	  double diff = FrontEnergy - BackEnergy;
 	  if(diff<0)diff*=-1;
-	  if(diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal
+	  //if(diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal <5%
+	  if(abs(diff)<3*sigma)
 	  {
 	    result = true;//They are -> it's a good event
 	  }
