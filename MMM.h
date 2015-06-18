@@ -11,6 +11,7 @@
 #include <TTree.h>
 #include <vector>
 #include <TROOT.h>
+#include <cmath>
 #include "multiTDC.h"
 
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
