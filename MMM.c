@@ -243,9 +243,9 @@ bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, dou
     if(FrontChannel>=MMMADCChannelLimits[i][0] && FrontChannel<=MMMADCChannelLimits[i][1] && BackChannel>=MMMADCChannelLimits[i][2] && BackChannel<=MMMADCChannelLimits[i][3])//If the two hits are part of the front and back of the same detector, then consider that the event might be good - make sure that hit 'i' in the main loop in the sort is always the front. Then we don't get any double-counting
       {
 	  double diff = FrontEnergy - BackEnergy;
-	  if(diff<0)diff*=-1;
+	  //if(diff<0)diff*=-1;
 	  //if(diff/(0.5*(FrontEnergy+BackEnergy))<0.05)//Check to see if the front and back energies are approximately equal <5%
-	  if(abs(diff)<3*sigma)
+	  if(std::abs(diff)<3*sigma)
 	  {
 	    result = true;//They are -> it's a good event
 	  }

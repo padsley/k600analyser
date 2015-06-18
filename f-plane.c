@@ -172,6 +172,8 @@ Double_t t_X1posC=-100.0;
 double t_Ex = -0.;
 double t_T3 = -0.;
 double t_rigidity3 = -0.;
+double t_theta = -90;
+double t_phi = -180;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -1699,16 +1701,14 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
       //printf("Xcorr: %f\n",*Xcorr);
   }
 
-  //double par1 = 6.31548 - 0.0273686*X + 5.9541e-5*X*X - 3.99997e-8*X*X*X;
-  //double par2 = -30.3446 + 0.1655*X - 0.000295033*X*X + 1.75109e-7*X*X*X;
-  //result = X - par1*ThetaSCAT - par2*ThetaSCAT*ThetaSCAT;
+  //At this point, result is X1posC after the ThSCAT correction
 
-  //I do this by calculating the ThSCAT correction and then the correction from Y1
-  //for(int i=0;i<NXY1Corr;i++)
-  //{
-      //if(i==0)result = result;
-      //if(i>0)result += XY1Corr[i] * pow(Y,i);
-  //}
+  for(int i=0;i<NXY1Corr;i++)
+    {
+      if(i==0)result = result;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+    }
+
   *Xcorr = result;
 }
 
@@ -1846,6 +1846,40 @@ void CalcPhiFP(Double_t X1, Double_t Y1, Double_t X2, Double_t Y2,  Double_t thF
    //printf("y1=%f  y2=%f  z_x1x2=%f ThFP = %f phi=%f \n",Y1,Y2,globals.z_x1x2,thFP,57.29578*atan(y/(globals.z_x1x2/sin(thFP/57.29578))));
 }
 
+double CalcThetaPrime(double X1, double ThFP)
+{
+  //Using the result of the fit:  
+  //TF2 *fit2 = new TF2("fit2","y*([0]+[1]*x+[2]*x*x) + [3] + [4]*x + [5]*x*x",250,660,28,33); where y = ThFP and x = X1
+
+  double *ThetaPrimePars = new double[6];
+  ThetaPrimePars[0] = -0.872219;
+  ThetaPrimePars[1] = -0.000434535;
+  ThetaPrimePars[2] = 4.58708e-07;
+  ThetaPrimePars[3] = 27.5189;
+  ThetaPrimePars[4] = 0.0134774;
+  ThetaPrimePars[5] = -1.77584e-05;
+
+  double result = ThFP*(ThetaPrimePars[0] + ThetaPrimePars[1]*X1 + ThetaPrimePars[2]*X1*X1) +  ThetaPrimePars[3] +  ThetaPrimePars[4]*X1 +  ThetaPrimePars[5]*X1*X1;
+  return result;
+}
+
+double CalcPhiPrime(double X1, double ThFP, double Y1)
+{
+  
+}
+
+double CalcTheta(double X1, double ThFP, double Y1)
+{
+  extern double theta3;//K600 scattering angle
+
+  double ThetaPrime = CalcThetaPrime(X1,ThFP);
+
+  double PhiPrime = CalcPhiPrime(X1, ThFP, Y1);
+  
+  double result = -1;
+
+  result = sqrt(pow(ThetaPrime + theta3,2.) + pow(PhiPrime,2.));
+}
 
 /*-- BOR routine --------------------Happens after init-----------------------------------------*/
 INT focal_bor(INT run_number)
@@ -2232,6 +2266,8 @@ INT focal_init(void)
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("T3",&t_T3,"t_T3/D");
   t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
+  t1->Branch("theta",&t_theta,"t_theta/D");
+  t1->Branch("phi",&t_phi,"t_phi/D");
 
   #ifdef _FULLANALYSIS
   t1->Branch("PhiSCAT",&t_PhiSCAT,"t_PhiSCAT/D");
@@ -3171,6 +3207,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
 
    t_rigidity3 = CalcQBrho(Xcorr);
+
+   t_theta = CalcThetaPrime(Xcorr,ThFPx);
+   t_phi = CalcPhiPrime(Xcorr,ThFPx,Y1);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
