@@ -1,20 +1,20 @@
 #!/bin/bash
 
-for COUNT in {2000..3000}
+for COUNT in {2062..2119}
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/experment-data/PR244/run0000"$COUNT".mid.gz"
+      FILE="/experiment-data/PR244/PR244B/run0000"$COUNT".mid.gz"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/experment-data/PR244/run000"$COUNT".mid.gz"
+      FILE="/experiment-data/PR244/PR244B/run000"$COUNT".mid.gz"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/experment-data/PR244/run00"$COUNT".mid.gz"
+      FILE="/experiment-data/PR244/PR244B/run00"$COUNT".mid.gz"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/experment-data/PR244/run0"$COUNT".mid.gz"
+      FILE="/experiment-data/PR244/PR244B/run0"$COUNT".mid.gz"
   else
       echo "This might not work"
   fi

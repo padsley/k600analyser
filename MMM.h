@@ -33,4 +33,10 @@ int MMMDetHitNumber(int FrontChannel, int BackChannel);
 int MMMStripFront(int FrontChannel);
 int MMMStripBack(int BackChannel);
 
+bool MMMTDCFrontTest(int TDCChannel);
+bool MMMTDCBackTest(int TDCChannel);
+bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel);
+
+int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel);
+
 #endif
