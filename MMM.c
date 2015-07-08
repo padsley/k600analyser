@@ -38,48 +38,58 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 
   for(int k=0;k<mTDC.GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
   {
-    for(int l=0;l<mTDC.GetSize();l++)//Loop over all of the TDC values *again* but in this case, looking for the N sides
+    if(MMMTDCFrontTest(mTDC.GetChannel(k)))
       {
-	for(int i=0;i<ADCsize;i++)
+	for(int l=0;l<mTDC.GetSize();l++)//Loop over all of the TDC values *again* but in this case, looking for the N sides
 	  {
-	    //Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
-	    if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
+	    if(MMMTDCBackTest(mTDC.GetChannel(l)) && MMMTDCFrontBackTest(mTDC.GetChannel(k),mTDC.GetChannel(l)))
 	      {
-		for(int j=0;j<ADCsize;j++)
-		  {
-		    if(ADC_import[j]>0)
+		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
+		if(DetNum>0)
+		  {	
+		    for(int i=MMMADCChannelLimits[DetNum][0];i<=MMMADCChannelLimits[DetNum][1];i++)
 		      {
-			double energyi = MMMEnergyCalc(i,ADC_import[i]);
-			double energyj = MMMEnergyCalc(j,ADC_import[j]);
-			
-			//Test whether the hits are in the front and back of the same detector and whether the energies are good
-			if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)))
+			//Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
+			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 			  {
-			    si->SetEnergy(0.5*(energyi+energyj));
-			    si->SetTheta(MMMThetaCalc(i));
-			    si->SetPhi(MMMPhiCalc(j));
-			    
-			    si->SetTime(mTDC.GetValue(k));
-			    si->SetTimeFront(mTDC.GetValue(k));
-			    si->SetTimeBack(mTDC.GetValue(l));
-			    
-			    si->SetDetectorHit(MMMDetHitNumber(i,j));
-			    si->SetADCChannelFront(i);
-			    si->SetADCChannelBack(j);
-			    si->SetStripFront(MMMStripFront(i));
-			    si->SetStripBack(MMMStripBack(j));
-			    
-			    si->SetTDCChannelFront(mTDC.GetChannel(k));
-			    si->SetTDCChannelBack(-1);
-			    si->SetADCValueFront(ADC_import[i]);
-			    si->SetADCValueBack(ADC_import[j]);
-			    
-			    si->SetTDCValueFront(mTDC.GetValue(k));
-			    si->SetTDCValueBack(-1);
-			    si->SetEnergyFront(energyi);
-			    si->SetEnergyBack(energyj);
-			    
-			    si->SetMult(mTDC.GetMult(k));
+			    for(int j=MMMADCChannelLimits[DetNum][2];j<=MMMADCChannelLimits[DetNum][3];j++)
+			      {
+				if(ADC_import[j]>0)
+				  {
+				    double energyi = MMMEnergyCalc(i,ADC_import[i]);
+				    double energyj = MMMEnergyCalc(j,ADC_import[j]);
+				    
+				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
+				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)))
+				      {
+					si->SetEnergy(0.5*(energyi+energyj));
+					si->SetTheta(MMMThetaCalc(i));
+					si->SetPhi(MMMPhiCalc(j));
+					
+					si->SetTime(mTDC.GetValue(k));
+					si->SetTimeFront(mTDC.GetValue(k));
+					si->SetTimeBack(mTDC.GetValue(l));
+					
+					si->SetDetectorHit(MMMDetHitNumber(i,j));
+					si->SetADCChannelFront(i);
+					si->SetADCChannelBack(j);
+					si->SetStripFront(MMMStripFront(i));
+					si->SetStripBack(MMMStripBack(j));
+					  
+					si->SetTDCChannelFront(mTDC.GetChannel(k));
+					si->SetTDCChannelBack(-1);
+					si->SetADCValueFront(ADC_import[i]);
+					si->SetADCValueBack(ADC_import[j]);
+					  
+					si->SetTDCValueFront(mTDC.GetValue(k));
+					si->SetTDCValueBack(-1);
+					si->SetEnergyFront(energyi);
+					si->SetEnergyBack(energyj);
+					  
+					si->SetMult(mTDC.GetMult(k));
+				      }
+				  }
+			      }
 			  }
 		      }
 		  }
@@ -202,7 +212,7 @@ double MMMThetaCalc(int Channel)
 double MMMPhiCalc(int Channel)
 {
   double phi = 0;
-  switch ((Channel-80)%8)
+  switch ((Channel-64)%8)
     {
     case 0:
       phi = 26.270786;
@@ -282,7 +292,7 @@ bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
    {
      if(ADCChannel%16==TDCChannel%16)
      {
-//        printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+       //printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
        result = true;
      }
    }
@@ -330,9 +340,60 @@ int MMMStripBack(int BackChannel)
   return result;
 }
 
-//void MMMGhostBuster(SiliconData *si)
-//{
+bool MMMTDCFrontTest(int TDCChannel)
+{
+  bool result = false;
+  for(int i=0;i<NumberOfMMM;i++)
+    {
+      if(TDCChannel>=MMMTDCChannelLimits[i][0] && TDCChannel<=MMMTDCChannelLimits[i][1])
+	{
+	  result = true;
+	}
+      if(MMMTDCChannelLimits[i][0]==-1)result = true;
+      if(MMMTDCChannelLimits[i][1]==-1)result = true;
+    }
+ 
+  return result;
+}
+
+bool MMMTDCBackTest(int TDCChannel)
+{
+  bool result = false;
+  for(int i=0;i<NumberOfMMM;i++)
+    {
+      if(TDCChannel>=MMMTDCChannelLimits[i][2] && TDCChannel<=MMMTDCChannelLimits[i][3])
+	{
+	  result = true;
+	}
+      if(MMMTDCChannelLimits[i][2]==-1)result = true;
+      if(MMMTDCChannelLimits[i][3]==-1)result = true;
+    }
+  return result;
+}
+
+bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
+{
+  bool result = false;
+  for(int i=0;i<NumberOfMMM;i++)
+    {
+      if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
+	{
+	  result = true;
+	}
+    }
+  return result;
+}
   
-
-
-//}
+int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel)
+{
+  int result = -1;
+  for(int i=0;i<NumberOfMMM;i++)
+    {
+      if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
+	{
+	  result = i;
+	}
+    }
+  //printf("result = %d\n",result);
+  return result;
+}
