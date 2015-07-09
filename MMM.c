@@ -52,7 +52,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 			//Don't want to run for events w
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 			  {
-			    for(int j=MMMADCChannelLimits[DetNum][2];j<=MMMADCChannelLimits[DetNum][3];j++)
+			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
 			      {
 				if(ADC_import[j]>0)
 				  {
