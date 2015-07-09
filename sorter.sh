@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for COUNT in {2062..2119}
+for COUNT in {2061..2061}
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]

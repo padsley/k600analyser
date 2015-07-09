@@ -47,12 +47,12 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
-		    for(int i=MMMADCChannelLimits[DetNum][0];i<=MMMADCChannelLimits[DetNum][1];i++)
+		    for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
 		      {
 			//Don't want to run for events which are below pedestal. Set this to be 250 generally for the moment. In future, might want to increase it a bit
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 			  {
-			    for(int j=MMMADCChannelLimits[DetNum][2];j<=MMMADCChannelLimits[DetNum][3];j++)
+			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
 			      {
 				if(ADC_import[j]>0)
 				  {
@@ -391,7 +391,7 @@ int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel)
     {
       if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
 	{
-	  result = i;
+	  result = i+1;
 	}
     }
   //printf("result = %d\n",result);
