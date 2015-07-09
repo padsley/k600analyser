@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for COUNT in {2062..2119}
+for COUNT in {2139..2139}
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
@@ -21,16 +21,16 @@ do
   echo $FILE
   if [ $COUNT -lt 10 ]
   then
-      FILE2="/k600user/PR244/data/sorted0000"$COUNT".root"
+      FILE2="/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24Coinc/sorted0000"$COUNT".root"
   elif [ $COUNT -lt 100 ]
   then
-      FILE2="/k600user/PR244/data/sorted000"$COUNT".root"
+      FILE2="/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24Coinc/sorted000"$COUNT".root"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE2="/k600user/PR244/data/sorted00"$COUNT".root"
+      FILE2="/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24Coinc/sorted00"$COUNT".root"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE2="/k600user/PR244/data/sorted0"$COUNT".root"
+      FILE2="/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24Coinc/sorted0"$COUNT".root"
   else
       echo "This might not work"
   fi
