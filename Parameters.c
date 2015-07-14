@@ -364,8 +364,7 @@ void ReadConfiguration()
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
-  //input.open("/k600user/PR244/k600analyser/configPR244Coincidences.cfg");
-  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+  input.open("/home/padsley/data/PR244/configPR244Coincidences.cfg");
 
   if(input.is_open())
     {
