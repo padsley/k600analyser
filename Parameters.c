@@ -358,13 +358,8 @@ void ReadConfiguration()
   bool Y1CorrectionParametersRead = false;
 
   std::ifstream input;
-  //input.open("config.cfg");//This is the line to change in order to change the configuration file
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
-  input.open("/home/padsley/data/PR244/configPR244Coincidences.cfg");
+  input.open("config.cfg");//This is the line to change in order to change the configuration file
+  
 
   if(input.is_open())
     {
