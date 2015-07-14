@@ -33,4 +33,10 @@ int W1DetHitNumber(int FrontChannel, int BackChannel);
 int W1StripFront(int FrontChannel);
 int W1StripBack(int BackChannel);
 
+// New functions to optimise sorting
+bool W1TDCFrontTest(int TDCChannel);
+bool W1TDCBackTest(int TDCChannel);
+bool W1TDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel);
+int W1TDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel);
+
 #endif
