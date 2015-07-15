@@ -20,12 +20,12 @@
 
 /*--number of channels  --------------------------------------------*/
 #define N_ADC               64
-#define N_QDC               16
+#define N_QDC               4	  // only refered to nr of qdc channels that is useful
 #define N_TDC               896
 #define N_SCLR              16    //Note; this number corresponds to 2x enabled channels/scaler
 #define N_PAT               16
 
 
 /*-- Histo ID bases ------------------------------------------------*/
-#define ADCCALIB_ID_BASE 1000
-#define ADCSUM_ID_BASE   2000
+//#define ADCCALIB_ID_BASE 1000
+//#define ADCSUM_ID_BASE   2000

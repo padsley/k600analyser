@@ -1,48 +1,783 @@
-int ADCModules = 4;
-int TDCModules = 6;
-int NumberOfMMM = 4;
-
-double pi=3.14159265359;
-
-int MMMADCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
-//int MMMTDCChannelLimits[4][4] = {{0, 15, 80, 87},{0+16, 15+16, 80+8, 87+8},{0+32, 15+32, 80+16, 87+16},{0+48, 15+48, 80+24, 87+24}};
-int MMMTDCChannelLimits[4][4] = {{816, 831, 80, 87},{816+16, 831+16, 80+8, 87+8},{816+32, 831+32, 80+16, 87+16},{816+48, 831+48, 80+24, 87+24}};
-
-//int HagarADCChannels[7] = {128+9,129+9,130+9,131+9,132+9,133+9,134+9};
-int HagarADCChannels[7] = {95+25,95+26,95+27,95+28,95+29,95+30,95+31};
-int HagarTDCChannels[7] = {656,657,658,659,660,661,662};
-double HagarGain[7]   = {0.00461,0.00555,0.00342,0.00529,0.00453,0.00573,0.00633};
-double HagarOffset[7] = {-2.8247,-2.9538,-2.7439,-3.1096,-3.5149,-2.5631,-2.8721};
-double HagarPedestal[7] = {50,50,200,50,50,50,50};
+#include "Parameters.h"
 
 
-//   This is how ADC limits look like effectively
-//   //   
-//   MMMADCChannelLimits[0][0] = 0;//First channel of the front of the first detector
-//   MMMADCChannelLimits[0][1] = 15;//Last channel of the front of the first detector
-//   MMMADCChannelLimits[0][2] = 80;//First channel of the back of the first detector
-//   MMMADCChannelLimits[0][3] = 87;//Last channel of the back of the first detector
-//   //   
-//   MMMADCChannelLimits[1][0] = 16;
-//   MMMADCChannelLimits[1][1] = 31;
-//   MMMADCChannelLimits[1][2] = 88;
-//   MMMADCChannelLimits[1][3] = 95;
-//   //   
-//   MMMADCChannelLimits[2][0] = 32;
-//   MMMADCChannelLimits[2][1] = 47;
-//   MMMADCChannelLimits[2][2] = 96;
-//   MMMADCChannelLimits[2][3] = 103;
-//   //   
-//   MMMADCChannelLimits[3][0] = 48;
-//   MMMADCChannelLimits[3][1] = 63;
-//   MMMADCChannelLimits[3][2] = 104;
-//   MMMADCChannelLimits[3][3] = 111;
+int ADCModules;
+int ADCsize;
+float *ADC;
 
+int TDCModules;
+int TDCsize;
 
-int PulseLimits[2] = {1800, 2400};
+int QDCsize = 32;
+float *QDC;
 
-double silicon_offset[128] =  {-168.968,-198.772,-174.247,-175.797,-156.718,-154.954,-200.519,-139.549,-198.366,-186.822,-194.288,-164.339,-168.337,-65.0572,-160.387,-86.0515,-185.858,-181.172,-213.626,-145.767,-187.324,-120.286,-196.958,-164.833,-231.898,-219.998,-234.078,-234.137,-196.327,-168.337,-137.259,-117.097,-104.795,-93.3315,-130.7,-95.7034,-143.824,-93.2749,-245.378,-61.288,-66.8823,-118.128,-130.505,-113.8,-195.205,-98.6295,-164.514,-113.121,-339.523,-292.835,-202.872,-254.645,-226.726,-241.886,-282.45,-251.477,-262.653,-303.501,-230.4,-289.334,-216.94,-163.518,-242.933,-134.158,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-135.655,-119.103,-49.8171,-75.5737,-131.49,-89.9631,-93.7386,-153.239,-61.288,-93.5364,-128.258,-100.068,-160.454,-115.918,-77.7873,-104.844,-30.1605,-37.7949,-83.0038,-105.674,-67.8342,-10.5308,-51.308,-71.2376,-91.0828,-26.77,-49.271,-81.6858,-68.4558,-121.084,-20.2022,-45.4696,0,0,0,0,0,0,0,0,0.,0,0,0,0,0,0,0};
-//{-167.805,-214.406,-187.454,-181.633,-160.386,-149.132,-202.629,-160.261,-203.654,-173.817,-187.64,-157.683,-148.687,-92.1872,-161.218,-70.8537,-180.455,-180.758,-227.364,-152.841,-184.163,-138.119,-178.638,-167.513,-235.224,-225.14,-196.467,-234.196,-171.881,-185.131,-151.409,-145.787,258.692,-88.8767,-140.271,-101.703,-140.5,-88.484,-245.035,-77.4569,-94.7413,-146.396,-136.314,-117.08,-215.074,-105.078,-144.869,-161.288,-295.513,-297.778,-193.066,-238.863,-246.341,-266.892,-275.673,-259.938,-264.263,-320.586,-240.4,-273.869,-234.21,-175.276,-229.119,-100.009,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-153.9,-141.116,-66.7166,-103.2,-130.332,-95.8439,-112.015,-162.337,-85.2311,-104.158,-133.836,-104.588,-176.148,-125.141,-90.5022,-124.296,-29.529,-61.7865,-88.3409,-114.406,-92.1489,-5.52266,-50.7833,-84.6803,-97.1285,-49.1359,-65.4897,-101.801,-92.5068,-116.007,-49.3386,-73.9171,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
- 
-double silicon_gain[128] = {2.72838,2.71065,2.72963,2.71972,2.73757,2.68715,2.73757,2.77656,2.79437,2.75694,2.82431,2.66121,2.87868,2.94297,2.78608,2.74183,2.80399,2.86851,2.83897,2.73757,2.83367,2.86309,2.88007,2.79437,2.82959,2.88007,2.85895,2.77528,2.89454,2.87868,2.93237,2.88338,2.88007,2.85354,2.89919,2.90011,2.88891,2.88007,2.91049,2.93094,2.93237,2.86903,2.90011,2.93237,2.94735,2.95364,2.98062,2.97474,3.19187,3.19866,3.14867,3.19755,3.11697,3.13651,3.17261,3.11802,3.07051,3.16596,3.23089,3.23795,3.24914,3.1609,3.24914,3.23682,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.0147,2.89919,3.03056,2.98564,3.00207,3.03668,3.0132,2.98513,2.93094,2.98513,3.0244,3.01932,3.01932,3.02538,3.0657,2.95221,2.87868,2.86903,2.94155,2.91049,2.99612,2.92094,2.83367,2.94155,2.96391,2.87321,2.86903,3.0132,2.8903,2.82298,2.93144,2.74682,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-//{2.7211,2.71494,2.73297,2.73106,2.73573,2.68548,2.76225,2.80152,2.79172,2.75188,2.80635,2.66006,2.75826,2.96099,2.78068,2.73402,2.79736,2.86712,2.84351,2.74067,2.83164,2.86948,2.87157,2.79478,2.83121,2.88493,2.84582,2.77553,2.88338,2.88706,2.93624,2.89496,2.74762,2.8514,2.89757,2.89894,2.88723,2.87429,2.90762,2.93522,2.94179,2.87595,2.90036,2.93048,2.95111,2.95414,2.97117,2.99479,3.17541,3.19887,3.14558,3.18869,3.12393,3.14539,3.17036,3.12102,3.07041,3.17293,3.2341,3.23097,3.25645,3.16729,3.24288,3.06999,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3.01396,2.90243,3.03025,2.99131,2.99434,3.03356,3.01627,2.97887,2.93761,2.98534,3.02228,3.01619,3.02228,3.0249,3.06732,2.95583,2.87665,2.86676,2.94053,2.91049,2.99978,2.91588,2.82934,2.94514,2.96318,2.88167,2.87429,3.01928,2.89797,2.81918,2.94514,2.75654,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+int NumberOfMMM;
+
+int **MMMADCChannelLimits;
+int **MMMTDCChannelLimits;
+
+int NumberOfW1;
+
+int **W1ADCChannelLimits;
+int **W1TDCChannelLimits;
+
+int *HagarADCChannelLimits;
+int *HagarTDCChannelLimits;
+
+double HagarGain[7] = {1,1,1,1,1,1,1};
+double HagarOffset[7] = {0,0,0,0,0,0,0};
+
+int *PulseLimits;//[2] = {-1e6, 1e6};
+
+double *ADCOffsets;
+double *ADCGains;
+
+int *ChannelCounter;
+int *GoodChannelCounter;
+
+bool VDC1_new, VDC2_new;
+
+int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
+double *XThetaCorr;//pointer array to store the terms from above
+int NXY1Corr;
+double *XY1Corr;
+
+int NXRigidityPars;
+double *XRigidityPars;
+
+bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
+double *masses;
+double T1;
+double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
+
+void ParameterInit()
+{
+  printf("\n ParameterInit\n");
+  masses = new double[4];
+  ReadConfiguration();
+  PulseLimitsInit();
+  ADCInit();
+  QDCInit();
+  PrintParameters();
+  printf("Finished initialising parameters - to the sorting!\n");
+}
+
+void MMMNumberInit()//This is called after the number of MMM detectors is found from the config file
+{
+  printf("\n MMMNumberInit\n");
+  
+  MMMADCChannelLimits = new int*[NumberOfMMM];
+  
+  for(int i=0;i<NumberOfMMM;i++)
+  {
+    MMMADCChannelLimits[i] = new int[4];
+  }
+  
+  for(int i=0;i<NumberOfMMM;i++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      MMMADCChannelLimits[i][j] = -1;
+    }
+  }
+  
+  MMMTDCChannelLimits = new int*[NumberOfMMM];
+  for(int i=0;i<NumberOfMMM;i++)
+  {
+    MMMTDCChannelLimits[i] = new int[4];
+  }
+  
+  for(int i=0;i<NumberOfMMM;i++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      MMMTDCChannelLimits[i][j] = -1;
+    }
+  }
+}
+
+void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  if(det<=NumberOfMMM)
+  {
+    if(side.compare(0,5,"pside")==0)
+    {
+      MMMADCChannelLimits[det-1][0] = start;
+      MMMADCChannelLimits[det-1][1] = stop;
+    }
+    else if(side.compare(0,5,"nside")==0)
+    {
+      MMMADCChannelLimits[det-1][2] = start;
+      MMMADCChannelLimits[det-1][3] = stop;
+    }
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of MMM detectors - skipped enabling this detector\n");
+  }
+}
+
+void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  if(det<=NumberOfMMM)
+    {
+      if(side.compare(0,5,"pside")==0)
+	{
+	  MMMTDCChannelLimits[det-1][0] = start;
+	  MMMTDCChannelLimits[det-1][1] = stop;
+	}
+      else if(side.compare(0,5,"nside")==0)
+	{
+	  MMMTDCChannelLimits[det-1][2] = start;
+	  MMMTDCChannelLimits[det-1][3] = stop;
+	}
+    }
+  else
+    {
+      printf("ADC: Detector number is higher than the number of MMM detectors - skipped enabling this detector\n");
+    }
+}
+
+void W1NumberInit()
+{
+  printf("\nW1ParameterInit\n");
+  
+  W1ADCChannelLimits = new int*[NumberOfW1];
+  
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    W1ADCChannelLimits[i] = new int[4];
+  }
+  
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      W1ADCChannelLimits[i][j] = -1;
+    }
+  }
+  
+  W1TDCChannelLimits = new int*[NumberOfW1];
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    W1TDCChannelLimits[i] = new int[4];
+  }
+  
+  for(int i=0;i<NumberOfW1;i++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      W1TDCChannelLimits[i][j] = -1;
+    }
+  }
+  printf("\nW1ParameterInit - end\n");
+}
+
+void W1ADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  if(det<=NumberOfW1)
+  {
+    if(side.compare(0,5,"pside")==0)
+    {
+      W1ADCChannelLimits[det-1][0] = start;
+      W1ADCChannelLimits[det-1][1] = stop;
+    }
+    else if(side.compare(0,5,"nside")==0)
+    {
+      W1ADCChannelLimits[det-1][2] = start;
+      W1ADCChannelLimits[det-1][3] = stop;
+    }
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+  }
+}
+
+void W1TDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
+{
+  if(det<=NumberOfW1)
+    {
+      if(side.compare(0,5,"pside")==0)
+	{
+	  W1TDCChannelLimits[det-1][0] = start;
+	  W1TDCChannelLimits[det-1][1] = stop;
+	}
+      else if(side.compare(0,5,"nside")==0)
+	{
+	  W1TDCChannelLimits[det-1][2] = start;
+	  W1TDCChannelLimits[det-1][3] = stop;
+	}
+    }
+  else
+    {
+      printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+    }
+}
+
+void HagarInit()
+{
+  HagarADCChannelLimits = new int[2];
+  HagarTDCChannelLimits = new int[2];
+}
+
+void HagarADCChannelsInit(int start, int stop)
+{
+  HagarADCChannelLimits[0] = start;
+  HagarADCChannelLimits[1] = stop;
+}
+
+void HagarTDCChannelsInit(int start, int stop)
+{
+  HagarTDCChannelLimits[0] = start;
+  HagarTDCChannelLimits[1] = stop;
+}
+
+void PulseLimitsInit()
+{
+  printf("\nPulseLimitsInit\n");
+  
+  PulseLimits = new int[2];
+  PulseLimits[0] = -100000;
+  PulseLimits[1] = 100000;
+}
+
+void CalibrationParametersInit()
+{
+  printf("\n CalibrationParametersInit\n"); 
+  
+  ADCOffsets = new double[32*ADCModules];
+  ADCGains = new double[32*ADCModules];
+  
+  for(int i=0;i<32*ADCModules;i++)
+  {
+    ADCOffsets[i] = 0;//printf("ADCOffsets[%d]: %f\n",i,ADCOffsets[i]);
+    ADCGains[i] = 1;//printf("ADCGains[%d]: %f\n",i,ADCGains[i]);
+  }
+}
+
+void ReadCalibrationParameters(std::string CalibFile)
+{
+  printf("ReadCalibrationParameters using file %s\n",CalibFile.c_str());
+  
+  bool CalibRead = true;
+  
+  std::ifstream CalibInput;
+  if(CalibFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
+    for(int i=0;i<32*ADCModules;i++)printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+  }
+  else
+  {
+    CalibInput.open(CalibFile.c_str());
+    
+    if(CalibInput.is_open())
+    {
+      while(CalibRead)
+      {
+	std::string LineBuffer;
+	int channel = -1;
+	double offset = 0, gain = 1;
+	CalibInput >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  CalibRead = false;
+	}
+	else
+	{
+	  channel = atoi(LineBuffer.c_str());
+	  CalibInput >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+	  CalibInput >> LineBuffer;
+	  gain = atof(LineBuffer.c_str());
+	  printf("Channel: %d\tOffset: %f\tGain: %f\n",channel,offset,gain);
+	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
+	}
+      }
+    }
+  }
+  CalibInput.close();
+  printf("Finished Calibration Parameters\n");
+}
+
+void SetADCChannelCalibration(int channel, double offset, double gain)
+{
+  if(channel<ADCsize)
+  {
+    ADCOffsets[channel] = offset;
+    ADCGains[channel]   = gain;
+  }
+}
+
+void ADCInit()
+{
+  printf("ADCInit\n");
+  ADC = new float[32*ADCModules];	     
+  ADCClear();
+}
+
+void ADCClear()
+{
+  for(int i=0;i<ADCsize;i++)
+  {
+    ADC[i] = 0;
+  }
+}
+
+void QDCInit()
+{
+  printf("QDCInit\n");
+  QDC = new float[QDCsize];
+  QDCClear();
+}
+
+void QDCClear()
+{
+  for(int i=0;i<QDCsize;i++)
+  {
+    QDC[i] = 0;
+  }
+}
+
+void ReadConfiguration()
+{
+  bool ConfigRead = true;
+  bool MMMADCChannelRead = false;
+  bool MMMTDCChannelRead = false;
+  bool W1ADCChannelRead = false;
+  bool W1TDCChannelRead = false;
+  bool HagarUsed = false;
+  bool HagarADCChannelRead = false;
+  bool HagarTDCChannelRead = false;
+  bool ThSCATCorrectionParametersRead = false;
+  bool XRigidityParametersRead = false;
+  bool Y1CorrectionParametersRead = false;
+
+  std::ifstream input;
+  input.open("config.cfg");//This is the line to change in order to change the configuration file
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
+  //input.open("/home/padsley/data/PR244/configPR244Coincidences.cfg");
+
+  if(input.is_open())
+    {
+      while(ConfigRead)
+	{
+	  std::string LineBuffer;
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
+	    {
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
+	      else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfMMM = atoi(LineBuffer.c_str());
+		  MMMNumberInit();
+		}
+	      else if(LineBuffer.compare(0,10,"NumberOfW1") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfW1 = atoi(LineBuffer.c_str());
+		  W1NumberInit();
+		}
+	      else if(LineBuffer.compare(0,10,"ADCModules") == 0)
+		{
+		  input >> LineBuffer;
+		  ADCModules = atoi(LineBuffer.c_str());
+		  ADCsize = 32*ADCModules;
+		  CalibrationParametersInit();
+		}
+	      else if(LineBuffer.compare(0,10,"TDCModules") == 0)
+		{
+		  input >> LineBuffer;
+		  TDCModules = atoi(LineBuffer.c_str());
+		  TDCsize = 128*TDCModules;
+		  ChannelCounter = new int[128*TDCModules];
+		  GoodChannelCounter = new int[128*TDCModules];
+		}
+	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
+		{
+		  if(MMMADCChannelRead==false)MMMADCChannelRead = true;
+		  else if(MMMADCChannelRead==true)MMMADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
+		{
+		  if(MMMTDCChannelRead==false)MMMTDCChannelRead = true;
+		  else if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,13,"W1ADCChannels") == 0)
+		{
+		  if(W1ADCChannelRead==false)W1ADCChannelRead = true;
+		  else if(W1ADCChannelRead==true)W1ADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,13,"W1TDCChannels") == 0)
+		{
+		  if(W1TDCChannelRead==false)W1TDCChannelRead = true;
+		  else if(W1TDCChannelRead==true)W1TDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,9,"HagarUsed") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"yes") == 0)
+		    {
+		      HagarInit();
+		      HagarUsed = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"no") == 0)
+		    {
+		      HagarUsed = false;
+		    }
+		  else
+		    {
+		      printf("Hagar usage option not recognised\n");
+		    }
+		}
+	      else if(LineBuffer.compare(0,16,"HagarADCChannels") == 0)
+		{
+		  if(HagarADCChannelRead==false)HagarADCChannelRead = true;
+		  else if(HagarADCChannelRead==true)HagarADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,16,"HagarTDCChannels") == 0)
+		{
+		  if(HagarTDCChannelRead==false)HagarTDCChannelRead = true;
+		  else if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,4,"VDC1") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"new") == 0)
+		    {
+		      printf("VDC1 is a new-type wire chamber\n");
+		      VDC1_new = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"old") == 0)
+		    {
+		      printf("VDC1 is an old-type wire chamber\n");
+		      VDC1_new = false;
+		    }
+		}
+	      else if(LineBuffer.compare(0,4,"VDC2") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"new") == 0)
+		    {
+		      printf("VDC2 is a new-type wire chamber\n");
+		      VDC2_new = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"old") == 0)
+		    {
+		      printf("VDC2 is an old-type wire chamber\n");
+		      VDC2_new = false;
+		    }
+		}
+	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using calibration file: %s\n",LineBuffer.c_str());
+		  ReadCalibrationParameters(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,21,"ThSCATCorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for the ThSCAT position correction\n",atoi(LineBuffer.c_str()));
+		  NXThetaCorr = atoi(LineBuffer.c_str());
+		  XThetaCorr = new double[NXThetaCorr];
+		  for(int c=0;c<NXThetaCorr;c++)XThetaCorr[c] = 0;
+		  ThSCATCorrectionParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
+		  else if(LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
+		  else TestInelastic = true;
+		  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
+		}
+	      else if(LineBuffer.compare(0,5,"mass1") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass1: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[0] = atof(LineBuffer.c_str());//Be careful... the index number is different to the particle number...
+		}
+	      else if(LineBuffer.compare(0,5,"mass2") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass2: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[1] = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,5,"mass3") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass3: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[2] = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,5,"mass4") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("mass4: %f MeV/c**2\n",atof(LineBuffer.c_str()));
+		  masses[3] = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
+		  T1 = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,15,"ScatteringAngle") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Scattering Angle: %f degrees\n",atof(LineBuffer.c_str()));
+		  theta3 = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,19,"RigidityCalibration") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d parameters for the correction X position -> Rigidity calibration\n",atoi(LineBuffer.c_str()));
+		  NXRigidityPars = atoi(LineBuffer.c_str());
+		  XRigidityPars = new double[NXRigidityPars];
+		  for(int c=0;c<NXRigidityPars;c++)XRigidityPars[c] = 0;
+		  XRigidityParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for the Y1 position correction\n",atoi(LineBuffer.c_str()));
+		  NXY1Corr = atoi(LineBuffer.c_str());
+		  XY1Corr = new double[NXY1Corr];
+		  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
+		  Y1CorrectionParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
+		{
+		  printf("ConfigEnd\n");
+		  ConfigRead = false;
+		}
+	      else
+		{
+		  printf("Line not recognised by ReadConfiguration\n");
+		  printf("%s\n",LineBuffer.c_str());
+		}
+	    }
+      
+	  if(ThSCATCorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead)ThSCATCorrectionParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XThetaCorr[npar] = valpar;
+		}
+	    }
+		
+	  if(Y1CorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,20,"EndY1CorrectionTerms") == 0 && Y1CorrectionParametersRead)Y1CorrectionParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XY1Corr[npar] = valpar;
+		}
+	    }
+	
+	  if(XRigidityParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,22,"EndRigidityCalibration") == 0 && XRigidityParametersRead)XRigidityParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());//Line is actually pointless... I should tidy this up
+		  XRigidityPars[npar] = atof(LineBuffer.c_str());
+		  //printf("Check XRigidityPars[%d]: %e\n",npar,XRigidityPars[npar]);
+		}
+	    }
+
+	  if(MMMADCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
+		{
+		  if(MMMADCChannelRead==true)MMMADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  MMMADCChannelsInit(num, side, start, stop);
+		}
+	    }
+      
+	  if(MMMTDCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,14,"MMMTDCChannels") == 0)
+		{
+		  if(MMMTDCChannelRead==true)MMMTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  MMMTDCChannelsInit(num, side, start, stop);
+		}
+	    }
+
+	  if(W1ADCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,13,"W1ADCChannels") == 0)
+		{
+		  if(W1ADCChannelRead==true)W1ADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  W1ADCChannelsInit(num, side, start, stop);
+		}
+	    }
+	
+	  if(W1TDCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,14,"W1TDCChannels") == 0)
+		{
+		  if(W1TDCChannelRead==true)W1TDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Side: %s\t",LineBuffer.c_str());
+		  side = LineBuffer;
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  W1TDCChannelsInit(num, side, start, stop);
+		}
+	    }
+
+	  if(HagarADCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,16,"HagarADCChannels") == 0)
+		{
+		  if(HagarADCChannelRead==true)HagarADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("HagarADCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  HagarADCChannelsInit(start, stop);
+		}
+	    }
+
+	  if(HagarTDCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,16,"HagarTDCChannels") == 0)
+		{
+		  if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("HagarTDCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  HagarTDCChannelsInit(start, stop);
+		}
+	    }
+	}
+    }
+  else
+    {
+      if(ConfigRead)printf("Configuration file not found - you're going to crash\n");
+    }
+  printf("Finished ReadConfiguration\n");
+}
+
+void PrintParameters()
+{
+  printf("ADCModules: %d\n",ADCModules);
+  printf("ADCsize: %d\n",ADCsize);
+  printf("TDCModules: %d\n",TDCModules);
+  printf("TDCsize: %d\n",TDCsize);
+}
+

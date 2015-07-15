@@ -21,6 +21,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
+#include <vector>
 
 /* midas includes */
 #include "midas.h"
@@ -35,33 +36,38 @@
 #include <TH2F.h>     
 #include <TTree.h>
 #include <TFile.h>
-#include <TRandom3.h>   
+#include <TRandom3.h>
+#include <TMath.h>
 
 /* home-made includes */
+#include "Parameters.h"
 #include "SiliconData.h"
 #include "MMM.h"
 #include "W1.h"
-#include "CloverData.h"
-#include "PR194CloverSort.h"
-#include "RawData.h"
 #include "GammaData.h"
 #include "HagarSort.h"
+#include "RawData.h"
 
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
 //#define _MOVIE
-//#define _JJAUTOTRIM  // uncomment for use with JJ_autotrim.C
+//#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _SILICONDATA   //Uncomment for any silicon analysis, which should be coupled to MMM or W1
-#define _MMM	       //Uncomment for MMM analysis	
-//#define _W1	       //Uncomment for W1 analysis 	
-//#define _CLOVERDATA  //Uncomment for clover analysis 
-//#define _RAWDATA     //Uncomment if you want raw data	
-#define _GAMMADATA     //Uncomment for any GAMMA analysis, such as HAGAR or CLOVER
-#define _HAGAR	       //Uncomment for HAGAR analysis
+#define _ADC
+#define _RAWDATA
+#define _SILICONDATA 
+#define _MMM
+//#define _W1
+//#define _GAMMADATA
+//#define _HAGAR
+
+/*-------------------- defined somewhere else ----------------------*/
+extern float *ADC;
+extern int ADCModules;
+extern float *QDC;
 
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -145,14 +151,14 @@ VDC X2;
 VDC U1;
 VDC U2;
 
-// general TDC variables for TTree, all with prefix "t_"
+// TTree variables, all with prefix "t_"
+// general TDC variables for TTree
 Double_t t_pad1,t_pad2;        
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
 Int_t    t_k600;
 Int_t    t_runtime=0;
-Double_t    t_trigdivci;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
 Double_t    x1offset=0.0;
@@ -163,10 +169,14 @@ Double_t t_X1pos=-100.0,t_X2pos=-100.0, t_U1pos=-100.0, t_U2pos=-100.0;
 Double_t t_X1th=-100.0, t_X2th=-100.0,  t_U1th=-100.0,  t_U2th=-100.0;
 Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
-Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
+//Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posC=-100.0;
-Double_t t_Ex=-100.0;
+double t_Ex = -0.;
 Int_t t_X1chisqminimization=0,t_X2chisqminimization=0, t_U1chisqminimization=0, t_U2chisqminimization=0;
+double t_T3 = -0.;
+double t_rigidity3 = -0.;
+double t_theta = -90;
+double t_phi = -180;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -203,6 +213,25 @@ Int_t t_U2wireUsed[MAX_WIRES_PER_EVENT];
 Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
 #endif
 
+#ifdef _ADC
+Double_t t_NaI[7];
+Double_t t_NaIE[7];
+Double_t t_NaIEtot;
+//Double_t t_Plastic[8];
+Double_t t_SiPside1[16];
+Double_t t_SiPside2[16];
+Double_t t_SiPside3[16];
+Double_t t_SiPside4[16];
+Double_t t_SiNside1[16];
+Double_t t_SiNside2[16];
+Double_t t_SiNside3[16];
+Double_t t_SiNside4[16];
+Double_t t_NaITDC[7];
+Double_t t_SiPside1TDC[16];
+Double_t t_SiPside2TDC[16];
+Double_t t_SiPside3TDC[16];
+Double_t t_SiPside4TDC[16];
+#endif
 
 #ifdef _SILICONDATA
 SiliconData *si;
@@ -216,9 +245,8 @@ CloverData *clov;
 RawData *raw;
 #endif
 
-//Double_t t_hagaradc[7];
 #ifdef _GAMMADATA
-GammaData *gam;
+GammaData *gammy;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -246,18 +274,17 @@ Double_t U1wirefit[10], U1distfit[10];
 Double_t X2wirefit[10], X2distfit[10];      
 Double_t U2wirefit[10], U2distfit[10];  
 
+
 /*--------Histogramming Data Structures ---------------------------------------------*/
 TFile *f1=new TFile("output.root","RECREATE");
 TTree *t1=new TTree("DATA","K600 data");
-//TTree *t2=new TTree("DATA2","Small dataset");
 
 static TH1F *hX1_lut, *hX2_lut, *hU1_lut, *hU2_lut;
 static TH1F *hCableOff, *hCableOfftmp;
 
 static TH1F *hEventID, *hEventID2;
 
-static TH2F *hPad1VsTofG, *hPad1Pad2G;
-static TH2F *hPad1VsTof;
+static TH2F *hPad1VsTofG, *hPad1Pad2, *hPad1Pad2G;
 
 static TH1F *hTDCRawSpectra[NR_OF_TDCS];
 static TH2F *hTDC2DModule[NR_OF_TDCS];
@@ -282,7 +309,6 @@ static TH1F *hU1_DriftTimeOffset;
 static TH1F *hU2_DriftTimeOffset;
 
 static TH1F *hX1_DriftTime140;
-static TH1F *hX1_DriftTimeOffsetNoHot;
 
 static TH1F *hX1_DriftTimeRef;
 static TH1F *hX2_DriftTimeRef;
@@ -310,7 +336,7 @@ static TH1F *h_Y1, *h_Y2;
 
 
 #ifdef _JJAUTOTRIM
-static TH1F *hTDC_REF[TDC_CHANNELS];   
+static TH1F *hTDC_REF[TDC_CHANNELS];   // uncomment if you use JJ_autotrim.C
 #endif
 
 
@@ -516,6 +542,7 @@ void setupchannel2wireXoldXold()
 // chan 500-707 = X wires VDC2
 //
 {
+   printf("setupchannel2wireXoldXold()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -571,7 +598,7 @@ void setupchannel2wireXoldXold()
 		  Channel2Wire[431]=507;			
 		  for(int i=424;i<432;i++){
 		    tdcchan=i;
-                    printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
+//                     printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
                     //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, Channel2Wire[tdcchan]);
                   }
 		}
@@ -579,7 +606,7 @@ void setupchannel2wireXoldXold()
 		  for(int i=channelstart;i<channelstart+16;i++){
 		    tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
 		    Channel2Wire[tdcchan]=i;
-                    printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
+//                     printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
 		  }
 		}
 	   }
@@ -593,6 +620,7 @@ void setupchannel2wireXoldXU()
 // Mapping of wires to channels when using 1 old VDC and 1 new VDC (placed with first wireplane being the X-wires)
 // See camac-vme-cabling.xls
 {
+  printf("setupchannel2wireXoldXU()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -699,6 +727,7 @@ void setupchannel2wireXUXU()
 // This is due to design mistakes on the PCB's
 //
 {
+   printf("setupchannel2wireXUXU()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -808,6 +837,7 @@ void setupchannel2wire()
 // chan 800-943 = U wires VDC2
 
 {
+   printf("setupchannel2wire() - UXUX\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -960,14 +990,14 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posC=-100.;
-   t_Ex=-100.0;
+   t_Ex=-1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
    t_X1flag=-100;   t_X2flag=-100;   t_U1flag=-100;   t_U2flag=-100;
-   t_X1effID=-100.; t_X2effID=-100.; t_U1effID=-100.; t_U2effID=-100.;   
+   //t_X1effID=-100.; t_X2effID=-100.; t_U1effID=-100.; t_U2effID=-100.;   
    t_X1res0=-100.0; t_X2res0=-100.0; t_U1res0=-100.0; t_U2res0=-100.0;
    t_X1res1=-100.0; t_X2res1=-100.0; t_U1res1=-100.0; t_U2res1=-100.0;   
    t_X1chisqminimization=0;t_X2chisqminimization=0; t_U1chisqminimization=0; t_U2chisqminimization=0;
-   #ifdef _VDCRESCALCS
+  #ifdef _VDCRESCALCS
    t_X1res2=-100.0; t_X2res2=-100.0; t_U1res2=-100.0; t_U2res2=-100.0;
    t_X1res3=-100.0; t_X2res3=-100.0; t_U1res3=-100.0; t_U2res3=-100.0;
    t_X1res4=-100.0; t_X2res4=-100.0; t_U1res4=-100.0; t_U2res4=-100.0;
@@ -998,24 +1028,29 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
 
    t_pulser=0;
 
+   #ifdef _ADC
+   for(int i = 0; i < 7 ; i++) { 
+      t_NaI[i]=0.; t_NaIE[i]=0.; //t_Plastic[i]=0.;
+   }
+   for(int i = 0; i < 16 ; i++) { 
+      t_SiPside1[i]=-1.; t_SiPside2[i]=-1.; t_SiPside3[i]=-1.; t_SiPside4[i]=-1.;
+   }
+   for(int i = 0; i < 16 ; i++) { 
+      t_SiNside1[i]=-1.; t_SiNside2[i]=-1.; t_SiNside3[i]=-1.; t_SiNside4[i]=-1.; 
+   }
+   t_NaIEtot=0.;
+   #endif
 
    #ifdef _MOVIE 
    for(int i =0; i < MAX_WIRES_PER_EVENT; i++) {	
 	   t_X1dt[i]=-1.0; t_U1dt[i]=-1.0; t_X2dt[i]=-1.0; t_U2dt[i]=-1.0; //without this the X1dt will have junk in above and beyond the good data
-	   t_X1wire[i]=-1; t_U1wire[i]=-1;  t_X2wire[i]=-1;  t_U2wire[i]=-1; 
-	   t_X1dtnohot[i]=-1.0; t_X1wirenohot[i]=-1;
+	   t_X1wire[i]=-1; t_U1wire[i]=-1;  t_X2wire[i]=-1;  t_U2wire[i]=-1;  
    }
    #endif
 
    #ifdef _POLARIZATION
    t_polu=0; t_pold=0;
    #endif
-
-/*
-   for(int i =0; i < 7; i++) {	   
-	t_hagaradc[i]=-1;
-   }
-*/
 
 }
 
@@ -1124,7 +1159,6 @@ void getRidOfHotWire(Int_t *_hits,Int_t *_hits2, Int_t wire[], Int_t time[])
 }
 
 
-
 //------------------------------------------------------------------------------
 void fixDoubleHit(Double_t dd[],Int_t wire[], Int_t badwire, Int_t *_wire_num, Int_t *_wireID_min, Int_t *_wireID_last){
 // USED IN RAYTRACE
@@ -1230,6 +1264,10 @@ void fixDoubleHit(Double_t dd[],Int_t wire[], Int_t badwire, Int_t *_wire_num, I
 
 
 }
+
+
+
+
 
 
 //------------------------------------------------------------------------------
@@ -1534,6 +1572,8 @@ void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireI
    
 }
 
+
+
 //--------------------------------------------------------------------------------------
 void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_chisq,Int_t wire_num,Double_t res[],Int_t *_flag, Int_t chamber, Double_t wused[] , Double_t dused[], Int_t *_wire_used, Int_t *_badwirecount, Int_t *_multmin, Int_t *_chisqminimization){
 
@@ -1774,6 +1814,9 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 }
 
 
+
+
+
 //--------------------------------------------------------------------------------------
 void CalcThetaFP(Double_t X1, Double_t X2, Double_t *Theta)
 {
@@ -1819,53 +1862,130 @@ void CalcPhiScat(Double_t Yfp, Double_t X1, Double_t ThSC, Double_t *Phiscat)
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 //lineshape correction
 {
-   //Double_t C1,C2,C3,C4;
-   //C1=gates.a0xcorr + gates.a1xcorr*X1 + gates.a2xcorr*X1*X1 ;    
-   //C2=gates.b0xcorr + gates.b1xcorr*X1 + gates.b2xcorr*X1*X1 ;   
-   //C3=gates.c0xcorr + gates.c1xcorr*X1 + gates.c2xcorr*X1*X1 ;   
-   //C4=gates.d0xcorr + gates.d1xcorr*X1 + gates.d2xcorr*X1*X1 ;   
-   //*X1corr=X1-C1*ThetaSCAT-C2*ThetaSCAT*ThetaSCAT-C3*ThetaSCAT*ThetaSCAT*ThetaSCAT-C4*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT;
-   *Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y + gates.b2xcorr*Y*Y) ;
-}
 
+  double result = 0;
+  extern int NXThetaCorr;
+  extern double *XThetaCorr;
+  extern int NXY1Corr;
+  extern double *XY1Corr;
+
+  *Xcorr = 0;
+  for(int i=0;i<NXThetaCorr;i++)
+  {
+    if(i==0)result = X;
+    if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);  //Correct the position X based on the ThetaSCAT value
+      //printf("Xcorr: %f\n",*Xcorr);
+  }
+
+  for(int i=0;i<NXY1Corr;i++)
+    {
+      if(i==0)result = result;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+    }
+
+  *Xcorr = result;
+}
 
 //--------------------------------------------------------------------------------------
-void CalcEx(Double_t X, Double_t *Ex)
-//simple excitation energy calibration
+double CalcQBrho(double Xcorr)
+// Brho in Tm
 {
+  //double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
+  //double rig = 3.78562 + 0.000351737*Xcorr - 1.95361e-10*Xcorr*Xcorr;
+  //std::cout << "rig: " << rig << std::endl;
 
-   //  *Ex= gates.exoff  + gates.exlin*X + gates.exquad*X*X;
- 
-   //----------- This half uses the calibration of X to P, then back to E and Ex
-   Double_t KE0=198.08;
-   Double_t theta=0.;
-   Double_t m0=3727.37924; // 2015 nist mass in MeV for alpha particle
-   Double_t m1=15.99491461956 * 931.494061;      // nist 2015 relative atomic mass  x u
-   Double_t m2=m0;
-   Double_t m3=m1;
-   Double_t E0,E1,E2,E3,P0,P1,P2,Qval,KE2;
-   Double_t a=-0.00000658483    ;//-0.00000651439;
-   Double_t b= 0.114966   ;//0.11524;
-   Double_t c= 1123.36   ;//1123.17;
+  extern int NXRigidityPars;
+  extern double *XRigidityPars;
 
-   P2 = a*X*X + b*X + c;
-   KE2 = sqrt(m2*m2 + P2*P2)-m2;
-  
-   E0 = KE0 + m0;
-   E1 = 0.  + m1;		// particle 1 is stationary in lab frame
-   E2 = KE2 + m2;
-   P0 = sqrt(E0*E0-m0*m0);
-   P1 = sqrt(E1*E1-m1*m1);
-   E3=sqrt( P0*P0 + P2*P2 - 2*P0*P2*cos(theta/57.2957) + m3*m3 );
-   Qval = m0+m1-m2-m3;    
-
-   *Ex = E0 + m1 - E2 - E3;
-
-
+  double rig = 0;
+  for(int i=0;i<NXRigidityPars;i++)
+    {
+      //printf("XRigidityPars[%d]: %e\n",i,XRigidityPars[i]);
+      rig += XRigidityPars[i] * pow(Xcorr,(double)i);
+    }
+  //std::cout << "rig: " << rig << std::endl;
+  return rig;
 }
-//30.7314 - 0.02812*X1posC -0.000003376*X1posC^2
+
+//--------------------------------------------------------------------------------------
+double CalcTfromXcorr(double Xcorr, double mass)
+{
+  double T = 0;
+
+  double rig = CalcQBrho(Xcorr);
+
+  double p = rig * TMath::C()/1e6;
+  //std::cout << "p3: " << p3 << std::endl;
+  T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  //std::cout << "T3: " << T << std::endl;
+  return T;
+}
+
+//--------------------------------------------------------------------------------------
+double CalcTfromRigidity(double rig, double mass)
+{
+  double T = 0;
+
+  double p = rig * TMath::C()/1e6;
+  T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+}
+
+//--------------------------------------------------------------------------------------
+double CalcTfromP(double p, double mass)
+{
+  double T = 0;
+  T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+}
+
+//--------------------------------------------------------------------------------------
+double CalcEx(double Xcorr)
+{
+  double exE = 0;
+  extern double T1;
+  double  T2 = 0, T3 = 0, T4 = 0;//Energies in MeV
+
+  double p1, p2, p3, p4;   //Momenta for each particle
+
+  extern double *masses;  //This is a pointer array containing the information on the particle masses involved in the reaction
+
+  extern double theta3;
+  double theta4 = 0;
+
+  extern bool TestInelastic;
+  if(TestInelastic)
+    {
+      masses[2] = masses[0];
+      masses[3] = masses[1];
+    }
+
+  p1 = sqrt(T1 * (T1 + 2*masses[0]));
+  p2 = 0;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  //std::cout << "p3: " << p3 << std::endl;
+  T3 = CalcTfromXcorr(Xcorr,masses[2]);
+  //std::cout << "T3: " << T3 << std::endl;
+  if(theta3 == 0)
+    {
+      theta4 = 0;
+      
+      p4 = p1 - p3;
+      T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
+      exE = T1 - T3 - T4;
+    }
+  else
+    {
+      theta4 = 180./TMath::Pi()*atan(sin(theta3*TMath::Pi()/180.)/(p1/p3 - cos(theta3*TMath::Pi()/180.)));
+      //std::cout << "theta4: " << theta4 << std::endl;
+      p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
+      T4 = CalcTfromP(p4,masses[3]);
+      //std::cout << "T4: " << T4 << std::endl;
+      exE = T1 - T3 - T4;
+    }
+  //std::cout << "exE: " << exE << std::endl;
+  if(exE<0)exE=0;
+  if(Xcorr>800)exE=0;
+  return exE;
+}
 
 //--------------------------------------------------------------------------------------
 
@@ -1904,6 +2024,44 @@ void CalcPhiFP(Double_t X1, Double_t Y1, Double_t X2, Double_t Y2,  Double_t thF
    y= Y2 - Y1 ;               
    *Phi=57.29578*atan(y*sin(thFP/57.29578)/globals.z_x1x2);
    //printf("y1=%f  y2=%f  z_x1x2=%f ThFP = %f phi=%f \n",Y1,Y2,globals.z_x1x2,thFP,57.29578*atan(y/(globals.z_x1x2/sin(thFP/57.29578))));
+}
+
+//--------------------------------------------------------------------------------------
+double CalcThetaPrime(double X1, double ThFP)
+{
+  //Using the result of the fit:  
+  //TF2 *fit2 = new TF2("fit2","y*([0]+[1]*x+[2]*x*x) + [3] + [4]*x + [5]*x*x",250,660,28,33); where y = ThFP and x = X1
+
+  double *ThetaPrimePars = new double[6];
+  ThetaPrimePars[0] = -0.872219;
+  ThetaPrimePars[1] = -0.000434535;
+  ThetaPrimePars[2] = 4.58708e-07;
+  ThetaPrimePars[3] = 27.5189;
+  ThetaPrimePars[4] = 0.0134774;
+  ThetaPrimePars[5] = -1.77584e-05;
+
+  double result = ThFP*(ThetaPrimePars[0] + ThetaPrimePars[1]*X1 + ThetaPrimePars[2]*X1*X1) +  ThetaPrimePars[3] +  ThetaPrimePars[4]*X1 +  ThetaPrimePars[5]*X1*X1;
+  return result;
+}
+
+//--------------------------------------------------------------------------------------
+double CalcPhiPrime(double X1, double ThFP, double Y1)
+{
+  
+}
+
+//--------------------------------------------------------------------------------------
+double CalcTheta(double X1, double ThFP, double Y1)
+{
+  extern double theta3;//K600 scattering angle
+
+  double ThetaPrime = CalcThetaPrime(X1,ThFP);
+
+  double PhiPrime = CalcPhiPrime(X1, ThFP, Y1);
+  
+  double result = -1;
+
+  result = sqrt(pow(ThetaPrime + theta3,2.) + pow(PhiPrime,2.));
 }
 
 
@@ -1946,11 +2104,7 @@ INT focal_bor(INT run_number)
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 
    switch(runinfo2.run_number){
-   // in case of analysis of 12C data
-   // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
-   // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
-   // in terms of kinematics. So now I use the O calibration but offsets the X1pos to compensate...
-        case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+       case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
         case 1090: x1offset=-0.9-0.109863; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
         case 1091: x1offset=-0.9-0.15863; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
         case 1092: x1offset=-0.9-0.207886; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
@@ -2014,14 +2168,39 @@ INT focal_eor(INT run_number)
 }
 
 
-
 /*-- init routine ---------------------Happens before BOR----------------------------------------*/
 INT focal_init(void)                    
 {
    char name[256];
    char title[256];
 
-   setupchannel2wireXUXU();    
+   ParameterInit();
+
+   extern bool VDC1_new, VDC2_new;
+ 
+   if(VDC1_new)
+     {
+       if(VDC2_new)
+	 {
+ 	   setupchannel2wireXUXU();
+	 }
+       else
+	 {
+	   printf("Probably not implemented");
+	 }
+     }
+   else
+     {
+       if(VDC2_new)
+	 {
+// 	   setupchannel2wireXoldXU();
+	 }
+       else
+	 {
+// 	   setupchannel2wireXoldXold();
+	 }
+     }
+
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
@@ -2056,8 +2235,8 @@ INT focal_init(void)
    hEventID  = H1_BOOK("hEventID","each bin represents a type of event",30,0,30);
    hEventID2  = H1_BOOK("hEventID2","each bin represents a type of event",30,0,30);
 
-   hPad1VsTof  = H2_BOOK("hPad1VsTof","Paddle 1 ave VS TOF", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
    hPad1VsTofG  = H2_BOOK("hPad1VsTofG","Paddle 1 ave VS TOF (gated)", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
+   hPad1Pad2   = H2_BOOK("hPad1Pad2 ","Pad1(y-axis) vs Pad2(x-axis)",  1024, 0, 4096, 1024,0 , 4096);
    hPad1Pad2G  = H2_BOOK("hPad1Pad2G","Pad1(y-axis) vs Pad2(x-axis) (PID gated)",  1024, 0, 4096, 1024,0 , 4096);
 
    hTDCPerEventRaw = H1_BOOK("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
@@ -2066,7 +2245,7 @@ INT focal_init(void)
    for(int counter=0;counter<NR_OF_TDCS;counter++){
 	  sprintf(name,"hTDC2DModule%d",counter);
 	  sprintf(title,"hTDC2DModule %d ",counter);
-          hTDC2DModule[counter]=H2_BOOK(name,title, 4000, -14000, 16000,128,0,128);
+          hTDC2DModule[counter]=H2_BOOK(name,title, 4000, -8000, 14999,128,0,128);
    }
 
    hHitPatternRawTDC   = H1_BOOK("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
@@ -2107,8 +2286,6 @@ INT focal_init(void)
    hX2_DriftTimeOffset = H1_BOOK("hX2_DriftTimeOff","X2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hU1_DriftTimeOffset = H1_BOOK("hU1_DriftTimeOff","U1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hU2_DriftTimeOffset = H1_BOOK("hU2_DriftTimeOff","U2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-
-   hX1_DriftTimeOffsetNoHot = H1_BOOK("hX1_DriftTimeOffNoHot","X1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
    hX1_Hits  = H1_BOOK("hX1_Hits","X1 wires/event (all X1 events)",20,0,20);
    hX2_Hits  = H1_BOOK("hX2_Hits","X2 wires/event (all U1 events)",20,0,20);
@@ -2162,7 +2339,6 @@ INT focal_init(void)
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   t1->Branch("runtime",&t_runtime,"t_runtime/I");
-  t1->Branch("trigdivci",&t_trigdivci,"t_trigdivci/D");
   t1->Branch("evtcounter",&t_evtcounter,"t_evtcounter/I");
   t1->Branch("tdcsperevent",&t_tdcsperevent,"t_tdcsperevent/I");
 
@@ -2195,7 +2371,7 @@ INT focal_init(void)
   t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
   t1->Branch("X1res1",&t_X1res1,"t_X1res1/D");
   t1->Branch("X1hits",&t_X1hits,"t_X1hits/I");
-  t1->Branch("X1effID",&t_X1effID,"t_X1effID/D");
+  //t1->Branch("X1effID",&t_X1effID,"t_X1effID/D");
   t1->Branch("X1effall",&t_X1effall,"t_X1effall/D");
   t1->Branch("X1effdt",&t_X1effdt,"t_X1effdt/D");
   t1->Branch("X1effgroup",&t_X1effgroup,"t_X1effgroup/D");
@@ -2224,7 +2400,7 @@ INT focal_init(void)
   t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
   t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
   t1->Branch("U1res1",&t_U1res1,"t_U1res1/D");
-  t1->Branch("U1effID",&t_U1effID,"t_U1effID/D");
+  //t1->Branch("U1effID",&t_U1effID,"t_U1effID/D");
   t1->Branch("U1hits",&t_U1hits,"t_U1hits/I");
   t1->Branch("U1effall",&t_U1effall,"t_U1effall/D");
   t1->Branch("U1effdt",&t_U1effdt,"t_U1effdt/D");
@@ -2252,7 +2428,7 @@ INT focal_init(void)
   t1->Branch("X2chisq",&t_X2chisq,"t_X2chisq/D");
   t1->Branch("X2res0",&t_X2res0,"t_X2res0/D");
   t1->Branch("X2res1",&t_X2res1,"t_X2res1/D");
-  t1->Branch("X2effID",&t_X2effID,"t_X2effID/D");
+  //t1->Branch("X2effID",&t_X2effID,"t_X2effID/D");
   t1->Branch("X2hits",&t_X2hits,"t_X2hits/I");
   t1->Branch("X2effall",&t_X2effall,"t_X2effall/D");
   t1->Branch("X2effdt",&t_X2effdt,"t_X2effdt/D");
@@ -2280,7 +2456,7 @@ INT focal_init(void)
   t1->Branch("U2chisq",&t_U2chisq,"t_U2chisq/D");
   t1->Branch("U2res0",&t_U2res0,"t_U2res0/D");
   t1->Branch("U2res1",&t_U2res1,"t_U2res1/D");
-  t1->Branch("U2effID",&t_U2effID,"t_U2effID/D");
+  //t1->Branch("U2effID",&t_U2effID,"t_U2effID/D");
   t1->Branch("U2hits",&t_U2hits,"t_U2hits/I");
   t1->Branch("U2effall",&t_U2effall,"t_U2effall/D");
   t1->Branch("U2effdt",&t_U2effdt,"t_U2effdt/D");
@@ -2311,9 +2487,36 @@ INT focal_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
+  t1->Branch("T3",&t_T3,"t_T3/D");
+  t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
+  t1->Branch("theta",&t_theta,"t_theta/D");
+  t1->Branch("phi",&t_phi,"t_phi/D");
 
   #ifdef _FULLANALYSIS
   t1->Branch("PhiSCAT",&t_PhiSCAT,"t_PhiSCAT/D");
+  #endif
+
+  #ifdef _ADC
+//   ADC = new float[32*ADCModules];
+  
+  t1->Branch("NaI",&t_NaI,"t_NaI[7]/D");
+  t1->Branch("NaIE",&t_NaIE,"t_NaIE[7]/D");
+  t1->Branch("NaIEtot",&t_NaIEtot,"t_NaIEtot/D");
+  t1->Branch("SiPside1",&t_SiPside1,"t_SiPside1[16]/D");
+  t1->Branch("SiPside2",&t_SiPside2,"t_SiPside2[16]/D");
+  t1->Branch("SiPside3",&t_SiPside3,"t_SiPside3[16]/D");
+  t1->Branch("SiPside4",&t_SiPside4,"t_SiPside4[16]/D");
+  t1->Branch("SiNside1",&t_SiNside1,"t_SiNside1[16]/D");
+  t1->Branch("SiNside2",&t_SiNside2,"t_SiNside2[16]/D");
+  t1->Branch("SiNside3",&t_SiNside3,"t_SiNside3[16]/D");
+  t1->Branch("SiNside4",&t_SiNside4,"t_SiNside4[16]/D");
+  t1->Branch("NaITDC",&t_NaITDC,"t_NaITDC[7]/D");
+  t1->Branch("SiPside1TDC",&t_SiPside1TDC,"t_SiPside1TDC[16]/D");
+  t1->Branch("SiPside2TDC",&t_SiPside2TDC,"t_SiPside2TDC[16]/D");
+  t1->Branch("SiPside3TDC",&t_SiPside3TDC,"t_SiPside3TDC[16]/D");
+  t1->Branch("SiPside4TDC",&t_SiPside4TDC,"t_SiPside4TDC[16]/D");
+  
+  
   #endif
  
   #ifdef _POLARIZATION
@@ -2334,56 +2537,38 @@ INT focal_init(void)
   t1->Branch("U1wire",t_U1wire,"t_U1wire[t_nU1wires]/I");
   t1->Branch("X2wire",t_X2wire,"t_X2wire[t_nX2wires]/I");
   t1->Branch("U2wire",t_U2wire,"t_U2wire[t_nU2wires]/I");
-  t1->Branch("X1dtnohot",t_X1dtnohot,"t_X1dtnohot[t_nX1wires]/D");
-  t1->Branch("X1wirenohot",t_X1wirenohot,"t_X1wirenohot[t_nX1wires]/I");
   #endif
 
-  //t2->Branch("tof",&t_tof,"t_tof/I");
-  //t2->Branch("pad1",&t_pad1,"t_pad1/D");
-  //t2->Branch("X1pos",&t_X1pos,"t_X1pos/D");
-  //t2->Branch("ThSCAT",&t_ThSCAT,"t_ThSCAT/D");
-  //t2->Branch("Y1",&t_Y1,"t_Y1/D");
-  
+
 #ifdef _SILICONDATA
+//   printf("L2108\n");
+  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
-  MMMLoadCuts(si);
+
+  //  MMMLoadCuts(si);
 #endif
 
 #ifdef _CLOVERDATA
-  gROOT->ProcessLine("#include \"CloverData.h\"");
+  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L CloverData.c+");
   t1->Branch("CloverInfo","CloverData",&clov);
 #endif
   
 #ifdef _RAWDATA
-  gROOT->ProcessLine("#include \"RawData.h\"");
+  gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
-
-
-//  t1->Branch("hagaradc",&t_hagaradc,"t_hagaradc[7]/D");
-#ifdef _GAMMADATA
-  gROOT->ProcessLine("#include \"GammaData.h\"");
-  gROOT->ProcessLine(".L GammaData.c+");           // this line means to compile it into a shared library
-  t1->Branch("GammaInfo","GammaData",&gam);
-#endif
-
-
-  return SUCCESS;
+   return SUCCESS;
 }
-
-
-
-
 
 
 /*-- event routine -----------------------------------------------------------------------------*/
 INT focal_event(EVENT_HEADER * pheader, void *pevent)
 {
-
+//   printf("L2218\n");
    DWORD *ptdc;
    Int_t ntdc = 0;
    Int_t tdc1190datacode, tdc1190error, tdc1190trailerstatus;
@@ -2394,19 +2579,15 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Int_t reftimes[7]; 
    Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
-   
-   Int_t tdcevtcount;
-   Int_t tdcchancounter=0;  // how many TDC channels hit per event
-   Int_t headertrailercounter=0;
+   Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
-   float RingsTDC[80];
+   float PsideTDC[80];
 
-   extern float ADC[128];         			// defined, declared and used in adc.c     
    extern float NaI[8];					// defined, declared and used in adc.c  
-   extern float Sectors[40],Rings[80];			// defined, declared and used in adc.c  
-   extern float Ring1[16],Ring2[16],Ring3[16],Ring4[16],Ring5[16];	// defined, declared and used in adc.c  
-   extern float Sector1[8],Sector2[8],Sector3[8],Sector4[8],Sector5[8]; // defined, declared and used in adc.c  
+   extern float Nside[80],Pside[80];			// defined, declared and used in adc.c  
+   extern float Pside1[16],Pside2[16],Pside3[16],Pside4[16];	// defined, declared and used in adc.c  
+   extern float Nside1[16],Nside2[16],Nside3[16],Nside4[16]; // defined, declared and used in adc.c  
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
    extern float pad1hip,pad1lowp,pad2hip,pad2lowp;    // defined, declared and used in qdc.c
    extern int qdcevtcount;   			      // defined, declared and used in qdc.c
@@ -2418,16 +2599,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    extern int trailer_bufoverflow_counter;            // defined; declared in analyzer.c	
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;
-   extern float trigdivci;			      // defined; declared in scaler.c	
 
-   float ADC_export[128];
-   int *TDC_channel_export;	// Defined here. Storage structure for TDC information 
-   float *TDC_value_export;	// to be exported to be used for ancillary detectors. Filled below.
+   //
+//    float ADC_export[160];
+   int *TDC_channel_export;
+   float *TDC_value_export;				//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
-   //Pointer to SiliconData class initialised.
-   #ifdef _SILICONDATA
-   //    si = new SiliconData();
-   #endif
+   std::vector<int> TDCChannelExportStore;
+   std::vector<float> TDCValueExportStore;
    
    #ifdef _MISALIGNTIME
    if (runtime>misaligntime) {
@@ -2453,7 +2632,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    // parameters in focal plane
    Int_t    X1hits = 0,   X2hits = 0,   U1hits = 0,   U2hits = 0;
-   Int_t    X1hits2 = 0,  X2hits2 = 0,  U1hits2 = 0, U2hits2 = 0;
    Int_t    X1hits_dt=0,  X2hits_dt=0,  U1hits_dt=0,  U2hits_dt=0;
    Double_t X1pos=-100.0, X2pos=-100.0, U1pos=-100.0, U2pos=-100.0;
    Double_t X1th=-100.0,  X2th=-100.0,  U1th=-100.0,  U2th=-100.0;
@@ -2463,11 +2641,12 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Double_t ThFP=-100, PhiFP=-100;  Double_t ThFPx=-100;
    Double_t ThSCAT=-100, PhiSCAT=-100;
    Double_t Y1=-100.0,Y2=-100.0;
-   Double_t Xcorr=-100, Ex=-100.;
+   Double_t Xcorr=-100;
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
    Int_t X1doublewires=0,X2doublewires=0,U1doublewires=0,U2doublewires=0;
    Int_t X1multiplemin=0,X2multiplemin=0,U1multiplemin=0,U2multiplemin=0;
    Int_t X1chisqminimization=0,U1chisqminimization=0,X2chisqminimization=0,U2chisqminimization=0;
+
    //---------------------------------------------------------------------
    // Start analysis
    t_evtcounter=qdc_counter1;
@@ -2480,6 +2659,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    // Before you do anything: Each RAW event goes to ch 'ev_id_all' in the EventID histogram
    hEventID->Fill(ev_id_all);  
+   hPad1Pad2->Fill(pad2,pad1);  // Raw data. 
  
    Int_t PaddlePIDGatesFlag=0;
    if(pad1>gates.lowpad1 && pad1< gates.hipad1 && pad2>gates.lowpad2 && pad2< gates.hipad2){   
@@ -2496,33 +2676,63 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_pad2hiP=pad2hip;
    t_pad2lowP=pad2lowp;	    
    t_runtime=runtime;
-   t_trigdivci=trigdivci;
 
-/*
-   t_hagaradc[0] = ADC[120];    // temporary measure until I get issue of HagarData shared library sorted out
-   t_hagaradc[1] = ADC[121];
-   t_hagaradc[2] = ADC[122];
-   t_hagaradc[3] = ADC[123];
-   t_hagaradc[4] = ADC[124];
-   t_hagaradc[5] = ADC[125];
-   t_hagaradc[6] = ADC[126];
-*/
 
-   //for(int i=0;i<7;i++){
-   //	 printf("ADC info supposedly for HAGAR:  HAGARchan %i   %f \n",i,t_hagaradc[i]);
-   //   }
+   //---------------------------------------------------------------------
+   //Put ADC info into TTree
+   #ifdef _ADC
 
+ 
+   Int_t Pside1Pedestal[16]={350,300,300,300,300,300,300,300,300,320,360,360,360,360,360,360};
+   Int_t Pside2Pedestal[16]={250,280,280,280,280,280,280,280,300,220,300,300,300,300,300,300};
+   Int_t Pside3Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
+   Int_t Pside4Pedestal[16]={300,300,300,300,300,300,300,300,300,220,300,300,300,300,300,300};
+
+   Int_t Nside1Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside2Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside3Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+   Int_t Nside4Pedestal[16]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
+
+   for(int i = 0; i < 16 ; i++) { 
+      if(Pside1[i]>Pside1Pedestal[i]) t_SiPside1[i]=Pside1[i];		
+      if(Pside2[i]>Pside2Pedestal[i]) t_SiPside2[i]=Pside2[i];		
+      if(Pside3[i]>Pside3Pedestal[i]) t_SiPside3[i]=Pside3[i];		
+      if(Pside4[i]>Pside4Pedestal[i]) t_SiPside4[i]=Pside4[i];		
+   }
+   for(int i = 0; i < 16 ; i++) {  //funny ribbon cables to caen invert order of Si chan, but we fixed it in ECL/NIM breakout board
+      if(Nside1[i]>Nside1Pedestal[i]) t_SiNside1[i]=Nside1[i];  
+      if(Nside2[i]>Nside2Pedestal[i]) t_SiNside2[i]=Nside2[i];  
+      if(Nside3[i]>Nside3Pedestal[i]) t_SiNside3[i]=Nside3[i];		 
+      if(Nside4[i]>Nside4Pedestal[i]) t_SiNside4[i]=Nside4[i];		 
+   }
+   for(int i = 0; i < 8 ; i++) { 
+      t_NaI[i]=NaI[i];
+    }
+
+   #endif
 
 
    //----------------------------------------------------------------------
    // look for TDC0 bank 
 
    ntdc = bk_locate(pevent, "TDC0", &ptdc);  // TDC bank in analyzer.c defined as TDC0. ntdc is nr of values in the bank
-   //printf("\n\nNr of words in TDC bank:                    %d words\n",ntdc);
+   //printf("nr of TDC datawords:                    %d words\n",ntdc);
    tdc_counter++;
    hTDCPerEventRaw->Fill(ntdc);    
-   t_tdcsperevent=ntdc;			// this is NOT RIGHT; ntdc contains separate words on modules and channels
-   tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
+   t_tdcsperevent=ntdc;
+   //if (ntdc == 0){                      // events with no TDC data. Ignore the event
+        //hEmptyTDCBankRaw->Fill(2);
+   //	#ifdef _PRINTTOSCREEN
+     //   printf("Event with no TDC datawords. Data ignored:  %i \n",empty_tdc_counter);
+   //	#endif
+     //   hEventID->Fill(ev_id_noTDC);          
+   //	empty_tdc_counter++;
+	//return 1;
+   //}
+   //else
+   //{
+       tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
+       //}
 
    // test for misaligned events in the MIDAS bank. The QDC and TDC event nr must agree. --> there are problems with QDC evtcounter from board?!
    //printf("tdc event nr from trailer:  %i\n",(ptdc[1]>>5)&0xfffff); 
@@ -2563,15 +2773,12 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
  
+   // loop through all the TDC datawords===================================================================================================
    //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event 
    
-   TDC_channel_export = new int[ntdc];   // Declare the size of the array for the TDC data to go to any external sorts
-   TDC_value_export = new float[ntdc];   // ntdc is actually too big, as we only want the tdc time info, not headers etc
+   //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
+   //TDC_value_export = new float[ntdc];
    
-
-
-   // loop through all the TDC datawords===================================================================================================
-
    for(int i = 0; i < ntdc; i++) {
       if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
         tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
@@ -2628,22 +2835,48 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       if(tdcmodule<0 || tdcmodule>7){
 	printf("bad tdc module nr %d\n",tdcmodule);   // error condition
       }
-     
+
+      
+      
       ref_time = reftimes[tdcmodule] - time;     // to get accurate time info that does not suffer from trigger jitter
       
       if(tdcmodule<7){
-	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 	
+	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 
+	
+	
+	
+#ifdef _ADC
+	if(tdcmodule==6){
+	  if(channel>63 && channel<80){
+	    t_SiPside1TDC[channel-64]=ref_time;
+	  }
+	  if(channel>79 && channel<96){
+	    t_SiPside2TDC[channel-80]=ref_time;
+	  }
+	  if(channel>95 && channel<112){
+	    t_SiPside3TDC[channel-96]=ref_time;
+	  }
+	  if(channel>111 && channel<128){
+	    t_SiPside4TDC[channel-112]=ref_time;
+	  }
+	}
+	if(tdcmodule==5){
+	  if(channel>24 && channel<31){
+	    t_NaITDC[channel-25]=ref_time;
+	  }
+	}
+#endif
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
       
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
-      TDC_channel_export[tdcchancounter] = channel;
-      TDC_value_export[tdcchancounter] = offset_time;
-      //printf("    i=%i  tdcchancounter=%i  TDC channel from inside f-plane: %i",i,tdcchancounter,channel);
-      //printf("      TDC value from inside f-plane: %i \n",offset_time);
-      tdcchancounter++;
+      //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
+      //TDC_channel_export[i] = channel;
+      //TDC_value_export[i] = offset_time;
+      TDCChannelExportStore.push_back(channel);
+      TDCValueExportStore.push_back(offset_time);
 
       switch(channel){
 		case 3:  t_k600=1; break;
@@ -2717,9 +2950,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       // Hence the lot of PID gate tests.
 	
       if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){         
+        //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
+	//  addwiregap=1;
+        //  //printf("addwiregap %i \n",addwiregap);
+        //}
+	//if(channelnew >= globals.x1_1st_wire_chan+35) t_X1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_X1effall=1;         
 	#ifdef _FULLANALYSIS
-	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 ){
+	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
 	  hX1_DriftTimeRef->Fill(ref_time);	
 	  hX1_DriftTimeOffset->Fill(offset_time);	
 	}
@@ -2729,16 +2967,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	t_X1dt[X1hits]=offset_time;                                 
 	t_X1wire[X1hits]=wire;
 	#endif
-	X1.wire[X1hits]=wire;		//new RN oct14
-	X1.time[X1hits]=offset_time;	//new RN oct14
 	X1hits++;
-	//if((offset_time >= gates.x1_driftt_low) && (offset_time <= gates.x1_driftt_hi)){    //drifttime gate
-	//  t_X1effdt=1; 
-	//  X1.wire[X1hits_dt]=wire;
-	//  X1.time[X1hits_dt]=offset_time;
-        //  X1hits_dt++;
-	//}
-
+	if((offset_time >= gates.x1_driftt_low) && (offset_time <= gates.x1_driftt_hi)){          //drifttime gate       
+	  t_X1effdt=1; 
+	  X1.wire[X1hits_dt]=wire;
+	  X1.time[X1hits_dt]=offset_time;
+          X1hits_dt++;
+	}
       }
       else if ((channelnew >= globals.u1_1st_wire_chan) && (channelnew < globals.u1_last_wire_chan)) {    //only for U1 wireplane
 	//if (channelnew >= globals.u1_1st_wire_chan+27) t_U1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
@@ -2754,15 +2989,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	t_U1dt[U1hits]=offset_time;                                 
 	t_U1wire[U1hits]=wire;
 	#endif
-	U1.wire[U1hits]=wire;
-	U1.time[U1hits]=offset_time;
 	U1hits++;
-	//if((offset_time >= gates.u1_driftt_low) && (offset_time <= gates.u1_driftt_hi)){            //drifttime gate 
-	//  t_U1effdt=1; 
-	//  U1.wire[U1hits_dt]=wire;
-	//  U1.time[U1hits_dt]=offset_time;
-	//  U1hits_dt++;
-	//}
+	if((offset_time >= gates.u1_driftt_low) && (offset_time <= gates.u1_driftt_hi)){            //drifttime gate 
+	  t_U1effdt=1; 
+	  U1.wire[U1hits_dt]=wire;
+	  U1.time[U1hits_dt]=offset_time;
+	  U1hits_dt++;
+	}
       }
       //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
       else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
@@ -2780,17 +3013,15 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	t_X2dt[X2hits]=offset_time;                                 
 	t_X2wire[X2hits]=wire;
 	#endif
-	X2.wire[X2hits]=wire;
-	X2.time[X2hits]=offset_time;
 	X2hits++;
-	//if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate 
-	//  t_X2effdt=1; 
-	//  X2.wire[X2hits_dt]=wire;
-	//  X2.time[X2hits_dt]=offset_time;
-	//  X2hits_dt++;
-	//}
+	if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate 
+	  t_X2effdt=1; 
+	  X2.wire[X2hits_dt]=wire;
+	  X2.time[X2hits_dt]=offset_time;
+	  X2hits_dt++;
+	}
       }    
-      else if ((channelnew >= globals.u2_1st_wire_chan+16) && (channelnew < globals.u2_last_wire_chan)) {    //only for U2 wireplane 
+      else if ((channelnew >= globals.u2_1st_wire_chan) && (channelnew < globals.u2_last_wire_chan)) {    //only for U2 wireplane 
 	//if(channelnew >= globals.u2_1st_wire_chan+15) t_U2effall=1;  // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_U2effall=1;  
 	#ifdef _FULLANALYSIS
@@ -2804,86 +3035,15 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	t_U2dt[U2hits]=offset_time;                                 
 	t_U2wire[U2hits]=wire;
 	#endif
-	U2.time[U2hits]=offset_time;
-	U2.wire[U2hits]=wire;
 	U2hits++;
-	//if((offset_time >= gates.u2_driftt_low) && (offset_time <= gates.u2_driftt_hi)){            //drifttime gate 
-	//  t_U2effdt=1; 
-	//  U2.wire[U2hits_dt]=wire;
-	//  U2.time[U2hits_dt]=offset_time;
-	//  U2hits_dt++;
-	//}
+	if((offset_time >= gates.u2_driftt_low) && (offset_time <= gates.u2_driftt_hi)){            //drifttime gate 
+	  t_U2effdt=1; 
+	  U2.wire[U2hits_dt]=wire;
+	  U2.time[U2hits_dt]=offset_time;
+	  U2hits_dt++;
+	}
       }
    } // end of loop over all the TDC words=======================================================================================
-
-   hPad1VsTof->Fill(tof,pad1);
-
-   //if (t_evtcounter>1084 && t_evtcounter<1086){ 
-   //     printevent(X1hits_dt, X1.wire, X1.time); printf("\n");
-   //} 
-
-   //--------------------------------------------------------------------------------------------------------
-   // We've gone through all the TDC words associated with this event we obtained data for the 4
-   // structures X1,U1,X2 and U2. Now for position and angle determination...
-   //--------------------------------------------------------------------------------------------------------
-
-   sortTDCs(X1hits, X1.wire, X1.time);     //Bubble sort so that order of wireplane.wire[]
-   sortTDCs(X2hits, X2.wire, X2.time);     //is from lowest wire to highest wire. 
-   sortTDCs(U1hits, U1.wire, U1.time);     //It makes things easier if the arrays are ordered.
-   sortTDCs(U2hits, U2.wire, U2.time);
-
-   getRidOfHotWire(&X1hits,&X1hits2, X1.wire, X1.time);
-   getRidOfHotWire(&U1hits,&U1hits2, U1.wire, U1.time);
-   getRidOfHotWire(&X2hits,&X2hits2, X2.wire, X2.time);
-   getRidOfHotWire(&U2hits,&U2hits2, U2.wire, U2.time);
-
-   for(int i = 0; i < X1hits2 ; i++) { 
-	if((X1.time[i] >= gates.x1_driftt_low) && (X1.time[i] <= gates.x1_driftt_hi)){   
-	  t_X1effdt=1; 
-	  X1.wire[X1hits_dt]=X1.wire[i];
-	  X1.time[X1hits_dt]=X1.time[i];
-	  #ifdef _MOVIE
-	  t_X1dtnohot[X1hits_dt]=X1.wire[i];
-	  t_X1wirenohot[X1hits_dt]=X1.time[i];
-	  #endif
-          X1hits_dt++;
-	}
-    }
-    #ifdef _FULLANALYSIS
-    if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 ){
-        for(int i = 0; i < X1hits2 ; i++) { 
-	  hX1_DriftTimeOffsetNoHot->Fill(X1.time[i]);	
-        }
-    }
-    #endif
-
-    for(int i = 0; i < U1hits2 ; i++) { 
-	if((U1.time[i] >= gates.u1_driftt_low) && (U1.time[i] <= gates.u1_driftt_hi)){   
-	  t_U1effdt=1; 
-	  U1.wire[U1hits_dt]=U1.wire[i];
-	  U1.time[U1hits_dt]=U1.time[i];
-          U1hits_dt++;
-	}
-    }
-    for(int i = 0; i < X2hits2 ; i++) { 
-	if((X2.time[i] >= gates.x2_driftt_low) && (X2.time[i] <= gates.x2_driftt_hi)){   
-	  t_X2effdt=1; 
-	  X2.wire[X2hits_dt]=X2.wire[i];
-	  X2.time[X2hits_dt]=X2.time[i];
-          X2hits_dt++;
-	}
-    }
-    for(int i = 0; i < U2hits2 ; i++) { 
-	if((U2.time[i] >= gates.u2_driftt_low) && (U2.time[i] <= gates.u2_driftt_hi)){   
-	  t_U2effdt=1; 
-	  U2.wire[U2hits_dt]=U2.wire[i];
-	  U2.time[U2hits_dt]=U2.time[i];
-          U2hits_dt++;
-	}
-    }
-
-
-
 
 
    //--------------------------------------------------------------------------------------------------------
@@ -2896,6 +3056,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    
    if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){   
       hPad1Pad2G->Fill(pad2,pad1);
+      hPad1VsTofG->Fill(tof,pad1);
 
       hEventID->Fill(ev_id_pid);           // all trigger bank events that pass through PID gates
       if(X1hits>1 && U1hits>1 && X2hits>1 && U2hits>1){
@@ -2924,8 +3085,6 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       if(X2hits_dt>1) hX2_EffID->Fill(ev_drifttime);  // If I test only !=0 then in EffID this can be bigger than just PID values
       if(U2hits_dt>1) hU2_EffID->Fill(ev_drifttime);
 
-      if(X1hits_dt==0) hPad1VsTofG->Fill(tof,pad1);
-
       //trying to establish which chambers fired in coincidence
       //NOTE this is not for good events, only PID selected and events with some decent drifttimes
       if(X1hits_dt>1 && U1hits_dt>1 && X2hits_dt>1 && U2hits_dt>1) hEventID->Fill(ev_id_4planes); // 4 fired 
@@ -2934,12 +3093,19 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       if(X1hits_dt>1 && U1hits_dt>1 && U2hits_dt>1 ) hEventID->Fill(ev_id_X1U1U2);                // 3 fired X1 U1 U2 
       if(X1hits_dt>1 && U1hits_dt>1 && X2hits_dt>1 ) hEventID->Fill(ev_id_X1U1X2);                // 3 fired X1 U1 X2 
 
-   }    //end loop for PID gates for efficiency calculation
+   }    //end loop for PID gates
+
+   //--------------------------------------------------------------------------------------------------------
+   // We've gone through all the TDC words associated with this event we obtained data for the 4
+   // structures X1,U1,X2 and U2. Now for position and angle determination...
    //--------------------------------------------------------------------------------------------------------
 
+   sortTDCs(X1hits_dt, X1.wire, X1.time);     //Bubble sort so that order of wireplane.wire[]
+   sortTDCs(X2hits_dt, X2.wire, X2.time);     //is from lowest wire to highest wire. 
+   sortTDCs(U1hits_dt, U1.wire, U1.time);     //It makes things easier if the arrays are ordered.
+   sortTDCs(U2hits_dt, U2.wire, U2.time);
 
-
-
+   //printevent(X1hits_dt, X1.wire, X1.time);     
 
    Int_t wrangeX1 = 1 + X1.wire[X1hits_dt-1]-X1.wire[0];  // wire range 
    Int_t wrangeX2 = 1 + X2.wire[X2hits_dt-1]-X2.wire[0];
@@ -2973,67 +3139,60 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    //Gates on number of wires, number of missing wires etc
    if(X1hits_dt>=globals.min_x_wires  &&  X1hits_dt<globals.max_x_wires+1){
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hX1_EffID->Fill(ev_wiresperevent);
-       //if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
-         hEventID->Fill(ev_id_X1_wires);  // events in X1 that pass through wire requirement gates 
-         t_X1effgroup=1; 
-         if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX1_EffID->Fill(ev_wiregap);
-         #ifdef _FULLANALYSIS
-         t_X1TimeDiff=(X1.time[0]-X1.time[1])-(X1.time[4]-X1.time[3]); // See Hall A paper manuscript: NIMA 474 (2001) 108 fig13
-         #endif
+     if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
+       hEventID->Fill(ev_id_X1_wires);  // events in X1 that pass through wire requirement gates 
+       t_X1effgroup=1; 
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX1_EffID->Fill(ev_wiregap);
+       #ifdef _FULLANALYSIS
+       t_X1TimeDiff=(X1.time[0]-X1.time[1])-(X1.time[4]-X1.time[3]); // See Hall A paper manuscript: NIMA 474 (2001) 108 fig13
+       #endif
+       //raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, &X1wires_used, &X1doublewires, &X1multiplemin); 
 
-    //if (t_evtcounter>1049 && t_evtcounter<1053){ 
-    //printf("\n-------------------------------------------------------event nr %i\n",t_evtcounter);
-    //printevent(X1hits_dt, X1.wire, X1.time);
-    //printevent2(X1hits_dt, X1.wire, X1.dist);
+       raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, X1wirefit, X1distfit, &X1wires_used, &X1doublewires, &X1multiplemin, &X1chisqminimization); 
 
-         raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, X1wirefit, X1distfit, &X1wires_used, &X1doublewires, &X1multiplemin, &X1chisqminimization); 
+       //for(int i = 0; i<X1wires_used; i++){
+       //  printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
+       //}
+       if(X1flag==0) t_X1effgood=1;
+       // Remember: X1hits_dt goes into raytrace as a fixed nr. But after raytrace this does not
+       // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
-    //}
+       t_X1pos=X1pos - x1offset;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
+       t_X1th=X1th;           //global scope.
+       t_X1flag=X1flag;
+       t_X1chisq=X1chisq;
+       t_X1res0=resolution[0];
+       t_X1res1=resolution[1];
+       #ifdef _VDCRESCALCS
+       t_X1res2=resolution[2];
+       t_X1res3=resolution[3];
+       t_X1res4=resolution[4];
+       t_X1res5=resolution[5];
+       t_X1res6=resolution[6];
+       t_X1res7=resolution[7];
+       t_X1res8=resolution[8];
+       #endif
+       t_X1hits=X1hits_dt; 
+       #ifdef _FULLANALYSIS
+       t_nX1wiresUsed=X1wires_used; 
+       t_X1doublewires=X1doublewires; 
+       t_X1multiplemin=X1multiplemin; 
+       for(int i = 0; i<X1wires_used; i++){
+         t_X1wireUsed[i]=X1.wire[i];
+         t_X1distUsed[i]=X1.dist[i];
+         //printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
+       }
+       //printf("\n");
+       #endif
 
-         //for(int i = 0; i<X1wires_used; i++){
-         //  printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
-         //}
-         if(X1flag==0) t_X1effgood=1;
-         // Remember: X1hits_dt goes into raytrace as a fixed nr. But after raytrace this does not
-         // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
-
-         t_X1pos=X1pos - x1offset;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
-         t_X1th=X1th;           //global scope.
-         t_X1flag=X1flag;
-         t_X1chisq=X1chisq;
-         t_X1res0=resolution[0];
-         t_X1res1=resolution[1];
-         #ifdef _VDCRESCALCS
-         t_X1res2=resolution[2];
-         t_X1res3=resolution[3];
-         t_X1res4=resolution[4];
-         t_X1res5=resolution[5];
-         t_X1res6=resolution[6];
-         t_X1res7=resolution[7];
-         t_X1res8=resolution[8];
-         #endif
-         t_X1hits=X1hits_dt; 
-         #ifdef _FULLANALYSIS
-         t_nX1wiresUsed=X1wires_used; 
-         t_X1doublewires=X1doublewires; 
-         t_X1multiplemin=X1multiplemin; 
-	 #endif
-         #ifdef _MOVIE
-         for(int i = 0; i<X1wires_used; i++){
-           t_X1wireUsed[i]=X1wirefit[i];
-           t_X1distUsed[i]=X1distfit[i];
-           //printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
-         }
-         #endif
-
-         if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){   //This to allow sensible histos to be filled
-	   if (X1flag!=0){
-	     hX1_EffID->Fill(ev_multiplemin);
-	   }
-	   else if(X1flag==0){	  
-	     hX1_EffID->Fill(ev_good);
-	     hEventID->Fill(ev_id_X1_good);  // good X1 events 
-	     for(int i = 0; i < X1hits_dt ; i++) { 
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){   //This to allow sensible histos to be filled
+	 if (X1flag!=0){
+	   hX1_EffID->Fill(ev_multiplemin);
+	 }
+	 else if(X1flag==0){	  
+	   hX1_EffID->Fill(ev_good);
+	   hEventID->Fill(ev_id_X1_good);  // good X1 events 
+	   for(int i = 0; i < X1hits_dt ; i++) { 
 		//if(X1pos>0 && X1pos<249){
 	     hX1_DriftTimeGood->Fill(X1.time[i]);	
                 //}
@@ -3046,20 +3205,20 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	   hX1_Res2diTL->Fill(resolution[0],resolution[1]);
 	   #endif
 	 }	 
-       //}
+       }
      }
    }  
 
-
-
    if(U1hits_dt>=globals.min_u_wires  &&  U1hits_dt<globals.max_u_wires){   
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hU1_EffID->Fill(ev_wiresperevent);
-       //if(globals.misswires>(wrangeU1-U1hits_dt)){
+     if(globals.misswires>(wrangeU1-U1hits_dt)){
        hEventID->Fill(ev_id_U1_wires);  // events in U1 that pass through the wire requirement gates 
        t_U1effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU1_EffID->Fill(ev_wiregap);
 
        raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1chisq, U1hits_dt, resolution, &U1flag,2, U1wirefit, U1distfit,&U1wires_used, &U1doublewires, &U1multiplemin, &U1chisqminimization); 
+
+       //raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1chisq, U1hits_dt, resolution, &U1flag,2,&U1wires_used, &U1doublewires, &U1multiplemin); 
        if(U1flag==0) t_U1effgood=1;
 
        //U1pos=U1pos/sin(U_WIRE_ANGLE/57.2957);  // since wires at 50degr to horizontal, they are 1/sin(50degr) further 
@@ -3107,18 +3266,19 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	   hU1_Res2diTL->Fill(resolution[0],resolution[1]);
 	   #endif
 	 }	 
-       //}
+       }
      }
    }
 
    if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
-       //if(globals.misswires>(wrangeX2-X2hits_dt)){
+     if(globals.misswires>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
        t_X2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
       
        raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3, X2wirefit, X2distfit,&X2wires_used, &X2doublewires, &X2multiplemin, &X2chisqminimization); 
+       //raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
        if(X2flag==0) t_X2effgood=1;
 
        t_X2pos=X2pos;         //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
@@ -3164,18 +3324,19 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	   hX2_Res2diTL->Fill(resolution[0],resolution[1]);
 	   #endif
 	 }
-       //}  
+       }  
      }
    }
       
    if(U2hits_dt>=globals.min_u_wires  &&  U2hits_dt<globals.max_u_wires){    
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hU2_EffID->Fill(ev_wiresperevent);
-       //if(globals.misswires>(wrangeU2-U2hits_dt)){
+     if(globals.misswires>(wrangeU2-U2hits_dt)){
        hEventID->Fill(ev_id_U2_wires);  // events in U1 that pass through the wire requirement gates 
        t_U2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU2_EffID->Fill(ev_wiregap);
 
        raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4, U2wirefit, U2distfit,&U2wires_used, &U2doublewires, &U2multiplemin, &U2chisqminimization); 
+       //raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4,&U2wires_used, &U2doublewires, &U2multiplemin); 
        if(U2flag==0) t_U2effgood=1;
 
        //U2pos=U2pos/sin(U_WIRE_ANGLE/57.2957);  //since wires at 50deg to horiz,they are 1/sin(50degr) further apart in x
@@ -3222,7 +3383,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	   hU2_Res2diTL->Fill(resolution[0],resolution[1]);
 	   #endif
 	 }
-       //}  
+       }  
      }
    }   
 
@@ -3255,12 +3416,20 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    CalcPhiFP(X1pos,Y1,X2pos,Y2,ThFP,&PhiFP);
    t_PhiFP=PhiFP;
 
-   CalcCorrX(X1pos-x1offset, (Y1), ThSCAT, &Xcorr);
+   //CalcCorrX(X1pos-x1offset, (Y2+10), ThSCAT, &Xcorr);
+   CalcCorrX(X1pos-x1offset, Y1, ThSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
+   t_Ex = CalcEx(Xcorr);
 
-   CalcEx(Xcorr, &Ex);
-   t_Ex=Ex;
+   extern double *masses;
+
+   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
+
+   t_rigidity3 = CalcQBrho(Xcorr);
+
+   t_theta = CalcThetaPrime(Xcorr,ThFPx);
+   t_phi = CalcPhiPrime(Xcorr,ThFPx,Y1);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
@@ -3301,54 +3470,47 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
      hEventID2->Fill(ev_id_X1U1X2);
    }
 
+   TDC_channel_export = new int[TDCChannelExportStore.size()];
+   TDC_value_export = new float[TDCValueExportStore.size()];
+   //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
+
+   //printf("TDCChannelExportStore.size(): %d \t TDCValueExportStore.size(): %d\n",TDCChannelExportStore.size(),TDCValueExportStore.size());
+
+   int TDCHits = 0;
+   if(TDCChannelExportStore.size()==TDCValueExportStore.size())TDCHits = TDCValueExportStore.size();
+   else{TDCHits = 0; printf("TDC Channel/Value mismatch - not going to process external data");}
+
+   for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
+   for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 
 #ifdef _RAWDATA
-   for(int p=0;p<128;p++) ADC_export[p] = ADC[p];
-   if(raw)
-   {
-     raw = RawDataDump(ADC_export,tdcchancounter, TDC_channel_export, TDC_value_export);
-   }
+  if(raw)
+  {
+    raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+  }
 #endif
   
 #ifdef _MMM
-   MMMInit();
-   for(int p=0;p<128;p++) ADC_export[p] = ADC[p];
-   //Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit 
-   //for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
-   if(si)
-   {
-      si = MMMSiliconSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
-   }
+    if(si)
+    {
+      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+    }
 #endif
 
 #ifdef _W1
-   for(int p=0;p<128;p++) ADC_export[p] = ADC[p];
-   //Populate ADC_export from the ADC array. This is itself created in adc.c. Remember to change the maximum limit 
-   //for the loop depending on what you need to loop over. If you have n ADCs, you shoul use 32*n as that limit
-   if(si)
-   {
-      si = W1SiliconSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
-   }
-#endif
-
-#ifdef _CLOVERDATA
-   //   clov = new CloverData();
-   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
-   if(clov)
-   {
-      clov = PR194CloverSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
-   }
+    if(si)
+    {
+      si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+    }
 #endif
 
 #ifdef _HAGAR
-   for(int p=0;p<128;p++)ADC_export[p] = ADC[p];
-   if(gam)
-   {
-      gam = HagarGammaSort(ADC_export, tdcchancounter, TDC_channel_export, TDC_value_export);
-   }
+    if(gammy)
+    {
+      gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+    }
 #endif
-
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
    //--------------------------------------------------------------------------------------------------------
@@ -3358,31 +3520,38 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
         t_nX1wires=X1hits;
         t_nU1wires=U1hits;
         t_nX2wires=X2hits;
-        t_nU2wires=U2hits
+        t_nU2wires=U2hits;
    }
    #endif
-
+   
    t1->Fill();    // fill the tree t1
-   //t2->Fill();    // fill the tree t2 - PA
-//    si->PrintEvent();
+
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
+
 #ifdef _CLOVERDATA
    clov->ClearEvent();//See comment above about SiliconData::ClearEvent()
    delete clov;//See comment above about deleting *si
 #endif
+
 #ifdef _RAWDATA
   delete raw;
 #endif
+
 #ifdef _GAMMADATA
-  gam->ClearEvent();
-  delete gam;
+  delete gammy;
 #endif
   
-   delete TDC_channel_export;
-   delete TDC_value_export;
+#ifdef _ADC
+    ADCClear();
+#endif
+  
+   delete [] TDC_channel_export;
+   delete [] TDC_value_export;
+   TDCChannelExportStore.clear();
+   TDCValueExportStore.clear();
    return SUCCESS;
 }
 

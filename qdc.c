@@ -15,9 +15,7 @@
 /* midas includes */
 #include "midas.h"
 #include "experim.h"
-#include "analyzer.h"
 #include <math.h>
-
 
 /* root includes */
 #include <TH1F.h>
@@ -25,6 +23,13 @@
 #include <TTree.h>
 //#include <TMath.h>
 
+/* home-made includes */
+#include "Parameters.h"
+
+
+// defined in Parameters.c
+extern float *QDC;
+extern int QDCsize;
 
 /*-- variables to be used in f-plane.c as extern variables----------*/
 float pad1=0,pad2=0,pad1hip=0,pad1lowp=0,pad2hip=0,pad2lowp=0;
@@ -70,28 +75,15 @@ const int QDC_X_HIGH = 4095;
 extern EXP_PARAM exp_param;
 extern RUNINFO runinfo;
 
-
 /*-- Histogramming Data Structures ----------------------------------------*/
-//static TH1I *hAdcHists[N_QDC];
-//static TH1I *hPaddle1;
-//static TH1I *hPaddle2;
-static TH2F *hPaddlePID;
+static TH2F *hQDC2D;
 
 
 /*-- init routine --------------------------------------------------*/
 INT qdc_init(void)
 {
 
-   // Paddle and TOF spectra
-   //hAdcHists[0] = H1I_BOOK("hPad1HiP","Pad1HiP (hi-P side), QDC0" , QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hAdcHists[1] = H1I_BOOK("hPad1LowP","Pad1LowP (low-P side), QDC1" , QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hAdcHists[2] = H1I_BOOK("hPad2HiP","Pad2HiP (hi-P side), QDC2", QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hAdcHists[3] = H1I_BOOK("hPad2LowP","Pad2LowP (low-P side), QDC3", QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hAdcHists[4] = H1I_BOOK("hPad3HiP","Pad3HiP (hi-P side), QDC4", QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hAdcHists[5] = H1I_BOOK("hPad3LowP","Pad3LowP (low-P side), QDC5", QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hPaddle1 = H1I_BOOK("hPad1Ave", "Paddle 1 (sqrt(L*R))", QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   //hPaddle2 = H1I_BOOK("hPad2Ave", "Paddle 2 (sqrt(L*R))", QDC_N_BINS, QDC_X_LOW, QDC_X_HIGH);
-   hPaddlePID   = H2_BOOK("hPad1Pad2","Paddle1(y-axis) vs Paddle2(x-axis)",  1024, 0, 4096, 1024,0 , 4096);
+   hQDC2D   = H2_BOOK("hQDC2D","QDC chan vs value", 4096, 0, 4096, 32,0 , 32);
 
    return SUCCESS;
 }
@@ -177,13 +169,13 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
 {
    INT i, nwords;
    DWORD *pqdc;
-   float qdc[32];      // size has to be 32 if you use the 32chan QDC and all channel are in banks
-   //   float pad1,pad2;
+   extern float *QDC;      // size has to be 32 if you use the 32chan QDC and all channel are in banks
    int qdcchan;
    extern int qdc_counter1, qdc_counter2;		      // defined; declared in analyzer.c
 	
+	for(int p=0;p<32;p++)QDC[p] = 0;
+	
    /* look for QDC0 bank, return if not present */
-   /* In PR137 and PR138 it is called QDC0 bank */
    nwords=bk_locate(pevent, "QDC0", &pqdc);
    qdc_counter1++;
    if (nwords==0){
@@ -195,9 +187,12 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
  	  //qdcchan=((pqdc[i])>>17)&0x1f;  // for 16 chan NIM QDC
   	  qdcchan=((pqdc[i])>>16)&0x1f;  // for 32 chan ECL QDC
           //printf("qdc data %d %d from 0x%08x number of words is : %d\n",qdcchan,(pqdc[i]&0x0fff),pqdc[i],nwords); 
-      	  qdc[qdcchan] =(float)(pqdc[i]&0x0fff);
+      	  QDC[qdcchan] =(float)(pqdc[i]&0x0fff);
+
+	  hQDC2D->Fill(QDC[qdcchan],qdcchan);
 	}
 	//v792N_printEntry((v792N_Data*)&(pqdc[i]));
+	
    }
    qdcevtcount=pqdc[24]&0xfffff;  // take event counter in the trailer, the 34th word, to 
 		  		  //f-plane to compare to TDC counter 
@@ -209,28 +204,18 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
 
    //printf("----- end of read of qdc --------\n");
    /* apply software gain calibration; not used now, but keep for future */
-   for (i = 0; i < N_QDC; i++){
-      qdc[i] *= 1.0;
+   for (i = 0; i < QDCsize; i++){
+      QDC[i] *= 1.0;
    }
 
-   /* fill QDC histos */
-   //for (i = 0; i < 6; i++){
-   //  if (qdc[i] > 0.0)                   // if ( qdc[i] > (float) qdc_param.histogram_threshold )
-   //      hAdcHists[i]->Fill(qdc[i], 1);
-   //}  
-   pad1hip=qdc[0];  // pad1HiP
-   pad1lowp=qdc[1];  // pad1lop
-   pad2hip=qdc[2];  // pad2HiP
-   pad2lowp=qdc[3];  // pad2lop
+   pad1hip=QDC[0];  
+   pad1lowp=QDC[1];  
+   pad2hip=QDC[2];  
+   pad2lowp=QDC[3];  
+   pad1=sqrt(QDC[0]*QDC[1]);
+   pad2=sqrt(QDC[2]*QDC[3]);
 
    //printf("ODB test in qdc.c : %d  \n",qdc_param.histogram_threshold);
-
-   pad1=sqrt(qdc[0]*qdc[1]);
-   pad2=sqrt(qdc[2]*qdc[3]);
-
-   //hPaddle1->Fill(pad1);
-   //hPaddle2->Fill(pad2);
-   hPaddlePID->Fill(pad2,pad1);
 
    return SUCCESS;
 }

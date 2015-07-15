@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Sat Oct 18 06:43:04 2014
+  Created on:   Tue Jul 14 15:59:01 2015
 
 \********************************************************************/
 
@@ -130,8 +130,6 @@ typedef struct {
   float     b0;
   float     b1;
   float     b2;
-  float     a0xcorr;
-  float     a1xcorr;
   float     c00;
   float     c01;
   float     c02;
@@ -156,14 +154,6 @@ typedef struct {
   float     d30;
   float     d31;
   float     d32;
-  float     a2xcorr;
-  float     b0xcorr;
-  float     b1xcorr;
-  float     b2xcorr;
-  float     a3xcorr;
-  float     exoff;
-  float     exlin;
-  float     exquad;
 } FOCALPLANE_PARAM;
 
 #define FOCALPLANE_PARAM_STR(_name) char *_name[] = {\
@@ -188,8 +178,6 @@ typedef struct {
 "b0 = FLOAT : 35.0792",\
 "b1 = FLOAT : -0.0119133",\
 "b2 = FLOAT : 0",\
-"a0xcorr = FLOAT : 3.5",\
-"a1xcorr = FLOAT : 0.5",\
 "c00 = FLOAT : -0.149905",\
 "c01 = FLOAT : 0.000190706",\
 "c02 = FLOAT : -1.00038e-07",\
@@ -214,14 +202,6 @@ typedef struct {
 "d30 = FLOAT : -0.0231652",\
 "d31 = FLOAT : -5.69357e-05",\
 "d32 = FLOAT : 1.16068e-07",\
-"a2xcorr = FLOAT : 0",\
-"b0xcorr = FLOAT : 0.08",\
-"b1xcorr = FLOAT : -0.01",\
-"b2xcorr = FLOAT : 0",\
-"a3xcorr = FLOAT : 0",\
-"exoff = FLOAT : 30.7314",\
-"exlin = FLOAT : -0.02812",\
-"exquad = FLOAT : -3.376e-06",\
 "",\
 NULL }
 

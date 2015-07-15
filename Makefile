@@ -18,7 +18,8 @@ missmidas::
 	@echo "...";
 endif
 
-
+ARCH := $(shell uname)
+ifeq ($(ARCH),Linux)
 OS_DIR = linux
 OSFLAGS = -DOS_LINUX -Dextname
 #CFLAGS = -Wall -lrt
@@ -26,6 +27,14 @@ CFLAGS = -Wno-cpp -lrt
 # add to compile in 32-bit mode
 # OSFLAGS += -m32
 LIBS = -lm -lz -lutil -lnsl -lpthread -lrt #-lgsl -lgslcblas #-lvme
+endif
+
+ifeq ($(ARCH),Darwin)
+OS_DIR = darwin
+OSFLAGS = -DOS_LINUX -Dextname
+CFLAGS = -Wno-cpp -lrt
+LIBS = -lm -lz -lutil
+endif
 
 #-----------------------------------------
 # ROOT flags and libs
@@ -53,12 +62,13 @@ VMEDRV_DIR   = $(MIDASSYS)/drivers/vme
 MODULES_DIR= $(MIDASSYS)/drivers/vme
 INC_DIR   = $(MIDASSYS)/include
 LIB_DIR   = $(MIDASSYS)/$(OS_DIR)/lib
+# LIB_DIR = $(MIDASSYS)/lib
 SRC_DIR   = $(MIDASSYS)/src
 
 #-------------------------------------------------------------------
 # List of analyzer modules
 #
-MODULES   = adc.o qdc.o scaler.o SiliconData.o GammaData.o Parameters.o multiTDC.o MMM.o W1.o CloverData.o PR194CloverSort.o RawData.o HagarSort.o f-plane.o
+MODULES   = adc.o qdc.o scaler.o SiliconData.o GammaData.o Parameters.o multiTDC.o MMM.o W1.o RawData.o HagarSort.o f-plane.o
 
 #-------------------------------------------------------------------
 # Hardware driver can be (camacnul, kcs2926, kcs2927, hyt1331)

@@ -11,7 +11,7 @@
 #include <TROOT.h>
 #include "multiTDC.h"
 
-GammaData *HagarGammaSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
 
 double HagarEnerygCalc(int Channel, double ADCValue);
 double HagarThetaCalc(int Channel);

@@ -1,8 +1,7 @@
 #ifndef __multiTDC__
 #define __multiTDC__ 1
 
-/* This header file defines the 'multiTDC' class. This is a class used to store the information about TDC values 
- * for ancillary detectors in K600 experiments, given that the V1190 TDCs can (and do!) run in multihit mode.
+/* This header file defines the 'multiTDC' class. This is a class used to store the information about TDC values for ancillary detectors in K600 experiments, given that the V1190 TDCs can (and do!) run in multihit mode.
  * 
  * * Author: Philip Adsley, July 2014
  * E-mail: padsley@gmail.com
@@ -14,13 +13,13 @@
 #include <vector>
 #include <stdio.h>
 
-extern int PulseLimits[2];
+extern double PulseLimits[2];
 
 class multiTDC
 {
 public :
   multiTDC();
-  multiTDC(int ntdc, int *TDC_channel_import, float *TDC_value_import);
+  void multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_import);
   virtual ~multiTDC();
   
   private :

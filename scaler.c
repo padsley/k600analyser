@@ -31,7 +31,7 @@
 
 /*-- variables to be used in f-plane.c as extern variables----------*/
 int runtime;
-double trigdivci;
+
 
 /*-- Module declaration --------------------------------------------*/
 INT scaler_event(EVENT_HEADER *, void *);
@@ -204,9 +204,8 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
      hClockI->Fill(counter);
    }
 
-   if(psclr[22]!=0.) {
-     trigdivci=psclr[20]/psclr[22];
-   }
+
+
 
    //==============================================================================================================
    counter += 1;

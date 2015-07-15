@@ -11,27 +11,32 @@
 #include <TTree.h>
 #include <vector>
 #include <TROOT.h>
+#include <cmath>
 #include "multiTDC.h"
 
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
 
 bool MMMSuppressChannel(int Channel);
 double MMMEnergyCalc(int Channel, double ADCValue);
-double MMMThetaCalc(int FrontChannel, int BackChannel);
-//(int Channel);
-double MMMPhiCalc(int FrontChannel, int BackChannel);
-//(int Channel);
-double MMMSACalc(int FrontChannel, int BackChannel);
+double MMMThetaCalc(int Channel);
+double MMMPhiCalc(int Channel);
 bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si);
-bool MMMADCTDCChannelTest(int ADCChannel, int TDCChannel);
+bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel);
+bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel);
+
 
 void MMMInit();
 void MMMLoadCuts(SiliconData *si);
 
 int MMMDetHitNumber(int FrontChannel, int BackChannel);
 
-int MMMRingCalc(int FrontChannel);
-int MMMSectorCalc(int BackChannel);
+int MMMStripFront(int FrontChannel);
+int MMMStripBack(int BackChannel);
 
+bool MMMTDCFrontTest(int TDCChannel);
+bool MMMTDCBackTest(int TDCChannel);
+bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel);
+
+int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel);
 
 #endif
