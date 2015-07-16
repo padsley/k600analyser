@@ -49,6 +49,8 @@
 #include "HagarSort.h"
 
 #include "RawData.h"
+
+#include "GATEAUSort.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
 //#define _MOVIE
@@ -67,6 +69,7 @@ extern float *QDC;
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
+#define _GATEAU
 
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
