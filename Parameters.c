@@ -30,6 +30,10 @@ int *HagarTDCChannelLimits;
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
 
+int NumberOfGATEAUPCB;
+
+int ***GATEAUSectorTDCLimits;
+
 int *PulseLimits;//[2] = {-1e6, 1e6};
 
 double *ADCOffsets;
@@ -343,6 +347,26 @@ void QDCClear()
   }
 }
 
+void GATEAUInit()
+{
+  printf("Number of GATEAU PCBs used: %d\n",NumberOfGATEAUPCB);
+  GATEAUSectorTDCLimits = new int**[NumberOfGATEAUPCB];
+  for(int i=0;i<NumberOfGATEAUPCB;i++)
+    {
+      GATEAUSectorTDCLimits[i] = new int*[5];
+      for(int j=0;j<5;j++)
+	{
+	  GATEAUSectorTDCLimits[i][j] = new int[2];
+	}
+    }
+}
+
+void GATEAUSectorInit(int num, int sector, int start, int stop)
+{
+  GATEAUSectorTDCLimits[num-1][sector-1][0] = start;
+  GATEAUSectorTDCLimits[num-1][sector-1][1] = stop;
+}
+
 void ReadConfiguration()
 {
   bool ConfigRead = true;
@@ -356,6 +380,7 @@ void ReadConfiguration()
   bool ThSCATCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
+  bool GATEAUSectorTDCChannelsRead = false;
 
   std::ifstream input;
   //input.open("config.cfg");//This is the line to change in order to change the configuration file
@@ -386,6 +411,12 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  NumberOfW1 = atoi(LineBuffer.c_str());
 		  W1NumberInit();
+		}
+	      else if(LineBuffer.compare(0,17,"NumberOfGATEAUPCB") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfGATEAUPCB = atoi(LineBuffer.c_str());
+		  GATEAUInit();
 		}
 	      else if(LineBuffer.compare(0,10,"ADCModules") == 0)
 		{
@@ -421,6 +452,11 @@ void ReadConfiguration()
 		{
 		  if(W1TDCChannelRead==false)W1TDCChannelRead = true;
 		  else if(W1TDCChannelRead==true)W1TDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,23,"GATEAUSectorTDCChannels") == 0)
+		{
+		  if(GATEAUSectorTDCChannelsRead==false)GATEAUSectorTDCChannelsRead = true;
+		  else if(GATEAUSectorTDCChannelsRead==true)GATEAUSectorTDCChannelsRead = false;
 		}
 	      else if(LineBuffer.compare(0,9,"HagarUsed") == 0)
 		{
@@ -725,6 +761,33 @@ void ReadConfiguration()
 		  stop = atoi(LineBuffer.c_str());
 	  
 		  W1TDCChannelsInit(num, side, start, stop);
+		}
+	    }
+
+	  if(GATEAUSectorTDCChannelsRead)
+	    {
+	      int num = 0, sector = 0, start = -1, stop = -1;
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,23,"GATEAUSectorTDCChannels") == 0)
+		{
+		  if(GATEAUSectorTDCChannelsRead==true)GATEAUSectorTDCChannelsRead = false;
+		}
+	      else
+		{
+		  printf("\n PCB Number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Sector: %d\t",atoi(LineBuffer.c_str()));
+		  sector = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\t",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  
+		  GATEAUSectorInit(num, sector, start, stop);
 		}
 	    }
 
