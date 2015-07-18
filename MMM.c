@@ -60,7 +60,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 				    double energyj = MMMEnergyCalc(j,ADC_import[j]);
 				    
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
-				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)))
+				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>400)
 				      {
 					si->SetEnergy(0.5*(energyi+energyj));
 					si->SetTheta(MMMThetaCalc(i));

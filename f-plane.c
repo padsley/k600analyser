@@ -1758,6 +1758,13 @@ double CalcTfromP(double p, double mass)
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
+double CalcExDirect(double Xcorr)
+{
+  double result = 0;
+  result = 31.3029 - 0.0299994*Xcorr - 1.54103e-6*pow(Xcorr,2.);
+  return result;
+}
+
 double CalcEx(double Xcorr)
 {
   double exE = 0;
@@ -3200,7 +3207,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    CalcCorrX(X1pos-x1offset, Y1, ThSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   t_Ex = CalcEx(Xcorr);
+   t_Ex = CalcExDirect(Xcorr);
 
    extern double *masses;
 
