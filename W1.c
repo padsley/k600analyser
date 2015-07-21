@@ -87,6 +87,8 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
                     si->SetMult(mTDC.GetMult(k));
                 }
             }
+            if (W1TDCChannelLimits[DetNum][2] == -1)
+                break;
         }
     }
 
