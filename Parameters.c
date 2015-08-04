@@ -31,6 +31,7 @@ double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
 
 int NumberOfGATEAUPCB;
+int NumberOfSectorsPerPCB = 5;
 
 int ***GATEAUSectorTDCLimits;
 

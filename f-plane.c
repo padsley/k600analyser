@@ -64,8 +64,8 @@ extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
 #define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
+//#define _SILICONDATA 
+//#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -247,6 +247,10 @@ RawData *raw;
 
 #ifdef _GAMMADATA
 GammaData *gammy;
+#endif
+
+#ifdef _GATEAU
+GATEAUData *gat;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -2354,6 +2358,12 @@ INT focal_init(void)
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
+
+#ifdef _GATEAU
+  gROOT->ProcessLine(".L GATEAUSort.c+");
+  t1->Branch("GATEAUInfo","GATEAUData",&gat);
+#endif
+
    return SUCCESS;
 }
 
@@ -3294,6 +3304,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
+
+#ifdef _GATEAU
+    if(gat)
+      {
+	gat = GATEAUSort(TDCHits, TDC_channel_export, TDC_value_export);
+      }
+#endif
+
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
    //--------------------------------------------------------------------------------------------------------
@@ -3328,6 +3346,10 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
   delete gammy;
 #endif
   
+#ifdef _GATEAU
+  delete gat;
+#endif
+
 #ifdef _ADC
     ADCClear();
 #endif
