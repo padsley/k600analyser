@@ -18,6 +18,7 @@ public :
 private :
   int TotalWiresFired;
   int **SectorWiresFired;
+  vector<vector<int>> WiresFired;
   
 public :
   //Setters
