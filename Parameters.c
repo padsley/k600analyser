@@ -27,8 +27,15 @@ int **W1TDCChannelLimits;
 int *HagarADCChannelLimits;
 int *HagarTDCChannelLimits;
 
+int *CloverADCChannelLimits;
+int *CloverTDCChannelLimits;
+
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
+
+double CloverGain[8] = {1,1,1,1,1,1,1,1};
+double CloverOffset[8] = {0,0,0,0,0,0,0,0};
+
 
 int *PulseLimits;//[2] = {-1e6, 1e6};
 
@@ -236,6 +243,30 @@ void HagarTDCChannelsInit(int start, int stop)
   HagarTDCChannelLimits[1] = stop;
 }
 
+
+
+void CloverInit()
+{
+  CloverADCChannelLimits = new int[2];
+  CloverTDCChannelLimits = new int[2];
+}
+
+void CloverADCChannelsInit(int start, int stop)
+{
+  CloverADCChannelLimits[0] = start;
+  CloverADCChannelLimits[1] = stop;
+}
+
+void CloverTDCChannelsInit(int start, int stop)
+{
+  CloverTDCChannelLimits[0] = start;
+  CloverTDCChannelLimits[1] = stop;
+}
+
+
+
+
+
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
@@ -353,6 +384,9 @@ void ReadConfiguration()
   bool HagarUsed = false;
   bool HagarADCChannelRead = false;
   bool HagarTDCChannelRead = false;
+  bool CloverUsed = false;
+  bool CloverADCChannelRead = false;
+  bool CloverTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
@@ -366,7 +400,7 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
 	    {
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
@@ -443,6 +477,33 @@ void ReadConfiguration()
 		{
 		  if(HagarTDCChannelRead==false)HagarTDCChannelRead = true;
 		  else if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
+		}
+              else if(LineBuffer.compare(0,9,"CloverUsed") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"yes") == 0)
+		    {
+		      CloverInit();
+		      CloverUsed = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"no") == 0)
+		    {
+		      CloverUsed = false;
+		    }
+		  else
+		    {
+		      printf("Clover usage option not recognised\n");
+		    }
+		}
+	      else if(LineBuffer.compare(0,16,"CloverADCChannels") == 0)
+		{
+		  if(CloverADCChannelRead==false)CloverADCChannelRead = true;
+		  else if(CloverADCChannelRead==true)CloverADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,16,"CloverTDCChannels") == 0)
+		{
+		  if(CloverTDCChannelRead==false)CloverTDCChannelRead = true;
+		  else if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
 		}
 	      else if(LineBuffer.compare(0,4,"VDC1") == 0)
 		{
@@ -762,6 +823,50 @@ void ReadConfiguration()
 		  HagarTDCChannelsInit(start, stop);
 		}
 	    }
+
+          if(CloverADCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,16,"CloverADCChannels") == 0)
+		{
+		  if(CloverADCChannelRead==true)CloverADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("CloverADCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  CloverADCChannelsInit(start, stop);
+		}
+	    }
+
+	  if(CloverTDCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,16,"CloverTDCChannels") == 0)
+		{
+		  if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("CloverTDCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  CloverTDCChannelsInit(start, stop);
+		}
+	    }
+
+
+
+
 	}
     }
   else

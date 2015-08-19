@@ -47,6 +47,7 @@
 
 #include "GammaData.h"
 #include "HagarSort.h"
+#include "CloverSort.h"
 
 #include "RawData.h"
 /*------------definitions to change analysis------------------------*/
@@ -63,11 +64,11 @@ extern int ADCModules;
 extern float *QDC;
 #define _RAWDATA
 #define _SILICONDATA 
-#define _MMM
+//#define _MMM
 //#define _W1
-//#define _GAMMADATA
-//#define _HAGAR
-
+#define _GAMMADATA
+#define _HAGAR
+//#define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -232,10 +233,6 @@ Double_t t_SiPside4TDC[16];
 
 #ifdef _SILICONDATA
 SiliconData *si;
-#endif
-
-#ifdef _CLOVERDATA
-CloverData *clov;
 #endif
 
 #ifdef _RAWDATA
@@ -2340,10 +2337,10 @@ INT focal_init(void)
   //  MMMLoadCuts(si);
 #endif
 
-#ifdef _CLOVERDATA
+#ifdef _GAMMADATA
   gROOT->ProcessLine(".L Parameters.c+");
-  gROOT->ProcessLine(".L CloverData.c+");
-  t1->Branch("CloverInfo","CloverData",&clov);
+  gROOT->ProcessLine(".L GammaData.c+");
+  t1->Branch("GammaInfo","GammaData",&gammy);
 #endif
   
 #ifdef _RAWDATA
@@ -3291,6 +3288,14 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
     }
 #endif
+
+#ifdef _CLOVER
+    if(gammy)
+    {
+      gammy = CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+    }
+#endif
+
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
    //--------------------------------------------------------------------------------------------------------
@@ -3312,18 +3317,15 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
 
-#ifdef _CLOVERDATA
-   clov->ClearEvent();//See comment above about SiliconData::ClearEvent()
-   delete clov;//See comment above about deleting *si
+#ifdef _GAMMADATA
+   gammy->ClearEvent();//See comment above about GammaData::ClearEvent()
+   delete gammy;//See comment above about deleting *gammy
 #endif
 
 #ifdef _RAWDATA
   delete raw;
 #endif
 
-#ifdef _GAMMADATA
-  delete gammy;
-#endif
   
 #ifdef _ADC
     ADCClear();
