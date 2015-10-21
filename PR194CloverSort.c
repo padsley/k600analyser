@@ -9,7 +9,8 @@ const double offset[4] = {-0.664321, -0.6179, -0.6484, -0.5685};
 CloverData *PR194CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 //PR194CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, CloverData *clov)
 {
-    multiTDC *mTDC = new multiTDC(ntdc, TDC_channel_import, TDC_value_import);
+    multiTDC *mTDC = new multiTDC;
+    mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
     CloverData *clov = new CloverData();
     
     for(int n=0;n<mTDC->GetSize();n++)//Loop over TDC values

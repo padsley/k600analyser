@@ -7,6 +7,7 @@ SiliconData::SiliconData()
 SiliconData::~SiliconData()
 {
 //   printf("Destructor called for SiliconData");
+  ClearEvent();
 }
 
 void SiliconData::PrintEvent()//Print out the 'proper' information about an event
@@ -26,11 +27,13 @@ bool SiliconData::TestEvent()
   bool result = true;
 //  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good and shizzle like that 
  unsigned int hits = SiliconEnergy.size();
-//  printf("Number of silicon hits: %d\n",hits);
+
   //Check to see the same number of hits c.f. the energy hits. If you get a lot of warning messages from theta, phi, time here, that's likely because you're doing the energy hits wrong/differently
   if(SiliconTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
   if(SiliconPhi.size() != hits){printf("Mismatched size: Phi\n"); result = false;}
   if(SiliconTime.size() != hits){printf("Mismatched size: Time\n"); result = false;}
+  if(SiliconTimeFront.size() != hits){printf("Mismatched size: Front Time\n"); result = false;}
+  if(SiliconTimeBack.size() != hits){printf("Mismatched size: Back Time\n"); result = false;}
   //Check to see that the calculated energy value lies within the right region - i.e. between the front and back energy stored for that channel
   for(unsigned int i=0; i<hits; i++)
   {
@@ -43,7 +46,7 @@ bool SiliconData::TestEvent()
   if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
   if(ADCChannelBack.size() != hits){printf("Mismatched size: ADCChannelBack\n"); result = false;}
   if(TDCChannelFront.size() != hits){printf("Mismatched size: TDCChannelFront\n"); result = false;}
-  if(TDCChannelBack.size() != hits){printf("Mismatched size: TDCChannelBack: %u\tHits: %u\t\n",TDCChannelBack.size(),hits); result = false;}
+  if(TDCChannelBack.size() != hits){printf("Mismatched size: TDCChannelBack\n"); result = false;}
   if(ADCValueFront.size() != hits){printf("Mismatched size: ADCValueFront\n"); result = false;}
   if(ADCValueBack.size() != hits){printf("Mismatched size: ADCValueBack\n"); result = false;}
   if(TDCValueFront.size() != hits){printf("Mismatched size: TDCValueFront\n"); result = false;}
@@ -53,13 +56,12 @@ bool SiliconData::TestEvent()
   if(EnergyFront.size() != hits){printf("Mismatched size: EnergyFront\n"); result = false;}
   if(EnergyBack.size() != hits){printf("Mismatched size: EnergyBack\n"); result = false;}
   
-  
-  
   return result;
 }
 
 void SiliconData::ClearEvent()
 {
+//   printf("SiliconData: ClearEvent()\n");
   SiliconEnergy.clear();
   SiliconTheta.clear();
   SiliconPhi.clear();

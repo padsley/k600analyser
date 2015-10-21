@@ -177,10 +177,12 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
 {
    INT i, nwords;
    DWORD *pqdc;
-   float qdc[32];      // size has to be 32 if you use the 32chan QDC and all channel are in banks
+   extern float *QDC;      // size has to be 32 if you use the 32chan QDC and all channel are in banks
    //   float pad1,pad2;
    int qdcchan;
    extern int qdc_counter1, qdc_counter2;		      // defined; declared in analyzer.c
+	
+	for(int p=0;p<32;p++)QDC[p] = 0;
 	
    /* look for QDC0 bank, return if not present */
    /* In PR137 and PR138 it is called QDC0 bank */
@@ -195,7 +197,7 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
  	  //qdcchan=((pqdc[i])>>17)&0x1f;  // for 16 chan NIM QDC
   	  qdcchan=((pqdc[i])>>16)&0x1f;  // for 32 chan ECL QDC
           //printf("qdc data %d %d from 0x%08x number of words is : %d\n",qdcchan,(pqdc[i]&0x0fff),pqdc[i],nwords); 
-      	  qdc[qdcchan] =(float)(pqdc[i]&0x0fff);
+      	  QDC[qdcchan] =(float)(pqdc[i]&0x0fff);
 	}
 	//v792N_printEntry((v792N_Data*)&(pqdc[i]));
    }
@@ -210,7 +212,7 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    //printf("----- end of read of qdc --------\n");
    /* apply software gain calibration; not used now, but keep for future */
    for (i = 0; i < N_QDC; i++){
-      qdc[i] *= 1.0;
+      QDC[i] *= 1.0;
    }
 
    /* fill QDC histos */
@@ -218,15 +220,15 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    //  if (qdc[i] > 0.0)                   // if ( qdc[i] > (float) qdc_param.histogram_threshold )
    //      hAdcHists[i]->Fill(qdc[i], 1);
    //}  
-   pad1hip=qdc[0];  // pad1HiP
-   pad1lowp=qdc[1];  // pad1lop
-   pad2hip=qdc[2];  // pad2HiP
-   pad2lowp=qdc[3];  // pad2lop
+   pad1hip=QDC[0];  // pad1HiP
+   pad1lowp=QDC[1];  // pad1lop
+   pad2hip=QDC[2];  // pad2HiP
+   pad2lowp=QDC[3];  // pad2lop
 
    //printf("ODB test in qdc.c : %d  \n",qdc_param.histogram_threshold);
 
-   pad1=sqrt(qdc[0]*qdc[1]);
-   pad2=sqrt(qdc[2]*qdc[3]);
+   pad1=sqrt(QDC[0]*QDC[1]);
+   pad2=sqrt(QDC[2]*QDC[3]);
 
    //hPaddle1->Fill(pad1);
    //hPaddle2->Fill(pad2);
