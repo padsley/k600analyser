@@ -2064,7 +2064,7 @@ INT focal_init(void)
        else
 	 {
 	   printf("Setup for a new VDC1 and an old VDC2\n");
-	   setupchannel2wireXUXold()
+	   setupchannel2wireXUXold();
 	 }
      }
    else
