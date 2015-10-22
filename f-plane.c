@@ -821,6 +821,7 @@ void setupchannel2wireXUXold()
 // hack the mapping of wires to channels with XU and then old X chamber
 //
 {
+	printf("setupchannel2wireXUXold()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -2063,7 +2064,7 @@ INT focal_init(void)
 	 }
        else
 	 {
-	   printf("Probably not implemented");
+	   setupchannel2wireXUXold();
 	 }
      }
    else
