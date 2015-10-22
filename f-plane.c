@@ -2063,18 +2063,19 @@ INT focal_init(void)
 	 }
        else
 	 {
-	   printf("Probably not implemented");
+	   printf("Setup for a new VDC1 and an old VDC2\n");
+	   setupchannel2wireXUXold()
 	 }
      }
    else
      {
        if(VDC2_new)
 	 {
-// 	   setupchannel2wireXoldXU();
+ 	   setupchannel2wireXoldXU();
 	 }
        else
 	 {
-// 	   setupchannel2wireXoldXold();
+ 	   setupchannel2wireXoldXold();
 	 }
      }
 
