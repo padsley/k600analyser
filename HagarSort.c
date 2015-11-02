@@ -37,20 +37,28 @@ GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float
 
   for(int k=0;k<mTDC->GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
   {
-	//printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
-	//printf("HagarADCChannelLimits[0]:  HagarADCChannelLimits[1]: ",HagarADCChannelLimits[0], HagarADCChannelLimits[0]);	
+	
+	//printf("HagarADCChannelLimits[0]:  %d \t  HagarADCChannelLimits[1]:  %d \n ",HagarADCChannelLimits[0], HagarADCChannelLimits[1]);	
 
 
 		   for(int i=HagarADCChannelLimits[0];i<=HagarADCChannelLimits[1];i++)
 		      {
+			//printf("HagarADCChannel:  %d \t  TDCChannel:  %d \n ", i, mTDC->GetChannel(k));	
+	
+
 			if(HagarADCTDCChannelCheck(i,mTDC->GetChannel(k)))
 			{
+
+		//	printf("line 49\n");
 			// 	  printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(n));
 	  			double GammaEnergy = HagarEnergyCalc(i,ADC_import[i]);
 	  			if(GammaEnergy>0.1)
 	  			{
+				//printf("Hagar Hit\n");
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
+				gammy->SetDetectorType("Hagar");
+
 				//gammy->SetDetectorHit(HagarDetHitNumber(i));
 	  			}
 			   }
@@ -67,48 +75,42 @@ GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float
 
 double HagarEnergyCalc(int Channel, double ADCValue)
 {
-  //define the calibration parameters
+  //printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
+ // printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
   double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
-//   printf("Energy = ADCOffsets[%d] + ADCGains[%d] * ADCValue\t %f = %f + %f * %f\n",Channel,Channel,result,ADCOffsets[Channel],ADCGains[Channel],ADCValue);
-  //   if(Channel<64 || Channel>=80 && Channel<112)printf("EnergyCalc: %g\n",result);
   return result;
 }
 
-/*
+
 bool HagarADCTDCChannelCheck(int ADCChannel, int TDCChannel)
 { 
   bool result = false;
-  printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+ // printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
     if(ADCChannel>=HagarADCChannelLimits[0] && ADCChannel<=HagarADCChannelLimits[1] && TDCChannel>=HagarTDCChannelLimits[0] && TDCChannel<=HagarTDCChannelLimits[1])//Check to see if the ADC/TDC events are in the same detector
      {
-       if(ADCChannel%8==TDCChannel%8)
+       if(TDCChannel-865 == ADCChannel)
         {
-//        printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+    //    printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
           result = true;
         }
      }
   return result;
 }
+
+/*int HagarDetHitNumber(int ADCChannel)
+{
+  int result = 0;
+  for(int i=0;i<8;i++)
+  {
+    if(ADCChannel>=HagarADCChannelLimits[0] && ADCChannel<=HagarADCChannelLimits[1])
+      {
+	result = i+1;
+      }
+  }
+  return result;
+}
+
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 double HagarThetaCalc(int Channel)

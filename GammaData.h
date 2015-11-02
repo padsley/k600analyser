@@ -30,51 +30,57 @@ class GammaData
 
  //Physical values which are generated
   std::vector<double> GammaEnergy;
-  std::vector<double> GammaTheta;
-  std::vector<double> GammaPhi;
+ // std::vector<double> GammaTheta;
+//  std::vector<double> GammaPhi;
   std::vector<double> GammaTime;
   std::vector<std::string> GammaDetectorType;//This is a particular thing in this class which isn't in the SiliconData type. It defines the type of the gamma detector. E.g. HPGeClover, HPGe, Hagar, NaI, CsI, Eyeball, BGO, Kudu, peacock.
   //It's a STRING... i.e., type what you want in there and then test for that later on
- 
+ std::vector<std::string> GammaDetectorLabel;
 
 
 
  //There should follow some diagnostic values which will be added for The Greater Good (The Greater Good).
-/*
-  //Diagnostic values - these are things which might be useful to finding problems in the experiment or the sort code.
-  std::vector<int> DetectorHit;
-  std::vector<int> ADCChannelFront;
-  std::vector<int> ADCChannelBack;
-  std::vector<int> TDCChannelFront;
-  std::vector<int> TDCChannelBack;
-  std::vector<int> ADCValueFront;
-  std::vector<int> ADCValueBack;
-  std::vector<int> TDCValueFront;
-  std::vector<int> TDCValueBack;
-  std::vector<int> StripFront;
-  std::vector<int> StripBack;
-  std::vector<double> EnergyFront;
-  std::vector<double> EnergyBack;
 
-*/
+  //Diagnostic values - these are things which might be useful to finding problems in the experiment or the sort code.
+ //   std::vector<int> DetectorHit;
+//  std::vector<int> ADCChannelFront;
+//  std::vector<int> ADCChannelBack;
+//  std::vector<int> TDCChannelFront;
+//  std::vector<int> TDCChannelBack;
+//  std::vector<int> ADCValueFront;
+//  std::vector<int> ADCValueBack;
+//  std::vector<int> TDCValueFront;
+//  std::vector<int> TDCValueBack;
+//  std::vector<int> StripFront;
+//  std::vector<int> StripBack;
+//  std::vector<double> EnergyFront;
+//  std::vector<double> EnergyBack;
+
+
 
 public :
 //Setters - set the physical values for each physical event
-  void SetHits(int hits){GammaHits = hits;}
+  void SetHits(int hits){GammaHits = hits;}	//number of gamma events
 
   void SetEnergy(double ener){GammaEnergy.push_back(ener);}
-  void SetTheta(double thet){GammaTheta.push_back(thet);}
-  void SetPhi(double ph){GammaPhi.push_back(ph);}
+//  void SetTheta(double thet){GammaTheta.push_back(thet);}
+ // void SetPhi(double ph){GammaPhi.push_back(ph);}
   void SetTime(double tim){GammaTime.push_back(tim);}
   void SetDetectorType(std::string type){GammaDetectorType.push_back(type);}
-//  void SetDetectorLabel(std::string label){GammaDetectorLabel.push_back(label);}//"clover1" "hagar" "LaBr1" DATA->Draw("GammaEnergy:Ex","GammaDetectorLabel==\"clover1\"","")
-	
+  void SetDetectorLabel(std::string label){GammaDetectorLabel.push_back(label);}//"clover1" "hagar" "LaBr1" DATA->Draw("GammaEnergy:Ex","GammaDetectorLabel==\"clover1\"","")
+
+  //void SetDetectorHit(int det)		{DetectorHit.push_back(det);}	//numeber of hits in the same clover
+
+
+
 //Getters - return the value of the private member - shouldn't have them visible to the user
   double GetEnergy(int i){return GammaEnergy.at(i);}
-  double GetTheta(int i){return GammaTheta.at(i);}
-  double GetPhi(int i){return GammaPhi.at(i);}
+//  double GetTheta(int i){return GammaTheta.at(i);}
+//  double GetPhi(int i){return GammaPhi.at(i);}
   double GetTime(int i){return GammaTime.at(i);}
   std::string GetType(int i){return GammaDetectorType.at(i);}
+  std::string GetLabel(int i){return GammaDetectorLabel.at(i);}
+  //double GetDetectorHit(int i){return DetectorHit.at(i);}
 
 //Should add Getters for the diagnostic values in case people want to use them to test events themselves under certain conditions
   void PrintEvent();

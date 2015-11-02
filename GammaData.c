@@ -31,18 +31,18 @@ bool GammaData::TestEvent()
  unsigned int hits = GammaEnergy.size();
 
   //Check to see the same number of hits c.f. the energy hits. If you get a lot of warning messages from theta, phi, time here, that's likely because you're doing the energy hits wrong/differently
-  if(GammaTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
-  if(GammaPhi.size() != hits){printf("Mismatched size: Phi\n"); result = false;}
+//  if(GammaTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
+ // if(GammaPhi.size() != hits){printf("Mismatched size: Phi\n"); result = false;}
   if(GammaTime.size() != hits){printf("Mismatched size: Time\n"); result = false;}
 
-
+/*
   for(unsigned int i=0; i<hits; i++)
   {
   //Check to see that the computed angle is reasonable and that nothing weird is going on - you need to add you own checks here as detector positions will change
     if(GammaTheta.at(i)<90){printf("GammaTheta suggests a Gamma detector at forward angles - problem in angle computation\n"); result = false;}
   }
 
-
+*/
 
 /*  diagnostic variable
   if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
@@ -71,25 +71,26 @@ void GammaData::ClearEvent()
   
 //   printf("GammaData: ClearEvent()\n");
   GammaEnergy.clear();
-  GammaTheta.clear();
-  GammaPhi.clear();
+//  GammaTheta.clear();
+//  GammaPhi.clear();
   GammaTime.clear();
+  GammaDetectorType.clear();
   
- /* diagnostic variable
- DetectorHit.clear();
-  ADCChannelFront.clear();
-  ADCChannelBack.clear();
-  TDCChannelFront.clear();
-  TDCChannelBack.clear();
-  ADCValueFront.clear();
-  ADCValueBack.clear();
-  TDCValueFront.clear();
-  TDCValueBack.clear();
-  StripFront.clear();
-  StripBack.clear();
-  EnergyFront.clear();
-  EnergyBack.clear();
-*/
+ //diagnostic variable
+  //DetectorHit.clear();
+  //ADCChannelFront.clear();
+  //ADCChannelBack.clear();
+  //TDCChannelFront.clear();
+  //TDCChannelBack.clear();
+  //ADCValueFront.clear();
+  //ADCValueBack.clear();
+  //TDCValueFront.clear();
+  //TDCValueBack.clear();
+  //StripFront.clear();
+  //StripBack.clear();
+  //EnergyFront.clear();
+  //EnergyBack.clear();
+
 
 }
 

@@ -15,8 +15,8 @@
 GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
 
 double HagarEnergyCalc(int Channel, double ADCValue);
-double HagarThetaCalc(int Channel);
-double HagarPhiCalc(int Channel);
+//double HagarThetaCalc(int Channel);
+//double HagarPhiCalc(int Channel);
 
 
 //bool MMMSuppressChannel(int Channel);

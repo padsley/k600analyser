@@ -27,8 +27,10 @@ int **W1TDCChannelLimits;
 int *HagarADCChannelLimits;
 int *HagarTDCChannelLimits;
 
-int *CloverADCChannelLimits;
-int *CloverTDCChannelLimits;
+int NumberOfClover;
+
+int **CloverADCChannelLimits;
+int **CloverTDCChannelLimits;
 
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
@@ -229,6 +231,7 @@ void HagarInit()
 {
   HagarADCChannelLimits = new int[2];
   HagarTDCChannelLimits = new int[2];
+//printf("\nHagarParameterInit - end\n");
 }
 
 void HagarADCChannelsInit(int start, int stop)
@@ -245,22 +248,69 @@ void HagarTDCChannelsInit(int start, int stop)
 
 
 
-void CloverInit()
+void CloverNumberInit()
 {
-  CloverADCChannelLimits = new int[2];
-  CloverTDCChannelLimits = new int[2];
+   printf("\nCloverParameterInit\n");
+  
+  CloverADCChannelLimits = new int*[NumberOfClover];
+  
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    CloverADCChannelLimits[i] = new int[2];
+  }
+  
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    for(int j=0;j<2;j++)
+    {
+      CloverADCChannelLimits[i][j] = -1;
+    }
+  }
+  
+  CloverTDCChannelLimits = new int*[NumberOfClover];
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    CloverTDCChannelLimits[i] = new int[2];
+  }
+  
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    for(int j=0;j<2;j++)
+    {
+      CloverTDCChannelLimits[i][j] = -1;
+    }
+  }
+  printf("\nCloverParameterInit - end\n");
 }
 
-void CloverADCChannelsInit(int start, int stop)
+void CloverADCChannelsInit(int det, int start, int stop)
 {
-  CloverADCChannelLimits[0] = start;
-  CloverADCChannelLimits[1] = stop;
+  if(det<=NumberOfClover)
+  {
+   
+      CloverADCChannelLimits[det-1][0] = start;
+      CloverADCChannelLimits[det-1][1] = stop;
+  
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of Clover detectors - skipped enabling this detector\n");
+  }
 }
 
-void CloverTDCChannelsInit(int start, int stop)
+void CloverTDCChannelsInit(int det, int start, int stop)
 {
-  CloverTDCChannelLimits[0] = start;
-  CloverTDCChannelLimits[1] = stop;
+  if(det<=NumberOfClover)
+    {
+    
+	  CloverTDCChannelLimits[det-1][0] = start;
+	  CloverTDCChannelLimits[det-1][1] = stop;
+
+    }
+  else
+    {
+      printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+    }
 }
 
 
@@ -478,12 +528,12 @@ void ReadConfiguration()
 		  if(HagarTDCChannelRead==false)HagarTDCChannelRead = true;
 		  else if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
 		}
-              else if(LineBuffer.compare(0,9,"CloverUsed") == 0)
+              else if(LineBuffer.compare(0,10,"CloverUsed") == 0)
 		{
 		  input >> LineBuffer;
 		  if(LineBuffer.compare(0,3,"yes") == 0)
 		    {
-		      CloverInit();
+		      CloverNumberInit();
 		      CloverUsed = true;
 		    }
 		  else if(LineBuffer.compare(0,3,"no") == 0)
@@ -495,12 +545,18 @@ void ReadConfiguration()
 		      printf("Clover usage option not recognised\n");
 		    }
 		}
-	      else if(LineBuffer.compare(0,16,"CloverADCChannels") == 0)
+ 	      else if(LineBuffer.compare(0,14,"NumberOfClover") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfClover = atoi(LineBuffer.c_str());
+		  CloverNumberInit();
+		}
+	      else if(LineBuffer.compare(0,17,"CloverADCChannels") == 0)
 		{
 		  if(CloverADCChannelRead==false)CloverADCChannelRead = true;
 		  else if(CloverADCChannelRead==true)CloverADCChannelRead = false;
 		}
-	      else if(LineBuffer.compare(0,16,"CloverTDCChannels") == 0)
+	      else if(LineBuffer.compare(0,17,"CloverTDCChannels") == 0)
 		{
 		  if(CloverTDCChannelRead==false)CloverTDCChannelRead = true;
 		  else if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
@@ -824,7 +880,7 @@ void ReadConfiguration()
 		}
 	    }
 
-          if(CloverADCChannelRead)
+      /*    if(CloverADCChannelRead)
 	    {
 	      int start = -1, stop = -1;
 	      input >> LineBuffer;
@@ -862,9 +918,57 @@ void ReadConfiguration()
 		  stop = atoi(LineBuffer.c_str());
 		  CloverTDCChannelsInit(start, stop);
 		}
+	    }*/
+
+	  if(CloverADCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,17,"CloverADCChannels") == 0)
+		{
+		  if(CloverADCChannelRead==true)CloverADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  CloverADCChannelsInit(num, start, stop);
+		}
 	    }
-
-
+	
+	  if(CloverTDCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,17,"CloverTDCChannels") == 0)
+		{
+		  if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  CloverTDCChannelsInit(num, start, stop);
+		}
+	    }
 
 
 	}
