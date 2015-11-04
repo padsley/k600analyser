@@ -3261,6 +3261,10 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
 
+#ifdef _GAMMADATA
+gammy = new GammaData();
+#endif
+
 #ifdef _RAWDATA
   if(raw)
   {
