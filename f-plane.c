@@ -3285,14 +3285,16 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _HAGAR
     if(gammy)
     {
-      gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
     }
 #endif
 
 #ifdef _CLOVER
     if(gammy)
     {
-      gammy = CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      //gammy = CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
     }
 #endif
 

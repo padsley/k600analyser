@@ -25,9 +25,10 @@ extern double *ADCGains;
 
 
 
-GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+//GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+void HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy)
 {
-  GammaData *gammy = new GammaData();
+  //GammaData *gammy = new GammaData();
   //Loop over ADC and TDC events and do the following:
   //Check whether there are front-back coincidences for a detector and test the energies
   //Check to see whether there's a TDC event for the same channel as the front hit ADC - TDCs are apparently in single-hit mode. Don't need to worry about multihits
@@ -68,7 +69,7 @@ GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float
 
   mTDC->ClearEvent();
   delete mTDC;
-  return gammy;
+  //return gammy;
 
 }
 

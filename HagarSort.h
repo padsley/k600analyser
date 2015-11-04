@@ -12,7 +12,8 @@
 #include <cmath>
 #include "multiTDC.h"
 
-GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+//GammaData *HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+void HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy);
 
 double HagarEnergyCalc(int Channel, double ADCValue);
 //double HagarThetaCalc(int Channel);

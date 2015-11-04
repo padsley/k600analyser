@@ -12,7 +12,8 @@
 #include <cmath>
 #include "multiTDC.h"
 
-GammaData *CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+//GammaData *CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy);
 
 double CloverEnergyCalc(int Channel, double ADCValue);
 //double CloverThetaCalc(int Channel);
