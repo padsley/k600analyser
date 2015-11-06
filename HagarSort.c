@@ -42,7 +42,7 @@ void HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_
 	//printf("HagarADCChannelLimits[0]:  %d \t  HagarADCChannelLimits[1]:  %d \n ",HagarADCChannelLimits[0], HagarADCChannelLimits[1]);	
 
 
-		   for(int i=HagarADCChannelLimits[0];i<=HagarADCChannelLimits[1];i++)
+		 for(int i=HagarADCChannelLimits[0];i<=HagarADCChannelLimits[1];i++)
 		      {
 			//printf("HagarADCChannel:  %d \t  TDCChannel:  %d \n ", i, mTDC->GetChannel(k));	
 	
@@ -59,7 +59,7 @@ void HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
 				gammy->SetDetectorType("Hagar");
-
+				gammy->SetDetectorLabel("-1");
 				//gammy->SetDetectorHit(HagarDetHitNumber(i));
 	  			}
 			   }
@@ -67,6 +67,7 @@ void HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_
   
    }
 
+  gammy->SetHits(gammy->SizeOfEvent());
   mTDC->ClearEvent();
   delete mTDC;
   //return gammy;

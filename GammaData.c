@@ -44,9 +44,9 @@ bool GammaData::TestEvent()
 
 */
 
-/*  diagnostic variable
-  if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
-  if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
+ // diagnostic variable
+ // if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
+/*  if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
   if(ADCChannelBack.size() != hits){printf("Mismatched size: ADCChannelBack\n"); result = false;}
   if(TDCChannelFront.size() != hits){printf("Mismatched size: TDCChannelFront\n"); result = false;}
   if(TDCChannelBack.size() != hits){printf("Mismatched size: TDCChannelBack\n"); result = false;}
@@ -75,9 +75,10 @@ void GammaData::ClearEvent()
 //  GammaPhi.clear();
   GammaTime.clear();
   GammaDetectorType.clear();
+  GammaDetectorLabel.clear();
   
  //diagnostic variable
-  //DetectorHit.clear();
+ // DetectorHit.clear();
   //ADCChannelFront.clear();
   //ADCChannelBack.clear();
   //TDCChannelFront.clear();

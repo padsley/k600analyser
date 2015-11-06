@@ -533,7 +533,7 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  if(LineBuffer.compare(0,3,"yes") == 0)
 		    {
-		      CloverNumberInit();
+		   //   CloverNumberInit();
 		      CloverUsed = true;
 		    }
 		  else if(LineBuffer.compare(0,3,"no") == 0)

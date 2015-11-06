@@ -42,7 +42,7 @@ class GammaData
  //There should follow some diagnostic values which will be added for The Greater Good (The Greater Good).
 
   //Diagnostic values - these are things which might be useful to finding problems in the experiment or the sort code.
- //   std::vector<int> DetectorHit;
+  //  std::vector<int> DetectorHit;
 //  std::vector<int> ADCChannelFront;
 //  std::vector<int> ADCChannelBack;
 //  std::vector<int> TDCChannelFront;
@@ -69,7 +69,7 @@ public :
   void SetDetectorType(std::string type){GammaDetectorType.push_back(type);}
   void SetDetectorLabel(std::string label){GammaDetectorLabel.push_back(label);}//"clover1" "hagar" "LaBr1" DATA->Draw("GammaEnergy:Ex","GammaDetectorLabel==\"clover1\"","")
 
-  //void SetDetectorHit(int det)		{DetectorHit.push_back(det);}	//numeber of hits in the same clover
+//  void SetDetectorHit(int det)		{DetectorHit.push_back(det);}	
 
 
 
@@ -80,7 +80,7 @@ public :
   double GetTime(int i){return GammaTime.at(i);}
   std::string GetType(int i){return GammaDetectorType.at(i);}
   std::string GetLabel(int i){return GammaDetectorLabel.at(i);}
-  //double GetDetectorHit(int i){return DetectorHit.at(i);}
+ // double GetDetectorHit(int i){return DetectorHit.at(i);}
 
 //Should add Getters for the diagnostic values in case people want to use them to test events themselves under certain conditions
   void PrintEvent();

@@ -38,11 +38,13 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
   mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);	
 
   for(int k=0;k<mTDC->GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
-  {
+   {
+    if(CloverTDCTest(mTDC->GetChannel(k)))
+      {
 	int DetNum = CloverTDCIdentifyDetector(mTDC->GetChannel(k));
-	if(DetNum>0)
+	 if(DetNum>0)
 		{	
-		   for(int i=CloverADCChannelLimits[DetNum-1][0];i<=CloverADCChannelLimits[DetNum-1][1];i++)
+		  for(int i=CloverADCChannelLimits[DetNum-1][0];i<=CloverADCChannelLimits[DetNum-1][1];i++)
 		      {
 			if(CloverADCTDCChannelCheck(i,mTDC->GetChannel(k)))
 			{
@@ -53,17 +55,20 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
 				gammy->SetDetectorType("Clover");
-				char buffer[256];
+				char buffer[256]; //to set the detector number
 				sprintf(buffer,"%d",DetNum);
-//				gammy->SetDetectorLabel(DetNum);
 				gammy->SetDetectorLabel(buffer);
 				//printf("HitClover\n");
-	  			} 
-			}
-      		      }
-    		}
-   }
 
+				//gammy->SetDetectorHit(CloverDetHitNumber(i));
+	  			} 
+			 }
+      		       }
+    		}
+	}
+    }
+
+  gammy->SetHits(gammy->SizeOfEvent());
   mTDC->ClearEvent();
   delete mTDC;
   //return gammy;
@@ -104,10 +109,24 @@ double CloverEnergyCalc(int Channel, double ADCValue)
   return result;
 }
 
+bool CloverTDCTest(int TDCChannel) // to check if the TDCChannel is the one associated with the Clovers
+{
+  bool result = false;
+  for(int i=0;i<NumberOfClover;i++)
+    {
+      if(TDCChannel>=CloverTDCChannelLimits[i][0] && TDCChannel<=CloverTDCChannelLimits[i][1])
+	{
+	  result = true;
+	}
+      if(CloverTDCChannelLimits[i][0]==-1)result = true;
+      if(CloverTDCChannelLimits[i][1]==-1)result = true;
+    }
+ 
+  return result;
+}
 
 
-
-bool CloverADCTDCChannelCheck(int ADCChannel, int TDCChannel)
+bool CloverADCTDCChannelCheck(int ADCChannel, int TDCChannel) // to consider only the TDC/ADC channel associated with a Clover
 { 
   bool result = false;
 //   printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
@@ -117,7 +136,7 @@ bool CloverADCTDCChannelCheck(int ADCChannel, int TDCChannel)
    {
      if(ADCChannel-CloverADCChannelLimits[i][0]==TDCChannel-CloverTDCChannelLimits[i][0])
      {
-//        printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
+     //   printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
        result = true;
      }
    }
@@ -128,5 +147,18 @@ bool CloverADCTDCChannelCheck(int ADCChannel, int TDCChannel)
      }
   return result;
 }
-
-
+/*
+int CloverDetHitNumber(int ADCChannel) //number of hit in one Clover
+{
+  int result = 0;
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    if(ADCChannel>=CloverADCChannelLimits[i][0] && ADCChannel<=CloverADCChannelLimits[i][1])
+      {
+	result = i+1;
+      }
+  }
+printf("result = %d\n",result);
+  return result;
+}
+*/
