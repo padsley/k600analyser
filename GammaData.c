@@ -43,9 +43,8 @@ bool GammaData::TestEvent()
   }
 
 */
-
- // diagnostic variable
- // if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
+// diagnostic variable
+ /// if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
 /*  if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
   if(ADCChannelBack.size() != hits){printf("Mismatched size: ADCChannelBack\n"); result = false;}
   if(TDCChannelFront.size() != hits){printf("Mismatched size: TDCChannelFront\n"); result = false;}
