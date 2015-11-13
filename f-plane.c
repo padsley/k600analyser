@@ -28,6 +28,10 @@
 #include "experim.h"
 #include "analyzer.h"
 
+/* Struck ADC Header and shizzle */
+#include "TSIS3302.hxx"
+#include "TGenericData.hxx"
+
 /*SDJ includes */
 #include <math.h>
 
@@ -69,6 +73,8 @@ extern float *QDC;
 #define _GAMMADATA
 #define _HAGAR
 #define _CLOVER
+
+#define _STRUCKADC
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -229,6 +235,10 @@ Double_t t_SiPside1TDC[16];
 Double_t t_SiPside2TDC[16];
 Double_t t_SiPside3TDC[16];
 Double_t t_SiPside4TDC[16];
+#endif
+
+#ifdef _STRUCKADC
+Double_t t_StruckADC1[8];
 #endif
 
 #ifdef _SILICONDATA
@@ -926,7 +936,7 @@ void getRefTimes(int time[], int ntdc, DWORD ptdc[])
 // 1st chan into each TDC is a copy of the trigger. Find this for each module for each event.
 // Without this you cannot get accurate time determination.
 {
-   memset(time,0,7*sizeof(int));   
+   memset(time,0,8*sizeof(int));   
    int module=0,channel=9999;   
    for(int i=0;i<ntdc;i++){               // loop through all the TDC datawords
       if((((ptdc[i])>>27)&0x1f)==0x1f){     // first determine TDC module nr. This precedes data for each module.
@@ -2293,6 +2303,10 @@ INT focal_init(void)
   
   #endif
  
+  #ifdef _STRUCKADC
+  t1->Branch("StruckADC1",&t_StruckADC1,"t_StruckADC1[8]/D");
+  #endif
+
   #ifdef _POLARIZATION
   t1->Branch("polu",&t_polu,"t_polu/I");   //PR153, polarized beam
   t1->Branch("pold",&t_pold,"t_pold/I");   //PR153, polarized beam
@@ -3246,6 +3260,50 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    if(X1flag==0 && U1flag==0 && X2flag==0){
      hEventID2->Fill(ev_id_X1U1X2);
    }
+
+   	////// SIS0 gubbins ///////
+
+		INT i, nSISwords;
+
+//  each fired channel of the ADC generates a 6 words sentence
+    INT wordsPerEvent = 6;
+    INT ChannelIndex, EnergyIndex;
+    INT StChannel;
+
+    DWORD *pSIS;
+//    uint32_t *pSIS;
+
+   //float *adc = new float[32*ADCModules];  
+//    printf("adc initialisation: %d\n",32*ADCModules);
+   //int adcchan,adcnr;
+   //extern int adc_counter1, adc_counter2;   // defined; declared in analyzer.c
+
+
+ 		nSISwords=bk_locate(pevent, "SIS0", &pSIS);
+    
+int nStHits = nSISwords/wordsPerEvent;
+
+//		if(nSISwords>0){
+//
+//		for (i = 0; i < nSISwords; i++){
+//			printf("pSIS[%d]: %d\n",i,pSIS[i]);
+//		}
+
+		for(int i =0; i<nStHits;i++){\
+
+// The channel of the ADC is the last number of the first word of the sentence
+		ChannelIndex = i*wordsPerEvent;
+		EnergyIndex  = (i+1)*wordsPerEvent -4;
+
+//		StChannel = (pSIS[ChannelIndex]>>16)&0x7;
+		StChannel = pSIS[ChannelIndex]&0x7;
+
+ 		uint32_t fADC_energy_max_value = pSIS[EnergyIndex];
+//		uint32_t fADC_energy_max_value = pSIS[EnergyIndex]&0xfffffff;
+		printf("Test for Struck Channel: %d\n", StChannel);		printf("fADC_energy_max_value: %d\n",fADC_energy_max_value);
+		if(StChannel<8)t_StruckADC1[StChannel] = fADC_energy_max_value;
+		}
+		///////////////////////////
 
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];
