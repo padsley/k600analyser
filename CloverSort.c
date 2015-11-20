@@ -59,24 +59,13 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
 				gammy->SetDetectorType("Clover");
-			/*	char buffer[256]; //to set the detector number
-				sprintf(buffer,"%d",DetNum);
-				gammy->SetDetectorLabel(buffer);*/
 
-        gammy->SetDetectorLabel(DetNum);
+				gammy->SetDetectorLabel(DetNum);
 				gammy->SetDetectorSegm(Segm);
 				gammy->SetGammaRawADC(ADC_import[i]);
 				gammy->SetGammaADCChannel(i);
-				//printf("HitClover\n");
-
-      //  gammy->SetADCChannelClover(i);
-			//	gammy->SetADCValueClover(ADC_import[i]);
-
-		//		gammy->SetTDCChannelClover(mTDC->GetChannel(k));
-			//	gammy->SetTDCValueClover(mTDC->GetValue(k));
-
-
-				//gammy->SetDetectorHit(CloverDetHitNumber(i));
+				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
+				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
 	  			} 
 			 }
       		       }

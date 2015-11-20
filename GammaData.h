@@ -42,17 +42,10 @@ class GammaData
  //There should follow some diagnostic values which will be added for The Greater Good (The Greater Good).
 
   //Diagnostic values - these are things which might be useful to finding problems in the experiment or the sort code.
-  //  std::vector<int> DetectorHit;
-//   std::vector<int> ADCChannelClover;
- // std::vector<int> TDCChannelClover;
- // std::vector<int> ADCValueClover;
-//  std::vector<int> TDCValueClover;
-//  std::vector<int> CloverSegment;
-//  std::vector<int> StripBack;
-//  std::vector<double> EnergyFront;
-//  std::vector<double> EnergyBack;
   std::vector<int> GammaRawADC;
   std::vector<int> GammaADCChannel;
+  std::vector<int> GammaTDCChannel;
+  std::vector<int> GammaTDCMultiplicity;
 
 
 public :
@@ -69,13 +62,8 @@ public :
    void SetDetectorSegm(int segm){GammaDetectorSegm.push_back(segm);}
    void SetGammaRawADC(int val){GammaRawADC.push_back(val);}
    void SetGammaADCChannel(int chan){GammaADCChannel.push_back(chan);}
-
-
-//  void SetDetectorHit(int det)		{DetectorHit.push_back(det);}	
-//  void SetADCChannelClover(int chan)	{ADCChannelClover.push_back(chan);}
-//  void SetTDCChannelClover(int chan)	{TDCChannelClover.push_back(chan);}
-//  void SetADCValueClover(int chan)	{ADCValueClover.push_back(chan);}
-//  void SetTDCValueClover(int chan)	{TDCValueClover.push_back(chan);}
+   void SetGammaTDCChannel(int chan){GammaTDCChannel.push_back(chan);}
+   void SetGammaTDCMultiplicity(int mult){GammaTDCMultiplicity.push_back(mult);}
 
 //Getters - return the value of the private member - shouldn't have them visible to the user
   double GetEnergy(int i){return GammaEnergy.at(i);}

@@ -29,36 +29,19 @@ bool GammaData::TestEvent()
 
  //  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good and shizzle like that 
  unsigned int hits = GammaEnergy.size();
+ if(GammaEnergy.size() != GammaHits){printf("Mismatch between GammaEnergy and GammaHits\n");result=false;}
 
   //Check to see the same number of hits c.f. the energy hits. If you get a lot of warning messages from theta, phi, time here, that's likely because you're doing the energy hits wrong/differently
 //  if(GammaTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
  // if(GammaPhi.size() != hits){printf("Mismatched size: Phi\n"); result = false;}
   if(GammaTime.size() != hits){printf("Mismatched size: Time\n"); result = false;}
-
-/*
-  for(unsigned int i=0; i<hits; i++)
-  {
-  //Check to see that the computed angle is reasonable and that nothing weird is going on - you need to add you own checks here as detector positions will change
-    if(GammaTheta.at(i)<90){printf("GammaTheta suggests a Gamma detector at forward angles - problem in angle computation\n"); result = false;}
-  }
-
-*/
-// diagnostic variable
- /// if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
-/*  if(ADCChannelFront.size() != hits){printf("Mismatched size: ADCChannelFront\n"); result = false;}
-  if(ADCChannelBack.size() != hits){printf("Mismatched size: ADCChannelBack\n"); result = false;}
-  if(TDCChannelFront.size() != hits){printf("Mismatched size: TDCChannelFront\n"); result = false;}
-  if(TDCChannelBack.size() != hits){printf("Mismatched size: TDCChannelBack\n"); result = false;}
-  if(ADCValueFront.size() != hits){printf("Mismatched size: ADCValueFront\n"); result = false;}
-  if(ADCValueBack.size() != hits){printf("Mismatched size: ADCValueBack\n"); result = false;}
-  if(TDCValueFront.size() != hits){printf("Mismatched size: TDCValueFront\n"); result = false;}
-  if(TDCValueBack.size() != hits){printf("Mismatched size: TDCValueBack\n"); result = false;}
-  if(StripFront.size() != hits){printf("Mismatched size: StripFront\n"); result = false;}
-   if(StripBack.size() != hits){printf("Mismatched size: StripBack\n"); result = false;}
-  if(EnergyFront.size() != hits){printf("Mismatched size: EnergyFront\n"); result = false;}
-  if(EnergyBack.size() != hits){printf("Mismatched size: EnergyBack\n"); result = false;}
-  
-*/
+  if(GammaDetectorType.size() != hits){printf("Mismatched size: GammaDetectorType\n"); result=false;}
+  if(GammaDetectorLabel.size() != hits){printf("Mismatched size: GammaDetectorLabel\n"); result=false;}
+  if(GammaDetectorSegm.size() != hits){printf("Mismatched size: GammaDetectorSegm\n"); result=false;}
+  if(GammaRawADC.size() != hits){printf("Mismatched size: GammaRawADC\n"); result=false;}
+  if(GammaADCChannel.size() != hits){printf("Mismatched size: GammaADCChannel\n"); result = false;}
+  if(GammaTDCChannel.size() != hits){printf("Mismatched size: GammaTDCChannel\n"); result = false;}
+  if(GammaTDCMultiplicity.size() != hits){printf("Mismatched size: GammaTDCMultiplicity\n"); result = false;}
 
   return result;
 }
@@ -67,8 +50,6 @@ bool GammaData::TestEvent()
 
 void GammaData::ClearEvent()
 {
-  
-//   printf("GammaData: ClearEvent()\n");
   GammaEnergy.clear();
 //  GammaTheta.clear();
 //  GammaPhi.clear();
@@ -78,18 +59,8 @@ void GammaData::ClearEvent()
   GammaDetectorSegm.clear();
   GammaRawADC.clear();
   GammaADCChannel.clear();
- //diagnostic variable
- // DetectorHit.clear();
-//  ADCChannelClover.clear();
-//  TDCChannelClover.clear();
-//  ADCValueClover.clear();
- // TDCValueClover.clear();
-  //StripFront.clear();
-  //StripBack.clear();
-  //EnergyFront.clear();
-  //EnergyBack.clear();
-
-
+  GammaTDCChannel.clear();
+  GammaTDCMultiplicity.clear();
 }
 
 unsigned int GammaData::SizeOfEvent()
