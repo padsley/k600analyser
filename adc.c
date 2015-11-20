@@ -195,6 +195,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
            if((padc[i]&0xf) ==2) adcnr=2;  //printf(" adc nr 2 \n");} 
            if((padc[i]&0xf) ==3) adcnr=3; // printf(" adc nr 3 \n");}
            if((padc[i]&0xf) ==4) adcnr=4;  //printf(" adc nr 4 \n");}
+	   if((padc[i]&0xf) ==5) adcnr=5; //printf(" adc nr 5 \n");}
 	   //printf("-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
 	}
 	if(((padc[i]>>24)&0x7) ==0){     // if not then they are not data but header words.

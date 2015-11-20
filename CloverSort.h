@@ -39,7 +39,7 @@ bool CloverTDCTest(int TDCChannel);
 //bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel);
 
 int CloverTDCIdentifyDetector(int TDCChannel);
-
+int CloverTDCIdentifySegment(int TDCChannel);
 
 #endif
 

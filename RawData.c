@@ -58,7 +58,7 @@ RawData *RawDataDump(float *ADC_import, int ntdc, int *TDC_channel_import, float
 {
   RawData *raw = new RawData();
   raw->Init(raw);
-  for(int i=0;i<ADCsize;i++)raw->SetADCValue(i,ADC_import[i]);
+  for(int i=0;i<ADCsize;i++){raw->SetADCValue(i,ADC_import[i]);}// printf("%d \t %d\n",i,ADC_import[i]);}
   for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
   
   for(int n=0;n<ntdc;n++)

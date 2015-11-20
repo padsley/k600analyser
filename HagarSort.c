@@ -59,7 +59,8 @@ void HagarSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
 				gammy->SetDetectorType("Hagar");
-				gammy->SetDetectorLabel("-1");
+				int label=-1;
+				gammy->SetDetectorLabel(label);
 				//gammy->SetDetectorHit(HagarDetHitNumber(i));
 	  			}
 			   }

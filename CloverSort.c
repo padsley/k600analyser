@@ -11,7 +11,7 @@
 #include "CloverSort.h"
 #include <math.h>
 #include <stdlib.h>
-
+#include <TRandom3.h>
 
 extern int ADCModules;
 extern int ADCsize;
@@ -23,6 +23,7 @@ extern int **CloverTDCChannelLimits;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
+TRandom3 *randy = new TRandom3(0);
 
 
 
@@ -42,6 +43,9 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
     if(CloverTDCTest(mTDC->GetChannel(k)))
       {
 	int DetNum = CloverTDCIdentifyDetector(mTDC->GetChannel(k));
+//  printf("+++++++++++++++++++DetNum %d\n",DetNum);
+  int Segm = CloverTDCIdentifySegment(mTDC->GetChannel(k));
+ // printf("-------------Segm %d\n",Segm);
 	 if(DetNum>0)
 		{	
 		  for(int i=CloverADCChannelLimits[DetNum-1][0];i<=CloverADCChannelLimits[DetNum-1][1];i++)
@@ -55,10 +59,22 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
 				gammy->SetDetectorType("Clover");
-				char buffer[256]; //to set the detector number
+			/*	char buffer[256]; //to set the detector number
 				sprintf(buffer,"%d",DetNum);
-				gammy->SetDetectorLabel(buffer);
+				gammy->SetDetectorLabel(buffer);*/
+
+        gammy->SetDetectorLabel(DetNum);
+				gammy->SetDetectorSegm(Segm);
+				gammy->SetGammaRawADC(ADC_import[i]);
+				gammy->SetGammaADCChannel(i);
 				//printf("HitClover\n");
+
+      //  gammy->SetADCChannelClover(i);
+			//	gammy->SetADCValueClover(ADC_import[i]);
+
+		//		gammy->SetTDCChannelClover(mTDC->GetChannel(k));
+			//	gammy->SetTDCValueClover(mTDC->GetValue(k));
+
 
 				//gammy->SetDetectorHit(CloverDetHitNumber(i));
 	  			} 
@@ -89,23 +105,55 @@ double CloverPhiCalc(int Channel)
 //function to identify the clover number
 int CloverTDCIdentifyDetector(int TDCChannel)
 {
-  int result = -1;
+ int testresult = -1;
+ int result=0;
+   for(int i=0;i<NumberOfClover;i++)
+    {
+     testresult = -1;
+       if(TDCChannel>=CloverTDCChannelLimits[i][0] && TDCChannel<=CloverTDCChannelLimits[i][1])
+       	{
+	  		 testresult = i+1;
+				}
+			if(testresult>0) result=testresult;
+//			printf("CloverTDCChannelLimits: %d  CloverTDCChannelLimits: %d \n TDC Channel: %d\n Clovernumber: %d\n ",CloverTDCChannelLimits[i][0], CloverTDCChannelLimits[i][1], TDCChannel,i);  
+// 			printf("testresult = %d\n",testresult);
+   }
+//  printf("result = %d\n",result);
+ return result;
+}
+
+//function to identify the segment number
+int CloverTDCIdentifySegment(int TDCChannel)
+{
+ int testresult = -1;
+ int result=0;
   for(int i=0;i<NumberOfClover;i++)
     {
+      testresult = -1;
       if(TDCChannel>=CloverTDCChannelLimits[i][0] && TDCChannel<=CloverTDCChannelLimits[i][1])
-	{
-	  result = i+1;
-	}
-    }
-  //printf("result = %d\n",result);
+	    {
+	     testresult = (TDCChannel-CloverTDCChannelLimits[i][0])+1;
+	    }
+      if(testresult>0) result=testresult;
+//			printf("CloverTDCChannelLimits: %d  CloverTDCChannelLimits: %d \n TDC Channel: %d\n Clovernumber: %d\n ",CloverTDCChannelLimits[i][0], CloverTDCChannelLimits[i][1], TDCChannel,i);  
+ //			printf("testresult = %d\n",testresult);;
+  }
+ // printf("+++++++++++++result = %d\n",result);
   return result;
 }
 
 double CloverEnergyCalc(int Channel, double ADCValue)
 {
-  //printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
+
+		  
+      double randNum = randy->Rndm();
+
+ // printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
  // printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
-  double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
+// double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
+// double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum-0.5);
+   double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum);
+// printf("ADCValue: %f \n  rand(): %f \n  result: %f\n", ADCValue, randNum,result);  
   return result;
 }
 

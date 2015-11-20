@@ -75,17 +75,15 @@ void GammaData::ClearEvent()
   GammaTime.clear();
   GammaDetectorType.clear();
   GammaDetectorLabel.clear();
-  
+  GammaDetectorSegm.clear();
+  GammaRawADC.clear();
+  GammaADCChannel.clear();
  //diagnostic variable
  // DetectorHit.clear();
-  //ADCChannelFront.clear();
-  //ADCChannelBack.clear();
-  //TDCChannelFront.clear();
-  //TDCChannelBack.clear();
-  //ADCValueFront.clear();
-  //ADCValueBack.clear();
-  //TDCValueFront.clear();
-  //TDCValueBack.clear();
+//  ADCChannelClover.clear();
+//  TDCChannelClover.clear();
+//  ADCValueClover.clear();
+ // TDCValueClover.clear();
   //StripFront.clear();
   //StripBack.clear();
   //EnergyFront.clear();

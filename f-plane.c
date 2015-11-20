@@ -67,14 +67,15 @@ extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
 #define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
 #define _GAMMADATA
-#define _HAGAR
+//#define _HAGAR
 #define _CLOVER
+#define _TDC
 
-#define _STRUCKADC
+//#define _STRUCKADC
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -117,7 +118,7 @@ const Double_t DRIFTLENGTH = 8.0;  // max distance (mm) the electrons can drift
 const Double_t U_WIRE_ANGLE=50.0;    // angle of wires in U-plane wrt to horizontal
 const int X_WIRES=208;
 const int U_WIRES=145;
-const int TDC_CHANNELS=896;
+const int TDC_CHANNELS=1024;
 const int TDC_MAX_TIME=14999;
 const int TDC_MIN_TIME=0;
 const int TDC_N_BINS=14999;
@@ -125,7 +126,7 @@ const int TOF_TDC_CHAN=1;     // ch1 in 1st TDC; i.e. the 2nd channel
 const int MAX_WIRES_PER_EVENT = 400;  // If more wires than this fire, the event data was bad  -- RN random choice  -- 
 				      // to be replaced by something else?!?! really only used for array definition
 				      // MUST FIND A BETTER WAY ... THIS VARIABLE NOT GOOD?
-const int NR_OF_TDCS=7;
+const int NR_OF_TDCS=8;
 const int LUT_CHANNELS=9000;
 const int TDC_CHAN_PULSER=2;
 
@@ -820,6 +821,95 @@ void setupchannel2wireXUXU()
 	   }
 	   preampcount++;	
       }
+  }
+}
+
+void setupchannel2wireXUXold()
+// hack the mapping of wires to channels with XU and then old X chamber
+//
+{
+  int input,tdcmodulecounter,preampnum,channelstart,basecount;
+  int preampcount=0;
+  int preampbase=0;
+  //int channel=0;
+  int tdcchan;
+
+  for(input=0;input<896;input++) Channel2Wire[input]=-1;
+
+  for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+    for(input=1;input<8;input++){
+      channelstart=0;
+      preampnum=(tdcmodulecounter*7)+input;
+      //printf("tdc %d input %d preamp %d \n",tdcmodulecounter,input,preampnum);
+
+      if(preampcount<13) { // wireplane X1  =================================================
+        basecount=0;
+        preampbase=0;
+	channelstart=basecount+(preampcount-preampbase)*16;
+
+	if(preampcount==(13-1)){            
+	  Channel2Wire[224]=197;
+	  Channel2Wire[225]=196;
+	  Channel2Wire[226]=195;
+	  Channel2Wire[227]=194;
+	  Channel2Wire[228]=193;
+	  Channel2Wire[229]=192;
+	  for(int i=230;i<240;i++){
+	    Channel2Wire[i]=0;
+	  }
+	  //for(int i=224;i<240;i++){
+	  //    printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[i],i);
+	  //}
+	}
+	else {
+	  int counter=1;
+	  for(int i=channelstart;i<channelstart+16;i++){
+	    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	    Channel2Wire[tdcchan]=(channelstart+16) - counter;
+	    counter++;
+	    //printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[tdcchan],tdcchan);
+	  }
+	} 
+      }
+      else if(preampcount<22){ // wireplane U1  =================================================
+        basecount=300;
+        preampbase=13;
+	channelstart=basecount+(preampcount-preampbase)*16;
+	for(int i=channelstart;i<channelstart+16;i++){
+	  tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	  Channel2Wire[tdcchan]=i;
+	  //printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[tdcchan],tdcchan);
+	}
+      }
+      else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
+        basecount=508;
+        preampbase=23;
+	channelstart=basecount + (preampcount-preampbase)*16;
+	if(preampcount==22){
+	  Channel2Wire[424]=500;
+	  Channel2Wire[425]=501;
+	  Channel2Wire[426]=502;
+	  Channel2Wire[427]=503;
+	  Channel2Wire[428]=504;
+	  Channel2Wire[429]=505;
+	  Channel2Wire[430]=506;
+	  Channel2Wire[431]=507;            
+	  for(int i=424;i<432;i++){
+	    tdcchan=i;
+	    //printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
+	    //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, Channel2Wire[tdcchan]);
+	  }
+	}
+	else{
+	  for(int i=channelstart;i<channelstart+16;i++){
+	    tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+	    Channel2Wire[tdcchan]=i;
+	    //printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
+	  }
+	}
+      }
+      preampcount++;   
+    }
   }
 }
 
@@ -1698,6 +1788,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   extern int NXThetaCorr;
   extern double *XThetaCorr;
   extern int NXY1Corr;
+
   extern double *XY1Corr;
 
   *Xcorr = 0;
@@ -1768,6 +1859,7 @@ double CalcTfromP(double p, double mass)
 double CalcEx(double Xcorr)
 {
   double exE = 0;
+
   extern double T1;
   double  T2 = 0, T3 = 0, T4 = 0;//Energies in MeV
 
@@ -1867,6 +1959,7 @@ double CalcThetaPrime(double X1, double ThFP)
   ThetaPrimePars[5] = -1.77584e-05;
 
   double result = ThFP*(ThetaPrimePars[0] + ThetaPrimePars[1]*X1 + ThetaPrimePars[2]*X1*X1) +  ThetaPrimePars[3] +  ThetaPrimePars[4]*X1 +  ThetaPrimePars[5]*X1*X1;
+  delete ThetaPrimePars;
   return result;
 }
 
@@ -1927,16 +2020,17 @@ INT focal_bor(INT run_number)
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 
    switch(runinfo2.run_number){
-	case 33116: x1offset=0.; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33123: x1offset=0.312561; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33132: x1offset=0.964111; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33139: x1offset=1.57703; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33148: x1offset=1.62781; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33154: x1offset=0.341736; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33159: x1offset=-0.1604; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33166: x1offset=-0.612671; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33175: x1offset=0.674438; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 33177: x1offset=0.61554; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1059: x1offset=0.; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1060: x1offset=0.; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1062: x1offset=-13.; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1079: x1offset=-12; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1081: x1offset=-22; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1082: x1offset=-24; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1083: x1offset=-24; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1084: x1offset=-20; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1085: x1offset=-22; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1086: x1offset=-22; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+	case 1087: x1offset=-22; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
    }
    return SUCCESS;
 }
@@ -1968,7 +2062,7 @@ INT focal_init(void)
      {
        if(VDC2_new)
 	 {
- 	   setupchannel2wireXUXU();
+ 	   //setupchannel2wireXUXU();
 	 }
        else
 	 {
@@ -1986,7 +2080,8 @@ INT focal_init(void)
 // 	   setupchannel2wireXoldXold();
 	 }
      }
-
+   
+   setupchannel2wireXUXold();
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
@@ -2360,6 +2455,7 @@ INT focal_init(void)
 #ifdef _RAWDATA
   gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L RawData.c+");
+  printf("RawData Init\n");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
    return SUCCESS;
@@ -2377,7 +2473,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Int_t channel, channelnew, time;
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
-   Int_t reftimes[7]; 
+   Int_t reftimes[8]; 
    Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
@@ -2508,11 +2604,11 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
     }
 
    #endif
-
+   
 
    //----------------------------------------------------------------------
    // look for TDC0 bank 
-
+ 
    ntdc = bk_locate(pevent, "TDC0", &ptdc);  // TDC bank in analyzer.c defined as TDC0. ntdc is nr of values in the bank
    //printf("nr of TDC datawords:                    %d words\n",ntdc);
    tdc_counter++;
@@ -2529,7 +2625,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    //}
    //else
    //{
-       tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
+   if(ntdc!=0)tdcevtcount=(ptdc[1]>>5)&0xfffff; // the 'evtnr' 
        //}
 
    // test for misaligned events in the MIDAS bank. The QDC and TDC event nr must agree. --> there are problems with QDC evtcounter from board?!
@@ -2559,6 +2655,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	return 1;
    }
 
+   
    if (ntdc == 0){                      // events with no TDC data. Ignore the event
         //hEmptyTDCBankRaw->Fill(2);
 	#ifdef _PRINTTOSCREEN
@@ -2566,11 +2663,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 	#endif
         hEventID->Fill(ev_id_noTDC);          
 	empty_tdc_counter++;
-	return 1;
+	#ifdef _TDCs
+	return 1;//aborts doing data if no TDCs
+	#endif
    }
-
+  
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
- 
+
    // loop through all the TDC datawords===================================================================================================
    //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event 
    
@@ -2638,8 +2737,8 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
       
       ref_time = reftimes[tdcmodule] - time;     // to get accurate time info that does not suffer from trigger jitter
       
-      if(tdcmodule<7){
-	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 
+      if(tdcmodule<8){
+	hTDC2DModule[tdcmodule]->Fill(ref_time,channel);
 	
 	
 	
@@ -3184,7 +3283,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    //--------------------------------------------------------------------------------------------------------
    CalcThetaFP(X1pos,X2pos,&ThFPx);  
    CalcThetaFP(U1pos,U2pos,&ThFP);  
-   CalcThetaScat(ThFP,X1pos,&ThSCAT);
+   CalcThetaScat(ThFPx,X1pos,&ThSCAT);
    t_ThFP=ThFP;
    t_ThSCAT=ThSCAT;
    t_ThFPx=ThFPx;
@@ -3262,7 +3361,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    }
 
    	////// SIS0 gubbins ///////
-
+   #ifdef _STRUCKADC
 		INT i, nSISwords;
 
 //  each fired channel of the ADC generates a 6 words sentence
@@ -3281,7 +3380,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
  		nSISwords=bk_locate(pevent, "SIS0", &pSIS);
     
-int nStHits = nSISwords/wordsPerEvent;
+		int nStHits = nSISwords/wordsPerEvent;
 
 //		if(nSISwords>0){
 //
@@ -3304,6 +3403,8 @@ int nStHits = nSISwords/wordsPerEvent;
 		if(StChannel<8)t_StruckADC1[StChannel] = fADC_energy_max_value;
 		}
 		///////////////////////////
+
+#endif
 
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];

@@ -23,7 +23,7 @@ extern double *ADCGains;
 
 TCutG *MMMFrontBackEnergyCut;
 
-const double sigma = 30;//keV - silicon energy resolution - used for the front-back energy cut condition
+const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
 SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 {
@@ -43,7 +43,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 	for(int l=0;l<mTDC.GetSize();l++)//Loop over all of the TDC values *again* but in this case, looking for the N sides
 	  {
 	    if(MMMTDCBackTest(mTDC.GetChannel(l)) && MMMTDCFrontBackTest(mTDC.GetChannel(k),mTDC.GetChannel(l)))
-	      {
+	      {//printf("test\n");
 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
@@ -51,17 +51,18 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		      {
 			//Don't want to run for events w
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
-			  {
+			  {//printf("test\n");
 			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
-			      {
+			      {//printf("test\n");
 				if(ADC_import[j]>0)
-				  {
+				  {//printf("test\n");
 				    double energyi = MMMEnergyCalc(i,ADC_import[i]);
 				    double energyj = MMMEnergyCalc(j,ADC_import[j]);
 				    
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)))
 				      {
+					//	printf("test\n");
 					si->SetEnergy(0.5*(energyi+energyj));
 					si->SetTheta(MMMThetaCalc(i));
 					si->SetPhi(MMMPhiCalc(j));
@@ -240,7 +241,7 @@ double MMMPhiCalc(int Channel)
       break;
     default : 
       phi = 0;
-      printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
+      //printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
     }
   return phi;
 }
@@ -379,7 +380,9 @@ bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
       if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
 	{
 	  result = true;
+	  //printf("TDC F-B true\n");
 	}
+      //else printf("TDC F-B false\n");
     }
   return result;
 }
