@@ -13,7 +13,7 @@
 #include <vector>
 #include <stdio.h>
 
-extern double PulseLimits[2];
+extern int* PulseLimits;
 
 class multiTDC
 {
@@ -24,7 +24,7 @@ public :
   
   private :
   //The actual members of the class
-  int TDChits;
+  unsigned int TDChits;
   
   std::vector<int> TDCchannels;
   std::vector<double> TDCvalues;

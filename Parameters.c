@@ -241,8 +241,8 @@ void PulseLimitsInit()
   printf("\nPulseLimitsInit\n");
   
   PulseLimits = new int[2];
-  PulseLimits[0] = -100000;
-  PulseLimits[1] = 100000;
+  PulseLimits[0] = 0;
+  PulseLimits[1] = 0;
 }
 
 void CalibrationParametersInit()
@@ -553,6 +553,14 @@ void ReadConfiguration()
 		  XY1Corr = new double[NXY1Corr];
 		  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
 		  Y1CorrectionParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,12,"PulseLimits") == 0)
+		{
+		  input >> LineBuffer;
+		  PulseLimits[0] = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  PulseLimits[1] = atoi(LineBuffer.c_str());
+		  printf("Good pulse limits: %d - %d\n", PulseLimits[0], PulseLimits[1]);
 		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
