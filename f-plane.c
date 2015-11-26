@@ -62,10 +62,12 @@
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
+
 #define _ADC
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
+
 #define _RAWDATA
 #define _SILICONDATA 
 #define _MMM
@@ -75,7 +77,7 @@ extern float *QDC;
 #define _CLOVER
 #define _TDC
 
-//#define _STRUCKADC
+#define _STRUCKADC
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -3372,23 +3374,17 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
     DWORD *pSIS;
 //    uint32_t *pSIS;
 
-   //float *adc = new float[32*ADCModules];  
-//    printf("adc initialisation: %d\n",32*ADCModules);
-   //int adcchan,adcnr;
-   //extern int adc_counter1, adc_counter2;   // defined; declared in analyzer.c
-
-
  		nSISwords=bk_locate(pevent, "SIS0", &pSIS);
     
 		int nStHits = nSISwords/wordsPerEvent;
-
+		//printf("nStHits: %d\n",nStHits);
 //		if(nSISwords>0){
 //
 //		for (i = 0; i < nSISwords; i++){
 //			printf("pSIS[%d]: %d\n",i,pSIS[i]);
 //		}
 
-		for(int i =0; i<nStHits;i++){\
+		for(int i =0; i<nStHits;i++){
 
 // The channel of the ADC is the last number of the first word of the sentence
 		ChannelIndex = i*wordsPerEvent;
@@ -3398,9 +3394,12 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 		StChannel = pSIS[ChannelIndex]&0x7;
 
  		uint32_t fADC_energy_max_value = pSIS[EnergyIndex];
-//		uint32_t fADC_energy_max_value = pSIS[EnergyIndex]&0xfffffff;
-		printf("Test for Struck Channel: %d\n", StChannel);		printf("fADC_energy_max_value: %d\n",fADC_energy_max_value);
+
+//		printf("Test for Struck Channel: %d\n", StChannel);
+//		printf("fADC_energy_max_value: %d\n",fADC_energy_max_value);
+
 		if(StChannel<8)t_StruckADC1[StChannel] = fADC_energy_max_value;
+		else printf("Bollocks\n");
 		}
 		///////////////////////////
 
