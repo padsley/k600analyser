@@ -818,6 +818,97 @@ void setupchannel2wireXUXU()
 }
 
 /* ---------------------------------------------------------------------------------------*/
+void setupchannel2wireXUXold()
+// hack the mapping of wires to channels with XU and then old X chamber
+//
+{
+  int input,tdcmodulecounter,preampnum,channelstart,basecount;
+  int preampcount=0;
+  int preampbase=0;
+  //int channel=0;
+  int tdcchan;
+  
+  for(input=0;input<896;input++) Channel2Wire[input]=-1;
+  
+  for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+    for(input=1;input<8;input++){
+      channelstart=0;
+      preampnum=(tdcmodulecounter*7)+input;
+      //printf("tdc %d input %d preamp %d \n",tdcmodulecounter,input,preampnum);
+      
+      if(preampcount<13) { // wireplane X1  =================================================
+	  basecount=0;
+	  preampbase=0;
+	  channelstart=basecount+(preampcount-preampbase)*16;
+	  
+	  if(preampcount==(13-1)){            
+	    Channel2Wire[224]=197;
+	    Channel2Wire[225]=196;
+	    Channel2Wire[226]=195;
+	    Channel2Wire[227]=194;
+	    Channel2Wire[228]=193;
+	    Channel2Wire[229]=192;
+	    for(int i=230;i<240;i++){
+	      Channel2Wire[i]=0;
+	    }
+	    //for(int i=224;i<240;i++){
+	      //    printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[i],i);
+	      //}
+	  }
+	  else {
+	    int counter=1;
+	    for(int i=channelstart;i<channelstart+16;i++){
+	      tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	      Channel2Wire[tdcchan]=(channelstart+16) - counter;
+	      counter++;
+	      //printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[tdcchan],tdcchan);
+	    }
+	  } 
+      }
+      else if(preampcount<22){ // wireplane U1  =================================================
+	  basecount=300;
+	  preampbase=13;
+	  channelstart=basecount+(preampcount-preampbase)*16;
+	  for(int i=channelstart;i<channelstart+16;i++){
+	    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	    Channel2Wire[tdcchan]=i;
+	    //printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[tdcchan],tdcchan);
+	  }
+      }
+      else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
+	  basecount=508;
+	  preampbase=23;
+	  channelstart=basecount + (preampcount-preampbase)*16;
+	  if(preampcount==22){
+	    Channel2Wire[424]=500;
+	    Channel2Wire[425]=501;
+	    Channel2Wire[426]=502;
+	    Channel2Wire[427]=503;
+	    Channel2Wire[428]=504;
+	    Channel2Wire[429]=505;
+	    Channel2Wire[430]=506;
+	    Channel2Wire[431]=507;            
+	    for(int i=424;i<432;i++){
+	      tdcchan=i;
+	      printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
+	      //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, Channel2Wire[tdcchan]);
+	    }
+	  }
+	  else{
+	    for(int i=channelstart;i<channelstart+16;i++){
+	      tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+	      Channel2Wire[tdcchan]=i;
+	      printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
+	    }
+	  }
+    }
+    preampcount++;   
+  }
+}
+}
+
+
+/* ---------------------------------------------------------------------------------------*/
 void setupchannel2wire()
 // hack the mapping of wires to channels for UXUX setup
 // See camac-vme-cabling.xls
@@ -930,7 +1021,7 @@ void getRefTimes(int time[], int ntdc, DWORD ptdc[])
 // 1st chan into each TDC is a copy of the trigger. Find this for each module for each event.
 // Without this you cannot get accurate time determination.
 {
-   memset(time,0,7*sizeof(int));   
+   memset(time,0,8*sizeof(int));   
    int module=0,channel=9999;   
    for(int i=0;i<ntdc;i++){               // loop through all the TDC datawords
       if((((ptdc[i])>>27)&0x1f)==0x1f){     // first determine TDC module nr. This precedes data for each module.
