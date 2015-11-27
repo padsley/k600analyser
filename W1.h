@@ -22,7 +22,8 @@ double W1EnergyCalc(int Channel, double ADCValue);
 double W1ThetaCalc(int FrontChannel, int BackChannel);
 double W1PhiCalc(int FrontChannel, int BackChannel);
 bool W1FrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si);
-bool W1ADCTDCChannelTest(int ADCChannel, int TDCChannel);
+bool W1ADCTDCChannelTestPSide(int ADCChannel, int TDCChannel);
+bool W1ADCTDCChannelTestNSide(int ADCChannel, int TDCChannel);
 
 void W1Init();
 void W1LoadCuts(SiliconData *si);
