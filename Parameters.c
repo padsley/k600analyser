@@ -322,8 +322,8 @@ void PulseLimitsInit()
   printf("\nPulseLimitsInit\n");
   
   PulseLimits = new int[2];
-  PulseLimits[0] = -100000;
-  PulseLimits[1] = 100000;
+  PulseLimits[0] = 0;
+  PulseLimits[1] = 0;
 }
 
 void CalibrationParametersInit()
@@ -442,8 +442,14 @@ void ReadConfiguration()
   bool Y1CorrectionParametersRead = false;
 
   std::ifstream input;
+
   input.open("config.cfg");//This is the line to change in order to change the configuration file
-  
+  //input.open("config.cfg");//This is the line to change in order to change the configuration file
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
+  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
 
   if(input.is_open())
     {
@@ -665,6 +671,14 @@ void ReadConfiguration()
 		  XY1Corr = new double[NXY1Corr];
 		  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
 		  Y1CorrectionParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,12,"PulseLimits") == 0)
+		{
+		  input >> LineBuffer;
+		  PulseLimits[0] = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  PulseLimits[1] = atoi(LineBuffer.c_str());
+		  printf("Good pulse limits: %d - %d\n", PulseLimits[0], PulseLimits[1]);
 		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
