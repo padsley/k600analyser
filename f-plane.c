@@ -1027,7 +1027,8 @@ void getRefTimes(int time[], int ntdc, DWORD ptdc[])
 // 1st chan into each TDC is a copy of the trigger. Find this for each module for each event.
 // Without this you cannot get accurate time determination.
 {
-   memset(time,0,8*sizeof(int));   
+  extern int TDCModules;
+   memset(time,0,TDCModules*sizeof(int));   
    int module=0,channel=9999;   
    for(int i=0;i<ntdc;i++){               // loop through all the TDC datawords
       if((((ptdc[i])>>27)&0x1f)==0x1f){     // first determine TDC module nr. This precedes data for each module.
