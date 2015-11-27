@@ -21,10 +21,12 @@ extern double *ADCGains;
 
 TCutG *W1FrontBackEnergyCut;
 
-SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
-        int *TDC_channel_import, float *TDC_value_import)
+//SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
+//      int *TDC_channel_import, float *TDC_value_import)
+void W1SiliconSort(float *ADC_import, int ntdc,
+		   int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
-    SiliconData *si = new SiliconData();
+  //   SiliconData *si = new SiliconData();
 
     multiTDC mTDC;
     mTDC.multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
@@ -95,7 +97,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
     si->SetHits(si->SizeOfEvent());
     if(!si->TestEvent())si->ClearEvent();
     //si->PrintEvent();
-    return si;
+    //   return si;
 }
 
 void W1LoadCuts(SiliconData *si)

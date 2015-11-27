@@ -3443,14 +3443,14 @@ gammy = new GammaData();
 #ifdef _MMM
     if(si)
     {
-      si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }
 #endif
 
 #ifdef _W1
     if(si)
     {
-      si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }
 #endif
 

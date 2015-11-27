@@ -25,9 +25,10 @@ TCutG *MMMFrontBackEnergyCut;
 
 const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
-SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+//SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
-  SiliconData *si = new SiliconData();
+  //SiliconData *si = new SiliconData();
 
   //Loop over ADC and TDC events and do the following:
   //Check whether there are front-back coincidences for a detector and test the energies
@@ -105,7 +106,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   //MMMGhostBuster(SiliconData *si);
 
   mTDC.ClearEvent();
-  return si;
+  //return si;
 }
 
 void MMMLoadCuts(SiliconData *si)
