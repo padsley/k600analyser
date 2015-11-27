@@ -2475,6 +2475,9 @@ INT focal_init(void)
 INT focal_event(EVENT_HEADER * pheader, void *pevent)
 {
 //   printf("L2218\n");
+
+  extern int TDCModules;//Number of TDC modules as declared in Parameters.c and set by the user on the config file
+
    DWORD *ptdc;
    Int_t ntdc = 0;
    Int_t tdc1190datacode, tdc1190error, tdc1190trailerstatus;
@@ -2482,8 +2485,13 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    Int_t channel, channelnew, time;
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
-   Int_t reftimes[8]; 
-   Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
+   Int_t *reftimes = new int[TDCModules]; 
+   for(int i=0;i<TDCModules;i++)reftimes[i]=0;
+
+   Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;//This should be changed at some point to be int tof[TDCModules] and then set according to the TDC module number
+   //int tof[TDCmodules];
+   //for(int i=0;i<TDCModules;i++)tof[i] = 0;
+
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
