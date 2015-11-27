@@ -364,7 +364,8 @@ void ReadConfiguration()
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
-  input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+  //input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
 
   if(input.is_open())
     {
@@ -374,6 +375,7 @@ void ReadConfiguration()
 	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
 	    {
 	      input >> LineBuffer;
+	      //printf("LineBuffer: %s\n",LineBuffer.c_str());
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
 	      else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
 		{
