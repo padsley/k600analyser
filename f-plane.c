@@ -54,6 +54,9 @@
 #include "CloverSort.h"
 
 #include "RawData.h"
+
+#include "GateauData.h"
+#include "GateauSort.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
 //#define _MOVIE
@@ -253,6 +256,10 @@ RawData *raw;
 
 #ifdef _GAMMADATA
 GammaData *gammy;
+#endif
+
+#ifdef _GATEAU
+GateauData *fatty;
 #endif
 
 Int_t t_pulser=0;    // a pattern register equivalent
@@ -3480,6 +3487,13 @@ gammy = new GammaData();
     }
 #endif
 
+#ifdef _GATEAU
+  if(fatty)
+  {
+    GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
+  }
+#endif
+
    //--------------------------------------------------------------------------------------------------------
    // Fill TTrees
    //--------------------------------------------------------------------------------------------------------
@@ -3510,6 +3524,10 @@ gammy = new GammaData();
   delete raw;
 #endif
 
+#ifdef _GATEAU
+  fatty->ClearEvent();
+  delete fatty;
+#endif
   
 #ifdef _ADC
     ADCClear();
