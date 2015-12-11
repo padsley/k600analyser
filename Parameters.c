@@ -38,6 +38,7 @@ double HagarOffset[7] = {0,0,0,0,0,0,0};
 double CloverGain[8] = {1,1,1,1,1,1,1,1};
 double CloverOffset[8] = {0,0,0,0,0,0,0,0};
 
+int ***GateauTDCChannelLimits;
 
 int *PulseLimits;//[2] = {-1e6, 1e6};
 
@@ -314,7 +315,28 @@ void CloverTDCChannelsInit(int det, int start, int stop)
 }
 
 
+void GateauTDCChannelLimitsInits()
+{
+  GateauTDCChannelLimits = new int**[2];
+  for(int i=0;i<2;i++)
+  {
+    GateauTDCChannelLimits[i] = new int*[5];
+    for(int j=0;j<5;j++)
+    {
+      GateauTDCChannelLimits[i][j] = new int[2];
+      for(int k=0;k<2;k++)
+      {
+	GateauTDCChannelLimits[i][j][k] = -1;
+      }
+    }
+  }
+}
 
+void GateauSetChannelLimits(int plane, int sector, int start, int stop)
+{
+  GateauTDCChannelLimits[plane][sector][0] = start;
+  GateauTDCChannelLimits[plane][sector][1] = stop;
+}
 
 
 void PulseLimitsInit()
@@ -440,10 +462,11 @@ void ReadConfiguration()
   bool ThSCATCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
+  bool GateauRead = false;
 
   std::ifstream input;
 
-  input.open("config.cfg");//This is the line to change in order to change the configuration file
+//   input.open("config.cfg");//This is the line to change in order to change the configuration file
   //input.open("config.cfg");//This is the line to change in order to change the configuration file
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
@@ -451,12 +474,14 @@ void ReadConfiguration()
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
 
+    input.open("configGateau.cfg");
+  
   if(input.is_open())
     {
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead)
 	    {
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
@@ -680,6 +705,11 @@ void ReadConfiguration()
 		  PulseLimits[1] = atoi(LineBuffer.c_str());
 		  printf("Good pulse limits: %d - %d\n", PulseLimits[0], PulseLimits[1]);
 		}
+		else if(LineBuffer.compare(0,6,"GATEAU") == 0)
+		{
+		  if(GateauRead==false)GateauRead = true;
+		  else if(GateauRead==true)GateauRead = false;
+		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
 		  printf("ConfigEnd\n");
@@ -744,6 +774,33 @@ void ReadConfiguration()
 		}
 	    }
 
+	     if(GateauRead)
+	  {
+	    int plane = 0, sector = 0, start = -1, stop = -1;
+	    
+	    input >> LineBuffer;
+	    if(LineBuffer.compare(0,6,"GATEAU") == 0)
+	    {
+	      if(GateauRead==true)GateauRead = false;
+	    }
+	    else
+	    {
+	      printf("\n GATEAU wireplane: %d\t",atoi(LineBuffer.c_str()));
+	      plane = atoi(LineBuffer.c_str());
+	      input >> LineBuffer;
+	      printf("Gateau Sector: %d\t",LineBuffer.c_str());
+	      sector = atoi(LineBuffer.c_str());
+	      input >> LineBuffer;
+	      printf("Start: %d\t",LineBuffer.c_str());
+	      start = atoi(LineBuffer.c_str());
+	      input >> LineBuffer;
+	      printf("Stop: %d\t",LineBuffer.c_str());
+	      stop = atoi(LineBuffer.c_str());
+	      
+	      GateauSetChannelLimits(plane,sector,start,stop);
+	    }
+	  }
+	    
 	  if(MMMADCChannelRead)
 	    {
 	      int num = 0, start = -1, stop = -1;

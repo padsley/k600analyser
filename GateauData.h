@@ -34,10 +34,30 @@ public :
   
   int ValuesWiresFired[2][5][16]; //Same as above
   
+  int GroupWiresFiredForSector[2][5]; //Number of wires fired in a group starting from the innermost active wire (can supress wires in GateauSort)
+  
+  double SectorSlope[2][5];
+  double SectorIntercept[2][5];
+  
+  double SectorFigureOfMerit[2][5];
+  
 public :
   //Setters - set the physical values for each physical event
   void SetWiresFired(int wires) {WiresFired = wires;}
   void SetWiresFiredForSector(int plane, int sector, int wires) {SectorWiresFired[plane][sector] = wires;}
+  
+//   void SetListWiresFired(int plane, int sector, multiTDC mTDC);
+//   void SetValuesWiresFired(int plane, int sector, multiTDC mTDC);
+  
+  void SetGroupWiresFiredForSector(int plane, int sector, int wires) {GroupWiresFiredForSector[plane][sector] = wires;}
+  
+  void SetSectorSlope(int plane, int sector, double slope) {SectorSlope[plane][sector] = slope;}
+  void SetSectorIntercept(int plane, int sector, double intercept) {SectorIntercept[plane][sector] = intercept;}
+  
+  void SetSectorFigureOfMerit(int plane, int sector, double FOM) {SectorFigureOfMerit[plane][sector] = FOM;}
+  
+  
+  int GetGroupWiresFiredForSector(int plane, int sector) {return GroupWiresFiredForSector[plane][sector];}
   
   void PrintEvent();
   bool TestEvent();

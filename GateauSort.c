@@ -13,23 +13,40 @@ void GateauSort(int TDCHits, int *TDC_channel_import, float *TDC_value_import, G
   mTDC.multiTDCSort(TDCHits, TDC_channel_import, TDC_value_import);
   
   
-  fatty->SetWiresFired(GetTotalWiresFired(mTDC));//using the multihit TDC stuff
+  fatty->SetWiresFired(CalcTotalWiresFired(mTDC));//using the multihit TDC stuff
   
   for(int i=0;i<2;i++)
   {
     for(int j=0;j<5;j++)
     {
-      fatty->SetWiresFiredForSector(i, j, GetWiresFiredPerSector(mTDC,i,j));//using multiTDC
+      fatty->SetWiresFiredForSector(i, j, CalcWiresFiredPerSector(mTDC,i,j));//using multiTDC
+      
+//       fatty->SetListWiresFired(i,j,mTDC);
+//       fatty->SetValueWiresFired(i,j,mTDC);
+      
+      fatty->SetGroupWiresFiredForSector(i, j, CalcGroupWiresFiredPerSector(mTDC,i,j));
+      if(fatty->GetGroupWiresFiredForSector(i,j)>2)
+      {
+	fatty->SetSectorSlope(i,j,CalcSectorSlope(mTDC,i,j));
+	fatty->SetSectorIntercept(i,j,CalcSectorSlope(mTDC,i,j));
+	fatty->SetSectorFigureOfMerit(i,j,CalcFigureOfMerit(mTDC,i,j));
+      }
+      else
+      {
+	fatty->SetSectorSlope(i,j,-1000);
+	fatty->SetSectorIntercept(i,i,-1000);
+	fatty->SetSectorFigureOfMerit(i,j,-1);
+      }
     }
   }
   
-  
+  //Want to now list wires fired in each sector and list the values of those fired wires
   
   
 }
 
 
-int GetTotalWiresFired(multiTDC mTDC)
+int CalcTotalWiresFired(multiTDC mTDC)
 {
   int result = 0;
   
@@ -50,7 +67,7 @@ int GetTotalWiresFired(multiTDC mTDC)
       return result;
 }
 
-int GetWiresFiredPerSector(multiTDC mTDC, int plane, int sector)
+int CalcWiresFiredPerSector(multiTDC mTDC, int plane, int sector)
 {
   int result = 0;
   
@@ -61,5 +78,33 @@ int GetWiresFiredPerSector(multiTDC mTDC, int plane, int sector)
       result++;
     }
   }
+  return result;
+}
+
+int CalcGroupWiresFiredPerSector(multiTDC mTDC, int plane, int sector)
+{
+ int result = 0;
+ 
+ return result;
+}
+
+double CalcSectorSlope(multiTDC mTDC, int plane, int sector)
+{
+  double result = 0.;
+  
+  return result;
+}
+
+double CalcSectorIntercept(multiTDC mTDC, int plane, int sector)
+{
+  double result = 0.;
+  
+  return result;
+}
+
+double CalcFigureOfMerit(multiTDC mTDC, int plane, int sector)
+{
+  double result = 0.;
+  
   return result;
 }
