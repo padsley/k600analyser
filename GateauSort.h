@@ -19,12 +19,7 @@ int CalcWiresFiredPerSector(multiTDC mTDC, int plane, int sector);
 
 int CalcGroupWiresFiredPerSector(multiTDC mTDC, int plane, int sector);
 
-double CalcSectorSlope(multiTDC, int plane, int sector);
-
-double CalcSectorIntercept(multiTDC, int plane, int sector);
-
-double CalcFigureOfMerit(multiTDC, int plane, int sector);
-
+double *FitSectorData(multiTDC mTDC, int plane, int sector, int WireCounter);
 
 
 #endif

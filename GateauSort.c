@@ -4,7 +4,7 @@
 
 extern int ***GateauTDCChannelLimits;
 
-int StartWire = 1;
+int StartWire = 0;//C numbering
 
 void GateauSort(int TDCHits, int *TDC_channel_import, float *TDC_value_import, GateauData *fatty)
 {
@@ -21,15 +21,16 @@ void GateauSort(int TDCHits, int *TDC_channel_import, float *TDC_value_import, G
     {
       fatty->SetWiresFiredForSector(i, j, CalcWiresFiredPerSector(mTDC,i,j));//using multiTDC
       
-//       fatty->SetListWiresFired(i,j,mTDC);
-//       fatty->SetValueWiresFired(i,j,mTDC);
+      //       fatty->SetListWiresFired(i,j,mTDC);
+      //       fatty->SetValueWiresFired(i,j,mTDC);
       
       fatty->SetGroupWiresFiredForSector(i, j, CalcGroupWiresFiredPerSector(mTDC,i,j));
       if(fatty->GetGroupWiresFiredForSector(i,j)>2)
       {
-	fatty->SetSectorSlope(i,j,CalcSectorSlope(mTDC,i,j));
-	fatty->SetSectorIntercept(i,j,CalcSectorSlope(mTDC,i,j));
-	fatty->SetSectorFigureOfMerit(i,j,CalcFigureOfMerit(mTDC,i,j));
+	double *FitResult = FitSectorData(mTDC,i,j,fatty->GetGroupWiresFiredForSector(i,j));
+	fatty->SetSectorSlope(i,j,FitResult[0]);
+	fatty->SetSectorIntercept(i,j,FitResult[1]);
+	fatty->SetSectorFigureOfMerit(i,j,FitResult[2]);
       }
       else
       {
@@ -83,28 +84,73 @@ int CalcWiresFiredPerSector(multiTDC mTDC, int plane, int sector)
 
 int CalcGroupWiresFiredPerSector(multiTDC mTDC, int plane, int sector)
 {
- int result = 0;
- 
- return result;
+  int result = 0;
+  
+  bool TestFired[16];
+  for(int i=0;i<16;i++)TestFired[i] = false;
+  
+  for(int k=0;k<mTDC.GetSize();k++)
+  {
+    if(mTDC.GetChannel(k) > GateauTDCChannelLimits[plane][sector][0] && mTDC.GetChannel(k) < GateauTDCChannelLimits[plane][sector][1])
+    {
+      TestFired[mTDC.GetChannel(k) - GateauTDCChannelLimits[plane][sector][0]] = true;
+    }
+  }
+  
+  bool AllFired = true;
+  
+  int i = StartWire;
+  
+  while (i<16 && AllFired)
+  {
+    result++;
+    if(!TestFired[i])AllFired = false;
+    i++;
+  }
+  
+  return result;//This should be a list of the number of wires fired starting from the middle wire. Hopefully.
 }
 
-double CalcSectorSlope(multiTDC mTDC, int plane, int sector)
+double *FitSectorData(multiTDC mTDC, int plane, int sector, int WireCounter)
 {
-  double result = 0.;
+  double *result = new double[3];//0 is slope, 1 is intercept, 2 is Figure of Merit
+  result[0] = 0; result[1] = 0; result[2] = 0;
   
-  return result;
-}
-
-double CalcSectorIntercept(multiTDC mTDC, int plane, int sector)
-{
-  double result = 0.;
-  
-  return result;
-}
-
-double CalcFigureOfMerit(multiTDC mTDC, int plane, int sector)
-{
-  double result = 0.;
-  
-  return result;
+  if(WireCounter>2)
+  {
+    int *wires = new int[WireCounter];
+    int *values = new int[WireCounter];
+    
+    for(int k=0;k<mTDC.GetSize();k++)
+    {
+      if(mTDC.GetChannel(k) > GateauTDCChannelLimits[plane][sector][0] && mTDC.GetChannel(k) < GateauTDCChannelLimits[plane][sector][1])
+      {
+	wires[mTDC.GetChannel(k) - GateauTDCChannelLimits[plane][sector][0] - StartWire] = mTDC.GetChannel(k) - GateauTDCChannelLimits[plane][sector][0];//This should set the wire number to be the number of the wire fired in the sector:
+	//Get the index from the start channel: TDCchannel - channel_limts = number of the wire in sector starting at zero
+	//Then -StartWire gives the number of the index from the start wire (i.e. the first wire to fix with index zero should be the StartWire
+	//Then the value is set to be the wire number in the sector
+	values[mTDC.GetChannel(k) - GateauTDCChannelLimits[plane][sector][0]] = mTDC.GetValue(k);
+      }
+    }
+    
+    double sumx = 0., sumx2 = 0., sumxy = 0., sumy = 0., sumy2 = 0.;
+    
+    //Now we want to compute the fit parameters: using least-squares
+    for(int i=0;i<WireCounter;i++)
+    {
+     sumx += wires[i];
+     sumx2 += pow(wires[i],2.);
+     sumxy += wires[i] * values[i];
+     sumy += values[i];
+     sumy2 += pow(values[i],2.);
+    }
+    
+    double denom = WireCounter * sumx2 - pow(sumx,2.);
+    
+    if(denom==0)printf("Can't do the track fitting for GATEAU\n");
+    
+    result[0] = (WireCounter * sumxy - sumx * sumy)/denom;//Slope
+    result[1] = (sumy*sumx2 - sumx*sumxy)/denom;//Intercept
+    result[2] = (sumxy - sumx*sumy/WireCounter) / sqrt((sumx2 - pow(sumx,2.)/WireCounter) * (sumy2 - pow(sumy,2.)/WireCounter));
+  }
 }
