@@ -55,8 +55,8 @@
 
 #include "RawData.h"
 
-#include "GateauData.h"
-#include "GateauSort.h"
+//#include "GateauData.h"
+//#include "GateauSort.h"
 /*------------definitions to change analysis------------------------*/
 //#define _POLARIZATION
 //#define _MOVIE
@@ -77,7 +77,7 @@ extern float *QDC;
 //#define _HAGAR
 // #define _CLOVER
 #define _TDC
-#define _GATEAU
+//#define _GATEAU
 
 //#define _STRUCKADC
 
@@ -167,10 +167,19 @@ Double_t t_pad1,t_pad2;
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
+
+//
 Int_t    t_k600;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
+
+Int_t    t_triggerU=0;
+Int_t    t_triggerI=0;
+Int_t    t_CIU=0;
+Int_t    t_CII=0;
+
+
 Double_t    x1offset=0.0;
 
 // focal plane variables for TTree
@@ -2240,6 +2249,11 @@ INT focal_init(void)
   t1->Branch("evtcounter",&t_evtcounter,"t_evtcounter/I");
   t1->Branch("tdcsperevent",&t_tdcsperevent,"t_tdcsperevent/I");
 
+  t1->Branch("triggerU",&t_triggerU,"t_triggerU/I");
+  t1->Branch("triggerI",&t_triggerI,"t_triggerI/I");
+  t1->Branch("CIU",&t_CIU,"t_CIU/I");
+  t1->Branch("CII",&t_CII,"t_CII/I");
+
   t1->Branch("tof",&t_tof,"t_tof/I");
   t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/I");
   t1->Branch("toftdc3",&t_toftdc3,"t_toftdc3/I");
@@ -2522,6 +2536,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    extern int trailer_bufoverflow_counter;            // defined; declared in analyzer.c	
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;
+   extern int triggerU,triggerI,CIU,CII;	      // defined; declared in scaler.c	
 
    //
 //    float ADC_export[160];
@@ -2597,6 +2612,12 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_pad2hiP=pad2hip;
    t_pad2lowP=pad2lowp;	    
    t_runtime=runtime;
+
+   t_triggerU=triggerU;
+   t_triggerI=triggerI;
+   t_CIU=CIU;
+   t_CII=CII;
+
 
    //---------------------------------------------------------------------
    //Put ADC info into TTree
