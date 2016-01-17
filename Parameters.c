@@ -53,6 +53,11 @@ double *masses;
 double T1;
 double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
 
+int RunNumber = 0;
+int TotalRunsNumber = 0;
+double **ExCorrTerms;
+double ExCorrection = 0.;
+
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
@@ -304,6 +309,82 @@ void ReadCalibrationParameters(std::string CalibFile)
   printf("Finished Calibration Parameters\n");
 }
 
+void ExRunCorrectionsInit(int runs)
+{
+  ExCorrTerms = new double*[runs];
+  for(int i=0;i<runs;i++)
+    {
+      ExCorrTerms[i] = new double[2];
+      ExCorrTerms[i][0] = 0;
+      ExCorrTerms[i][1] = 0;
+    }
+}
+
+void ReadExCorrectionTerms(std::string filename)
+{
+  bool Reading = true;
+
+  if(filename.compare(0,6,"compare") == 0)
+    {
+      printf("Ignore the Ex correction terms\n");
+    }
+  else
+    {
+      std::ifstream input;
+      input.open(filename.c_str());
+      if(input.is_open())
+	{
+	  int runCounter = 0;
+	  while(Reading)
+	    {
+	      std::string LineBuffer;
+	      int runs = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,3,"eof") == 0)
+		{
+		  //End-of-file
+		  Reading = false;
+		}
+	      else if(LineBuffer.compare(0,4,"runs") == 0)
+		{
+		  //Number of runs used
+		  input >> LineBuffer;
+		  runs = atoi(LineBuffer.c_str());
+		  ExRunCorrectionsInit(runs);
+		  TotalRunsNumber = runs;
+		}
+	      else
+		{
+		  int run = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  float ExCorr = atof(LineBuffer.c_str());
+		  printf("Run: %d \t ExCorr: %f\n",run,ExCorr);
+		  ExCorrTerms[runCounter][0] = run;
+		  ExCorrTerms[runCounter][1] = ExCorr;
+		  runCounter++;
+		}
+	    }
+	}
+    }
+}
+
+void LoadExCorrection(int run)
+{
+  bool foundRun = false;
+  printf("Load Ex Correction term for run  %d\n",run);
+  printf("TotalRunsNumber: %d\n",TotalRunsNumber);
+
+  for(int i=0;i<TotalRunsNumber;i++)
+    {
+      if(ExCorrTerms[i][0] == run)
+	{
+	  ExCorrection = ExCorrTerms[i][1];
+	  foundRun = true;
+	}
+    }
+  if(!foundRun)printf("Run not found\n");
+}
+
 void SetADCChannelCalibration(int channel, double offset, double gain)
 {
   if(channel<ADCsize)
@@ -482,6 +563,12 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  printf("Using calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,17,"ExCorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Ex correction file: %s\n",LineBuffer.c_str());
+		  ReadExCorrectionTerms(LineBuffer);
 		}
 	      else if(LineBuffer.compare(0,21,"ThSCATCorrectionTerms") == 0)
 		{

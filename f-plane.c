@@ -55,7 +55,7 @@
 //#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
-//#define _FULLANALYSIS
+#define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _ADC
 extern float *ADC;
@@ -170,6 +170,7 @@ Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posC=-100.0;
 double t_Ex = -0.;
+double t_ExC = -0.;
 double t_T3 = -0.;
 double t_rigidity3 = -0.;
 double t_theta = -90;
@@ -367,7 +368,10 @@ void GetODBRunInfo()
       exit(1);
    }
    printf("\n==================================================================== %i  \n\n",runinfo2.run_number);
-   
+   extern int RunNumber;
+   RunNumber = runinfo2.run_number;
+   printf("RunNumber: \t%d\n",RunNumber);
+   LoadExCorrection(RunNumber);
    db_close_record(hDB,hKey);
 }
 
@@ -982,6 +986,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posC=-100.;
    t_Ex=-1.;
+   t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
    t_X1flag=-100;   t_X2flag=-100;   t_U1flag=-100;   t_U2flag=-100;
    t_X1effID=-100.; t_X2effID=-100.; t_U1effID=-100.; t_U2effID=-100.;   
@@ -1814,6 +1819,15 @@ double CalcEx(double Xcorr)
   return exE;
 }
 
+double CorrectEx(double mEx)
+{
+  extern double ExCorrection;
+
+  double result = 0;
+  result = mEx - ExCorrection;
+  return result;
+}
+
 //--------------------------------------------------------------------------------------
 
 //void testrunnr(Int_t runn)
@@ -1957,7 +1971,8 @@ INT focal_init(void)
 
 //    setupchannel2wireXUXU();    
    //setupchannel2wireXoldXold();
-
+   extern int RunNumber;
+   printf("RunNumber: \t %d\n",RunNumber);
    ParameterInit();
 
    extern bool VDC1_new, VDC2_new;
@@ -2271,6 +2286,7 @@ INT focal_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
+  t1->Branch("ExC",&t_ExC,"t_ExC/D");
   t1->Branch("T3",&t_T3,"t_T3/D");
   t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
   t1->Branch("theta",&t_theta,"t_theta/D");
@@ -3208,6 +3224,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    t_X1posC=Xcorr;
 
    t_Ex = CalcExDirect(Xcorr);
+   t_ExC = CorrectEx(t_Ex);
 
    extern double *masses;
 
