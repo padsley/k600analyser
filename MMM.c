@@ -309,8 +309,9 @@ double MMMPhiCalc(int Channel)
       break;
     default : 
       phi = 0;
-      printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
+      //printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
     }
+    phi = 0;
   return phi;
 }
 

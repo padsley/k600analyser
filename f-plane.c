@@ -57,13 +57,13 @@
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _ADC
+//#define _ADC
 extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
-#define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
+//#define _RAWDATA
+//#define _SILICONDATA 
+//#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -173,6 +173,7 @@ double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
 double t_rigidity3 = -0.;
+double t_thetaPrime = -90.;
 double t_theta = -90;
 double t_phi = -180;
 
@@ -821,6 +822,97 @@ void setupchannel2wireXUXU()
 }
 
 /* ---------------------------------------------------------------------------------------*/
+void setupchannel2wireXUXold()
+// hack the mapping of wires to channels with XU and then old X chamber
+//
+{
+  int input,tdcmodulecounter,preampnum,channelstart,basecount;
+  int preampcount=0;
+  int preampbase=0;
+  //int channel=0;
+  int tdcchan;
+  
+  for(input=0;input<896;input++) Channel2Wire[input]=-1;
+  
+  for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+    for(input=1;input<8;input++){
+      channelstart=0;
+      preampnum=(tdcmodulecounter*7)+input;
+      //printf("tdc %d input %d preamp %d \n",tdcmodulecounter,input,preampnum);
+      
+      if(preampcount<13) { // wireplane X1  =================================================
+	  basecount=0;
+	  preampbase=0;
+	  channelstart=basecount+(preampcount-preampbase)*16;
+	  
+	  if(preampcount==(13-1)){            
+	    Channel2Wire[224]=197;
+	    Channel2Wire[225]=196;
+	    Channel2Wire[226]=195;
+	    Channel2Wire[227]=194;
+	    Channel2Wire[228]=193;
+	    Channel2Wire[229]=192;
+	    for(int i=230;i<240;i++){
+	      Channel2Wire[i]=0;
+	    }
+	    //for(int i=224;i<240;i++){
+	      //    printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[i],i);
+	      //}
+	  }
+	  else {
+	    int counter=1;
+	    for(int i=channelstart;i<channelstart+16;i++){
+	      tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	      Channel2Wire[tdcchan]=(channelstart+16) - counter;
+	      counter++;
+	      //printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[tdcchan],tdcchan);
+	    }
+	  } 
+      }
+      else if(preampcount<22){ // wireplane U1  =================================================
+	  basecount=300;
+	  preampbase=13;
+	  channelstart=basecount+(preampcount-preampbase)*16;
+	  for(int i=channelstart;i<channelstart+16;i++){
+	    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	    Channel2Wire[tdcchan]=i;
+	    //printf("chan2wire %d   tdcchan= %d  \n",Channel2Wire[tdcchan],tdcchan);
+	  }
+      }
+      else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
+	  basecount=508;
+	  preampbase=23;
+	  channelstart=basecount + (preampcount-preampbase)*16;
+	  if(preampcount==22){
+	    Channel2Wire[424]=500;
+	    Channel2Wire[425]=501;
+	    Channel2Wire[426]=502;
+	    Channel2Wire[427]=503;
+	    Channel2Wire[428]=504;
+	    Channel2Wire[429]=505;
+	    Channel2Wire[430]=506;
+	    Channel2Wire[431]=507;            
+	    for(int i=424;i<432;i++){
+	      tdcchan=i;
+	      printf("chan2wire[%d]  = %d  \n",tdcchan,Channel2Wire[tdcchan]);
+	      //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, Channel2Wire[tdcchan]);
+	    }
+	  }
+	  else{
+	    for(int i=channelstart;i<channelstart+16;i++){
+	      tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+	      Channel2Wire[tdcchan]=i;
+	      printf("chan2wire[%d] = %d   \n",tdcchan, Channel2Wire[tdcchan]);
+	    }
+	  }
+    }
+    preampcount++;   
+  }
+}
+}
+
+
+/* ---------------------------------------------------------------------------------------*/
 void setupchannel2wire()
 // hack the mapping of wires to channels for UXUX setup
 // See camac-vme-cabling.xls
@@ -933,7 +1025,7 @@ void getRefTimes(int time[], int ntdc, DWORD ptdc[])
 // 1st chan into each TDC is a copy of the trigger. Find this for each module for each event.
 // Without this you cannot get accurate time determination.
 {
-   memset(time,0,7*sizeof(int));   
+   memset(time,0,8*sizeof(int));   
    int module=0,channel=9999;   
    for(int i=0;i<ntdc;i++){               // loop through all the TDC datawords
       if((((ptdc[i])>>27)&0x1f)==0x1f){     // first determine TDC module nr. This precedes data for each module.
@@ -1644,7 +1736,6 @@ void CalcThetaFP(Double_t X1, Double_t X2, Double_t *Theta)
    *Theta=57.29578*atan(globals.z_x1x2/x);
 }
 
-//--------------------------------------------------------------------------------------
 void CalcThetaScat(Double_t Thetafp, Double_t X1, Double_t *Thetascat)
 {
    Double_t A,B;
@@ -1676,6 +1767,7 @@ void CalcPhiScat(Double_t Yfp, Double_t X1, Double_t ThSC, Double_t *Phiscat)
    *Phiscat=1*((parA0 + parA1*ThSC + parA2*ThSC*ThSC + parA3*ThSC*ThSC*ThSC)*Yfp
 	    +(parB0 + parB1*ThSC + parB2*ThSC*ThSC + parB3*ThSC*ThSC*ThSC));
 }
+
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
@@ -1830,12 +1922,6 @@ double CorrectEx(double mEx)
 
 //--------------------------------------------------------------------------------------
 
-//void testrunnr(Int_t runn)
-//{
-//  printf("\n==================================================================== %i  \n\n\n\n",runn);
-//
-//}
-
 //--------------------------------------------------------------------------------------
 void CalcYFP(Double_t x, Double_t u, Double_t thFP, Double_t *y)
 {
@@ -1867,6 +1953,8 @@ void CalcPhiFP(Double_t X1, Double_t Y1, Double_t X2, Double_t Y2,  Double_t thF
    //printf("y1=%f  y2=%f  z_x1x2=%f ThFP = %f phi=%f \n",Y1,Y2,globals.z_x1x2,thFP,57.29578*atan(y/(globals.z_x1x2/sin(thFP/57.29578))));
 }
 
+
+
 double CalcThetaPrime(double X1, double ThFP)
 {
   //Using the result of the fit:  
@@ -1886,7 +1974,9 @@ double CalcThetaPrime(double X1, double ThFP)
 
 double CalcPhiPrime(double X1, double ThFP, double Y1)
 {
-  
+  double result = 0;
+  result = Y1 * (0.108+0.00086*ThFP) - (0.6097+3.99e-4*X1);
+  return result;
 }
 
 double CalcTheta(double X1, double ThFP, double Y1)
@@ -2290,6 +2380,7 @@ INT focal_init(void)
   t1->Branch("T3",&t_T3,"t_T3/D");
   t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
   t1->Branch("theta",&t_theta,"t_theta/D");
+  t1->Branch("thetaPrime",&t_thetaPrime,"t_thetaPrime/D");
   t1->Branch("phi",&t_phi,"t_phi/D");
 
   #ifdef _FULLANALYSIS
@@ -2302,15 +2393,15 @@ INT focal_init(void)
   t1->Branch("NaI",&t_NaI,"t_NaI[7]/D");
   t1->Branch("NaIE",&t_NaIE,"t_NaIE[7]/D");
   t1->Branch("NaIEtot",&t_NaIEtot,"t_NaIEtot/D");
-  t1->Branch("SiPside1",&t_SiPside1,"t_SiPside1[16]/D");
-  t1->Branch("SiPside2",&t_SiPside2,"t_SiPside2[16]/D");
-  t1->Branch("SiPside3",&t_SiPside3,"t_SiPside3[16]/D");
-  t1->Branch("SiPside4",&t_SiPside4,"t_SiPside4[16]/D");
-  t1->Branch("SiNside1",&t_SiNside1,"t_SiNside1[16]/D");
-  t1->Branch("SiNside2",&t_SiNside2,"t_SiNside2[16]/D");
-  t1->Branch("SiNside3",&t_SiNside3,"t_SiNside3[16]/D");
-  t1->Branch("SiNside4",&t_SiNside4,"t_SiNside4[16]/D");
-  t1->Branch("NaITDC",&t_NaITDC,"t_NaITDC[7]/D");
+  //t1->Branch("SiPside1",&t_SiPside1,"t_SiPside1[16]/D");
+  //t1->Branch("SiPside2",&t_SiPside2,"t_SiPside2[16]/D");
+  //t1->Branch("SiPside3",&t_SiPside3,"t_SiPside3[16]/D");
+  //t1->Branch("SiPside4",&t_SiPside4,"t_SiPside4[16]/D");
+  //t1->Branch("SiNside1",&t_SiNside1,"t_SiNside1[16]/D");
+  //t1->Branch("SiNside2",&t_SiNside2,"t_SiNside2[16]/D");
+  //t1->Branch("SiNside3",&t_SiNside3,"t_SiNside3[16]/D");
+  //t1->Branch("SiNside4",&t_SiNside4,"t_SiNside4[16]/D");
+  //t1->Branch("NaITDC",&t_NaITDC,"t_NaITDC[7]/D");
   t1->Branch("SiPside1TDC",&t_SiPside1TDC,"t_SiPside1TDC[16]/D");
   t1->Branch("SiPside2TDC",&t_SiPside2TDC,"t_SiPside2TDC[16]/D");
   t1->Branch("SiPside3TDC",&t_SiPside3TDC,"t_SiPside3TDC[16]/D");
@@ -3223,8 +3314,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    CalcCorrX(X1pos-x1offset, Y1, ThSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   t_Ex = CalcExDirect(Xcorr);
-   t_ExC = CorrectEx(t_Ex);
+   //t_Ex = CalcExDirect(Xcorr);
+   t_Ex = CalcEx(Xcorr);
+
 
    extern double *masses;
 
@@ -3232,8 +3324,9 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
 
    t_rigidity3 = CalcQBrho(Xcorr);
 
-   t_theta = CalcThetaPrime(Xcorr,ThFPx);
-   t_phi = CalcPhiPrime(Xcorr,ThFPx,Y1);
+   t_thetaPrime = CalcThetaPrime(Xcorr,ThFP);
+   t_theta = CalcTheta(Xcorr, ThFP, Y1);
+   t_phi = CalcPhiPrime(Xcorr,ThFP,Y1);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
