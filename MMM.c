@@ -25,6 +25,71 @@ TCutG *MMMFrontBackEnergyCut;
 
 const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
+double TDCOffsets[64] = {2180.06,
+2177.38,
+2138.44,
+2116.34,
+2143.47,
+2134.65,
+2154.8,
+2145.37,
+2143.91,
+2106.59,
+2107.9,
+2115.07,
+2153.49,
+2096.72,
+2111.04,
+2089.38,
+2304.18,
+2295.5,
+2313.7,
+2258.54,
+2249.64,
+2237.04,
+2247.58,
+2275.4,
+2251.4,
+2261.99,
+2244.29,
+2201.36,
+2235.62,
+2256.41,
+2228.89,
+2179.46,
+1804,
+2202.34,
+2243.57,
+2238.94,
+2224.37,
+2179.97,
+2212.43,
+2211.06,
+2201.18,
+2209.8,
+2202.67,
+2183.57,
+2198.41,
+2146.87,
+2163.14,
+2208.32,
+2238.36,
+2164.76,
+2197.97,
+2176.16,
+2174.87,
+2147.11,
+2144.08,
+2142.6,
+2162.39,
+2116.09,
+2129.79,
+2107.31,
+2162.93,
+2157.17,
+2097.37,
+2106.41};
+
 //SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
@@ -63,7 +128,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>400)
 				      {
-					//	printf("test\n");
+// 						printf("test\n");
 					//si->SetEnergy(0.5*(energyi+energyj));
 					si->SetEnergy(energyi);
 					si->SetTheta(MMMThetaCalc(i));
@@ -72,6 +137,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 					si->SetTime(mTDC.GetValue(k));
 					si->SetTimeFront(mTDC.GetValue(k));
 					si->SetTimeBack(mTDC.GetValue(l));
+					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)-6*128-64]);
 					
 					si->SetDetectorHit(MMMDetHitNumber(i,j));
 					si->SetADCChannelFront(i);
@@ -101,7 +167,9 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
       }
   }
   
+//   si->PrintEvent();
   si->SetHits(si->SizeOfEvent());
+//   printf("MMM L105\n");
   if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
   //printf("MMM.c L88");
   //MMMGhostBuster(SiliconData *si);
