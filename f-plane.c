@@ -70,8 +70,8 @@ extern float *ADC;
 extern int ADCModules;
 extern float *QDC;
 #define _RAWDATA
-// #define _SILICONDATA 
-// #define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
 // #define _GAMMADATA
 //#define _HAGAR
@@ -2075,7 +2075,7 @@ INT focal_init(void)
    char name[256];
    char title[256];
 
-//    setupchannel2wireXUXU();    
+   setupchannel2wireXUXU();    
    //setupchannel2wireXoldXold();
 
    ParameterInit();
@@ -2093,22 +2093,22 @@ INT focal_init(void)
        else
 	 {
 	   printf("Setup for a new VDC1 and an old VDC2\n");
-	   setupchannel2wireXUXold();
+// 	   setupchannel2wireXUXold();
 	 }
      }
    else
      {
        if(VDC2_new)
 	 {
- 	   setupchannel2wireXoldXU();
+//  	   setupchannel2wireXoldXU();
 	 }
        else
 	 {
- 	   setupchannel2wireXoldXold();
+//  	   setupchannel2wireXoldXold();
 	 }
      }
    
-   setupchannel2wireXUXold();
+//    setupchannel2wireXUXold();
 
    #ifdef _MISALIGNTIME
    read_misalignment(&misaligntime,"misalignment.dat");
@@ -3533,7 +3533,7 @@ gammy = new GammaData();
 
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
-   delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
+//    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
 
 #ifdef _GAMMADATA
