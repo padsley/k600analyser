@@ -1956,7 +1956,7 @@ void CalcYFP(Double_t x, Double_t u, Double_t thFP, Double_t *y)
 // for XU configuration
   tmp1=(u*tanfp-sinu*16);    
   tmp2=sinu*tanfp;
-  *y=-1*((tmp1/tmp2-x)*tanu+26.21);        
+  *y=-1*((tmp1/tmp2-x)*tanu+29.85);        
  
   //printf("x=%f  u=%f  ThFP=%f  sinu=%f  tanu=%f tanThFP=%f  y=%f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
   //printf("%f %f %f %f %f %f %f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
