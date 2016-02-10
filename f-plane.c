@@ -1511,6 +1511,8 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    Double_t x_tttv, sum_0=0.0, sum_x=0.0, sum_z=0.0, sum_xz=0.0, sum_x2=0.0;
    Int_t    wireID_first=0, wireID_last=0, wireID_min=0;
    Double_t wirechisq=0;
+   Double_t averagedd=0;
+   Double_t sstot=0,ssres=0;
    Double_t x_first, x_last, a1, b1, a, b, a_pre, b_pre, X_pre, Th_pre, drift_min_esti;
    Double_t X_v1=1.0, Th_v1=1.0,chisq_v1=0.0;
    Int_t badwire=1000;
@@ -1658,13 +1660,19 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    X_v1  = (-1.)*b1/a1;
    Th_v1 = (-1.)*57.29578*atan(a1); // [deg.]
  
+   averagedd=sum_z/sum_0;
+
+   // from this loop we obtain really sum of squares of residuals and total sum of squares
    for(i=0;i<wire_num;++i){
      if(dd[i]!=dd[wireID_min]){
-       chisq_v1 += pow(dd[i]-(a1*X_WIRESPACE*(wire[i])+b1),2); 
+       ssres += pow(dd[i]-(a1*X_WIRESPACE*(wire[i])+b1),2); 
        ++wirechisq;
+       sstot += pow(dd[i]-averagedd,2);
      }
    }
-   chisq_v1 /= wirechisq;
+
+   //chisq_v1 /= wirechisq;
+   chisq_v1 = 1- ssres/sstot;
 
    //----- these values are sent back to the main routine---------
    *_X = X_v1; 
@@ -1938,7 +1946,7 @@ void CalcYFP(Double_t x, Double_t u, Double_t thFP, Double_t *y)
 // for XU configuration
   tmp1=(u*tanfp-sinu*16);    
   tmp2=sinu*tanfp;
-  *y=-1*((tmp1/tmp2-x)*tanu+26.21);        
+  *y=-1*((tmp1/tmp2-x)*tanu+29.21);        // added 3mm to previous offset of 26.21mm
  
   //printf("x=%f  u=%f  ThFP=%f  sinu=%f  tanu=%f tanThFP=%f  y=%f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
   //printf("%f %f %f %f %f %f %f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
