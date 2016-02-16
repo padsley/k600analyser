@@ -66,6 +66,9 @@ void SiliconData::ClearEvent()
   SiliconTheta.clear();
   SiliconPhi.clear();
   SiliconTime.clear();
+  SiliconTimeFront.clear();
+  SiliconTimeBack.clear();
+  SiliconTimeOffset.clear();
   
   DetectorHit.clear();
   ADCChannelFront.clear();

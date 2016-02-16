@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Tue Jul 14 15:59:01 2015
+  Created on:   Fri Jul  3 15:23:14 2015
 
 \********************************************************************/
 
@@ -130,6 +130,8 @@ typedef struct {
   float     b0;
   float     b1;
   float     b2;
+  float     a0xcorr;
+  float     a1xcorr;
   float     c00;
   float     c01;
   float     c02;
@@ -154,15 +156,41 @@ typedef struct {
   float     d30;
   float     d31;
   float     d32;
+  float     a2xcorr;
+  float     b0xcorr;
+  float     b1xcorr;
+  float     b2xcorr;
+  float     a3xcorr;
+  float     c0;
+  float     c1;
+  float     c2;
+  float     d0;
+  float     d1;
+  float     d2;
+  float     c0xcorr;
+  float     c1xcorr;
+  float     c2xcorr;
+  float     d0xcorr;
+  float     d1xcorr;
+  float     d2xcorr;
+  float     a4xcorr;
+  float     yoffset;
+  float     f0xcorr;
+  float     f1xcorr;
+  float     x0;
+  float     mtarget;
+  float     calpa;
+  float     calpb;
+  float     calpc;
 } FOCALPLANE_PARAM;
 
 #define FOCALPLANE_PARAM_STR(_name) char *_name[] = {\
 "[.]",\
-"x1_driftt_low = INT : 6300",\
+"x1_driftt_low = INT : 6100",\
 "x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6300",\
-"u1_driftt_low = INT : 6300",\
-"u2_driftt_low = INT : 6300",\
+"x2_driftt_low = INT : 6100",\
+"u1_driftt_low = INT : 6100",\
+"u2_driftt_low = INT : 6100",\
 "x2_driftt_hi = INT : 8050",\
 "u2_driftt_hi = INT : 8050",\
 "u1_driftt_hi = INT : 8050",\
@@ -170,7 +198,7 @@ typedef struct {
 "hitof = INT : 6000",\
 "lowpad1 = INT : 1",\
 "lowpad2 = INT : 0",\
-"hipad1 = INT : 4100",\
+"hipad1 = INT : 2000",\
 "hipad2 = INT : 4000",\
 "a0 = FLOAT : -1.05242",\
 "a1 = FLOAT : 0.00022768",\
@@ -178,6 +206,8 @@ typedef struct {
 "b0 = FLOAT : 35.0792",\
 "b1 = FLOAT : -0.0119133",\
 "b2 = FLOAT : 0",\
+"a0xcorr = FLOAT : 3.7",\
+"a1xcorr = FLOAT : 0.6",\
 "c00 = FLOAT : -0.149905",\
 "c01 = FLOAT : 0.000190706",\
 "c02 = FLOAT : -1.00038e-07",\
@@ -202,6 +232,32 @@ typedef struct {
 "d30 = FLOAT : -0.0231652",\
 "d31 = FLOAT : -5.69357e-05",\
 "d32 = FLOAT : 1.16068e-07",\
+"a2xcorr = FLOAT : 0",\
+"b0xcorr = FLOAT : 0.08",\
+"b1xcorr = FLOAT : -0.01",\
+"b2xcorr = FLOAT : 0",\
+"a3xcorr = FLOAT : 0",\
+"c0 = FLOAT : -0.0388196",\
+"c1 = FLOAT : -2.31421e-05",\
+"c2 = FLOAT : 0",\
+"d0 = FLOAT : 0.269372",\
+"d1 = FLOAT : 0.000451383",\
+"d2 = FLOAT : 0",\
+"c0xcorr = FLOAT : 0",\
+"c1xcorr = FLOAT : 0",\
+"c2xcorr = FLOAT : 0",\
+"d0xcorr = FLOAT : 0",\
+"d1xcorr = FLOAT : 0",\
+"d2xcorr = FLOAT : 0",\
+"a4xcorr = FLOAT : 0",\
+"yoffset = FLOAT : 5",\
+"f0xcorr = FLOAT : 0",\
+"f1xcorr = FLOAT : 0",\
+"x0 = FLOAT : 647.505",\
+"mtarget = FLOAT : 15.99492",\
+"calpa = FLOAT : -1.5768e-05",\
+"calpb = FLOAT : 0.126985",\
+"calpc = FLOAT : 1119.45",\
 "",\
 NULL }
 
@@ -245,10 +301,10 @@ typedef struct {
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
-"lut_x1_offset = INT : 0",\
-"lut_u1_offset = INT : 0",\
-"lut_x2_offset = INT : 0",\
-"lut_u2_offset = INT : 0",\
+"lut_x1_offset = INT : 30",\
+"lut_u1_offset = INT : 30",\
+"lut_x2_offset = INT : 30",\
+"lut_u2_offset = INT : 30",\
 "x1_1st_wire_chan = INT : 0",\
 "x1_last_wire_chan = INT : 200",\
 "x2_1st_wire_chan = INT : 500",\

@@ -2,10 +2,13 @@
 
 
 int ADCModules;
+
 int ADCsize;
+
 float *ADC;
 
 int TDCModules;
+
 int TDCsize;
 
 int QDCsize = 32;
@@ -50,6 +53,13 @@ double *masses;
 double T1;
 double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
 
+int RunNumber = 0;
+int TotalRunsNumber = 0;
+double **ExCorrTerms;
+double ExCorrection = 0.;
+
+
+/*-------------------------------------------------*/
 void ParameterInit()
 {
   printf("\n ParameterInit\n");
@@ -62,6 +72,7 @@ void ParameterInit()
   printf("Finished initialising parameters - to the sorting!\n");
 }
 
+/*-------------------------------------------------*/
 void MMMNumberInit()//This is called after the number of MMM detectors is found from the config file
 {
   printf("\n MMMNumberInit\n");
@@ -96,6 +107,8 @@ void MMMNumberInit()//This is called after the number of MMM detectors is found 
   }
 }
 
+
+/*-------------------------------------------------*/
 void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
   if(det<=NumberOfMMM)
@@ -117,6 +130,7 @@ void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If ther
   }
 }
 
+/*-------------------------------------------------*/
 void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
   if(det<=NumberOfMMM)
@@ -138,6 +152,7 @@ void MMMTDCChannelsInit(int det, std::string side,int start, int stop)//If there
     }
 }
 
+/*-------------------------------------------------*/
 void W1NumberInit()
 {
   printf("\nW1ParameterInit\n");
@@ -173,6 +188,7 @@ void W1NumberInit()
   printf("\nW1ParameterInit - end\n");
 }
 
+/*-------------------------------------------------*/
 void W1ADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
   if(det<=NumberOfW1)
@@ -194,6 +210,7 @@ void W1ADCChannelsInit(int det, std::string side, int start, int stop)//If there
   }
 }
 
+/*-------------------------------------------------*/
 void W1TDCChannelsInit(int det, std::string side,int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
 {
   if(det<=NumberOfW1)
@@ -215,24 +232,28 @@ void W1TDCChannelsInit(int det, std::string side,int start, int stop)//If there 
     }
 }
 
+/*-------------------------------------------------*/
 void HagarInit()
 {
   HagarADCChannelLimits = new int[2];
   HagarTDCChannelLimits = new int[2];
 }
 
+/*-------------------------------------------------*/
 void HagarADCChannelsInit(int start, int stop)
 {
   HagarADCChannelLimits[0] = start;
   HagarADCChannelLimits[1] = stop;
 }
 
+/*-------------------------------------------------*/
 void HagarTDCChannelsInit(int start, int stop)
 {
   HagarTDCChannelLimits[0] = start;
   HagarTDCChannelLimits[1] = stop;
 }
 
+/*-------------------------------------------------*/
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
@@ -242,6 +263,7 @@ void PulseLimitsInit()
   PulseLimits[1] = 100000;
 }
 
+/*-------------------------------------------------*/
 void CalibrationParametersInit()
 {
   printf("\n CalibrationParametersInit\n"); 
@@ -256,6 +278,7 @@ void CalibrationParametersInit()
   }
 }
 
+/*-------------------------------------------------*/
 void ReadCalibrationParameters(std::string CalibFile)
 {
   printf("ReadCalibrationParameters using file %s\n",CalibFile.c_str());
@@ -301,6 +324,86 @@ void ReadCalibrationParameters(std::string CalibFile)
   printf("Finished Calibration Parameters\n");
 }
 
+/*-------------------------------------------------*/
+void ExRunCorrectionsInit(int runs)
+{
+  ExCorrTerms = new double*[runs];
+  for(int i=0;i<runs;i++)
+    {
+      ExCorrTerms[i] = new double[2];
+      ExCorrTerms[i][0] = 0;
+      ExCorrTerms[i][1] = 0;
+    }
+}
+
+/*-------------------------------------------------*/
+void ReadExCorrectionTerms(std::string filename)
+{
+  bool Reading = true;
+
+  if(filename.compare(0,6,"compare") == 0)
+    {
+      printf("Ignore the Ex correction terms\n");
+    }
+  else
+    {
+      std::ifstream input;
+      input.open(filename.c_str());
+      if(input.is_open())
+	{
+	  int runCounter = 0;
+	  while(Reading)
+	    {
+	      std::string LineBuffer;
+	      int runs = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,3,"eof") == 0)
+		{
+		  //End-of-file
+		  Reading = false;
+		}
+	      else if(LineBuffer.compare(0,4,"runs") == 0)
+		{
+		  //Number of runs used
+		  input >> LineBuffer;
+		  runs = atoi(LineBuffer.c_str());
+		  ExRunCorrectionsInit(runs);
+		  TotalRunsNumber = runs;
+		}
+	      else
+		{
+		  int run = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  float ExCorr = atof(LineBuffer.c_str());
+		  printf("Run: %d \t ExCorr: %f\n",run,ExCorr);
+		  ExCorrTerms[runCounter][0] = run;
+		  ExCorrTerms[runCounter][1] = ExCorr;
+		  runCounter++;
+		}
+	    }
+	}
+    }
+}
+
+/*-------------------------------------------------*/
+void LoadExCorrection(int run)
+{
+  bool foundRun = false;
+  printf("Load Ex Correction term for run  %d\n",run);
+  printf("TotalRunsNumber: %d\n",TotalRunsNumber);
+
+  for(int i=0;i<TotalRunsNumber;i++)
+    {
+      if(ExCorrTerms[i][0] == run)
+	{
+	  ExCorrection = ExCorrTerms[i][1];
+	  foundRun = true;
+	}
+    }
+  if(!foundRun)printf("Run not found\n");
+}
+
+/*-------------------------------------------------*/
 void SetADCChannelCalibration(int channel, double offset, double gain)
 {
   if(channel<ADCsize)
@@ -310,12 +413,14 @@ void SetADCChannelCalibration(int channel, double offset, double gain)
   }
 }
 
+/*-------------------------------------------------*/
 void ADCInit()
 {
   printf("ADCInit\n");
   ADC = new float[32*ADCModules];	     
   ADCClear();
 }
+
 
 void ADCClear()
 {
@@ -325,6 +430,8 @@ void ADCClear()
   }
 }
 
+
+/*-------------------------------------------------*/
 void QDCInit()
 {
   printf("QDCInit\n");
@@ -332,6 +439,7 @@ void QDCInit()
   QDCClear();
 }
 
+/*-------------------------------------------------*/
 void QDCClear()
 {
   for(int i=0;i<QDCsize;i++)
@@ -340,6 +448,7 @@ void QDCClear()
   }
 }
 
+/*-------------------------------------------------*/
 void ReadConfiguration()
 {
   bool ConfigRead = true;
@@ -355,13 +464,14 @@ void ReadConfiguration()
   bool Y1CorrectionParametersRead = false;
 
   std::ifstream input;
-  input.open("config.cfg");//This is the line to change in order to change the configuration file
+  //input.open("config.cfg");//This is the line to change in order to change the configuration file
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
   //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
-  //input.open("/home/padsley/data/PR244/configPR244Coincidences.cfg");
+  //input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
 
   if(input.is_open())
     {
@@ -371,6 +481,7 @@ void ReadConfiguration()
 	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
 	    {
 	      input >> LineBuffer;
+	      //printf("LineBuffer: %s\n",LineBuffer.c_str());
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
 	      else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
 		{
@@ -479,6 +590,12 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  printf("Using calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,17,"ExCorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Ex correction file: %s\n",LineBuffer.c_str());
+		  ReadExCorrectionTerms(LineBuffer);
 		}
 	      else if(LineBuffer.compare(0,21,"ThSCATCorrectionTerms") == 0)
 		{
@@ -773,6 +890,7 @@ void ReadConfiguration()
   printf("Finished ReadConfiguration\n");
 }
 
+/*-------------------------------------------------*/
 void PrintParameters()
 {
   printf("ADCModules: %d\n",ADCModules);

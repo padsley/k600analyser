@@ -34,11 +34,6 @@ extern double *ADCOffsets, *ADCGains;
 /*-- variables to be used in f-plane.c as extern variables----------*/
 //float ADC[128];
 int adcevtcount;
-float NaI[8];//, Plastic[8];
-float Nside[80],Pside[80];
-//float PsideTDC[80];
-float Pside1[16],Pside2[16],Pside3[16],Pside4[16];
-float Nside1[16],Nside2[16],Nside3[16],Nside4[16];
 
 
 /*-- For ODB: from /Analyzer/Parameters/----------------------------*/

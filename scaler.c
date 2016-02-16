@@ -31,6 +31,8 @@
 
 /*-- variables to be used in f-plane.c as extern variables----------*/
 int runtime;
+int CII,CIU,triggerU,triggerI;
+
 
 
 /*-- Module declaration --------------------------------------------*/
@@ -154,6 +156,8 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
 	psclr[i]=111;					 	   // so this test is supposed to take out all with	
      }                                                             // f as bits 29-32 (28-31)
    }
+
+
   
    for(unsigned int j = 0; j <psclr[0]; j++) {   //use of unsigned int to get rid of compiler warning:
      hTriggerU->Fill(counter);			 //"warning: comparison between signed and unsigned integer expressions"
@@ -204,8 +208,10 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
      hClockI->Fill(counter);
    }
 
-
-
+   triggerU = psclr[0];
+   triggerI = psclr[20];
+   CIU = psclr[2];
+   CII = psclr[22];
 
    //==============================================================================================================
    counter += 1;

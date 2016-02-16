@@ -1,18 +1,17 @@
-Tue Jul 14 14:39:03 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap stopped
-Tue Jul 14 14:41:58 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap started
-Tue Jul 14 14:57:19 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap stopped
-Tue Jul 14 15:04:30 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap started
-Tue Jul 14 15:05:28 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap stopped
-Tue Jul 14 15:58:36 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap started
-Tue Jul 14 15:58:51 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap stopped
-Tue Jul 14 15:59:00 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap started
-Tue Jul 14 15:59:03 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap stopped
-Tue Jul 14 15:59:35 2015 [Analyzer,INFO] Program Analyzer on host rnlap started
-Tue Jul 14 15:59:35 2015 [Analyzer,INFO] Set run number 1023 in ODB
-Tue Jul 14 16:00:08 2015 [Analyzer,INFO] Program Analyzer on host rnlap stopped
-Tue Jul 14 16:31:36 2015 [Analyzer,INFO] Program Analyzer on host rnlap started
-Tue Jul 14 16:31:36 2015 [Analyzer,INFO] Set run number 1023 in ODB
-Tue Jul 14 16:33:46 2015 [Analyzer,INFO] Program Analyzer on host rnlap stopped
-Tue Jul 14 19:01:33 2015 [Analyzer,INFO] Program Analyzer on host rnlap started
-Tue Jul 14 19:01:34 2015 [Analyzer,INFO] Set run number 1023 in ODB
-Tue Jul 14 19:07:47 2015 [Analyzer,INFO] Program Analyzer on host rnlap stopped
+Wed Dec 23 14:08:17 2015 [Analyzer,ERROR] [system.c:1015:ss_shm_delete,ERROR] shm_unlink(/Default_ODB_SHM) errno 2 (No such file or directory)
+Wed Dec 23 14:08:17 2015 [Analyzer,INFO] Program Analyzer on host rnlap started
+Wed Dec 23 14:08:17 2015 [Analyzer,ERROR] [system.c:1015:ss_shm_delete,ERROR] shm_unlink(/Default_SYSMSG_SHM) errno 2 (No such file or directory)
+Wed Dec 23 14:08:17 2015 [Analyzer,ERROR] [odb.c:9054:db_open_record,ERROR] struct size mismatch for "/" (expected size: 84, size in ODB: 0)
+Wed Dec 23 14:08:17 2015 [Analyzer,ERROR] [f-plane.c:369:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+Wed Dec 23 14:08:17 2015 [Analyzer,ERROR] [midas.c:1970:,ERROR] cm_disconnect_experiment not called at end of program
+Wed Dec 23 14:12:16 2015 [ODBEdit,ERROR] [odb.c:5557:db_set_mode,ERROR] invalid database handle
+Wed Dec 23 14:12:16 2015 [ODBEdit,ERROR] [odb.c:5557:db_set_mode,ERROR] invalid database handle
+Wed Dec 23 14:12:16 2015 [ODBEdit,ERROR] [odb.c:1049:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 10908 does not exists
+Wed Dec 23 14:12:16 2015 [ODBEdit,INFO] Deleted entry '/System/Clients/10908' for client 'Analyzer' because it is not connected to ODB
+Wed Dec 23 14:12:16 2015 [ODBEdit,INFO] Program ODBEdit on host rnlap started
+Wed Dec 23 14:12:16 2015 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 10908 does not exist
+Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Wed Feb 10 16:59:33 2016 [ODBEdit,INFO] Program ODBEdit on host rnlap started
+Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
