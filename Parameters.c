@@ -45,6 +45,8 @@ int *PulseLimits;//[2] = {-1e6, 1e6};
 double *ADCOffsets;
 double *ADCGains;
 
+double *TDCOffsets;
+
 int *ChannelCounter;
 int *GoodChannelCounter;
 
@@ -78,6 +80,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
+  TDCInit();
   PrintParameters();
   printf("Finished initialising parameters - to the sorting!\n");
 }
@@ -526,6 +529,64 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
+void TDCInit()
+{
+  printf("TDCInit\n");
+  TDCOffsets = new double[128*TDCModules];
+  TDCOffsetsClear();
+}
+
+void TDCOffsetsClear()
+{
+  for(int i=0;i<TDCsize;i++)
+    {
+      TDCOffsets[i] = 0;
+    }
+}
+
+void SetTDCChannelOffset(int channel, double offset)
+{
+  TDCOffsets[channel] = offset;
+}
+
+void ReadTDCOffsets(std::string OffsetsFile)
+{
+  bool Reading = true;
+
+  if(OffsetsFile.compare(0,6,"ignore") == 0)
+    {
+      printf("Ignore the TDC offsets\n");
+    }
+  else
+    {
+      std::ifstream input;
+      input.open(OffsetsFile.c_str());
+      if(input.is_open())
+	{
+	  while(Reading)
+	    {
+	      std::string LineBuffer;
+	      int channel = -1;
+	      double offset = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,3,"eof") == 0)
+		{
+		  Reading = false;
+		}
+	      else
+		{
+		  channel = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  offset = atof(LineBuffer.c_str());
+		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
+		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
+		}
+	    }
+	}
+    }
+}
+
+/*-------------------------------------------------*/
 void QDCInit()
 {
   printf("QDCInit\n");
@@ -715,6 +776,12 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  printf("Using calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using TDC Offsets file: %s\n",LineBuffer.c_str());
+		  ReadTDCOffsets(LineBuffer);
 		}
 	      else if(LineBuffer.compare(0,17,"ExCorrectionTerms") == 0)
 		{

@@ -21,11 +21,13 @@ extern int **MMMTDCChannelLimits;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
+extern double *TDCOffsets;
+
 TCutG *MMMFrontBackEnergyCut;
 
 const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
-double TDCOffsets[64] = {2180.06,
+/*double TDCOffsets[64] = {2180.06,
 2177.38,
 2138.44,
 2116.34,
@@ -88,9 +90,8 @@ double TDCOffsets[64] = {2180.06,
 2162.93,
 2157.17,
 2097.37,
-2106.41};
+2106.41};*/
 
-//SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
   //SiliconData *si = new SiliconData();
@@ -136,7 +137,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 					si->SetTimeFront(mTDC.GetValue(k));
 					si->SetTimeBack(mTDC.GetValue(l));
 
-					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)-6*128-64]);
+					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
 					
 					si->SetDetectorHit(MMMDetHitNumber(i,j));
 					si->SetADCChannelFront(i);
