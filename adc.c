@@ -33,6 +33,7 @@ extern double *ADCOffsets, *ADCGains;
 
 /*-- variables to be used in f-plane.c as extern variables----------*/
 //float ADC[128];
+
 int adcevtcount;
 
 
@@ -152,7 +153,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 //    printf("adc initialisation: %d\n",32*ADCModules);
    int adcchan,adcnr;
    extern int adc_counter1, adc_counter2;   // defined; declared in analyzer.c
- 	
+
    /* look for ADC0 bank, return if not present */
    nwords=bk_locate(pevent, "ADC0", &padc);
    adc_counter1++;
@@ -169,6 +170,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
            if((padc[i]&0xf) ==2) adcnr=2;  //printf(" adc nr 2 \n");} 
            if((padc[i]&0xf) ==3) adcnr=3; // printf(" adc nr 3 \n");}
            if((padc[i]&0xf) ==4) adcnr=4;  //printf(" adc nr 4 \n");}
+	   if((padc[i]&0xf) ==5) adcnr=5; //printf(" adc nr 5 \n");}
 	   //printf("-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
 	}
 	if(((padc[i]>>24)&0x7) ==0){     // if not then they are not data but header words.
@@ -201,8 +203,8 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 				    // we have pedestals but it's worth being proper about it.
        if (adc[i] > 0.0) {  
 	   ADC[i]=adc[i];                 // if ( adc[i] > (float) adc_param.histogram_threshold )
-       }      
-   }  
+       }
+   }      
 
 //   printf("Got to SUCCESS in adc.c\n");
    return SUCCESS;

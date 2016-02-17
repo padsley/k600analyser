@@ -1813,31 +1813,47 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //========================================================================================================================
 
 #ifdef _RAWDATA
-   if(raw)
-   {
-     raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export, QDC);
-   }
+  if(raw)
+  {
+    raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+  }
 #endif
   
 #ifdef _MMM
-   if(si)
-   {
-     si = MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
-   }
+    if(si)
+    {
+      MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
+    }
 #endif
 
 #ifdef _W1
-   if(si)
-   {
-      si = W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
-   }
+    if(si)
+    {
+      W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
+    }
 #endif
 
 #ifdef _HAGAR
-   if(gammy)
-   {
-      gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
-   }
+    if(gammy)
+    {
+      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
+    }
+#endif
+
+#ifdef _CLOVER
+    if(gammy)
+    {
+      //gammy = CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
+    }
+#endif
+
+#ifdef _GATEAU
+  if(fatty)
+  {
+    GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
+  }
 #endif
 
    //========================================================================================================================
@@ -1857,26 +1873,27 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
 #ifdef _SILICONDATA
    si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
-   delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
+   //    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
-
-#ifdef _CLOVERDATA
-   clov->ClearEvent();//See comment above about SiliconData::ClearEvent()
-   delete clov;//See comment above about deleting *si
+   
+#ifdef _GAMMADATA
+   gammy->ClearEvent();//See comment above about GammaData::ClearEvent()
+   delete gammy;//See comment above about deleting *gammy
 #endif
-
+   
 #ifdef _RAWDATA
    delete raw;
 #endif
-
-#ifdef _GAMMADATA
-   delete gammy;
+   
+#ifdef _GATEAU
+   fatty->ClearEvent();
+   delete fatty;
 #endif
-  
+   
 #ifdef _ADC
    ADCClear();
 #endif
-  
+        
    delete [] TDC_channel_export;
    delete [] TDC_value_export;
    TDCChannelExportStore.clear();

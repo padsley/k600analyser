@@ -216,7 +216,6 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    pad2=sqrt(QDC[2]*QDC[3]);
 
    //printf("ODB test in qdc.c : %d  \n",qdc_param.histogram_threshold);
-
    return SUCCESS;
 }
 

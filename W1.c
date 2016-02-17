@@ -21,11 +21,9 @@ extern double *ADCGains;
 
 TCutG *W1FrontBackEnergyCut;
 
-SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
-        int *TDC_channel_import, float *TDC_value_import)
+void W1SiliconSort(float *ADC_import, int ntdc,
+		   int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
-    SiliconData *si = new SiliconData();
-
     multiTDC mTDC;
     mTDC.multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
 
@@ -95,7 +93,7 @@ SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
     si->SetHits(si->SizeOfEvent());
     if(!si->TestEvent())si->ClearEvent();
     //si->PrintEvent();
-    return si;
+    //   return si;
 }
 
 void W1LoadCuts(SiliconData *si)
@@ -229,11 +227,11 @@ bool W1ADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
             }
             //if(TDCChannel<832)printf("Pass for invalid TDC value! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
         }
-        if(W1ADCChannelLimits[i][0]==-1)result = true; //No information for some of the W1s -> Suppress this test (i.e. if there is no ADC channel set)
-        if(W1ADCChannelLimits[i][1]==-1)result = true;
-        if(W1TDCChannelLimits[i][0]==-1)result = true;
-        if(W1TDCChannelLimits[i][1]==-1)result = true;
-
+        // Commenting out for now because it can cause problems if some detectors are missing - NH
+        //if(W1ADCChannelLimits[i][0]==-1)result = true; //No information for some of the W1s -> Suppress this test (i.e. if there is no ADC channel set)
+        //if(W1ADCChannelLimits[i][1]==-1)result = true;
+        //if(W1TDCChannelLimits[i][0]==-1)result = true;
+        //if(W1TDCChannelLimits[i][1]==-1)result = true;
     }
 
     //printf("W1ADCTDCChannelTest stop: %d %d",ADCChannel,TDCChannel);
@@ -273,8 +271,9 @@ bool W1TDCFrontTest(int TDCChannel)
         {
             result = true;
         }
-        if (W1TDCChannelLimits[i][0] == -1) result = true;
-        if (W1TDCChannelLimits[i][1] == -1) result = true;
+        // Commenting out for now because it can cause problems if some detectors are missing - NH
+        //if (W1TDCChannelLimits[i][0] == -1) result = true;
+        //if (W1TDCChannelLimits[i][1] == -1) result = true;
     }
     return result;
 }
@@ -304,8 +303,10 @@ bool W1TDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
         {
             result = true;
         }
-        if (W1TDCChannelLimits[i][0] == -1) result = true;
-        if (W1TDCChannelLimits[i][1] == -1) result = true;
+        // Commenting out for now because it can cause problems if some detectors are missing - NH
+        //if (W1TDCChannelLimits[i][0] == -1) result = true;
+        //if (W1TDCChannelLimits[i][1] == -1) result = true;
+
         if (W1TDCChannelLimits[i][2] == -1) result = true;
         if (W1TDCChannelLimits[i][3] == -1) result = true;
     }

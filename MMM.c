@@ -90,12 +90,10 @@ double TDCOffsets[64] = {2180.06,
 2097.37,
 2106.41};
 
-
-
-SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+//SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
-  SiliconData *si = new SiliconData();
-
+  //SiliconData *si = new SiliconData();
   //Loop over ADC and TDC events and do the following:
   //Check whether there are front-back coincidences for a detector and test the energies
   //Check to see whether there's a TDC event for the same channel as the front hit ADC - TDCs are apparently in single-hit mode. Don't need to worry about multihits
@@ -110,7 +108,7 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 	for(int l=0;l<mTDC.GetSize();l++)//Loop over all of the TDC values *again* but in this case, looking for the N sides
 	  {
 	    if(MMMTDCBackTest(mTDC.GetChannel(l)) && MMMTDCFrontBackTest(mTDC.GetChannel(k),mTDC.GetChannel(l)))
-	      {
+	      {//printf("test\n");
 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
@@ -118,25 +116,26 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 		      {
 			//Don't want to run for events w
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
-			  {
+			  {//printf("test\n");
 			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
-			      {
+			      {//printf("test\n");
 				if(ADC_import[j]>0)
-				  {
+				  {//printf("test\n");
 				    double energyi = MMMEnergyCalc(i,ADC_import[i]);
 				    double energyj = MMMEnergyCalc(j,ADC_import[j]);
 				    
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>400)
 				      {
-					si->SetEnergy(0.5*(energyi+energyj));
+					si->SetEnergy(energyi);
+
 					si->SetTheta(MMMThetaCalc(i));
 					si->SetPhi(MMMPhiCalc(j));
 					
 					si->SetTime(mTDC.GetValue(k));
 					si->SetTimeFront(mTDC.GetValue(k));
 					si->SetTimeBack(mTDC.GetValue(l));
-// 					printf("TDCOffsets index: %d\n",mTDC.GetChannel(k)-6*128-64);
+
 					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)-6*128-64]);
 					
 					si->SetDetectorHit(MMMDetHitNumber(i,j));
@@ -146,7 +145,9 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 					si->SetStripBack(MMMStripBack(j));
 					  
 					si->SetTDCChannelFront(mTDC.GetChannel(k));
+
 					si->SetTDCChannelBack(mTDC.GetChannel(l));
+
 					si->SetADCValueFront(ADC_import[i]);
 					si->SetADCValueBack(ADC_import[j]);
 					  
@@ -167,13 +168,16 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
       }
   }
   
+//   si->PrintEvent();
   si->SetHits(si->SizeOfEvent());
+//   printf("MMM L105\n");
   if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
   //printf("MMM.c L88");
   //MMMGhostBuster(SiliconData *si);
 
   mTDC.ClearEvent();
-  return si;
+  //return si;
+
 }
 
 void MMMLoadCuts(SiliconData *si)
@@ -449,7 +453,9 @@ bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
       if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
 	{
 	  result = true;
+	  //printf("TDC F-B true\n");
 	}
+      //else printf("TDC F-B false\n");
     }
   return result;
 }

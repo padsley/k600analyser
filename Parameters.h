@@ -41,13 +41,17 @@ void HagarInit();
 void HagarADCChannelsInit(int start, int stop);
 void HagarTDCChannelsInit(int start, int stop);
 
+void CloverNumberInit();
+void CloverADCChannelsInit(int det, int start, int stop);
+void CloverTDCChannelsInit(int det, int start, int stop);
+
 void CalibrationParametersInit();
 void PulseLimitsInit();
 
 void ADCInit();
 void SetADCChannelCalibration(int channel, double offset, double gain);
-
 void ADCClear();
+
 void QDCInit();
 void QDCClear();
 

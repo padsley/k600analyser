@@ -15,7 +15,8 @@
 #include <TROOT.h>
 #include "multiTDC.h"
 
-SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+//SiliconData *W1SiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+void W1SiliconSort(float *ADC_import, int ntdc,int *TDC_channel_import, float *TDC_value_import, SiliconData *si);
 
 bool W1SuppressChannel(int Channel);
 double W1EnergyCalc(int Channel, double ADCValue);

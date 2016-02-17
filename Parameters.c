@@ -27,8 +27,18 @@ int **W1TDCChannelLimits;
 int *HagarADCChannelLimits;
 int *HagarTDCChannelLimits;
 
+int NumberOfClover;
+
+int **CloverADCChannelLimits;
+int **CloverTDCChannelLimits;
+
+int ***GateauTDCChannelLimits;
+
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
+
+double CloverGain[8] = {1,1,1,1,1,1,1,1};
+double CloverOffset[8] = {0,0,0,0,0,0,0,0};
 
 int *PulseLimits;//[2] = {-1e6, 1e6};
 
@@ -106,7 +116,6 @@ void MMMNumberInit()//This is called after the number of MMM detectors is found 
     }
   }
 }
-
 
 /*-------------------------------------------------*/
 void MMMADCChannelsInit(int det, std::string side, int start, int stop)//If there are segfaults in this section, it might be because the number of MMM detectors isn't correctly set
@@ -254,6 +263,93 @@ void HagarTDCChannelsInit(int start, int stop)
 }
 
 /*-------------------------------------------------*/
+void CloverNumberInit()
+{
+   printf("\nCloverParameterInit\n");
+  
+  CloverADCChannelLimits = new int*[NumberOfClover];
+  
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    CloverADCChannelLimits[i] = new int[2];
+  }
+  
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    for(int j=0;j<2;j++)
+    {
+      CloverADCChannelLimits[i][j] = -1;
+    }
+  }
+  
+  CloverTDCChannelLimits = new int*[NumberOfClover];
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    CloverTDCChannelLimits[i] = new int[2];
+  }
+  
+  for(int i=0;i<NumberOfClover;i++)
+  {
+    for(int j=0;j<2;j++)
+    {
+      CloverTDCChannelLimits[i][j] = -1;
+    }
+  }
+  printf("\nCloverParameterInit - end\n");
+}
+
+void CloverADCChannelsInit(int det, int start, int stop)
+{
+  if(det<=NumberOfClover)
+  {
+   
+      CloverADCChannelLimits[det-1][0] = start;
+      CloverADCChannelLimits[det-1][1] = stop;
+  
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of Clover detectors - skipped enabling this detector\n");
+  }
+}
+
+void CloverTDCChannelsInit(int det, int start, int stop)
+{
+  if(det<=NumberOfClover)
+    {
+    
+	  CloverTDCChannelLimits[det-1][0] = start;
+	  CloverTDCChannelLimits[det-1][1] = stop;
+
+    }
+  else
+    {
+      printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+    }
+}
+
+void GateauTDCChannelLimitsInits()
+{
+  GateauTDCChannelLimits = new int**[2];
+  for(int i=0;i<2;i++)
+  {
+    GateauTDCChannelLimits[i] = new int*[5];
+    for(int j=0;j<5;j++)
+    {
+      GateauTDCChannelLimits[i][j] = new int[2];
+      for(int k=0;k<2;k++)
+      {
+	GateauTDCChannelLimits[i][j][k] = -1;
+      }
+    }
+  }
+}
+
+void GateauSetChannelLimits(int plane, int sector, int start, int stop)
+{
+  GateauTDCChannelLimits[plane][sector][0] = start;
+  GateauTDCChannelLimits[plane][sector][1] = stop;
+}
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
@@ -421,7 +517,6 @@ void ADCInit()
   ADCClear();
 }
 
-
 void ADCClear()
 {
   for(int i=0;i<ADCsize;i++)
@@ -429,7 +524,6 @@ void ADCClear()
     ADC[i] = 0;
   }
 }
-
 
 /*-------------------------------------------------*/
 void QDCInit()
@@ -459,29 +553,27 @@ void ReadConfiguration()
   bool HagarUsed = false;
   bool HagarADCChannelRead = false;
   bool HagarTDCChannelRead = false;
+  bool CloverUsed = false;
+  bool CloverADCChannelRead = false;
+  bool CloverTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
+  bool GateauRead = false;
 
   std::ifstream input;
-  //input.open("config.cfg");//This is the line to change in order to change the configuration file
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Si28/configSi28PR236WE3.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR236/Mg26/configMg26PR236WE2.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR226/configPR226.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
-  //input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Mg24/configMg24PR244WE1.cfg");
-  //input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
-  input.open("/afs/tlabs.ac.za/user/p/padsley/data/PR244/Si28/configSi28PR244WE1.cfg");
 
-  if(input.is_open())
+  input.open("config.cfg");//This is the line to change in order to change the configuration file
+
+ if(input.is_open())
     {
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead)
 	    {
 	      input >> LineBuffer;
-	      //printf("LineBuffer: %s\n",LineBuffer.c_str());
+// 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
 	      if(LineBuffer.compare(0,1,"%") == 0){input.ignore(std::numeric_limits<std::streamsize>::max(), '\n' );}
 	      else if(LineBuffer.compare(0,11,"NumberOfMMM") == 0)
 		{
@@ -556,6 +648,39 @@ void ReadConfiguration()
 		{
 		  if(HagarTDCChannelRead==false)HagarTDCChannelRead = true;
 		  else if(HagarTDCChannelRead==true)HagarTDCChannelRead = false;
+		}
+              else if(LineBuffer.compare(0,10,"CloverUsed") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"yes") == 0)
+		    {
+		   //   CloverNumberInit();
+		      CloverUsed = true;
+		    }
+		  else if(LineBuffer.compare(0,3,"no") == 0)
+		    {
+		      CloverUsed = false;
+		    }
+		  else
+		    {
+		      printf("Clover usage option not recognised\n");
+		    }
+		}
+ 	      else if(LineBuffer.compare(0,14,"NumberOfClover") == 0)
+		{
+		  input >> LineBuffer;
+		  NumberOfClover = atoi(LineBuffer.c_str());
+		  CloverNumberInit();
+		}
+	      else if(LineBuffer.compare(0,17,"CloverADCChannels") == 0)
+		{
+		  if(CloverADCChannelRead==false)CloverADCChannelRead = true;
+		  else if(CloverADCChannelRead==true)CloverADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,17,"CloverTDCChannels") == 0)
+		{
+		  if(CloverTDCChannelRead==false)CloverTDCChannelRead = true;
+		  else if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
 		}
 	      else if(LineBuffer.compare(0,4,"VDC1") == 0)
 		{
@@ -668,6 +793,19 @@ void ReadConfiguration()
 		  for(int c=0;c<NXY1Corr;c++)XY1Corr[c] = 0;
 		  Y1CorrectionParametersRead = true;
 		}
+	      else if(LineBuffer.compare(0,12,"PulseLimits") == 0)
+		{
+		  input >> LineBuffer;
+		  PulseLimits[0] = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  PulseLimits[1] = atoi(LineBuffer.c_str());
+		  printf("Good pulse limits: %d - %d\n", PulseLimits[0], PulseLimits[1]);
+		}
+		else if(LineBuffer.compare(0,6,"GATEAU") == 0)
+		{
+		  if(GateauRead==false)GateauRead = true;
+		  else if(GateauRead==true)GateauRead = false;
+		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
 		  printf("ConfigEnd\n");
@@ -732,6 +870,33 @@ void ReadConfiguration()
 		}
 	    }
 
+	  if(GateauRead)
+	  {
+	    int plane = 0, sector = 0, start = -1, stop = -1;
+	    
+	    input >> LineBuffer;
+	    if(LineBuffer.compare(0,6,"GATEAU") == 0)
+	    {
+	      if(GateauRead==true)GateauRead = false;
+	    }
+	    else
+	    {
+	      printf("\n GATEAU wireplane: %d\t",atoi(LineBuffer.c_str()));
+	      plane = atoi(LineBuffer.c_str());
+	      input >> LineBuffer;
+	      printf("Gateau Sector: %d\t",LineBuffer.c_str());
+	      sector = atoi(LineBuffer.c_str());
+	      input >> LineBuffer;
+	      printf("Start: %d\t",LineBuffer.c_str());
+	      start = atoi(LineBuffer.c_str());
+	      input >> LineBuffer;
+	      printf("Stop: %d\t",LineBuffer.c_str());
+	      stop = atoi(LineBuffer.c_str());
+	      
+	      GateauSetChannelLimits(plane,sector,start,stop);
+	    }
+	  }
+	    
 	  if(MMMADCChannelRead)
 	    {
 	      int num = 0, start = -1, stop = -1;
@@ -879,6 +1044,95 @@ void ReadConfiguration()
 		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
 		  stop = atoi(LineBuffer.c_str());
 		  HagarTDCChannelsInit(start, stop);
+		}
+	    }
+      /*    if(CloverADCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,16,"CloverADCChannels") == 0)
+		{
+		  if(CloverADCChannelRead==true)CloverADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("CloverADCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  CloverADCChannelsInit(start, stop);
+		}
+	    }
+
+	  if(CloverTDCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,16,"CloverTDCChannels") == 0)
+		{
+		  if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("CloverTDCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  CloverTDCChannelsInit(start, stop);
+		}
+	    }*/
+
+	  if(CloverADCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,17,"CloverADCChannels") == 0)
+		{
+		  if(CloverADCChannelRead==true)CloverADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input>> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  CloverADCChannelsInit(num, start, stop);
+		}
+	    }
+	
+	  if(CloverTDCChannelRead)
+	    {
+	      int num = 0, start = -1, stop = -1;
+	      std::string side = "";
+	      input >> LineBuffer;
+	      printf("%s\n",LineBuffer.c_str());
+	      if(LineBuffer.compare(0,17,"CloverTDCChannels") == 0)
+		{
+		  if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+		  num = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+	  
+		  CloverTDCChannelsInit(num, start, stop);
 		}
 	    }
 	}
