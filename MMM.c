@@ -94,7 +94,6 @@ double TDCOffsets[64] = {2180.06,
 void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
   //SiliconData *si = new SiliconData();
-
   //Loop over ADC and TDC events and do the following:
   //Check whether there are front-back coincidences for a detector and test the energies
   //Check to see whether there's a TDC event for the same channel as the front hit ADC - TDCs are apparently in single-hit mode. Don't need to worry about multihits
@@ -128,15 +127,15 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>400)
 				      {
-// 						printf("test\n");
-					//si->SetEnergy(0.5*(energyi+energyj));
 					si->SetEnergy(energyi);
+
 					si->SetTheta(MMMThetaCalc(i));
 					si->SetPhi(MMMPhiCalc(j));
 					
 					si->SetTime(mTDC.GetValue(k));
 					si->SetTimeFront(mTDC.GetValue(k));
 					si->SetTimeBack(mTDC.GetValue(l));
+
 					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)-6*128-64]);
 					
 					si->SetDetectorHit(MMMDetHitNumber(i,j));
@@ -146,7 +145,9 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 					si->SetStripBack(MMMStripBack(j));
 					  
 					si->SetTDCChannelFront(mTDC.GetChannel(k));
-					si->SetTDCChannelBack(-1);
+
+					si->SetTDCChannelBack(mTDC.GetChannel(l));
+
 					si->SetADCValueFront(ADC_import[i]);
 					si->SetADCValueBack(ADC_import[j]);
 					  
@@ -176,6 +177,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 
   mTDC.ClearEvent();
   //return si;
+
 }
 
 void MMMLoadCuts(SiliconData *si)

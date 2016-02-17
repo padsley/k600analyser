@@ -27,8 +27,7 @@ bool SiliconData::TestEvent()
   bool result = true;
 //  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good and shizzle like that 
  unsigned int hits = SiliconEnergy.size();
-// printf("SiliconHits: %d\n",hits);
- 
+
   //Check to see the same number of hits c.f. the energy hits. If you get a lot of warning messages from theta, phi, time here, that's likely because you're doing the energy hits wrong/differently
   if(SiliconTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
   if(SiliconPhi.size() != hits){printf("Mismatched size: Phi\n"); result = false;}
@@ -71,7 +70,6 @@ void SiliconData::ClearEvent()
   SiliconTimeFront.clear();
   SiliconTimeBack.clear();
   SiliconTimeOffset.clear();
-
   
   DetectorHit.clear();
   ADCChannelFront.clear();

@@ -70,9 +70,10 @@ int trailer_bufoverflow_counter=0;
 
 /*-- Module declarations -------------------------------------------*/
 extern ANA_MODULE scaler_accum_module;
-extern ANA_MODULE focalplane_module;
+//extern ANA_MODULE focalplane_module;
+extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
-extern ANA_MODULE adc_module;                     //RN
+extern ANA_MODULE adc_module;                    
 
 ANA_MODULE *scaler_module[] = {
    &scaler_accum_module,
@@ -80,23 +81,22 @@ ANA_MODULE *scaler_module[] = {
 };
 
 ANA_MODULE *trigger_module[] = {
-   &adc_module,					 //RN
+   &adc_module,					
    &qdc_module,
-   &focalplane_module,
+//   &focalplane_module,
+   &main_module,
    NULL
 };
 
 
 
 /*-- Bank definitions ----------------------------------------------*/
-//ASUM_BANK_STR(asum_bank_str);
 
 BANK_LIST ana_trigger_bank_list[] = {
     // online banks 
-    //{"ADC0", TID_DWORD, N_ADC, NULL},           //RN
-    {"QDC0", TID_DWORD, N_ADC, NULL},
+    {"ADC0", TID_DWORD, N_ADC, NULL},         
+    {"QDC0", TID_DWORD, N_QDC, NULL},
     {"TDC0", TID_DWORD, N_TDC, NULL},
-    //{"PAT0", TID_DWORD, N_PAT, NULL},
 
     // calculated banks 
     //{"CADC", TID_FLOAT, N_ADC, NULL},

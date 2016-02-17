@@ -21,13 +21,9 @@ extern double *ADCGains;
 
 TCutG *W1FrontBackEnergyCut;
 
-//SiliconData *W1SiliconSort(float *ADC_import, int ntdc,
-//      int *TDC_channel_import, float *TDC_value_import)
 void W1SiliconSort(float *ADC_import, int ntdc,
 		   int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
-  //   SiliconData *si = new SiliconData();
-
     multiTDC mTDC;
     mTDC.multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);
 
@@ -236,7 +232,6 @@ bool W1ADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
         //if(W1ADCChannelLimits[i][1]==-1)result = true;
         //if(W1TDCChannelLimits[i][0]==-1)result = true;
         //if(W1TDCChannelLimits[i][1]==-1)result = true;
-
     }
 
     //printf("W1ADCTDCChannelTest stop: %d %d",ADCChannel,TDCChannel);
@@ -311,6 +306,7 @@ bool W1TDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
         // Commenting out for now because it can cause problems if some detectors are missing - NH
         //if (W1TDCChannelLimits[i][0] == -1) result = true;
         //if (W1TDCChannelLimits[i][1] == -1) result = true;
+
         if (W1TDCChannelLimits[i][2] == -1) result = true;
         if (W1TDCChannelLimits[i][3] == -1) result = true;
     }

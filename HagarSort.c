@@ -12,7 +12,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-
 extern int ADCModules;
 extern int ADCsize;
 
@@ -114,7 +113,6 @@ bool HagarADCTDCChannelCheck(int ADCChannel, int TDCChannel)
 }
 
 */
-
 
 double HagarThetaCalc(int Channel)
 {

@@ -7,9 +7,9 @@ GammaData::GammaData()
 
 GammaData::~GammaData()
 {
-//   printf("Destructor called for GammaData");
-  ClearEvent();
+  //Destructor
 }
+
 
 void GammaData::PrintEvent()//Print out the 'proper' information about an event
 {
@@ -45,8 +45,6 @@ bool GammaData::TestEvent()
 
   return result;
 }
-
-
 
 void GammaData::ClearEvent()
 {

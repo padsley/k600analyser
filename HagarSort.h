@@ -40,6 +40,5 @@ bool HagarTDCTest(int TDCChannel);
 
 int HagarTDCIdentifyDetector(int TDCChannel);
 
-
 #endif
 
