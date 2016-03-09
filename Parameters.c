@@ -64,6 +64,7 @@ bool TestInelastic = true; //Test to see if this is an elastic reaction... defau
 double *masses;
 double T1;
 double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
+double z_x1x2,x_x1x2;
 
 int RunNumber = 0;
 int TotalRunsNumber = 0;
@@ -624,7 +625,7 @@ void ReadConfiguration()
 
   std::ifstream input;
 
-  input.open("config.cfg");//This is the line to change in order to change the configuration file
+  input.open("config.cfg");  //This is the line to change in order to change the configuration file
 
  if(input.is_open())
     {
@@ -806,6 +807,23 @@ void ReadConfiguration()
 		  else TestInelastic = true;
 		  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
 		}
+
+
+	      else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("VDCSeparationDistanceZ: %f \n",atof(LineBuffer.c_str()));
+		  z_x1x2 = atof(LineBuffer.c_str());
+		}
+	      else if(LineBuffer.compare(0,22,"VDCSeparationDistanceX") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("VDCSeparationDistanceX: %f \n",atof(LineBuffer.c_str()));
+		  x_x1x2 = atof(LineBuffer.c_str());
+		}
+
+
+
 	      else if(LineBuffer.compare(0,5,"mass1") == 0)
 		{
 		  input >> LineBuffer;
