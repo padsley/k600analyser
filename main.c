@@ -59,7 +59,7 @@
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-//#define _RAWDATA
+#define _RAWDATA
 #define _SILICONDATA 
 #define _MMM
 //#define _W1
@@ -88,12 +88,12 @@ INT main_init(void);
 FOCALPLANE_PARAM_STR(focalplane_param_str);
 
 ANA_MODULE main_module = {
-   "main",                /* module name           */
+   "main",                	/* module name           */
    "Retief Neveling",           /* author                */
-   main_event,                 /* event routine         */
-   main_bor,                   /* BOR routine           */
-   main_eor,                   /* EOR routine           */
-   main_init,                  /* init routine          */
+   main_event,                  /* event routine         */
+   main_bor,                    /* BOR routine           */
+   main_eor,                    /* EOR routine           */
+   main_init,                   /* init routine          */
    NULL,                        /* exit routine          */
    &gates,                      /* parameter structure   */
    sizeof(gates),               /* structure size        */
@@ -146,7 +146,13 @@ Int_t    t_k600;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
-Double_t    x1offset=0.0;
+Double_t x1offset=0.0;
+Int_t    t_triggerI=0;
+Int_t    t_triggerU=0;
+Int_t    t_CII=0;
+Int_t    t_CIU=0;
+
+
 
 // focal plane variables for TTree
 Int_t    t_X1hits = 0,  t_X2hits = 0,   t_U1hits = 0,   t_U2hits = 0;
@@ -160,9 +166,12 @@ double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
 double t_rigidity3 = -0.;
-double t_thetaPrime = -90.;
+double t_thetaSCAT = -90.;
+double t_phiSCAT = -180;
 double t_theta = -90;
-double t_phi = -180;
+Double_t t_thetaFP=-100; 
+Double_t t_thetaFPx=-100;
+Double_t t_phiFP=-100;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -176,10 +185,6 @@ Double_t t_X1res6,      t_X2res6,       t_U1res6,       t_U2res6;
 Double_t t_X1res7,      t_X2res7,       t_U1res7,       t_U2res7;
 Double_t t_X1res8,      t_X2res8,       t_U1res8,       t_U2res8;
 #endif
-Double_t t_ThFP=-100; Double_t t_ThFPx=-100;
-Double_t t_ThSCAT=-100;
-Double_t t_PhiSCAT=-100;
-Double_t t_PhiFP=-100;
 Double_t t_Y1=-100.0,t_Y2=-100.0;
 
 Double_t t_X1effall, t_X1effdt, t_X1effgroup, t_X1effgood;
@@ -317,9 +322,9 @@ void GetODBGlobals()
 
    // open ODB structures 
    cm_get_experiment_database(&hDB, NULL);
-   db_find_key(hDB, 0, "/Analyzer/Parameters/GLOBAL", &hKey);
+   db_find_key(hDB, 0,  (char *)"/Analyzer/Parameters/GLOBAL", &hKey);
    if(db_open_record(hDB, hKey, &globals, sizeof(GLOBAL_PARAM), MODE_READ, NULL, NULL) != DB_SUCCESS) {
-      cm_msg(MERROR, "analyzer_init", "Cannot open \"/Analyzer/Parameters/GLOBAL\" tree in ODB");
+      cm_msg(MERROR,  (char *)"analyzer_init",  (char *)"Cannot open \"/Analyzer/Parameters/GLOBAL\" tree in ODB");
       exit(1);//return 0;
    }
    //printf("ODB test : %d  \n",globals.misswires);
@@ -337,11 +342,11 @@ void GetODBRunInfo()
    cm_get_experiment_database(&hDB, NULL);
    
    RUNINFO_STR(runinfo_str);            // RUNINFO_STR in experim.h      rn:  not true !?!?!
-   db_create_record(hDB, 0, "/Runinfo", strcomb(runinfo_str));
-   db_find_key(hDB, 0, "/Runinfo", &hKey);
+   db_create_record(hDB, 0, (char *)"/Runinfo", strcomb(runinfo_str));
+   db_find_key(hDB, 0, (char *)"/Runinfo", &hKey);
    if (db_open_record(hDB, hKey, &runinfo2, sizeof(runinfo2), MODE_READ, NULL, NULL) !=
        DB_SUCCESS) {
-      cm_msg(MERROR, "analyzer_init", "Cannot open \"/Runinfo\" tree in ODB");
+      cm_msg(MERROR, (char *)"analyzer_init",  (char *)"Cannot open \"/Runinfo\" tree in ODB");
       exit(1);
    }
    printf("\n==================================================================== %i  \n\n",runinfo2.run_number);
@@ -395,6 +400,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
    t_tof=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
    t_k600=0; t_runtime=-1;
+   t_triggerI=0, t_triggerU=0, t_CII=0, t_CIU=0;
    t_X1hits = -100; t_X2hits = -100; t_U1hits = -100; t_U2hits = -100;
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
@@ -415,8 +421,9 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1res7=-100.0; t_X2res7=-100.0; t_U1res7=-100.0; t_U2res7=-100.0;
    t_X1res8=-100.0; t_X2res8=-100.0; t_U1res8=-100.0; t_U2res8=-100.0;
    #endif
-   t_ThFP=-100; t_ThFPx=-100; 
-   t_ThSCAT=-100; t_PhiSCAT=-100;t_PhiFP=-100;
+   t_thetaFP=-100; t_thetaFPx=-100; t_phiFP=-100;
+   t_thetaSCAT=-100; t_phiSCAT=-100; 
+   t_theta=-100;
    t_Y1=-100.0; t_Y2=-100.0;
 
    t_X1effall=-1; t_X1effdt=-1; t_X1effgroup=-1; t_X1effgood=-1;
@@ -477,37 +484,6 @@ void CalcPhiScat(Double_t Yfp, Double_t X1, Double_t ThSC, Double_t *Phiscat)
 
 
 
-//--------------------------------------------------------------------------------------
-void CalcThetaFP(Double_t X1, Double_t X2, Double_t *Theta)
-{
-   Double_t x;
-   x=(X2 + globals.x_x1x2) - X1 ;               
-   *Theta=57.29578*atan(globals.z_x1x2/x);
-}
-
-
-//--------------------------------------------------------------------------------------
-void CalcPhiFP(Double_t X1, Double_t Y1, Double_t X2, Double_t Y2,  Double_t thFP, Double_t *Phi)
-{
-   Double_t y;
-   y= Y2 - Y1 ;               
-   *Phi=57.29578*atan(y*sin(thFP/57.29578)/globals.z_x1x2);
-   //printf("y1=%f  y2=%f  z_x1x2=%f ThFP = %f phi=%f \n",Y1,Y2,globals.z_x1x2,thFP,57.29578*atan(y/(globals.z_x1x2/sin(thFP/57.29578))));
-}
-
-
-//--------------------------------------------------------------------------------------
-void CalcThetaScat(Double_t Thetafp, Double_t X1, Double_t *Thetascat)
-{
-   Double_t A,B;
-   A=gates.a0 + gates.a1*X1 + gates.a2*X1*X1;               
-   B=gates.b0 + gates.b1*X1 + gates.b2*X1*X1;               
-   *Thetascat=1*(A*Thetafp+B);
-   //printf("Thetascat %f  \n",*Thetascat);
-   //Theta_SCAT=(-0.741205 + -9.34925e-05*X)*Theta_FP + (25.5606 + -0.00193707*X) 
-}
-
-
 
 
 
@@ -526,8 +502,6 @@ INT main_init(void)
 
    extern bool VDC1_new, VDC2_new;
 
-   //setupchannel2wireXoldXold(Channel2Wire);
-   
    if(VDC1_new)
      {
        if(VDC2_new)
@@ -536,18 +510,19 @@ INT main_init(void)
 	 }
        else
 	 {
-	   printf("Probably not implemented");
+ 	   setupchannel2wireXUXold(Channel2Wire);
+	   //printf("Probably not implemented");
 	 }
      }
    else
      {
        if(VDC2_new)
 	 {
-// 	   setupchannel2wireXoldXU(Channel2Wire);
+ 	   setupchannel2wireXoldXU(Channel2Wire);
 	 }
        else
 	 {
-// 	   setupchannel2wireXoldXold(Channel2Wire);
+	   setupchannel2wireXoldXold(Channel2Wire);
 	 }
      }
 
@@ -557,9 +532,9 @@ INT main_init(void)
    printf("== Misalignment time cutoff (sec): %i ==\n",misaligntime);
    #endif
 
-   read_cable(cableOffset,"CableLength.dat");
+   read_cable(cableOffset,(char *)"CableLength.dat");
 
-   open_subfolder("LUT&Cable");
+   open_subfolder((char *)"LUT&Cable");
      hX1_lut = H1_BOOK("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
      hU1_lut = H1_BOOK("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
      hX2_lut = H1_BOOK("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
@@ -690,6 +665,11 @@ INT main_init(void)
   t1->Branch("runtime",&t_runtime,"t_runtime/I");
   t1->Branch("evtcounter",&t_evtcounter,"t_evtcounter/I");
   t1->Branch("tdcsperevent",&t_tdcsperevent,"t_tdcsperevent/I");
+
+  t1->Branch("triggerI",&t_triggerI,"t_triggerI/I");
+  t1->Branch("triggerU",&t_triggerU,"t_triggerU/I");
+  t1->Branch("CIU",&t_CIU,"t_CIU/I");
+  t1->Branch("CII",&t_CII,"t_CII/I");
 
   t1->Branch("tof",&t_tof,"t_tof/I");
   t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/I");
@@ -826,10 +806,9 @@ INT main_init(void)
   t1->Branch("U2wireUsed",t_U2wireUsed,"t_U2wireUsed[t_nU2wiresUsed]/I");
   #endif
 
-  t1->Branch("ThSCAT",&t_ThSCAT,"t_ThSCAT/D");
-  t1->Branch("ThFP",&t_ThFP,"t_ThFP/D");
-  t1->Branch("PhiFP",&t_PhiFP,"t_PhiFP/D");
-  t1->Branch("ThFPx",&t_ThFPx,"t_ThFPx/D");
+  t1->Branch("thetaFP",&t_thetaFP,"t_thetaFP/D");
+  t1->Branch("thetaFPx",&t_thetaFPx,"t_thetaFPx/D");
+  t1->Branch("phiFP",&t_phiFP,"t_phiFP/D");
   t1->Branch("Y1",&t_Y1,"t_Y1/D");
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
@@ -839,13 +818,9 @@ INT main_init(void)
   t1->Branch("T3",&t_T3,"t_T3/D");
   t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
   t1->Branch("theta",&t_theta,"t_theta/D");
-  t1->Branch("thetaPrime",&t_thetaPrime,"t_thetaPrime/D");
-  t1->Branch("phi",&t_phi,"t_phi/D");
+  t1->Branch("thetaSCAT",&t_thetaSCAT,"t_thetaSCAT/D");
+  t1->Branch("phiSCAT",&t_phiSCAT,"t_phiSCAT/D");
 
-  #ifdef _FULLANALYSIS
-  t1->Branch("PhiSCAT",&t_PhiSCAT,"t_PhiSCAT/D");
-  #endif
- 
   #ifdef _POLARIZATION
   t1->Branch("polu",&t_polu,"t_polu/I");   //PR153, polarized beam
   t1->Branch("pold",&t_pold,"t_pold/I");   //PR153, polarized beam
@@ -873,6 +848,10 @@ INT main_init(void)
   gROOT->ProcessLine(".L SiliconData.c+");
   t1->Branch("SiliconInfo","SiliconData",&si);
   //MMMLoadCuts(si);
+#endif
+
+#ifdef _MMM
+  MMMInit();    // At this moment it only sets up the angle definitions
 #endif
 
 #ifdef _CLOVERDATA
@@ -905,10 +884,10 @@ INT main_bor(INT run_number)
    GetODBGlobals();                // get globals that can be set in the ODB
    //PrintODBstuff();
 
-   read_lut(lutx1,globals.lut_x1_offset,"lut-x1.dat");              
-   read_lut(lutu1,globals.lut_u1_offset,"lut-u1.dat");         
-   read_lut(lutx2,globals.lut_x2_offset,"lut-x2.dat");   
-   read_lut(lutu2,globals.lut_u2_offset,"lut-u2.dat");              
+   read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
+   read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");         
+   read_lut(lutx2,globals.lut_x2_offset,(char *)"lut-x2.dat");   
+   read_lut(lutu2,globals.lut_u2_offset,(char *)"lut-u2.dat");              
      
    for(int j = 0; j < LUT_CHANNELS; j++) {                   // And immediately fill LUT spectra
      for(int k = 0; k < lutx1[j]*1000; k++) {
@@ -931,16 +910,62 @@ INT main_bor(INT run_number)
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 
    switch(runinfo2.run_number){
-	case 33116: x1offset=0.; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33123: x1offset=0.312561; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33132: x1offset=0.964111; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33139: x1offset=1.57703; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33148: x1offset=1.62781; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33154: x1offset=0.341736; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33159: x1offset=-0.1604; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33166: x1offset=-0.612671; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-	case 33175: x1offset=0.674438; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 33177: x1offset=0.61554; 	printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+   // in case of analysis of 12C data
+   // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
+   // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
+   // in terms of kinematics. So now I use the O calibration but offsets the X1pos to compensate...
+        case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1090: x1offset=-0.9-0.109863; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1091: x1offset=-0.9-0.15863; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1092: x1offset=-0.9-0.207886; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1093: x1offset=-0.9-0.0908203; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1094: x1offset=-0.9-0.138123; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1095: x1offset=-0.9-0.057; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1096: x1offset=-0.9-0.0791626; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1099: x1offset=-0.9+0.0325928; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1100: x1offset=-0.9-0.0883179; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1101: x1offset=-0.9-0.0873413; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1106: x1offset=-0.9-0.195862; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1029: x1offset=-0.9-0.125366; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1035: x1offset=-0.9-0.230042; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1045: x1offset=-0.9+0.150452; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1046: x1offset=-0.9+0.278992; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1062: x1offset=-0.9+0.251282; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1080: x1offset=-0.9-0.211487; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+
+   // in case of analysis of LiCO data
+        case 1023: x1offset=0; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1024: x1offset=-0.0103149; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1025: x1offset=-0.0167236; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1026: x1offset=-0.0152588; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1030: x1offset=-0.00427246; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1032: x1offset=-0.00457764; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1033: x1offset=-0.0109253; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1034: x1offset=-0.0296631; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1036: x1offset=-0.0206909; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1039: x1offset=-0.0289307; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1041: x1offset=-0.0429688; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1043: x1offset=-0.0498657; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1044: x1offset=-0.0682983; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1047: x1offset=-0.0731812; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1048: x1offset=-0.0797119; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1052: x1offset=0.0429688; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1053: x1offset=0.0273438; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1056: x1offset=0.0322876; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1058: x1offset=0.0302124; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1059: x1offset=0.0234375; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1060: x1offset=0.0203857; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1070: x1offset=-0.0385132; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1071: x1offset=-0.0546265; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1073: x1offset=-0.0177612; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1075: x1offset=0.00714111; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1078: x1offset=0.0237427; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1079: x1offset=0.0909424; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1084: x1offset=0.233093; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1085: x1offset=0.71875; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1086: x1offset=0.379822; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 1087: x1offset=0.154419; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;  
+
    }
    return SUCCESS;
 }
@@ -953,7 +978,7 @@ INT main_bor(INT run_number)
 //================================================================================================
 INT main_event(EVENT_HEADER * pheader, void *pevent)
 {
-//   printf("L2218\n");
+   //printf("L2218\n");
    DWORD *ptdc;
    Int_t ntdc = 0;
    Int_t tdc1190datacode, tdc1190error, tdc1190trailerstatus;
@@ -980,7 +1005,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int trailer_bufoverflow_counter;            // defined; declared in analyzer.c	
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;
-   
+   extern int triggerI, triggerU, CII, CIU;   
+
    //float ADC_export[160];
    int *TDC_channel_export;
    float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
@@ -1018,8 +1044,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Double_t X1chisq=15.0, X2chisq=15.0, U1chisq=15.0, U2chisq=15.0;
    Int_t    X1flag=-100,  X2flag=-100,  U1flag=-100,  U2flag=-100;
    Double_t X1eff=0,      X2eff=0,      U1eff=0,      U2eff=0;
-   Double_t ThFP=-100, PhiFP=-100;  Double_t ThFPx=-100;
-   Double_t ThSCAT=-100, PhiSCAT=-100;
+   Double_t thetaFP=-100;   
+   Double_t thetaFPx=-100;
+   Double_t thetaSCAT=-100, phiSCAT=-100;
    Double_t Y1=-100.0,Y2=-100.0;
    Double_t Xcorr=-100;
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
@@ -1030,6 +1057,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //---------------------------------------------------------------------
    // Start analysis
    t_evtcounter=qdc_counter1;
+   //printf("main.c L1046: Event nr : %d\n",qdc_counter1);
+   
 
 //   Int_t PaddlePIDGatesFlagb=0;
 //   if(pad1>gates.lowpad1b && pad1< gates.hipad1b && pad2>gates.lowpad2b && pad2< gates.hipad2b){   
@@ -1055,7 +1084,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_pad2hiP=pad2hip;
    t_pad2lowP=pad2lowp;	    
    t_runtime=runtime;
-
+   t_triggerI=triggerI;
+   t_triggerU=triggerU;
+   t_CII=CII;
+   t_CIU=CIU;
 
 
    //----------------------------------------------------------------------
@@ -1712,47 +1744,40 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   CalcThetaFP(X1pos,X2pos,&ThFPx);  
-   CalcThetaFP(U1pos,U2pos,&ThFP);  
-   CalcThetaScat(ThFP,X1pos,&ThSCAT);
-   t_ThFP=ThFP;
-   t_ThSCAT=ThSCAT;
-   t_ThFPx=ThFPx;
+   thetaFPx = CalcThetaFP(X1pos,X2pos);
+   t_thetaFPx = thetaFPx;
+   thetaFP  = CalcThetaFP(U1pos,U2pos);
+   t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
    t_Y1=Y1;
    #ifdef _FULLANALYSIS
    h_Y1->Fill(Y1);
-   CalcPhiScat(Y1,X1pos,ThSCAT,&PhiSCAT);
-   t_PhiSCAT=PhiSCAT;
    #endif
 
-   Y2=CalcYFP(X2pos,U2pos,ThFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
+   Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
    t_Y2=Y2;
    #ifdef _FULLANALYSIS
    h_Y2->Fill(Y2);
    #endif
 
-   CalcPhiFP(X1pos,Y1,X2pos,Y2,ThFP,&PhiFP);
-   t_PhiFP=PhiFP;
+   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
-   //CalcCorrX(X1pos-x1offset, (Y2+10), ThSCAT, &Xcorr);
-   CalcCorrX(X1pos-x1offset, Y1, ThSCAT, &Xcorr);
+   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
+
+   CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
+
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr);
 
-
    extern double *masses;
-
    t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
-
    t_rigidity3 = CalcQBrho(Xcorr);
-
-   t_thetaPrime = CalcThetaPrime(Xcorr,ThFP);
-   t_theta = CalcTheta(Xcorr, ThFP, Y1);
-   t_phi = CalcPhiPrime(Xcorr,ThFP,Y1);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
@@ -1872,8 +1897,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t1->Fill();    // fill the tree t1
 
 #ifdef _SILICONDATA
-   si->ClearEvent();//Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
-   //    delete si;//Delete the pointer otherwise we lose access to the memory and start to crash the machine
+   si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
 #endif
    
 #ifdef _GAMMADATA
@@ -1887,7 +1911,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    
 #ifdef _GATEAU
    fatty->ClearEvent();
-   delete fatty;
 #endif
    
 #ifdef _ADC
@@ -1908,6 +1931,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 //================================================================================================
 INT main_eor(INT run_number)
 {
+#ifdef _SILICONDATA
+   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
+#endif
+
    return SUCCESS;
 }
 

@@ -41,9 +41,11 @@ double CalcEx(double Xcorr);
 double CorrectEx(double mEx);
 
 double CalcYFP(double x, double u, double thFP);
-double CalcThetaPrime(double X1, double ThFP);
-double CalcPhiPrime(double X1, double ThFP, double Y1);
+double CalcThetaScat(double X1, double ThFP);
+double CalcPhiScat(double X1, double ThFP, double Y1);
 double CalcTheta(double X1, double ThFP, double Y1);
+double CalcThetaFP(double X1, double X2);
+double CalcPhiFP(double X1, double Y1, double X2, double Y2,  double thFP);
 
 
 #endif

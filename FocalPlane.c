@@ -468,6 +468,7 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
 // hack the mapping of wires to channels with XU and then old X chamber
 //
 {
+  printf("setupchannel2wireXUXold()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -534,17 +535,17 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
 	    chan2wire[429]=505;
 	    chan2wire[430]=506;
 	    chan2wire[431]=507;            
-	    for(int i=424;i<432;i++){
-	      tdcchan=i;
-	      printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
+	    //for(int i=424;i<432;i++){
+	      //tdcchan=i;
+	      //printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
 	      //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
-	    }
+	    //}
 	  }
 	  else{
 	    for(int i=channelstart;i<channelstart+16;i++){
 	      tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
 	      chan2wire[tdcchan]=i;
-	      printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+	      //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
 	    }
 	  }
     }
@@ -1469,16 +1470,9 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 //lineshape correction
 {
-   //Double_t C1,C2,C3,C4;
-   //C1=gates.a0xcorr + gates.a1xcorr*X1 + gates.a2xcorr*X1*X1 ;    
-   //C2=gates.b0xcorr + gates.b1xcorr*X1 + gates.b2xcorr*X1*X1 ;   
-   //C3=gates.c0xcorr + gates.c1xcorr*X1 + gates.c2xcorr*X1*X1 ;   
-   //C4=gates.d0xcorr + gates.d1xcorr*X1 + gates.d2xcorr*X1*X1 ;   
-   //*X1corr=X1-C1*ThetaSCAT-C2*ThetaSCAT*ThetaSCAT-C3*ThetaSCAT*ThetaSCAT*ThetaSCAT-C4*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT;
    //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
   //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
   //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
-  //*Xcorr = X - 2.38982*ThetaSCAT - 0.607534*ThetaSCAT*ThetaSCAT;
 
   double result = 0;
   extern int NXThetaCorr;
@@ -1651,25 +1645,26 @@ double CalcYFP(double x, double u, double thFP)
 
 
 //--------------------------------------------------------------------------------------
-double CalcThetaPrime(double X1, double ThFP)
+double CalcThetaScat(double X1, double ThFP)
 {
   //Using the result of the fit:  
   //TF2 *fit2 = new TF2("fit2","y*([0]+[1]*x+[2]*x*x) + [3] + [4]*x + [5]*x*x",250,660,28,33); where y = ThFP and x = X1
 
-  double *ThetaPrimePars = new double[6];
-  ThetaPrimePars[0] = -0.872219;
-  ThetaPrimePars[1] = -0.000434535;
-  ThetaPrimePars[2] = 4.58708e-07;
-  ThetaPrimePars[3] = 27.5189;
-  ThetaPrimePars[4] = 0.0134774;
-  ThetaPrimePars[5] = -1.77584e-05;
+  double *ThetaSCATPars = new double[6];
+  ThetaSCATPars[0] = -1.05242;  
+  ThetaSCATPars[1] =  0.00022768; 
+  ThetaSCATPars[2] =  0;   
+  ThetaSCATPars[3] =  35.0792;   
+  ThetaSCATPars[4] = -0.0119133; 
+  ThetaSCATPars[5] =  0;  
 
-  double result = ThFP*(ThetaPrimePars[0] + ThetaPrimePars[1]*X1 + ThetaPrimePars[2]*X1*X1) +  ThetaPrimePars[3] +  ThetaPrimePars[4]*X1 +  ThetaPrimePars[5]*X1*X1;
+  double result = ThFP*(ThetaSCATPars[0] + ThetaSCATPars[1]*X1 + ThetaSCATPars[2]*X1*X1) +  ThetaSCATPars[3] +  ThetaSCATPars[4]*X1 +  ThetaSCATPars[5]*X1*X1;
   return result;
 }
 
 //--------------------------------------------------------------------------------------
-double CalcPhiPrime(double X1, double ThFP, double Y1)
+double CalcPhiScat(double X1, double ThFP, double Y1)
+
 {
   double result = 0;
   result = Y1 * (0.108+0.00086*ThFP) - (0.6097+3.99e-4*X1);
@@ -1681,13 +1676,42 @@ double CalcTheta(double X1, double ThFP, double Y1)
 {
   extern double theta3;//K600 scattering angle
 
-  double ThetaPrime = CalcThetaPrime(X1,ThFP);
+  double ThetaSCAT = CalcThetaScat(X1,ThFP);
 
-  double PhiPrime = CalcPhiPrime(X1, ThFP, Y1);
+  double PhiSCAT = CalcPhiScat(X1, ThFP, Y1);
   
   double result = -1;
 
-  result = sqrt(pow(ThetaPrime + theta3,2.) + pow(PhiPrime,2.));
+  result = sqrt(pow(ThetaSCAT + theta3,2.) + pow(PhiSCAT,2.));
 }
 
+//--------------------------------------------------------------------------------------
+double CalcThetaFP(double X1, double X2)
+// Calculate the horizontal component of the particle track throught the focal plane
+{
+   double x;
+   double result =-1;
+   extern double z_x1x2, x_x1x2;
+
+   x=(X2 + x_x1x2) - X1 ;               
+   result=57.29578*atan(z_x1x2/x);
+   //printf("z_x1x2=%f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
+  
+   return result;
+}
+
+//--------------------------------------------------------------------------------------
+double CalcPhiFP(double X1, double Y1, double X2, double Y2,  double thFP)
+// Calculate the certical component of the particle track throught the focal plane
+{
+   double y;
+   double result=-1;
+   extern double z_x1x2, x_x1x2;
+
+   y= Y2 - Y1 ;               
+   result=57.29578*atan(y*sin(thFP/57.29578)/z_x1x2);
+   //printf("y1=%f y2=%f z_x1x2=%f ThFP=%f phi=%f\n",Y1,Y2,z_x1x2,thFP,57.29578*atan(y/(z_x1x2/sin(thFP/57.29578))));
+   return result;
+
+}
 
