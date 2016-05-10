@@ -38,7 +38,7 @@ int adcevtcount;
 
 
 /*-- For ODB: from /Analyzer/Parameters/----------------------------*/
-ADC_PARAM adc_param;
+//ADC_PARAM adc_param;
 
 
 /*-- Module declaration --------------------------------------------*/
@@ -47,7 +47,7 @@ INT adc_init(void);
 INT adc_bor(INT run_number);
 INT adc_eor(INT run_number);
 
-ADC_PARAM_STR(adc_param_str);
+//ADC_PARAM_STR(adc_param_str);
 
 ANA_MODULE adc_module = {
    "ADC",                       /* module name           */
@@ -57,9 +57,9 @@ ANA_MODULE adc_module = {
    adc_eor,                     /* EOR routine           */
    adc_init,                    /* init routine          */
    NULL,                        /* exit routine          */
-   &adc_param,                  /* parameter structure   */
-   sizeof(adc_param),           /* structure size        */
-   adc_param_str,               /* initial parameters    */
+   //&adc_param,                  /* parameter structure   */
+   //sizeof(adc_param),           /* structure size        */
+   //adc_param_str,               /* initial parameters    */
 };
 
 
