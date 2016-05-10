@@ -1,21 +1,16 @@
 
-/********************************************************************\
+/********************************************************************************\
   Name:         main.c
   Created by:   Retief Neveling
-  Contents:     Focal-plane detector package module. 
+  Contents:     The central analysis module. 
+
+		Contains the Initialization routine, the Begin-Of-Run routine, 
+		the Event routine, and the End-of-Run routine
 
 		Currently undergoing some changes to take out VDC 
 		stuff from this and leave this as the main routine
 
-  Remember: X wireplane has 198 wires, and 13 preamps. 
-            Thus 208 preamp channels from 0-207
-            Wire 1 start at preamp ch 10, Wire 198 stops at pream ch 208
-            (wire 1 on low momentum side)
-  Remember: U-wire plane has 143 wires, and 9 preamps
-            Thus 144 preamp channels from 0-143
-            Wire 1 start at preamp ch 1, Wire 143 stops at pream ch 143
-            (wire 1 on low momentum side)
-\********************************************************************/
+\********************************************************************************/
 
 
 /*-- Include files -------------------------------------------------*/
@@ -310,6 +305,7 @@ static TH1F *h_Y1, *h_Y2;
 
 
 #ifdef _JJAUTOTRIM
+const int TDC_CHANNELS=896;
 static TH1F *hTDC_REF[TDC_CHANNELS];   // uncomment if you use JJ_autotrim.C
 #endif
 
@@ -459,37 +455,11 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
 }
 
 
-//--------------------------------------------------------------------------------------
-void CalcPhiScat(Double_t Yfp, Double_t X1, Double_t ThSC, Double_t *Phiscat)
-{
-   //Double_t A,B;
-   Double_t parA0,parA1,parA2,parA3;
-   Double_t parB0,parB1,parB2,parB3;
-
-   parA0=gates.c00 + gates.c01*X1 + gates.c02*X1*X1;               
-   parA1=gates.c10 + gates.c11*X1 + gates.c12*X1*X1;               
-   parA2=gates.c20 + gates.c21*X1 + gates.c22*X1*X1;               
-   parA3=gates.c30 + gates.c31*X1 + gates.c32*X1*X1;               
-
-   parB0=gates.d00 + gates.d01*X1 + gates.d02*X1*X1;               
-   parB1=gates.d10 + gates.d11*X1 + gates.d12*X1*X1;               
-   parB2=gates.d20 + gates.d21*X1 + gates.d22*X1*X1;               
-   parB3=gates.d30 + gates.d31*X1 + gates.d32*X1*X1;     
- 
-   //*Phiscat=1*(A*Yfp+B);
-   *Phiscat=1*((parA0 + parA1*ThSC + parA2*ThSC*ThSC + parA3*ThSC*ThSC*ThSC)*Yfp
-	    +(parB0 + parB1*ThSC + parB2*ThSC*ThSC + parB3*ThSC*ThSC*ThSC));
-}
-
-
-
-
-
 
 
 
 //================================================================================================
-/*-- init routine ---------------------Happens before BOR----------------------------------------*/
+/*-- init routine ---------------------Happens before BOR---------------------------------------*/
 //================================================================================================
 INT main_init(void)                    
 {
@@ -1007,7 +977,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
 
-   //float ADC_export[160];
    int *TDC_channel_export;
    float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 

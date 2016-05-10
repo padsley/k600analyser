@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Wed Mar  9 17:39:21 2016
+  Created on:   Fri Mar 11 12:51:36 2016
 
 \********************************************************************/
 
@@ -124,6 +124,12 @@ typedef struct {
   INT       lowpad2;
   INT       hipad1;
   INT       hipad2;
+  float     a0;
+  float     a1;
+  float     a2;
+  float     b0;
+  float     b1;
+  float     b2;
   float     c00;
   float     c01;
   float     c02;
@@ -170,6 +176,12 @@ typedef struct {
 "lowpad2 = INT : 0",\
 "hipad1 = INT : 2000",\
 "hipad2 = INT : 4000",\
+"a0 = FLOAT : -1.05242",\
+"a1 = FLOAT : 0.00022768",\
+"a2 = FLOAT : 0",\
+"b0 = FLOAT : 35.0792",\
+"b1 = FLOAT : -0.0119133",\
+"b2 = FLOAT : 0",\
 "c00 = FLOAT : -0.149905",\
 "c01 = FLOAT : 0.000190706",\
 "c02 = FLOAT : -1.00038e-07",\
@@ -222,34 +234,6 @@ typedef struct {
   INT       lowpad2;
   INT       hipad1;
   INT       hipad2;
-  float     c00;
-  float     c01;
-  float     c02;
-  float     c11;
-  float     c10;
-  float     c12;
-  float     c20;
-  float     c21;
-  float     c22;
-  float     c30;
-  float     c31;
-  float     c32;
-  float     d00;
-  float     d01;
-  float     d02;
-  float     d10;
-  float     d11;
-  float     d12;
-  float     d20;
-  float     d21;
-  float     d22;
-  float     d30;
-  float     d31;
-  float     d32;
-  float     mtarget;
-  float     calpa;
-  float     calpb;
-  float     calpc;
 } FOCALPLANE_PARAM;
 
 #define FOCALPLANE_PARAM_STR(_name) char *_name[] = {\
@@ -268,34 +252,6 @@ typedef struct {
 "lowpad2 = INT : 0",\
 "hipad1 = INT : 2000",\
 "hipad2 = INT : 4000",\
-"c00 = FLOAT : -0.149905",\
-"c01 = FLOAT : 0.000190706",\
-"c02 = FLOAT : -1.00038e-07",\
-"c11 = FLOAT : -1.01008e-05",\
-"c10 = FLOAT : 0.0120318",\
-"c12 = FLOAT : -6.39233e-09",\
-"c20 = FLOAT : 0.0141237",\
-"c21 = FLOAT : -4.05089e-05",\
-"c22 = FLOAT : 3.25848e-08",\
-"c30 = FLOAT : -0.00243223",\
-"c31 = FLOAT : -8.68271e-06",\
-"c32 = FLOAT : 1.58795e-08",\
-"d00 = FLOAT : -0.686069",\
-"d01 = FLOAT : -0.000487973",\
-"d02 = FLOAT : 9.36511e-07",\
-"d10 = FLOAT : 0.13385",\
-"d11 = FLOAT : -0.000277455",\
-"d12 = FLOAT : 1.41865e-07",\
-"d20 = FLOAT : -0.0221455",\
-"d21 = FLOAT : 0.000187413",\
-"d22 = FLOAT : -2.33532e-07",\
-"d30 = FLOAT : -0.0231652",\
-"d31 = FLOAT : -5.69357e-05",\
-"d32 = FLOAT : 1.16068e-07",\
-"mtarget = FLOAT : 15.99492",\
-"calpa = FLOAT : -1.5768e-05",\
-"calpb = FLOAT : 0.126985",\
-"calpc = FLOAT : 1119.45",\
 "",\
 NULL }
 
