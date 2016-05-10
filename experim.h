@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Fri Mar 11 12:51:36 2016
+  Created on:   Tue May 10 14:41:05 2016
 
 \********************************************************************/
 
@@ -32,188 +32,6 @@ typedef struct {
 "Comment = STRING : [80] Analysis",\
 "",\
 NULL }
-
-#ifndef EXCL_ADC
-
-#define ADC_PARAM_DEFINED
-
-typedef struct {
-  INT       software_gain[16];
-  short     histogram_threshold;
-  INT       adc_threshold;
-} ADC_PARAM;
-
-#define ADC_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"Software Gain = INT[16] :",\
-"[0] 0",\
-"[1] 0",\
-"[2] 0",\
-"[3] 0",\
-"[4] 0",\
-"[5] 0",\
-"[6] 0",\
-"[7] 0",\
-"[8] 0",\
-"[9] 0",\
-"[10] 0",\
-"[11] 0",\
-"[12] 0",\
-"[13] 0",\
-"[14] 0",\
-"[15] 0",\
-"Histogram Threshold = SHORT : 6",\
-"adc_threshold = INT : 5",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_QDC
-
-#define QDC_PARAM_DEFINED
-
-typedef struct {
-  INT       software_gain[16];
-  short     histogram_threshold;
-  INT       adc_threshold;
-} QDC_PARAM;
-
-#define QDC_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"Software Gain = INT[16] :",\
-"[0] 0",\
-"[1] 0",\
-"[2] 0",\
-"[3] 0",\
-"[4] 0",\
-"[5] 0",\
-"[6] 0",\
-"[7] 0",\
-"[8] 0",\
-"[9] 0",\
-"[10] 0",\
-"[11] 0",\
-"[12] 0",\
-"[13] 0",\
-"[14] 0",\
-"[15] 0",\
-"Histogram Threshold = SHORT : 6",\
-"adc_threshold = INT : 5",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_MAIN
-
-#define MAIN_PARAM_DEFINED
-
-typedef struct {
-  INT       x1_driftt_low;
-  INT       x1_driftt_hi;
-  INT       x2_driftt_low;
-  INT       u1_driftt_low;
-  INT       u2_driftt_low;
-  INT       x2_driftt_hi;
-  INT       u2_driftt_hi;
-  INT       u1_driftt_hi;
-  INT       lowtof;
-  INT       hitof;
-  INT       lowpad1;
-  INT       lowpad2;
-  INT       hipad1;
-  INT       hipad2;
-  float     a0;
-  float     a1;
-  float     a2;
-  float     b0;
-  float     b1;
-  float     b2;
-  float     c00;
-  float     c01;
-  float     c02;
-  float     c11;
-  float     c10;
-  float     c12;
-  float     c20;
-  float     c21;
-  float     c22;
-  float     c30;
-  float     c31;
-  float     c32;
-  float     d00;
-  float     d01;
-  float     d02;
-  float     d10;
-  float     d11;
-  float     d12;
-  float     d20;
-  float     d21;
-  float     d22;
-  float     d30;
-  float     d31;
-  float     d32;
-  float     mtarget;
-  float     calpa;
-  float     calpb;
-  float     calpc;
-} MAIN_PARAM;
-
-#define MAIN_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"x1_driftt_low = INT : 6100",\
-"x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6100",\
-"u1_driftt_low = INT : 6100",\
-"u2_driftt_low = INT : 6100",\
-"x2_driftt_hi = INT : 8050",\
-"u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 2000",\
-"hitof = INT : 6000",\
-"lowpad1 = INT : 1",\
-"lowpad2 = INT : 0",\
-"hipad1 = INT : 2000",\
-"hipad2 = INT : 4000",\
-"a0 = FLOAT : -1.05242",\
-"a1 = FLOAT : 0.00022768",\
-"a2 = FLOAT : 0",\
-"b0 = FLOAT : 35.0792",\
-"b1 = FLOAT : -0.0119133",\
-"b2 = FLOAT : 0",\
-"c00 = FLOAT : -0.149905",\
-"c01 = FLOAT : 0.000190706",\
-"c02 = FLOAT : -1.00038e-07",\
-"c11 = FLOAT : -1.01008e-05",\
-"c10 = FLOAT : 0.0120318",\
-"c12 = FLOAT : -6.39233e-09",\
-"c20 = FLOAT : 0.0141237",\
-"c21 = FLOAT : -4.05089e-05",\
-"c22 = FLOAT : 3.25848e-08",\
-"c30 = FLOAT : -0.00243223",\
-"c31 = FLOAT : -8.68271e-06",\
-"c32 = FLOAT : 1.58795e-08",\
-"d00 = FLOAT : -0.686069",\
-"d01 = FLOAT : -0.000487973",\
-"d02 = FLOAT : 9.36511e-07",\
-"d10 = FLOAT : 0.13385",\
-"d11 = FLOAT : -0.000277455",\
-"d12 = FLOAT : 1.41865e-07",\
-"d20 = FLOAT : -0.0221455",\
-"d21 = FLOAT : 0.000187413",\
-"d22 = FLOAT : -2.33532e-07",\
-"d30 = FLOAT : -0.0231652",\
-"d31 = FLOAT : -5.69357e-05",\
-"d32 = FLOAT : 1.16068e-07",\
-"mtarget = FLOAT : 15.99492",\
-"calpa = FLOAT : -1.5768e-05",\
-"calpb = FLOAT : 0.126985",\
-"calpc = FLOAT : 1119.45",\
-"",\
-NULL }
-
-#endif
 
 #ifndef EXCL_FOCALPLANE
 
@@ -247,11 +65,11 @@ typedef struct {
 "u2_driftt_hi = INT : 8050",\
 "u1_driftt_hi = INT : 8050",\
 "lowtof = INT : 2000",\
-"hitof = INT : 6000",\
-"lowpad1 = INT : 1",\
+"hitof = INT : 7000",\
+"lowpad1 = INT : 0",\
 "lowpad2 = INT : 0",\
-"hipad1 = INT : 2000",\
-"hipad2 = INT : 4000",\
+"hipad1 = INT : 4096",\
+"hipad2 = INT : 4096",\
 "",\
 NULL }
 
@@ -280,7 +98,6 @@ typedef struct {
   INT       u1_last_wire_chan;
   INT       u2_1st_wire_chan;
   INT       u2_last_wire_chan;
-  float     adc_threshold;
 } GLOBAL_PARAM;
 
 #define GLOBAL_PARAM_STR(_name) char *_name[] = {\
@@ -291,10 +108,10 @@ typedef struct {
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
-"lut_x1_offset = INT : 30",\
-"lut_u1_offset = INT : 30",\
-"lut_x2_offset = INT : 30",\
-"lut_u2_offset = INT : 30",\
+"lut_x1_offset = INT : 0",\
+"lut_u1_offset = INT : 0",\
+"lut_x2_offset = INT : 0",\
+"lut_u2_offset = INT : 0",\
 "x1_1st_wire_chan = INT : 0",\
 "x1_last_wire_chan = INT : 200",\
 "x2_1st_wire_chan = INT : 500",\
@@ -303,7 +120,48 @@ typedef struct {
 "u1_last_wire_chan = INT : 443",\
 "u2_1st_wire_chan = INT : 800",\
 "u2_last_wire_chan = INT : 943",\
-"ADC Threshold = FLOAT : 5",\
+"",\
+NULL }
+
+#endif
+
+#ifndef EXCL_MAIN
+
+#define MAIN_PARAM_DEFINED
+
+typedef struct {
+  INT       x1_driftt_low;
+  INT       x1_driftt_hi;
+  INT       x2_driftt_low;
+  INT       u1_driftt_low;
+  INT       u2_driftt_low;
+  INT       x2_driftt_hi;
+  INT       u2_driftt_hi;
+  INT       u1_driftt_hi;
+  INT       lowtof;
+  INT       hitof;
+  INT       lowpad1;
+  INT       lowpad2;
+  INT       hipad1;
+  INT       hipad2;
+} MAIN_PARAM;
+
+#define MAIN_PARAM_STR(_name) char *_name[] = {\
+"[.]",\
+"x1_driftt_low = INT : 6100",\
+"x1_driftt_hi = INT : 8050",\
+"x2_driftt_low = INT : 6100",\
+"u1_driftt_low = INT : 6100",\
+"u2_driftt_low = INT : 6100",\
+"x2_driftt_hi = INT : 8050",\
+"u2_driftt_hi = INT : 8050",\
+"u1_driftt_hi = INT : 8050",\
+"lowtof = INT : 2000",\
+"hitof = INT : 6000",\
+"lowpad1 = INT : 1",\
+"lowpad2 = INT : 0",\
+"hipad1 = INT : 4096",\
+"hipad2 = INT : 4096",\
 "",\
 NULL }
 
