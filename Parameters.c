@@ -56,6 +56,8 @@ int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
 double *XThetaCorr;//pointer array to store the terms from above
 int NXY1Corr;
 double *XY1Corr;
+int NThFPtoThSCAT;   //Number of terms to convert thetaFP to thetaSCAT
+double *ThFPtoThSCAT;//pointer array to store the terms from above
 
 int NXRigidityPars;
 double *XRigidityPars;
@@ -622,6 +624,7 @@ void ReadConfiguration()
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
+  bool ThFPtoThSCATParametersRead = false;
 
   std::ifstream input;
 
@@ -632,7 +635,7 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPtoThSCATParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -807,6 +810,15 @@ void ReadConfiguration()
 		  else TestInelastic = true;
 		  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
 		}
+	      else if(LineBuffer.compare(0,17,"ThFPtoThSCATTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for thetaFP to thetaSCAT conversion\n",atoi(LineBuffer.c_str()));
+		  NThFPtoThSCAT = atoi(LineBuffer.c_str());
+		  ThFPtoThSCAT = new double[NThFPtoThSCAT];
+		  for(int c=0;c<NThFPtoThSCAT;c++) ThFPtoThSCAT[c] = 0;
+		  ThFPtoThSCATParametersRead = true;
+		}
 
 
 	      else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
@@ -908,7 +920,7 @@ void ReadConfiguration()
 	      int npar = -1;
 	      double valpar = 0;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead)ThSCATCorrectionParametersRead = false;
+	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead) ThSCATCorrectionParametersRead = false;
 	      else
 		{
 		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
@@ -925,7 +937,7 @@ void ReadConfiguration()
 	      int npar = -1;
 	      double valpar = 0;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,20,"EndY1CorrectionTerms") == 0 && Y1CorrectionParametersRead)Y1CorrectionParametersRead = false;
+	      if(LineBuffer.compare(0,20,"EndY1CorrectionTerms") == 0 && Y1CorrectionParametersRead) Y1CorrectionParametersRead = false;
 	      else
 		{
 		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
@@ -936,6 +948,26 @@ void ReadConfiguration()
 		  XY1Corr[npar] = valpar;
 		}
 	    }
+
+      
+	  if(ThFPtoThSCATParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,20,"EndThFPtoThSCATTerms") == 0 && ThFPtoThSCATParametersRead) ThFPtoThSCATParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  ThFPtoThSCAT[npar] = valpar;
+		}
+	    }
+
+
 	
 	  if(XRigidityParametersRead)
 	    {
