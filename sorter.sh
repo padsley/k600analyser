@@ -2,6 +2,8 @@
 
 
 for COUNT in {2139..2139}
+
+
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
@@ -48,5 +50,3 @@ do
       fi
   fi
 done
-
-
