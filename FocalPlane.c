@@ -9,6 +9,15 @@
   This main aim now is to get the vast majority of the vdc code
   out of what used to be f-plane.c, and which is not called main.c
 
+  Remember: X wireplane has 198 wires, and 13 preamps. 
+            Thus 208 preamp channels from 0-207
+            Wire 1 start at preamp ch 10, Wire 198 stops at pream ch 208
+            (wire 1 on low momentum side)
+  Remember: U-wire plane has 143 wires, and 9 preamps
+            Thus 144 preamp channels from 0-143
+            Wire 1 start at preamp ch 1, Wire 143 stops at pream ch 143
+            (wire 1 on low momentum side)
+
 \********************************************************************/
 
 
@@ -1702,7 +1711,7 @@ double CalcThetaFP(double X1, double X2)
 
 //--------------------------------------------------------------------------------------
 double CalcPhiFP(double X1, double Y1, double X2, double Y2,  double thFP)
-// Calculate the certical component of the particle track throught the focal plane
+// Calculate the vertical component of the particle track throught the focal plane
 {
    double y;
    double result=-1;

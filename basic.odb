@@ -1,23 +1,18 @@
-[/System/Clients/9659]
+[/System/Clients/23999]
 Name = STRING : [32] ODBEdit
 Host = STRING : [256] rnlap.tlabs.ac.za
 Hardware type = INT : 44
-Server Port = INT : 40171
+Server Port = INT : 59240
+
+[/System/Clients/24857]
+Name = STRING : [32] ODBEdit1
+Host = STRING : [256] rnlap.tlabs.ac.za
+Hardware type = INT : 44
+Server Port = INT : 47116
 
 [/System]
 Client Notify = INT : 0
 Prompt = STRING : [256] [%h:%e:%s]%p>
-
-[/Programs/Analyzer]
-Required = BOOL : n
-Watchdog timeout = INT : 1410065408
-Check interval = DWORD : 180000
-Start command = STRING : [256] 
-Auto start = BOOL : n
-Auto stop = BOOL : n
-Auto restart = BOOL : n
-Alarm class = STRING : [32] 
-First failed = DWORD : 0
 
 [/Programs/ODBEdit]
 Required = BOOL : n
@@ -29,6 +24,17 @@ Auto stop = BOOL : n
 Auto restart = BOOL : n
 Alarm class = STRING : [32] 
 First failed = DWORD : 1281101553
+
+[/Programs/Analyzer]
+Required = BOOL : n
+Watchdog timeout = INT : 1410065408
+Check interval = DWORD : 180000
+Start command = STRING : [256] 
+Auto start = BOOL : n
+Auto stop = BOOL : n
+Auto restart = BOOL : n
+Alarm class = STRING : [32] 
+First failed = DWORD : 0
 
 [/Programs/mhttpd]
 Required = BOOL : y
@@ -158,14 +164,14 @@ First failed = DWORD : 1262694156
 [/Experiment]
 Name = STRING : [32] Default
 
-[/Experiment/Run Parameters]
-Comment = STRING : [80] Analysis
-
 [/Experiment/Buffer sizes]
 SYSMSG = DWORD : 100000
 SYSTEM = DWORD : 4194304
 k600SYSTEMSCALER = DWORD : 8388608
 SYSTEMSCALER = DWORD : 8388608
+
+[/Experiment/Run Parameters]
+Comment = STRING : [80] Analysis
 
 [/Experiment/Lock when running]
 Run parameter = LINK : [27] /Experiment/Run parameters
@@ -175,7 +181,7 @@ Write Data? = LINK : [19] /Logger/Write Data
 MAX_EVENT_SIZE = DWORD : 4194304
 
 [/Logger]
-Data dir = STRING : [256] /home/neveling/K600/PR226-Retief-16O/ANALYSIS/
+Data dir = STRING : [256] /home/neveling/K600/SOFTWARE/git/k600analyser-1
 Message file = STRING : [256] midas.log
 Write data = BOOL : y
 Auto restart = BOOL : n
@@ -229,7 +235,7 @@ Number of events = LINK : [42] /Equipment/Trigger/Statistics/Events sent
 [/Runinfo]
 State = INT : 1
 Online Mode = INT : 0
-Run number = INT : 1023
+Run number = INT : 1095
 Transition in progress = INT : 0
 Start abort = INT : 0
 Requested transition = INT : 0
@@ -238,47 +244,116 @@ Start time binary = DWORD : 1224159995
 Stop time = STRING : [32] Thu Oct 16 14:26:44 2008
 Stop time binary = DWORD : 1224160004
 
-[/Analyzer/Parameters/ADC]
-Software Gain = INT[16] :
-[0] 0
-[1] 0
-[2] 0
-[3] 0
-[4] 0
-[5] 0
-[6] 0
-[7] 0
-[8] 0
-[9] 0
-[10] 0
-[11] 0
-[12] 0
-[13] 0
-[14] 0
-[15] 0
-Histogram Threshold = SHORT : 6
-adc_threshold = INT : 5
+[/Alarms]
+Alarm system active = BOOL : y
 
-[/Analyzer/Parameters/QDC]
-Software Gain = INT[16] :
-[0] 0
-[1] 0
-[2] 0
-[3] 0
-[4] 0
-[5] 0
-[6] 0
-[7] 0
-[8] 0
-[9] 0
-[10] 0
-[11] 0
-[12] 0
-[13] 0
-[14] 0
-[15] 0
-Histogram Threshold = SHORT : 6
-adc_threshold = INT : 5
+[/Alarms/Alarms/Demo ODB]
+Active = BOOL : n
+Triggered = INT : 0
+Type = INT : 3
+Check interval = INT : 60
+Checked last = DWORD : 0
+Time triggered first = STRING : [32] 
+Time triggered last = STRING : [32] 
+Condition = STRING : [256] /Runinfo/Run number > 100
+Alarm Class = STRING : [32] Alarm
+Alarm Message = STRING : [80] Run number became too large
+
+[/Alarms/Alarms/Demo periodic]
+Active = BOOL : n
+Triggered = INT : 0
+Type = INT : 4
+Check interval = INT : 28800
+Checked last = DWORD : 1176474143
+Time triggered first = STRING : [32] 
+Time triggered last = STRING : [32] 
+Condition = STRING : [256] 
+Alarm Class = STRING : [32] Warning
+Alarm Message = STRING : [80] Please do your shift checks
+
+[/Alarms/Alarms/EventRate]
+Active = BOOL : y
+Triggered = INT : 12
+Type = INT : 3
+Check interval = INT : 5
+Checked last = DWORD : 1418898692
+Time triggered first = STRING : [32] Tue Jan  5 14:22:36 2010
+Time triggered last = STRING : [32] Thu Dec 18 12:31:32 2014
+Condition = STRING : [256] /Equipment/WireChamber/Statistics/Events per sec. <  120
+Alarm Class = STRING : [32] Alarm
+Alarm Message = STRING : [80] Event Rate has dropped too low
+
+[/Alarms/Alarms/Speaker]
+Active = BOOL : y
+Triggered = INT : 0
+Type = INT : 2
+Check interval = INT : 60
+Checked last = DWORD : 0
+Time triggered first = STRING : [32] 
+Time triggered last = STRING : [32] 
+Condition = STRING : [256] on
+Alarm Class = STRING : [32] Alarm
+Alarm Message = STRING : [80] Program Speaker is not running
+
+[/Alarms/Classes/Alarm]
+Write system message = BOOL : y
+Write Elog message = BOOL : n
+System message interval = INT : 60
+System message last = DWORD : 1418898692
+Execute command = STRING : [256] 
+Execute interval = INT : 0
+Execute last = DWORD : 0
+Stop run = BOOL : n
+Display BGColor = STRING : [32] red
+Display FGColor = STRING : [32] black
+
+[/Alarms/Classes/Warning]
+Write system message = BOOL : y
+Write Elog message = BOOL : n
+System message interval = INT : 60
+System message last = DWORD : 0
+Execute command = STRING : [256] 
+Execute interval = INT : 0
+Execute last = DWORD : 0
+Stop run = BOOL : n
+Display BGColor = STRING : [32] red
+Display FGColor = STRING : [32] black
+
+[/Analyzer/Parameters/focalplane]
+x1_driftt_low = INT : 6100
+x1_driftt_hi = INT : 8050
+x2_driftt_low = INT : 6100
+u1_driftt_low = INT : 6100
+u2_driftt_low = INT : 6100
+x2_driftt_hi = INT : 8050
+u2_driftt_hi = INT : 8050
+u1_driftt_hi = INT : 8050
+lowtof = INT : 2000
+hitof = INT : 7000
+lowpad1 = INT : 0
+lowpad2 = INT : 0
+hipad1 = INT : 4096
+hipad2 = INT : 4096
+
+[/Analyzer/Parameters/GLOBAL]
+misswires = INT : 2
+max_tdc_channels = INT : 1000
+min_x_wires = INT : 3
+min_u_wires = INT : 3
+max_x_wires = INT : 9
+max_u_wires = INT : 8
+lut_x1_offset = INT : 0
+lut_u1_offset = INT : 0
+lut_x2_offset = INT : 0
+lut_u2_offset = INT : 0
+x1_1st_wire_chan = INT : 0
+x1_last_wire_chan = INT : 200
+x2_1st_wire_chan = INT : 500
+x2_last_wire_chan = INT : 700
+u1_1st_wire_chan = INT : 300
+u1_last_wire_chan = INT : 443
+u2_1st_wire_chan = INT : 800
+u2_last_wire_chan = INT : 943
 
 [/Analyzer/Parameters/main]
 x1_driftt_low = INT : 6100
@@ -293,107 +368,8 @@ lowtof = INT : 2000
 hitof = INT : 6000
 lowpad1 = INT : 1
 lowpad2 = INT : 0
-hipad1 = INT : 2000
-hipad2 = INT : 4000
-a0 = FLOAT : -1.05242
-a1 = FLOAT : 0.00022768
-a2 = FLOAT : 0
-b0 = FLOAT : 35.0792
-b1 = FLOAT : -0.0119133
-b2 = FLOAT : 0
-c00 = FLOAT : -0.149905
-c01 = FLOAT : 0.000190706
-c02 = FLOAT : -1.00038e-07
-c11 = FLOAT : -1.01008e-05
-c10 = FLOAT : 0.0120318
-c12 = FLOAT : -6.39233e-09
-c20 = FLOAT : 0.0141237
-c21 = FLOAT : -4.05089e-05
-c22 = FLOAT : 3.25848e-08
-c30 = FLOAT : -0.00243223
-c31 = FLOAT : -8.68271e-06
-c32 = FLOAT : 1.58795e-08
-d00 = FLOAT : -0.686069
-d01 = FLOAT : -0.000487973
-d02 = FLOAT : 9.36511e-07
-d10 = FLOAT : 0.13385
-d11 = FLOAT : -0.000277455
-d12 = FLOAT : 1.41865e-07
-d20 = FLOAT : -0.0221455
-d21 = FLOAT : 0.000187413
-d22 = FLOAT : -2.33532e-07
-d30 = FLOAT : -0.0231652
-d31 = FLOAT : -5.69357e-05
-d32 = FLOAT : 1.16068e-07
-mtarget = FLOAT : 15.99492
-calpa = FLOAT : -1.5768e-05
-calpb = FLOAT : 0.126985
-calpc = FLOAT : 1119.45
-
-[/Analyzer/Parameters/focalplane]
-x1_driftt_low = INT : 6100
-x1_driftt_hi = INT : 8050
-x2_driftt_low = INT : 6100
-u1_driftt_low = INT : 6100
-u2_driftt_low = INT : 6100
-x2_driftt_hi = INT : 8050
-u2_driftt_hi = INT : 8050
-u1_driftt_hi = INT : 8050
-lowtof = INT : 2000
-hitof = INT : 6000
-lowpad1 = INT : 1
-lowpad2 = INT : 0
-hipad1 = INT : 2000
-hipad2 = INT : 4000
-c00 = FLOAT : -0.149905
-c01 = FLOAT : 0.000190706
-c02 = FLOAT : -1.00038e-07
-c11 = FLOAT : -1.01008e-05
-c10 = FLOAT : 0.0120318
-c12 = FLOAT : -6.39233e-09
-c20 = FLOAT : 0.0141237
-c21 = FLOAT : -4.05089e-05
-c22 = FLOAT : 3.25848e-08
-c30 = FLOAT : -0.00243223
-c31 = FLOAT : -8.68271e-06
-c32 = FLOAT : 1.58795e-08
-d00 = FLOAT : -0.686069
-d01 = FLOAT : -0.000487973
-d02 = FLOAT : 9.36511e-07
-d10 = FLOAT : 0.13385
-d11 = FLOAT : -0.000277455
-d12 = FLOAT : 1.41865e-07
-d20 = FLOAT : -0.0221455
-d21 = FLOAT : 0.000187413
-d22 = FLOAT : -2.33532e-07
-d30 = FLOAT : -0.0231652
-d31 = FLOAT : -5.69357e-05
-d32 = FLOAT : 1.16068e-07
-mtarget = FLOAT : 15.99492
-calpa = FLOAT : -1.5768e-05
-calpb = FLOAT : 0.126985
-calpc = FLOAT : 1119.45
-
-[/Analyzer/Parameters/GLOBAL]
-misswires = INT : 2
-max_tdc_channels = INT : 1000
-min_x_wires = INT : 3
-min_u_wires = INT : 3
-max_x_wires = INT : 9
-max_u_wires = INT : 8
-lut_x1_offset = INT : 30
-lut_u1_offset = INT : 30
-lut_x2_offset = INT : 30
-lut_u2_offset = INT : 30
-x1_1st_wire_chan = INT : 0
-x1_last_wire_chan = INT : 200
-x2_1st_wire_chan = INT : 500
-x2_last_wire_chan = INT : 700
-u1_1st_wire_chan = INT : 300
-u1_last_wire_chan = INT : 443
-u2_1st_wire_chan = INT : 800
-u2_last_wire_chan = INT : 943
-ADC Threshold = FLOAT : 5
+hipad1 = INT : 4096
+hipad2 = INT : 4096
 
 [/Analyzer/Output]
 Filename = STRING : [256] 
@@ -535,29 +511,29 @@ Events sent = DOUBLE : 2.420921664622108e-322
 
 [/Equipment/Scaler/Variables]
 SCLR = DWORD[28] :
-[0] 455
-[1] 6
-[2] 263
+[0] 142
+[1] 1
+[2] 137
 [3] 10
 [4] 0
 [5] 0
 [6] 0
 [7] 0
-[8] 3705
-[9] 3808
-[10] 3422
-[11] 3101
-[12] 0
-[13] 449
-[14] 449
-[15] 449
+[8] 2
+[9] 0
+[10] 3
+[11] 17
+[12] 7
+[13] 5
+[14] 6
+[15] 0
 [16] 0
 [17] 0
 [18] 0
 [19] 0
-[20] 449
-[21] 4
-[22] 261
+[20] 142
+[21] 2
+[22] 137
 [23] 10
 [24] 0
 [25] 0
@@ -580,14 +556,14 @@ SCLD = DWORD[200] :
 [4] 0
 [5] 0
 [6] 0
-[7] 2937
-[8] 2452
-[9] 2131
-[10] 1964
-[11] 2327
-[12] 2086
-[13] 2237
-[14] 9283
+[7] 23
+[8] 21
+[9] 26
+[10] 25
+[11] 30
+[12] 26
+[13] 28
+[14] 77
 [15] 0
 [16] 0
 [17] 0
@@ -643,19 +619,19 @@ SCLD = DWORD[200] :
 [67] 0
 [68] 0
 [69] 0
-[70] 9389
-[71] 9396
-[72] 9426
-[73] 9432
+[70] 0
+[71] 0
+[72] 0
+[73] 0
 [74] 0
 [75] 0
 [76] 0
 [77] 0
 [78] 0
 [79] 0
-[80] 10
+[80] 9
 [81] 8
-[82] 7
+[82] 8
 [83] 7
 [84] 8
 [85] 7
@@ -664,26 +640,26 @@ SCLD = DWORD[200] :
 [88] 0
 [89] 0
 [90] 34
-[91] 34
-[92] 34
-[93] 34
-[94] 34
+[91] 0
+[92] 0
+[93] 0
+[94] 0
 [95] 0
 [96] 0
 [97] 0
-[98] 477
+[98] 151
 [99] 0
 [100] 0
-[101] 477
-[102] 1
-[103] 1031
-[104] 1008
-[105] 1008
-[106] 1000
-[107] 995
-[108] 1014
-[109] 1017
-[110] 499
+[101] 151
+[102] 0
+[103] 168
+[104] 174
+[105] 181
+[106] 183
+[107] 188
+[108] 192
+[109] 199
+[110] 151
 [111] 0
 [112] 0
 [113] 0
@@ -698,9 +674,9 @@ SCLD = DWORD[200] :
 [122] 0
 [123] 0
 [124] 0
-[125] 39
-[126] 38
-[127] 50
+[125] 0
+[126] 0
+[127] 0
 [128] 0
 [129] 0
 [130] 0
@@ -713,8 +689,8 @@ SCLD = DWORD[200] :
 [137] 0
 [138] 0
 [139] 0
-[140] 233
-[141] 1631
+[140] 136
+[141] 945
 [142] 0
 [143] 0
 [144] 0
@@ -763,11 +739,11 @@ SCLD = DWORD[200] :
 [187] 0
 [188] 0
 [189] 0
-[190] 997836
-[191] 108
-[192] 56
-[193] 56
-[194] 986
+[190] 14196
+[191] 6084
+[192] 5502
+[193] 5502
+[194] 0
 [195] 0
 [196] 0
 [197] 0
@@ -2845,189 +2821,111 @@ ADC0 = DWORD[140] :
 [137] 4161749085
 [138] 4162797670
 [139] 4227887702
-TDC0 = DWORD[67] :
+TDC0 = DWORD[64] :
 [0] 4160749568
-[1] 1074678495
-[2] 705241
-[3] 4895750
-[4] 184131
-[5] 5419995
-[6] 5944313
-[7] 6468591
-[8] 60469501
-[9] 59945602
-[10] 60994234
-[11] 58897980
-[12] 59421842
-[13] 61519035
-[14] 2147484127
-[15] 4160749569
-[16] 1074678495
-[17] 1007396
-[18] 16207287
-[19] 485712
-[20] 16732061
-[21] 2147483871
-[22] 4160749570
-[23] 1074678495
-[24] 608820
-[25] 87710
-[26] 43595857
-[27] 43072026
-[28] 44120754
-[29] 42548492
-[30] 44645803
-[31] 2147483967
-[32] 4160749571
-[33] 1074678495
-[34] 544004
-[35] 22893
-[36] 60308375
-[37] 59784433
-[38] 60833069
-[39] 58736975
-[40] 59260690
-[41] 61357683
-[42] 61882690
-[43] 2147484031
-[44] 4160749572
-[45] 1074678495
-[46] 936380
-[47] 415268
-[48] 2147483807
-[49] 4160749573
-[50] 1074678495
-[51] 944457
-[52] 423344
-[53] 45504446
-[54] 46554149
-[55] 44456515
-[56] 44980617
-[57] 46029322
-[58] 2147483967
-[59] 4160749574
-[60] 1074678495
-[61] 753439
-[62] 7569184
-[63] 232327
-[64] 8096646
-[65] 36930420
-[66] 2147483903
+[1] 1107605951
+[2] 938582
+[3] 5130818
+[4] 419227
+[5] 5655106
+[6] 2147483871
+[7] 4160749569
+[8] 1107605951
+[9] 853071
+[10] 333144
+[11] 25491811
+[12] 26016585
+[13] 26541258
+[14] 27066186
+[15] 41745229
+[16] 41221253
+[17] 40697413
+[18] 2147484031
+[19] 4160749570
+[20] 1107605951
+[21] 879386
+[22] 360032
+[23] 66412599
+[24] 66937281
+[25] 65888877
+[26] 65365249
+[27] 2147483935
+[28] 4160749571
+[29] 1107605951
+[30] 1000273
+[31] 9386338
+[32] 480918
+[33] 9910822
+[34] 8862447
+[35] 2147483903
+[36] 4160749572
+[37] 1107605951
+[38] 840525
+[39] 321168
+[40] 35440918
+[41] 50122541
+[42] 34392848
+[43] 33868895
+[44] 35965855
+[45] 36490717
+[46] 2147483999
+[47] 4160749573
+[48] 1107605951
+[49] 946714
+[50] 427356
+[51] 2147483807
+[52] 4160749574
+[53] 1107605951
+[54] 548444
+[55] 7364190
+[56] 12081346
+[57] 13128598
+[58] 29090
+[59] 7893409
+[60] 12604892
+[61] 13653288
+[62] 14178179
+[63] 2147484031
 QDC0 = DWORD[34] :
 [0] 4194312192
-[1] 4160766667
+[1] 4160768261
 [2] 4161814653
-[3] 4160832536
-[4] 4161880193
-[5] 4160898043
+[3] 4160833425
+[4] 4161880195
+[5] 4160897085
 [6] 4161945703
-[7] 4160963511
+[7] 4160962613
 [8] 4162011257
-[9] 4161028155
+[9] 4161028157
 [10] 4162076821
-[11] 4161093672
+[11] 4161093673
 [12] 4162142327
-[13] 4161159220
-[14] 4162207881
+[13] 4161159221
+[14] 4162207884
 [15] 4161224740
-[16] 4162273426
+[16] 4162273429
 [17] 4161290301
-[18] 4162338924
+[18] 4162338925
 [19] 4161355835
 [20] 4162404469
-[21] 4161421362
-[22] 4162470036
-[23] 4161486915
-[24] 4162535542
-[25] 4161552451
-[26] 4162601064
-[27] 4161617976
-[28] 4162666613
-[29] 4161683505
-[30] 4162732121
+[21] 4161421361
+[22] 4162470035
+[23] 4161486916
+[24] 4162535544
+[25] 4161552455
+[26] 4162601063
+[27] 4161617977
+[28] 4162666615
+[29] 4161683507
+[30] 4162732116
 [31] 4161749056
-[32] 4162797721
-[33] 4227887702
+[32] 4162797724
+[33] 4228916685
 
 [/Equipment/WireChamber/Statistics]
 Events sent = DOUBLE : 0
 Events per sec. = DOUBLE : 0
 kBytes per sec. = DOUBLE : 0
-
-[/Alarms]
-Alarm system active = BOOL : y
-
-[/Alarms/Alarms/Demo ODB]
-Active = BOOL : n
-Triggered = INT : 0
-Type = INT : 3
-Check interval = INT : 60
-Checked last = DWORD : 0
-Time triggered first = STRING : [32] 
-Time triggered last = STRING : [32] 
-Condition = STRING : [256] /Runinfo/Run number > 100
-Alarm Class = STRING : [32] Alarm
-Alarm Message = STRING : [80] Run number became too large
-
-[/Alarms/Alarms/Demo periodic]
-Active = BOOL : n
-Triggered = INT : 0
-Type = INT : 4
-Check interval = INT : 28800
-Checked last = DWORD : 1176474143
-Time triggered first = STRING : [32] 
-Time triggered last = STRING : [32] 
-Condition = STRING : [256] 
-Alarm Class = STRING : [32] Warning
-Alarm Message = STRING : [80] Please do your shift checks
-
-[/Alarms/Alarms/EventRate]
-Active = BOOL : y
-Triggered = INT : 12
-Type = INT : 3
-Check interval = INT : 5
-Checked last = DWORD : 1418898692
-Time triggered first = STRING : [32] Tue Jan  5 14:22:36 2010
-Time triggered last = STRING : [32] Thu Dec 18 12:31:32 2014
-Condition = STRING : [256] /Equipment/WireChamber/Statistics/Events per sec. <  120
-Alarm Class = STRING : [32] Alarm
-Alarm Message = STRING : [80] Event Rate has dropped too low
-
-[/Alarms/Alarms/Speaker]
-Active = BOOL : y
-Triggered = INT : 0
-Type = INT : 2
-Check interval = INT : 60
-Checked last = DWORD : 0
-Time triggered first = STRING : [32] 
-Time triggered last = STRING : [32] 
-Condition = STRING : [256] on
-Alarm Class = STRING : [32] Alarm
-Alarm Message = STRING : [80] Program Speaker is not running
-
-[/Alarms/Classes/Alarm]
-Write system message = BOOL : y
-Write Elog message = BOOL : n
-System message interval = INT : 60
-System message last = DWORD : 1418898692
-Execute command = STRING : [256] 
-Execute interval = INT : 0
-Execute last = DWORD : 0
-Stop run = BOOL : n
-Display BGColor = STRING : [32] red
-Display FGColor = STRING : [32] black
-
-[/Alarms/Classes/Warning]
-Write system message = BOOL : y
-Write Elog message = BOOL : n
-System message interval = INT : 60
-System message last = DWORD : 0
-Execute command = STRING : [256] 
-Execute interval = INT : 0
-Execute last = DWORD : 0
-Stop run = BOOL : n
-Display BGColor = STRING : [32] red
-Display FGColor = STRING : [32] black
 
 [/History/Display/Default/WireChamber rate]
 Time Scale = STRING : [32] 1h

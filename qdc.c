@@ -38,7 +38,7 @@ int qdcevtcount2;
 
 
 /*-- For ODB: from /Analyzer/Parameters/----------------------------*/
-QDC_PARAM qdc_param;
+//QDC_PARAM qdc_param;
 
 
 /*-- Module declaration --------------------------------------------*/
@@ -47,7 +47,7 @@ INT qdc_init(void);
 INT qdc_bor(INT run_number);
 INT qdc_eor(INT run_number);
 
-QDC_PARAM_STR(qdc_param_str);
+//QDC_PARAM_STR(qdc_param_str);
 
 ANA_MODULE qdc_module = {
    "QDC",                       /* module name           */
@@ -57,9 +57,9 @@ ANA_MODULE qdc_module = {
    qdc_eor,                     /* EOR routine           */
    qdc_init,                    /* init routine          */
    NULL,                        /* exit routine          */
-   &qdc_param,                  /* parameter structure   */
-   sizeof(qdc_param),           /* structure size        */
-   qdc_param_str,               /* initial parameters    */
+   //&qdc_param,                  /* parameter structure   */
+   //sizeof(qdc_param),           /* structure size        */
+   //qdc_param_str,               /* initial parameters    */
 };
 
 
