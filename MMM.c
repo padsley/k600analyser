@@ -181,7 +181,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
   //printf("SiliconData PrintEvent routine: Silicon hits: %d\n",si->SizeOfEvent());
   //si->PrintEvent();
   //printf("MMM.c L180\n");
-  if(!si->TestEvent()); si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
+  if(!si->TestEvent()) si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
   //printf("MMM.c L182\n");
   //MMMGhostBuster(SiliconData *si);
 
