@@ -1656,18 +1656,12 @@ double CalcYFP(double x, double u, double thFP)
 //--------------------------------------------------------------------------------------
 double CalcThetaScat(double X1, double ThFP)
 {
-  //Using the result of the fit:  
-  //TF2 *fit2 = new TF2("fit2","y*([0]+[1]*x+[2]*x*x) + [3] + [4]*x + [5]*x*x",250,660,28,33); where y = ThFP and x = X1
+  
+  extern int NThFPtoThSCAT;
+  extern double *ThFPtoThSCAT;
 
-  double *ThetaSCATPars = new double[6];
-  ThetaSCATPars[0] = -1.05242;  
-  ThetaSCATPars[1] =  0.00022768; 
-  ThetaSCATPars[2] =  0;   
-  ThetaSCATPars[3] =  35.0792;   
-  ThetaSCATPars[4] = -0.0119133; 
-  ThetaSCATPars[5] =  0;  
-
-  double result = ThFP*(ThetaSCATPars[0] + ThetaSCATPars[1]*X1 + ThetaSCATPars[2]*X1*X1) +  ThetaSCATPars[3] +  ThetaSCATPars[4]*X1 +  ThetaSCATPars[5]*X1*X1;
+  double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1) 
+		      + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
   return result;
 }
 
