@@ -75,7 +75,7 @@ extern EXP_PARAM exp_param;
 extern RUNINFO runinfo;
 
 /*-- Histogramming Data Structures ----------------------------------------*/
-static TH2F *hADC2DModule[5];
+TH2F **hADC2DModule;
 
 /*-- init routine --------------------------------------------------*/
 INT adc_init(void)
@@ -83,11 +83,12 @@ INT adc_init(void)
    char name[256];
    char title[256];
    int i;
-   
-   for(int counter=0;counter<5;counter++){
+
+   hADC2DModule = new TH2F*[ADCModules];   
+   for(int counter=0;counter<ADCModules;counter++){
 	  sprintf(name,"hADC2DModule%d",counter);
 	  sprintf(title,"hADC2DModule %d ",counter);
-          hADC2DModule[counter]=H2_BOOK(name,title,4096,0,4096,32,0,32);
+          hADC2DModule[counter]=new TH2F(name,title,4096,0,4096,32,0,32);
    }
 
    return SUCCESS;

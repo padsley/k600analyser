@@ -239,10 +239,6 @@ Double_t U1wirefit[10], U1distfit[10];
 Double_t X2wirefit[10], X2distfit[10];      
 Double_t U2wirefit[10], U2distfit[10];  
 
-//const int NR_OF_TDCS=TDCModules;
-const int NR_OF_TDCS=7;
-
-
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -259,9 +255,7 @@ static TH1F *hEventID, *hEventID2;
 
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
-//static TH1F *hTDCRawSpectra[NR_OF_TDCS];
-TH2F *hTDC2DModule[NR_OF_TDCS];
-
+TH2F **hTDC2DModule;
 
 static TH1F *hTDCPerEventRaw;
 //static TH1F *hTDCPerEvent;
@@ -543,14 +537,7 @@ INT main_init(void)
    hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
    //hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
 
-
-   if (NR_OF_TDCS!=TDCModules) { 
-	printf("\n\n\n\n\n        !!!! YOU HAVE A PROBLEM YOU SHOULD FIX !!!\n");
-	printf("    Due to the fact that c++ does not allow variable array size, and the fact that:\n");
-	printf("    NR_OF_TDCS= %d   BUT  TDCModules (from config.cfg) = %d\n",NR_OF_TDCS,TDCModules);
-	printf("    you are bound to be in trouble. Fix this problem first by ensuring NR_OF_TDCS\n");
-	printf("    inside main.c is hardcoded to the same value as TDCModules \n\n\n\n\n\n\n");
-   } 
+   hTDC2DModule = new TH2F*[TDCModules];
    for(int counter=0;counter<TDCModules;counter++){
 	  sprintf(name,"hTDC2DModule%d",counter);
 	  sprintf(title,"hTDC2DModule %d ",counter);
