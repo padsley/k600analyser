@@ -239,6 +239,7 @@ Double_t U1wirefit[10], U1distfit[10];
 Double_t X2wirefit[10], X2distfit[10];      
 Double_t U2wirefit[10], U2distfit[10];  
 
+//const int NR_OF_TDCS=TDCModules;
 const int NR_OF_TDCS=7;
 
 /*-----------------------------------------------------------------------------------*/
@@ -255,8 +256,26 @@ static TH1F *hEventID, *hEventID2;
 
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
-static TH1F *hTDCRawSpectra[NR_OF_TDCS];
+//static TH1F *hTDCRawSpectra[NR_OF_TDCS];
 static TH2F *hTDC2DModule[NR_OF_TDCS];
+
+
+/*
+TH1F *hTDCRawSpectra[TDCModules];
+TH1F *gEnergy[npeaks];
+TGraphErrors *gDCS[npeaks];
+for(unsigned int i=0;i {
+char buffer[256];
+sprintf(buffer,"gEnergy_%d",i+1);
+gEnergy[i] = new TGraphErrors();
+gEnergy[i]->SetName(buffer);
+gDCS[i] = new TGraphErrors();
+sprintf(buffer,"gDCS_%d",i+1);
+gDCS[i]->SetName(buffer);
+}
+*/
+
+
 static TH1F *hTDCPerEventRaw;
 //static TH1F *hTDCPerEvent;
 
@@ -306,7 +325,7 @@ static TH1F *h_Y1, *h_Y2;
 
 #ifdef _JJAUTOTRIM
 const int TDC_CHANNELS=896;
-static TH1F *hTDC_REF[TDC_CHANNELS];   // uncomment if you use JJ_autotrim.C
+static TH1F *hTDC_REF[TDC_CHANNELS];   // for use of JJ_autotrim.C
 #endif
 
 
@@ -505,12 +524,12 @@ INT main_init(void)
    read_cable(cableOffset,(char *)"CableLength.dat");
 
    open_subfolder((char *)"LUT&Cable");
-     hX1_lut = H1_BOOK("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
-     hU1_lut = H1_BOOK("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
-     hX2_lut = H1_BOOK("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
-     hU2_lut = H1_BOOK("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
-     hCableOff = H1_BOOK("hCableOff","cable offsets)",896,0,896);
-     hCableOfftmp = H1_BOOK("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
+     hX1_lut = new TH1F("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
+     hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
+     hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
+     hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
+     hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
+     hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
    close_subfolder(); 
 
    for(int j = 0; j < 896; j++) {
@@ -527,95 +546,96 @@ INT main_init(void)
 
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   hEventID  = H1_BOOK("hEventID","each bin represents a type of event",30,0,30);
-   hEventID2  = H1_BOOK("hEventID2","each bin represents a type of event",30,0,30);
+   hEventID  = new TH1F("hEventID","each bin represents a type of event",30,0,30);
+   //hEventID  = new TH1F("hEventID","each bin represents a type of event",30,0,30);
+   hEventID2  = new TH1F("hEventID2","each bin represents a type of event",30,0,30);
 
-   hPad1VsTofG  = H2_BOOK("hPad1VsTofG","Paddle 1 ave VS TOF (gated)", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
-   hPad1Pad2G  = H2_BOOK("hPad1Pad2G","Pad1(y-axis) vs Pad2(x-axis) (PID gated)",  1024, 0, 4096, 1024,0 , 4096);
+   hPad1VsTofG  = new TH2F("hPad1VsTofG","Paddle 1 ave VS TOF (gated)", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
+   hPad1Pad2G  = new TH2F("hPad1Pad2G","Pad1(y-axis) vs Pad2(x-axis) (PID gated)",  1024, 0, 4096, 1024,0 , 4096);
 
-   hTDCPerEventRaw = H1_BOOK("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
-   //hTDCPerEvent    = H1_BOOK("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
+   hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
+   //hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
    
    for(int counter=0;counter<TDCModules;counter++){
 	  sprintf(name,"hTDC2DModule%d",counter);
 	  sprintf(title,"hTDC2DModule %d ",counter);
-          hTDC2DModule[counter]=H2_BOOK(name,title, 4000, -8000, 14999,128,0,128);
+          hTDC2DModule[counter]=new TH2F(name,title, 4000, -8000, 14999,128,0,128);
    }
 
-   hHitPatternRawTDC   = H1_BOOK("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
-   hHitPatternAll   = H1_BOOK("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
-   hHitPatternPID   = H1_BOOK("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
+   hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
+   hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
+   hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
-   hChanVsTimeRef       = H2_BOOK("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = H2_BOOK("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffsetPID = H2_BOOK("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
-   hWireVsTimeOffset    = H2_BOOK("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = H2_BOOK("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+   hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
+   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
+   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
 
-   hX1_EffID    = H1_BOOK("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
-   hU1_EffID    = H1_BOOK("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
-   hX2_EffID    = H1_BOOK("hX2_EffID","VDC efficiency calculation: X2 ",20,0,20);
-   hU2_EffID    = H1_BOOK("hU2_EffID","VDC efficiency calculation: U2 ",20,0,20);
+   hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
+   hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
+   hX2_EffID    = new TH1F("hX2_EffID","VDC efficiency calculation: X2 ",20,0,20);
+   hU2_EffID    = new TH1F("hU2_EffID","VDC efficiency calculation: U2 ",20,0,20);
 
-   hX1_DriftLength = H1_BOOK("hX1_DriftLength","DriftLength X1 (mm)  ",110,-1,10);
-   hX2_DriftLength = H1_BOOK("hX2_DriftLength","DriftLength X2 (mm)  ",110,-1,10);
-   hU1_DriftLength = H1_BOOK("hU1_DriftLength","DriftLength U1 (mm)  ",110,-1,10);
-   hU2_DriftLength = H1_BOOK("hU2_DriftLength","DriftLength U2 (mm)  ",110,-1,10);
+   hX1_DriftLength = new TH1F("hX1_DriftLength","DriftLength X1 (mm)  ",110,-1,10);
+   hX2_DriftLength = new TH1F("hX2_DriftLength","DriftLength X2 (mm)  ",110,-1,10);
+   hU1_DriftLength = new TH1F("hU1_DriftLength","DriftLength U1 (mm)  ",110,-1,10);
+   hU2_DriftLength = new TH1F("hU2_DriftLength","DriftLength U2 (mm)  ",110,-1,10);
 
-   hX1_DriftTimeGood = H1_BOOK("hX1_DriftTimeGood","X1 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU1_DriftTimeGood = H1_BOOK("hU1_DriftTimeGood","U1 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hX2_DriftTimeGood = H1_BOOK("hX2_DriftTimeGood","X2 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU2_DriftTimeGood = H1_BOOK("hU2_DriftTimeGood","U2 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX1_DriftTimeGood = new TH1F("hX1_DriftTimeGood","X1 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU1_DriftTimeGood = new TH1F("hU1_DriftTimeGood","U1 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX2_DriftTimeGood = new TH1F("hX2_DriftTimeGood","X2 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU2_DriftTimeGood = new TH1F("hU2_DriftTimeGood","U2 drifttimes (good events) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
    #ifdef _FULLANALYSIS
-   hDriftTimeRawAll  = H1_BOOK("hDriftTimeRawAll","All drifttimes (before subtracting ref times), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hDriftTimeOffsetAll  = H1_BOOK("hDriftTimeOffsetAll","All drifttimes (cablelenghts offsets included), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hDriftTimeRawAll  = new TH1F("hDriftTimeRawAll","All drifttimes (before subtracting ref times), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hDriftTimeOffsetAll  = new TH1F("hDriftTimeOffsetAll","All drifttimes (cablelenghts offsets included), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
-   hX1_DriftTimeRef  = H1_BOOK("hX1_DriftTimeRef","X1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hX2_DriftTimeRef  = H1_BOOK("hX2_DriftTimeRef","X2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU1_DriftTimeRef  = H1_BOOK("hU1_DriftTimeRef","U1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU2_DriftTimeRef  = H1_BOOK("hU2_DriftTimeRef","U2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX1_DriftTimeRef  = new TH1F("hX1_DriftTimeRef","X1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX2_DriftTimeRef  = new TH1F("hX2_DriftTimeRef","X2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU1_DriftTimeRef  = new TH1F("hU1_DriftTimeRef","U1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU2_DriftTimeRef  = new TH1F("hU2_DriftTimeRef","U2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
-   hX1_DriftTimeOffset = H1_BOOK("hX1_DriftTimeOff","X1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hX2_DriftTimeOffset = H1_BOOK("hX2_DriftTimeOff","X2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU1_DriftTimeOffset = H1_BOOK("hU1_DriftTimeOff","U1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU2_DriftTimeOffset = H1_BOOK("hU2_DriftTimeOff","U2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX1_DriftTimeOffset = new TH1F("hX1_DriftTimeOff","X1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX2_DriftTimeOffset = new TH1F("hX2_DriftTimeOff","X2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU1_DriftTimeOffset = new TH1F("hU1_DriftTimeOff","U1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU2_DriftTimeOffset = new TH1F("hU2_DriftTimeOff","U2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
-   hX1_Hits  = H1_BOOK("hX1_Hits","X1 wires/event (all X1 events)",20,0,20);
-   hX2_Hits  = H1_BOOK("hX2_Hits","X2 wires/event (all U1 events)",20,0,20);
-   hU1_Hits  = H1_BOOK("hU1_Hits","U1 wires/event (all X2 events)",20,0,20);
-   hU2_Hits  = H1_BOOK("hU2_Hits","U2 wires/event (all U2 events)",20,0,20);
+   hX1_Hits  = new TH1F("hX1_Hits","X1 wires/event (all X1 events)",20,0,20);
+   hX2_Hits  = new TH1F("hX2_Hits","X2 wires/event (all U1 events)",20,0,20);
+   hU1_Hits  = new TH1F("hU1_Hits","U1 wires/event (all X2 events)",20,0,20);
+   hU2_Hits  = new TH1F("hU2_Hits","U2 wires/event (all U2 events)",20,0,20);
 
-   hX1_HitsG  = H1_BOOK("hX1_HitsG","X1 wires/event (good event)",20,0,20);
-   hX2_HitsG  = H1_BOOK("hX2_HitsG","X2 wires/event (good event)",20,0,20);
-   hU1_HitsG  = H1_BOOK("hU1_HitsG","U1 wires/event (good event)",20,0,20);
-   hU2_HitsG  = H1_BOOK("hU2_HitsG","U2 wires/event (good event)",20,0,20);
+   hX1_HitsG  = new TH1F("hX1_HitsG","X1 wires/event (good event)",20,0,20);
+   hX2_HitsG  = new TH1F("hX2_HitsG","X2 wires/event (good event)",20,0,20);
+   hU1_HitsG  = new TH1F("hU1_HitsG","U1 wires/event (good event)",20,0,20);
+   hU2_HitsG  = new TH1F("hU2_HitsG","U2 wires/event (good event)",20,0,20);
 
-   hX1_Chisq     = H1_BOOK("hX1_Chisq","Chi squared: X1 ",500,0,15);
-   hX1_Eff       = H1_BOOK("hX1_Eff","VDC efficiency: X1 ",1000,0,100);
-   hX1_PosEff    = H2_BOOK("hX1_PosEff","VDC efficiency along focal plane: X1 ",200,0,800,1000,0,100);
-   hU1_Chisq     = H1_BOOK("hU1_Chisq","Chi squared: U1 ",500,0,15);
-   hU1_Eff       = H1_BOOK("hU1_Eff","VDC efficiency: U1 ",1000,0,100);
-   hX2_Chisq     = H1_BOOK("hX2_Chisq","Chi squared: X2 ",500,0,15);
-   hX2_Eff       = H1_BOOK("hX2_Eff","VDC efficiency: X2 ",1000,0,100);
-   hU2_Chisq     = H1_BOOK("hU2_Chisq","Chi squared: U2 ",500,0,15);
-   hU2_Eff       = H1_BOOK("hU2_Eff","VDC efficiency: U2 ",1000,0,100);
+   hX1_Chisq     = new TH1F("hX1_Chisq","Chi squared: X1 ",500,0,15);
+   hX1_Eff       = new TH1F("hX1_Eff","VDC efficiency: X1 ",1000,0,100);
+   hX1_PosEff    = new TH2F("hX1_PosEff","VDC efficiency along focal plane: X1 ",200,0,800,1000,0,100);
+   hU1_Chisq     = new TH1F("hU1_Chisq","Chi squared: U1 ",500,0,15);
+   hU1_Eff       = new TH1F("hU1_Eff","VDC efficiency: U1 ",1000,0,100);
+   hX2_Chisq     = new TH1F("hX2_Chisq","Chi squared: X2 ",500,0,15);
+   hX2_Eff       = new TH1F("hX2_Eff","VDC efficiency: X2 ",1000,0,100);
+   hU2_Chisq     = new TH1F("hU2_Chisq","Chi squared: U2 ",500,0,15);
+   hU2_Eff       = new TH1F("hU2_Eff","VDC efficiency: U2 ",1000,0,100);
 
-   hX1_Res       = H1_BOOK("hX1_Res","X1 position resolution",400,-8.,8.);
-   hX1_Res2dRCNP = H2_BOOK("hX1_Res2dRCNP","RCNP style resolution plot: X1", 200,-3,3,200,-3.,3.);
-   hX1_Res2diTL  = H2_BOOK("hX1_Res2diTL","iTL style resolution plot for X1 (xaxis=pos-int(pos)) ", 200,-0.1,1.1,200,-3.,3.);
-   hU1_Res       = H1_BOOK("hU1_Res","U1 position resolution",400,-8.,8.);
-   hU1_Res2dRCNP = H2_BOOK("hU1_Res2dRCNP","Min.drift-Estimated VS Min.drift: U1", 200,-3,3,200,-3.,3.);
-   hU1_Res2diTL  = H2_BOOK("hU1_Res2diTL","iTL style resolution plot: U1", 200,-0.1,1.1,200,-3.,3.);
-   hX2_Res       = H1_BOOK("hX2_Res","X2 position resolution",400,-8.,8.);
-   hX2_Res2dRCNP = H2_BOOK("hX2_Res2dRCNP","Min.drift-Estimated VS Min.drift: X2", 200,-3,3,200,-3.,3.);
-   hX2_Res2diTL  = H2_BOOK("hX2_Res2diTL","iTL style resolution plot: X2", 200,-0.1,1.1,200,-3.,3.);
-   hU2_Res       = H1_BOOK("hU2_Res","U2 position resolution",400,-8.,8.);
-   hU2_Res2dRCNP = H2_BOOK("hU2_Res2dRCNP","Min.drift-Estimated VS Min.drift: U2", 200,-3,3,200,-3.,3.);
-   hU2_Res2diTL  = H2_BOOK("hU2_Res2diTL","iTL style resolution plot: U2", 200,-0.1,1.1,200,-3.,3.);
+   hX1_Res       = new TH1F("hX1_Res","X1 position resolution",400,-8.,8.);
+   hX1_Res2dRCNP = new TH2F("hX1_Res2dRCNP","RCNP style resolution plot: X1", 200,-3,3,200,-3.,3.);
+   hX1_Res2diTL  = new TH2F("hX1_Res2diTL","iTL style resolution plot for X1 (xaxis=pos-int(pos)) ", 200,-0.1,1.1,200,-3.,3.);
+   hU1_Res       = new TH1F("hU1_Res","U1 position resolution",400,-8.,8.);
+   hU1_Res2dRCNP = new TH2F("hU1_Res2dRCNP","Min.drift-Estimated VS Min.drift: U1", 200,-3,3,200,-3.,3.);
+   hU1_Res2diTL  = new TH2F("hU1_Res2diTL","iTL style resolution plot: U1", 200,-0.1,1.1,200,-3.,3.);
+   hX2_Res       = new TH1F("hX2_Res","X2 position resolution",400,-8.,8.);
+   hX2_Res2dRCNP = new TH2F("hX2_Res2dRCNP","Min.drift-Estimated VS Min.drift: X2", 200,-3,3,200,-3.,3.);
+   hX2_Res2diTL  = new TH2F("hX2_Res2diTL","iTL style resolution plot: X2", 200,-0.1,1.1,200,-3.,3.);
+   hU2_Res       = new TH1F("hU2_Res","U2 position resolution",400,-8.,8.);
+   hU2_Res2dRCNP = new TH2F("hU2_Res2dRCNP","Min.drift-Estimated VS Min.drift: U2", 200,-3,3,200,-3.,3.);
+   hU2_Res2diTL  = new TH2F("hU2_Res2diTL","iTL style resolution plot: U2", 200,-0.1,1.1,200,-3.,3.);
 
-   h_Y1   = H1_BOOK("h_Y1","Y1 ",400,-100,100);
-   h_Y2   = H1_BOOK("h_Y2","Y2 ",400,-100,100);
+   h_Y1   = new TH1F("h_Y1","Y1 ",400,-100,100);
+   h_Y2   = new TH1F("h_Y2","Y2 ",400,-100,100);
    #endif
 
    #ifdef _JJAUTOTRIM                           // if you use JJ_autotrim.C
@@ -624,7 +644,7 @@ INT main_init(void)
    for(int i=0;i<TDC_CHANNELS;i++){
 	sprintf(name,"TDCchan_%d",i);
 	sprintf(title,"TDC channel # %d (reftimes incl) ",i);
-   	hTDC_REF[i] = H1_BOOK(name,title,TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   	hTDC_REF[i] = new TH1F(name,title,TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    }
    close_subfolder();
    close_subfolder();   
