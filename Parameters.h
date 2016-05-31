@@ -9,22 +9,24 @@
 
 // Originally declared as constants; some are needed in array definitions, and some I
 // just tried to make a distinction between things one can change and things one should not change at all
-const double X_WIRESPACE = 4.0;  // distance (mm) between signal wires
-const double DRIFTLENGTH = 8.0;  // max distance (mm) the electrons can drift
-const double U_WIRE_ANGLE=50.0;    // angle of wires in U-plane wrt to horizontal
+const double X_WIRESPACE = 4.0;     // distance (mm) between signal wires
+const double DRIFTLENGTH = 8.0;     // max distance (mm) the electrons can drift
+const double U_WIRE_ANGLE=50.0;     // angle of wires in U-plane wrt to horizontal
 const int X_WIRES=208;
 const int U_WIRES=145;
 const int TDC_MAX_TIME=14999;
 const int TDC_MIN_TIME=0;
 const int TDC_N_BINS=14999;
-const int TOF_TDC_CHAN=1;     // ch1 in 1st TDC; i.e. the 2nd channel     
+const int TOF_TDC_CHAN=1;             // ch1 in 1st TDC; i.e. the 2nd channel     
 const int MAX_WIRES_PER_EVENT = 400;  // If more wires than this fire, the event data was bad  -- RN random choice  -- 
 				      // to be replaced by something else?!?! really only used for array definition
 				      // MUST FIND A BETTER WAY ... THIS VARIABLE NOT GOOD?
 const int LUT_CHANNELS=9000;
-const int TDC_CHAN_PULSER=2;
+const int TDC_CHAN_PULSER=2;      // A pulser PR, in absence of pattern register unit
 
-//const int NR_OF_TDCS=7;     // this value is now declared in the config file config.cfg, as it can change from exp to exp
+const int TDC_CHAN_POLU=4;        // May 2016: this was last used in PR153 Oct 2011
+const int TDC_CHAN_POLD=5;
+
 
 
 

@@ -103,10 +103,6 @@ extern int TDCModules;
 
 
 /*-------------------- global variables for main --------------------*/
-#ifdef _POLARIZATION              // for PR153, Sept/Oct 2010
-const int TDC_CHAN_POLU=2;
-const int TDC_CHAN_POLD=3;
-#endif
 
 float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
@@ -1206,11 +1202,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       TDCValueExportStore.push_back(offset_time);
 
       switch(channel){
-		case 3:  t_k600=1; break;
+		case (TDC_CHAN_PULSER): t_pulser=1; break;            // see Parameters.h. The chan = 2
+
 		case 9:  pad1hipt=ref_time;t_pad1hiPT=pad1hipt; break;
 		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
+
 		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
@@ -1218,7 +1216,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case (TOF_TDC_CHAN+4*128): if(t_toftdc5==0) toftdc5=ref_time; t_toftdc5=toftdc5; break;
 		case (TOF_TDC_CHAN+5*128): if(t_toftdc6==0) toftdc6=ref_time; t_toftdc6=toftdc6; break;
 		case (TOF_TDC_CHAN+6*128): if(t_toftdc7==0) toftdc7=ref_time; t_toftdc7=toftdc7; break;
-		case (TDC_CHAN_PULSER): t_pulser=1; break; 
 		#ifdef _POLARIZATION  		
 		case (TDC_CHAN_POLU): t_polu=1; break;  // for polarized beam
 		case (TDC_CHAN_POLD): t_pold=1; break;  // for polarized beam
