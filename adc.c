@@ -86,7 +86,7 @@ INT adc_init(void)
    char title[256];
    int i;
  
-   printf("ADCModules = %d  ",ADCModules);
+   //printf("ADCModules = %d  ",ADCModules);
    hADC2DModule = new TH2F*[ADCModules];   
    for(int counter=0;counter<ADCModules;counter++){
 	  sprintf(name,"hADC2DModule%d",counter);
@@ -179,18 +179,18 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 	   if((padc[i]&0xf) ==5) adcnr=5;  // printf(" adc nr 5 \n");}
 	   if((padc[i]&0xf) ==6) adcnr=6;  // printf(" adc nr 6 \n");}
 	   if((padc[i]&0xf) ==7) adcnr=7;  // printf(" adc nr 7 \n");}
-	   if((padc[i]&0xf) ==8) adcnr=8;  // printf(" adc nr 7 \n");}
-	   //printf("-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
+	   if((padc[i]&0xf) ==8) adcnr=8;  // printf(" adc nr 8 \n");}
+	   printf("\n-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
 	}
 	if(((padc[i]>>24)&0x7) ==0){     // if not then they are not data but header words.
 	    adcchan=((padc[i])>>16)&0x1f;
             adcchan=adcchan + adcnr*32;
 	    if(adcchan<ADCModules*32)   adc[adcchan] =(float)(padc[i]&0x0fff);  // this test necessary to ensure no problems when
 										// nr of ADCs were wrongly given in the config file
-            //printf("raw data 0x%08x -> chan %d data %d adcnr %i words %d \n",padc[i],adcchan,(padc[i]&0x0fff),adcnr,nwords);
+            //printf("raw data 0x%08x -> chan %d, data %d, adcnr %i, 32*adcnr %d, diff %d\n",padc[i],adcchan,(padc[i]&0x0fff),adcnr,32*adcnr,adcchan-32*adcnr);
           
             /* fill basic ADC histos */
-	    hADC2DModule[adcnr]->Fill(adc[adcchan],adcchan-32*adcnr);
+	    if(adcchan<ADCModules*32)   hADC2DModule[adcnr]->Fill(adc[adcchan],adcchan-32*adcnr);
 	}
 
    }
