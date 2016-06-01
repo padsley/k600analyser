@@ -85,7 +85,7 @@ void ParameterInit()
   QDCInit();
   TDCInit();
   PrintParameters();
-  printf("Finished initialising parameters - to the sorting!\n");
+  printf("\nFinished initialising parameters - to the sorting!\n");
 }
 
 /*-------------------------------------------------*/

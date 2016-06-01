@@ -7,8 +7,9 @@
 #include <cstdlib>
 #include <limits>
 
-// Originally declared as constants; some are needed in array definitions, and some I
-// just tried to make a distinction between things one can change and things one should not change at all
+// Originally declared as constants, sinc I tried to make a distinction
+// between things one can change and things one should not change at all ... RN
+
 const double X_WIRESPACE = 4.0;     // distance (mm) between signal wires
 const double DRIFTLENGTH = 8.0;     // max distance (mm) the electrons can drift
 const double U_WIRE_ANGLE=50.0;     // angle of wires in U-plane wrt to horizontal
@@ -23,9 +24,8 @@ const int MAX_WIRES_PER_EVENT = 400;  // If more wires than this fire, the event
 				      // MUST FIND A BETTER WAY ... THIS VARIABLE NOT GOOD?
 const int LUT_CHANNELS=9000;
 const int TDC_CHAN_PULSER=2;      // A pulser PR, in absence of pattern register unit
-
-const int TDC_CHAN_POLU=4;        // May 2016: this was last used in PR153 Oct 2011
-const int TDC_CHAN_POLD=5;
+const int TDC_CHAN_POLU=4;        // May 2016: this was last used in PR153 Oct 2010
+const int TDC_CHAN_POLD=5;        // May 2016: this was last used in PR153 Oct 2010
 
 
 
