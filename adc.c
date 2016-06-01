@@ -180,7 +180,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 	   if((padc[i]&0xf) ==6) adcnr=6;  // printf(" adc nr 6 \n");}
 	   if((padc[i]&0xf) ==7) adcnr=7;  // printf(" adc nr 7 \n");}
 	   if((padc[i]&0xf) ==8) adcnr=8;  // printf(" adc nr 8 \n");}
-	   printf("\n-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
+	   //printf("\n-----raw data 0x%08x ->  data %d adcnr %i \n",padc[i],(padc[i]&0x0fff),adcnr); 
 	}
 	if(((padc[i]>>24)&0x7) ==0){     // if not then they are not data but header words.
 	    adcchan=((padc[i])>>16)&0x1f;
