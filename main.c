@@ -462,9 +462,7 @@ INT main_init(void)
    char name[256];
    char title[256];
 
-   extern int RunNumber;
-   printf("RunNumber: \t %d\n",RunNumber);
-   ParameterInit();
+   //ParameterInit();     // now called inside init routine of analyzer.c
 
    extern bool VDC1_new, VDC2_new;
 
