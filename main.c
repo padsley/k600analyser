@@ -946,7 +946,7 @@ INT main_bor(INT run_number)
 //================================================================================================
 INT main_event(EVENT_HEADER * pheader, void *pevent)
 {
-   //printf("L2218\n");
+   //printf("main.c L949\n");
    DWORD *ptdc;
    Int_t ntdc = 0;
    Int_t tdc1190datacode, tdc1190error, tdc1190trailerstatus;
@@ -1118,9 +1118,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
  
-   // loop through all the TDC datawords===================================================================================================
-   //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event 
-   
+   // ===loop through all the TDC datawords================================================================================================
+
+   //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event    
    //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
    //TDC_value_export = new float[ntdc];
    
@@ -1129,6 +1129,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
         tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
         continue;                            // go back to beginning of for loop as this word only tells us about tdcmodule nr
       }                                      // Raw data: 1st word has TDC module nr, then info on that module, then go to next tdcmodule
+      if(tdcmodule<0 || tdcmodule>TDCModules){
+	printf("bad tdc module nr %d\n",tdcmodule);   // error condition
+      }
       tdc1190datacode = 0x1F&((ptdc[i])>>27);
 
       #ifdef _PRINTTOSCREEN
@@ -1177,18 +1180,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       channel = (0x7F&((ptdc[i])>>19));      // channel is per TDC; i.e. 0-127
       time = 0x7FFFF&(ptdc[i]);
 
-      if(tdcmodule<0 || tdcmodule>7){
-	printf("bad tdc module nr %d\n",tdcmodule);   // error condition
-      }
-
-      
-      
+ 
       ref_time = reftimes[tdcmodule] - time;     // to get accurate time info that does not suffer from trigger jitter
       
       if(tdcmodule<TDCModules){
-	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 
-	
-		
+	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 		
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
