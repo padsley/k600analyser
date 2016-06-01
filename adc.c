@@ -25,15 +25,8 @@
 //#include <TMath.h>
 
 
-// defined in Parameters.c
-extern float *ADC;
-extern int ADCModules;
-extern int ADCsize;
-extern double *ADCOffsets, *ADCGains;
 
-/*-- variables to be used in f-plane.c as extern variables----------*/
-//float ADC[128];
-
+/*-- variables to be used in main.c as extern variables----------*/
 int adcevtcount;
 
 
@@ -64,18 +57,26 @@ ANA_MODULE adc_module = {
 
 
 /*--------------------------------------------------------------------------*/
-#define H1I_BOOK(n,t,b,min,max) (h1_book<TH1I>(n,t,b,min,max))
-#define H2I_BOOK(n,t,xb,xmin,xmax,yb,ymin,ymax) (h2_book<TH2I>(n,t,xb,xmin,xmax,yb,ymin,ymax))
+//#define H1I_BOOK(n,t,b,min,max) (h1_book<TH1I>(n,t,b,min,max))
+//#define H2I_BOOK(n,t,xb,xmin,xmax,yb,ymin,ymax) (h2_book<TH2I>(n,t,xb,xmin,xmax,yb,ymin,ymax))
+
+// defined in Parameters.c
+extern float *ADC;
+extern int ADCModules;
+extern int ADCsize;
+extern double *ADCOffsets, *ADCGains;
 
 /*------------Declarations of predefined Constants ----------------*/
-const int ADC_N_BINS = 4096;
-const int ADC_X_LOW  = 0;
-const int ADC_X_HIGH = 4095;
+//const int ADC_N_BINS = 4096;
+//const int ADC_X_LOW  = 0;
+//const int ADC_X_HIGH = 4095;
 extern EXP_PARAM exp_param;
 extern RUNINFO runinfo;
 
 /*-- Histogramming Data Structures ----------------------------------------*/
 TH2F **hADC2DModule;
+//static TH2F *hADC2DModule[5];
+
 
 /*-- init routine --------------------------------------------------*/
 INT adc_init(void)
@@ -83,14 +84,21 @@ INT adc_init(void)
    char name[256];
    char title[256];
    int i;
-
+  
    hADC2DModule = new TH2F*[ADCModules];   
    for(int counter=0;counter<ADCModules;counter++){
 	  sprintf(name,"hADC2DModule%d",counter);
 	  sprintf(title,"hADC2DModule %d ",counter);
           hADC2DModule[counter]=new TH2F(name,title,4096,0,4096,32,0,32);
-   }
+  }
 
+/*
+   for(int counter=0;counter<5;counter++){
+	  sprintf(name,"hADC2DModule%d",counter);
+	  sprintf(title,"hADC2DModule %d ",counter);
+          hADC2DModule[counter]=H2_BOOK(name,title,4096,0,4096,32,0,32);
+   }
+*/
    return SUCCESS;
 }
 
@@ -150,8 +158,9 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 {
    INT i, nwords;
    DWORD *padc;
-   float *adc = new float[32*ADCModules];  
-//    printf("adc initialisation: %d\n",32*ADCModules);
+   //float *adc = new float[32*ADCModules];  
+   float *adc = new float[32];  
+   //printf("adc initialisation: %d\n",32*ADCModules);
    int adcchan,adcnr;
    extern int adc_counter1, adc_counter2;   // defined; declared in analyzer.c
 
@@ -162,7 +171,8 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
       adc_counter2++;
       return 1;
    }
-//     printf("adc.c: L185\n");     
+
+   //printf("adc.c: L176\n");     
    for (i = 0; i < nwords; i++){
         //printf("-------raw data 0x%08x  Nr of words %d \n",padc[i],nwords); 
         if(((padc[i]>>24)&0xff) ==0xfd) {
@@ -179,8 +189,10 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
             adcchan=adcchan + adcnr*32;
       	    adc[adcchan] =(float)(padc[i]&0x0fff);
             //printf("raw data 0x%08x -> chan %d data %d adcnr %i words %d \n",padc[i],adcchan,(padc[i]&0x0fff),adcnr,nwords);
-
+          
             /* fill basic ADC histos */
+	    //hADC2DModule[adcnr]->Fill(adc[adcchan],adcchan);
+/*
             if(adcchan<32) {
 		hADC2DModule[0]->Fill(adc[adcchan],adcchan);
 	    }  
@@ -194,6 +206,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 		hADC2DModule[3]->Fill(adc[adcchan],adcchan-96);
 	    }
             else if(adcchan<160) hADC2DModule[4]->Fill(adc[adcchan],adcchan-128);  
+*/
 	}
 
    }

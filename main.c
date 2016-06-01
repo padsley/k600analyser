@@ -103,10 +103,6 @@ extern int TDCModules;
 
 
 /*-------------------- global variables for main --------------------*/
-#ifdef _POLARIZATION              // for PR153, Sept/Oct 2010
-const int TDC_CHAN_POLU=2;
-const int TDC_CHAN_POLD=3;
-#endif
 
 float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
@@ -950,7 +946,7 @@ INT main_bor(INT run_number)
 //================================================================================================
 INT main_event(EVENT_HEADER * pheader, void *pevent)
 {
-   //printf("L2218\n");
+   //printf("main.c L949\n");
    DWORD *ptdc;
    Int_t ntdc = 0;
    Int_t tdc1190datacode, tdc1190error, tdc1190trailerstatus;
@@ -1122,9 +1118,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
  
-   // loop through all the TDC datawords===================================================================================================
-   //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event 
-   
+   // ===loop through all the TDC datawords================================================================================================
+
+   //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event    
    //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
    //TDC_value_export = new float[ntdc];
    
@@ -1133,6 +1129,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
         tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
         continue;                            // go back to beginning of for loop as this word only tells us about tdcmodule nr
       }                                      // Raw data: 1st word has TDC module nr, then info on that module, then go to next tdcmodule
+      if(tdcmodule<0 || tdcmodule>TDCModules){
+	printf("bad tdc module nr %d\n",tdcmodule);   // error condition
+      }
       tdc1190datacode = 0x1F&((ptdc[i])>>27);
 
       #ifdef _PRINTTOSCREEN
@@ -1181,18 +1180,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       channel = (0x7F&((ptdc[i])>>19));      // channel is per TDC; i.e. 0-127
       time = 0x7FFFF&(ptdc[i]);
 
-      if(tdcmodule<0 || tdcmodule>7){
-	printf("bad tdc module nr %d\n",tdcmodule);   // error condition
-      }
-
-      
-      
+ 
       ref_time = reftimes[tdcmodule] - time;     // to get accurate time info that does not suffer from trigger jitter
       
       if(tdcmodule<TDCModules){
-	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 
-	
-		
+	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 		
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
@@ -1206,11 +1198,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       TDCValueExportStore.push_back(offset_time);
 
       switch(channel){
-		case 3:  t_k600=1; break;
+		case (TDC_CHAN_PULSER): t_pulser=1; break;            // see Parameters.h. The chan = 2
+
 		case 9:  pad1hipt=ref_time;t_pad1hiPT=pad1hipt; break;
 		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
+
 		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
@@ -1218,7 +1212,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case (TOF_TDC_CHAN+4*128): if(t_toftdc5==0) toftdc5=ref_time; t_toftdc5=toftdc5; break;
 		case (TOF_TDC_CHAN+5*128): if(t_toftdc6==0) toftdc6=ref_time; t_toftdc6=toftdc6; break;
 		case (TOF_TDC_CHAN+6*128): if(t_toftdc7==0) toftdc7=ref_time; t_toftdc7=toftdc7; break;
-		case (TDC_CHAN_PULSER): t_pulser=1; break; 
 		#ifdef _POLARIZATION  		
 		case (TDC_CHAN_POLU): t_polu=1; break;  // for polarized beam
 		case (TDC_CHAN_POLD): t_pold=1; break;  // for polarized beam
