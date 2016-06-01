@@ -30,6 +30,11 @@
 #include <TTree.h>
 #include <TFile.h>
 
+/* home-made includes */
+#include "Parameters.h"
+
+
+
 /*                   // what is this!?! I thought we are working with ROOT? 
 #ifdef HAVE_HBOOK
 #include <cfortran.h>
@@ -70,7 +75,6 @@ int trailer_bufoverflow_counter=0;
 
 /*-- Module declarations -------------------------------------------*/
 extern ANA_MODULE scaler_accum_module;
-//extern ANA_MODULE focalplane_module;
 extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
 extern ANA_MODULE adc_module;                    
@@ -83,7 +87,6 @@ ANA_MODULE *scaler_module[] = {
 ANA_MODULE *trigger_module[] = {
    &adc_module,					
    &qdc_module,
-//   &focalplane_module,
    &main_module,
    NULL
 };
@@ -190,6 +193,9 @@ INT analyzer_init()
    //runnr=runinfo.run_number;
 
 
+   ParameterInit();
+
+
    return SUCCESS;
 }
 
@@ -283,9 +289,8 @@ INT ana_end_of_run(INT run_number, char *error)
 
 
    // close the root file (that containst the trees) created in f-plane.c
-   extern TFile *f1;  // declared in f-plane.c
-   extern TTree *t1;  // declared in f-plane.c
-   extern TTree *t2;  // declared in f-plane.c
+   extern TFile *f1;  // declared in main.c
+   extern TTree *t1;  // declared in main.c
    f1->cd();
    f1->Write();
    f1->Close();
