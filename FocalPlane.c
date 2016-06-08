@@ -1656,13 +1656,42 @@ double CalcYFP(double x, double u, double thFP)
 //--------------------------------------------------------------------------------------
 double CalcThetaScat(double X1, double ThFP)
 {
-  
+
+/*  
   extern int NThFPtoThSCAT;
   extern double *ThFPtoThSCAT;
 
   double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1) 
 		      + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
   return result;
+*/
+
+  double result = 0;
+  extern int NThFPSCATOffset;
+  extern double *ThFPSCATOffset;
+  extern int NThFPSCATSlope;
+  extern double *ThFPSCATSlope;
+
+  //printf("anglefp = %f\n",ThFP);  
+
+  for(int i=0;i<NThFPSCATOffset;i++)
+  {
+    if(i==0) result = 0;
+    if(i>0)  result += ThFPSCATOffset[i] * pow(X1,i-1); 
+    //printf("NTHFPSCATOffset  %i  and parameter %f  and result %f at X1= %f \n",i, ThFPSCATOffset[i],result,X1);
+  }
+
+  for(int i=0;i<NThFPSCATSlope;i++)
+  {
+    if(i==0) result = result;
+    if(i>0)  result += ThFP * ThFPSCATSlope[i] * pow(X1,i-1);
+    //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, ThFPSCATSlope[i],result,X1);
+  }
+
+  //printf("\n\n");
+  return result;
+
+
 }
 
 //--------------------------------------------------------------------------------------

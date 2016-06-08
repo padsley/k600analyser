@@ -60,7 +60,7 @@
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
-//#define _ADC
+
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -1875,10 +1875,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    fatty->ClearEvent();
 #endif
    
-#ifdef _ADC
-   ADCClear();
-#endif
+//#ifdef _ADC
+   if(ADCModules>0) ADCClear();
+//#endif
         
+//#define _ADC
    delete [] TDC_channel_export;
    delete [] TDC_value_export;
    TDCChannelExportStore.clear();
