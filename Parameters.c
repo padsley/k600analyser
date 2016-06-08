@@ -56,8 +56,10 @@ int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
 double *XThetaCorr;//pointer array to store the terms from above
 int NXY1Corr;
 double *XY1Corr;
-int NThFPtoThSCAT;   //Number of terms to convert thetaFP to thetaSCAT
-double *ThFPtoThSCAT;//pointer array to store the terms from above
+int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
+double *ThFPSCATOffset;  //pointer array to store the terms from above
+int NThFPSCATSlope;    //Number of terms to convert thetaFP to thetaSCAT
+double *ThFPSCATSlope; //pointer array to store the terms from above
 
 int NXRigidityPars;
 double *XRigidityPars;
@@ -624,7 +626,8 @@ void ReadConfiguration()
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
-  bool ThFPtoThSCATParametersRead = false;
+  bool ThFPSCATOffsetParametersRead = false;
+  bool ThFPSCATSlopeParametersRead = false;
 
   std::ifstream input;
 
@@ -635,7 +638,7 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPtoThSCATParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -810,14 +813,23 @@ void ReadConfiguration()
 		  else TestInelastic = true;
 		  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
 		}
-	      else if(LineBuffer.compare(0,17,"ThFPtoThSCATTerms") == 0)
+	      else if(LineBuffer.compare(0,19,"ThFPSCATOffsetTerms") == 0)
 		{
 		  input >> LineBuffer;
-		  printf("Using %d terms for thetaFP to thetaSCAT conversion\n",atoi(LineBuffer.c_str()));
-		  NThFPtoThSCAT = atoi(LineBuffer.c_str());
-		  ThFPtoThSCAT = new double[NThFPtoThSCAT];
-		  for(int c=0;c<NThFPtoThSCAT;c++) ThFPtoThSCAT[c] = 0;
-		  ThFPtoThSCATParametersRead = true;
+		  printf("Using %d terms for thetaFP to thetaSCAT conversion: offset \n",atoi(LineBuffer.c_str()));
+		  NThFPSCATOffset = atoi(LineBuffer.c_str());
+		  ThFPSCATOffset = new double[NThFPSCATOffset];
+		  for(int c=0;c<NThFPSCATOffset;c++) ThFPSCATOffset[c] = 0;
+		  ThFPSCATOffsetParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,18,"ThFPSCATSlopeTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for thetaFP to thetaSCAT conversion: slope \n",atoi(LineBuffer.c_str()));
+		  NThFPSCATSlope = atoi(LineBuffer.c_str());
+		  ThFPSCATSlope = new double[NThFPSCATSlope];
+		  for(int c=0;c<NThFPSCATSlope;c++) ThFPSCATSlope[c] = 0;
+		  ThFPSCATSlopeParametersRead = true;
 		}
 
 
@@ -950,12 +962,12 @@ void ReadConfiguration()
 	    }
 
       
-	  if(ThFPtoThSCATParametersRead)
+	  if(ThFPSCATOffsetParametersRead)
 	    {
 	      int npar = -1;
 	      double valpar = 0;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,20,"EndThFPtoThSCATTerms") == 0 && ThFPtoThSCATParametersRead) ThFPtoThSCATParametersRead = false;
+	      if(LineBuffer.compare(0,22,"EndThFPSCATOffsetTerms") == 0 && ThFPSCATOffsetParametersRead) ThFPSCATOffsetParametersRead = false;
 	      else
 		{
 		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
@@ -963,10 +975,26 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
 		  valpar = atof(LineBuffer.c_str());
-		  ThFPtoThSCAT[npar] = valpar;
+		  ThFPSCATOffset[npar] = valpar;
 		}
 	    }
 
+	  if(ThFPSCATSlopeParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,21,"EndThFPSCATSlopeTerms") == 0 && ThFPSCATSlopeParametersRead) ThFPSCATSlopeParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  ThFPSCATSlope[npar] = valpar;
+		}
+	    }
 
 	
 	  if(XRigidityParametersRead)
