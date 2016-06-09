@@ -49,14 +49,14 @@
 /*------------Preprocessor Directives to change analysis------------*/
 //#define _POLARIZATION
 //#define _MOVIE
-//#define _JJAUTOTRIM
+#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
+//#define _RAWDATA
+//#define _SILICONDATA 
+//#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -1221,7 +1221,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       hChanVsTimeOffset->Fill(offset_time,channel);  // 2D: chan vs offset corrected times
 
       #ifdef _JJAUTOTRIM  
-      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){		// if you want to use JJ_autotrim.C
+      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 && channel<TDC_CHANNELS){		// if you want to use JJ_autotrim.C
          hTDC_REF[channel]->Fill(ref_time);                                     // fill spectra for individual wires   	
       }											
       #endif
