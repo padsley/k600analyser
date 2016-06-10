@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Tue May 10 14:41:05 2016
+  Created on:   Fri Jun 10 09:37:09 2016
 
 \********************************************************************/
 
@@ -156,9 +156,9 @@ typedef struct {
 "x2_driftt_hi = INT : 8050",\
 "u2_driftt_hi = INT : 8050",\
 "u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 2000",\
-"hitof = INT : 6000",\
-"lowpad1 = INT : 1",\
+"lowtof = INT : 123",\
+"hitof = INT : 7000",\
+"lowpad1 = INT : 0",\
 "lowpad2 = INT : 0",\
 "hipad1 = INT : 4096",\
 "hipad2 = INT : 4096",\

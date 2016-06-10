@@ -504,7 +504,7 @@ void LoadExCorrection(int run)
 	  foundRun = true;
 	}
     }
-  if(!foundRun)printf("Run not found\n");
+  if(!foundRun)printf("For Ex correction: run not found\n");
 }
 
 /*-------------------------------------------------*/

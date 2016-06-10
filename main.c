@@ -63,16 +63,17 @@
 
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
-FOCALPLANE_PARAM gates;     // these are to be found in experim.h
+//FOCALPLANE_PARAM gates;     // these are to be found in experim.h
+MAIN_PARAM gates;     // these are to be found in experim.h
 GLOBAL_PARAM globals;
 WIRECHAMBER_SETTINGS WireChamberSettings;
 RUNINFO runinfo2;
   // At present we use 2 methods to get to ODB data:
-  // the globals we get through GetODBGlobals() subroutine
-  // the gates we get directly from the ODB, see focalplane_module declaration
+  // -the globals we get through GetODBGlobals() subroutine
+  // -the gates we used to get directly from the ODB, see focalplane_module declaration
   // below. The gates will thus change upon changing an ODB entry 'on-the-fly' 
   // while the globals will only change for each initialzation as it is
-  // performed in the init routine.
+  // obtained only in the init routine.
 
 /*---- MIDAS Module declaration ------------------------------------*/
 INT main_event(EVENT_HEADER *, void *);
@@ -80,7 +81,8 @@ INT main_bor(INT run_number);
 INT main_eor(INT run_number);
 INT main_init(void);
 
-FOCALPLANE_PARAM_STR(focalplane_param_str);
+//FOCALPLANE_PARAM_STR(focalplane_param_str);
+MAIN_PARAM_STR(main_param_str);
 
 ANA_MODULE main_module = {
    "main",                	/* module name           */
@@ -92,7 +94,7 @@ ANA_MODULE main_module = {
    NULL,                        /* exit routine          */
    &gates,                      /* parameter structure   */
    sizeof(gates),               /* structure size        */
-   focalplane_param_str,        /* initial parameters IN ODB????   */
+   main_param_str,        /* initial parameters IN ODB????   */
 };
 
 /*-------------------- defined somewhere else ----------------------*/
@@ -322,7 +324,15 @@ void GetODBGlobals()
    //printf("ODB test : %d  \n",globals.misswires);
    
    db_close_record(hDB,hKey);
+
+   //printf("globals.x1_1st_wire_chan: %d  \n",globals.x1_1st_wire_chan);
+   //printf("globals.x2_1st_wire_chan: %d  \n",globals.x2_1st_wire_chan);  
+   //printf("globals.u1_1st_wire_chan: %d  \n",globals.u1_1st_wire_chan);  
+   //printf("globals.u2_1st_wire_chan: %d  \n",globals.u2_1st_wire_chan);
+
 }
+
+
 
 //----------------------------------------------------------------------------------------//
 void GetODBRunInfo()
@@ -345,9 +355,10 @@ void GetODBRunInfo()
    extern int RunNumber;
    RunNumber = runinfo2.run_number;
    printf("RunNumber: \t%d\n",RunNumber);
-   LoadExCorrection(RunNumber);
+   //LoadExCorrection(RunNumber);               // not used at present
    db_close_record(hDB,hKey);
 }
+
 
 //----------------------------------------------------------------------------------------//
 void PrintODBstuff()
@@ -362,6 +373,12 @@ void PrintODBstuff()
   printf("gates.hipad1: %d  \n",gates.hipad1);
   printf("gates.lowpad2: %d  \n",gates.lowpad2);
   printf("gates.hipad2: %d  \n",gates.hipad2);
+
+  printf("lut x1 offset: %d \n",globals.lut_x1_offset);
+  printf("lut u1 offset: %d \n",globals.lut_u1_offset);
+  printf("lut x2 offset: %d \n",globals.lut_x2_offset);
+  printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+
 }
 
 //------------------------------------------------------------------------------
@@ -848,6 +865,7 @@ INT main_bor(INT run_number)
 			  //    Date: 	Thu, 7 Feb 2013 15:50:35 +0200 (SAST)
    
    GetODBGlobals();                // get globals that can be set in the ODB
+   //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
    //PrintODBstuff();
 
    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
