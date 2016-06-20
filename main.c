@@ -49,12 +49,12 @@
 /*------------Preprocessor Directives to change analysis------------*/
 //#define _POLARIZATION
 //#define _MOVIE
-#define _JJAUTOTRIM
+//#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
-//#define _RAWDATA
+#define _RAWDATA
 //#define _SILICONDATA 
 //#define _MMM
 //#define _W1
@@ -99,6 +99,7 @@ ANA_MODULE main_module = {
 
 /*-------------------- defined somewhere else ----------------------*/
 extern float *ADC;
+extern int *ADCchannel;
 extern int ADCModules;
 extern float *QDC;
 extern int TDCModules;
@@ -970,7 +971,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t channel, channelnew, time;
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
-   Int_t reftimes[7]; 
+   Int_t reftimes[10]; 
    Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
@@ -1820,7 +1821,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _RAWDATA
   if(raw)
   {
-    raw = RawDataDump(ADC,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+    //printf("made it in main.c to RawDataDump\n");
+    raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
   }
 #endif
   

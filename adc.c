@@ -64,6 +64,7 @@ ANA_MODULE adc_module = {
 
 // defined in Parameters.c
 extern float *ADC;
+extern int   *ADCchannel;
 extern int ADCModules;
 extern int ADCsize;
 extern double *ADCOffsets, *ADCGains;
@@ -197,9 +198,11 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
    //adcevtcount=padc[33]&0xfffff;  // take event counter in the trailer, the 34th word, to f-plane to compare to TDC counter 
    for(i=0; i<ADCsize;i++){
        ADC[i] = 0;		    // Clear out the ADC values - should always be resetting the values because 
-				    // we have pedestals but it's worth being proper about it.
+       ADCchannel[i]=-1;	    // we have pedestals but it's worth being proper about it.
+
        if (adc[i] > 0.0) {  
 	   ADC[i]=adc[i];                 // if ( adc[i] > (float) adc_param.histogram_threshold )
+	   ADCchannel[i]=i;
        }
    }      
 
