@@ -6,6 +6,7 @@ int ADCModules;
 int ADCsize;
 
 float *ADC;
+int *ADCchannel;
 
 int TDCModules;
 
@@ -504,7 +505,7 @@ void LoadExCorrection(int run)
 	  foundRun = true;
 	}
     }
-  if(!foundRun)printf("Run not found\n");
+  if(!foundRun)printf("For Ex correction: run not found\n");
 }
 
 /*-------------------------------------------------*/
@@ -522,6 +523,7 @@ void ADCInit()
 {
   printf("ADCInit\n");
   ADC = new float[32*ADCModules];	     
+  ADCchannel = new int[32*ADCModules];	     
   ADCClear();
 }
 
@@ -530,6 +532,7 @@ void ADCClear()
   for(int i=0;i<ADCsize;i++)
   {
     ADC[i] = 0;
+    ADCchannel[i] = -1;
   }
 }
 
