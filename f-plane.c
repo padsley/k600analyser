@@ -47,10 +47,10 @@
 
 #include "SiliconData.h"
 #include "MMM.h"
-#include "W1.h"
+//#include "W1.h"
 
 #include "GammaData.h"
-#include "HagarSort.h"
+//#include "HagarSort.h"
 #include "CloverSort.h"
 
 #include "RawData.h"
