@@ -209,9 +209,9 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    }
 
    triggerU = psclr[0];
-   triggerI = psclr[20];
+   triggerI = psclr[32];
    CIU = psclr[2];
-   CII = psclr[22];
+   CII = psclr[34];
 
    //==============================================================================================================
    counter += 1;
