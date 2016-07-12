@@ -230,7 +230,7 @@ void MMMInit()//Initialise function which gets the information on the DAQ channe
 //---------------------------------------------------------------------
 bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
 {
-  if(Channel>128)
+  if(Channel>1000)
     return true;
   else
     return false;
@@ -266,45 +266,61 @@ double MMMThetaCalc(int FrontChannel, int BackChannel)
       }
   }
 */
+	for(int k=0;k<NumberOfMMM;k++){
+ 	  if(FrontChannel>=MMMADCChannelLimits[k][0] && FrontChannel<=MMMADCChannelLimits[k][1]) {  
+		detectori=k;
+		ring=FrontChannel - MMMADCChannelLimits[k][0] ;
+ 	 }
+	}
 
-  if(FrontChannel<16) {  
-	detectori=0; 
-	ring=FrontChannel;
-  }
-  else if (FrontChannel<32){  
-	detectori=1;
-	ring=FrontChannel-16;
-  }
-  else if (FrontChannel<48) { 
-	detectori=2;
-	ring=FrontChannel-32;
-  }
-  else if  (FrontChannel<64) { 
-	detectori=3;
-	ring=FrontChannel-48;
-  }
-  	   
-  if(BackChannel>79 && BackChannel<88) {  
-	detectorj=0; 
-	sector=BackChannel-80;
-  }
-  else if (BackChannel>87 && BackChannel<96){  
-	detectorj=1;
-	sector=BackChannel-88;
-  }
-  else if (BackChannel>95 && BackChannel<104) { 
-	detectorj=2;
-	sector=BackChannel-96;
-  }
-  else if  (BackChannel>103 && BackChannel<112) { 
-	detectorj=3;
-	sector=BackChannel-104;
-  }
+	for(int k=0;k<NumberOfMMM;k++){
+ 	 if(BackChannel>=MMMADCChannelLimits[k][2] && BackChannel<=MMMADCChannelLimits[k][3]) {  
+		detectorj=k;
+		sector=BackChannel- MMMADCChannelLimits[k][2] ;
+  	 }
+        }
+
+//   if(FrontChannel<16) {  
+// 	detectori=0; 
+// 	ring=FrontChannel;
+//   }
+//   else if (FrontChannel<32){  
+// 	detectori=1;
+// 	ring=FrontChannel-16;
+//   }
+//   else if (FrontChannel<48) { 
+// 	detectori=2;
+// 	ring=FrontChannel-32;
+//   }
+//   else if  (FrontChannel<64) { 
+// 	detectori=3;
+// 	ring=FrontChannel-48;
+//   }
+//   	   
+//   if(BackChannel>79 && BackChannel<88) {  
+// 	detectorj=0; 
+// 	sector=BackChannel-80;
+//   }
+//   else if (BackChannel>87 && BackChannel<96){  
+// 	detectorj=1;
+// 	sector=BackChannel-88;
+//   }
+//   else if (BackChannel>95 && BackChannel<104) { 
+// 	detectorj=2;
+// 	sector=BackChannel-96;
+//   }
+//   else if  (BackChannel>103 && BackChannel<112) { 
+// 	detectorj=3;
+// 	sector=BackChannel-104;
+//   }
 
   if(detectori!=detectorj)  printf("something wrong: ring and sectors does not agree on detector nr. Bad frontback test");
 
   //printf("detectori = %i : ring = %i,  sector = %i  theta = %f \n",detectori, ring, sector,GA_TIARA[detectori][ring][sector][0]);
+  
   return GA_TIARA[detectori][ring][sector][0]; 
+//   double double_ring = (double)ring;
+//   return double_ring; 
 }
 
 
@@ -317,44 +333,61 @@ double MMMPhiCalc(int FrontChannel, int BackChannel)
   int ring,sector;
   int detectori,detectorj;
 
-  if(FrontChannel<16) {  
-	detectori=0; 
-	ring=FrontChannel;
+for(int k=0;k<NumberOfMMM;k++){
+  if(FrontChannel>=MMMADCChannelLimits[k][0] && FrontChannel<=MMMADCChannelLimits[k][1]) {  
+	detectori=k;
+	ring=FrontChannel - MMMADCChannelLimits[k][0] ;
   }
-  else if (FrontChannel<32){  
-	detectori=1;
-	ring=FrontChannel-16;
+}
+
+for(int k=0;k<NumberOfMMM;k++){
+  if(BackChannel>=MMMADCChannelLimits[k][2] && BackChannel<=MMMADCChannelLimits[k][3]) {  
+	detectorj=k;
+	sector=BackChannel- MMMADCChannelLimits[k][2] ;
   }
-  else if (FrontChannel<48) { 
-	detectori=2;
-	ring=FrontChannel-32;
-  }
-  else if  (FrontChannel<64) { 
-	detectori=3;
-	ring=FrontChannel-48;
-  }
-  	   
-  if(BackChannel>79 && BackChannel<88) {  
-	detectorj=0; 
-	sector=BackChannel-80;
-  }
-  else if (BackChannel>87 && BackChannel<96){  
-	detectorj=1;
-	sector=BackChannel-88;
-  }
-  else if (BackChannel>95 && BackChannel<104) { 
-	detectorj=2;
-	sector=BackChannel-96;
-  }
-  else if  (BackChannel>103 && BackChannel<112) { 
-	detectorj=3;
-	sector=BackChannel-104;
-  }
+}  
+//   if(FrontChannel<16) {  
+// 	detectori=0; 
+// 	ring=FrontChannel;
+//   }
+//   else if (FrontChannel<32){  
+// 	detectori=1;
+// 	ring=FrontChannel-16;
+//   }
+//   else if (FrontChannel<48) { 
+// 	detectori=2;
+// 	ring=FrontChannel-32;
+//   }
+//   else if  (FrontChannel<64) { 
+// 	detectori=3;
+// 	ring=FrontChannel-48;
+//   }
+//   	   
+//   if(BackChannel>79 && BackChannel<88) {  
+// 	detectorj=0; 
+// 	sector=BackChannel-80;
+//   }
+//   else if (BackChannel>87 && BackChannel<96){  
+// 	detectorj=1;
+// 	sector=BackChannel-88;
+//   }
+//   else if (BackChannel>95 && BackChannel<104) { 
+// 	detectorj=2;
+// 	sector=BackChannel-96;
+//   }
+//   else if  (BackChannel>103 && BackChannel<112) { 
+// 	detectorj=3;
+// 	sector=BackChannel-104;
+//   }
 
   if(detectori!=detectorj)  printf("something wrong: ring and sectors does not agree on detector nr. Bad frontback test");
 
   //printf("detectori = %i : ring = %i,  sector = %i \n",detectori, ring, sector);
+  
   return GA_TIARA[detectori][ring][sector][1]; 
+  
+//   double double_sector = (double)sector;
+//   return double_sector;
 }
 
 

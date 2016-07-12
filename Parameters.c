@@ -35,11 +35,19 @@ int **CloverTDCChannelLimits;
 
 int ***GateauTDCChannelLimits;
 
+int NumberOfScintillator;
+
+int *ScintillatorADCChannelLimits;
+int *ScintillatorTDCChannelLimits;
+
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
 
 double CloverGain[8] = {1,1,1,1,1,1,1,1};
 double CloverOffset[8] = {0,0,0,0,0,0,0,0};
+
+double ScintillatorGain[8] = {1,1,1,1,1,1,1,1};
+double ScintillatorOffset[8] = {0,0,0,0,0,0,0,0};
 
 int *PulseLimits;//[2] = {-1e6, 1e6};
 
@@ -369,6 +377,39 @@ void PulseLimitsInit()
 }
 
 /*-------------------------------------------------*/
+void ScintillatorInit()
+{
+
+  printf("\nScintillatorParameterInit\n");
+  
+  ScintillatorADCChannelLimits = new int[2];
+  ScintillatorTDCChannelLimits = new int[2];
+
+    for(int j=0;j<2;j++)
+    {
+      ScintillatorTDCChannelLimits[j] = -1;
+      ScintillatorADCChannelLimits[j] = -1;
+    }  
+  
+  printf("\nScintillatorParameterInit - end\n");
+}
+
+/*-------------------------------------------------*/
+void ScintillatorADCChannelsInit(int start, int stop)
+{
+  ScintillatorADCChannelLimits[0] = start;
+  ScintillatorADCChannelLimits[1] = stop;
+}
+
+/*-------------------------------------------------*/
+void ScintillatorTDCChannelsInit(int start, int stop)
+{
+  ScintillatorTDCChannelLimits[0] = start;
+  ScintillatorTDCChannelLimits[1] = stop;
+}
+
+/* ----------------------------------------------- */
+/*-------------------------------------------------*/
 void CalibrationParametersInit()
 {
   printf("\n CalibrationParametersInit\n"); 
@@ -625,6 +666,9 @@ void ReadConfiguration()
   bool CloverUsed = false;
   bool CloverADCChannelRead = false;
   bool CloverTDCChannelRead = false;
+  bool ScintillatorUsed = false;
+  bool ScintillatorADCChannelRead = false;
+  bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
@@ -641,7 +685,7 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -728,7 +772,7 @@ void ReadConfiguration()
 		   //   CloverNumberInit();
 		      CloverUsed = true;
 		    }
-		  else if(LineBuffer.compare(0,3,"no") == 0)
+		  else if(LineBuffer.compare(0,2,"no") == 0)
 		    {
 		      CloverUsed = false;
 		    }
@@ -752,6 +796,33 @@ void ReadConfiguration()
 		{
 		  if(CloverTDCChannelRead==false)CloverTDCChannelRead = true;
 		  else if(CloverTDCChannelRead==true)CloverTDCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,16,"ScintillatorUsed") == 0)
+		{
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,3,"yes") == 0)
+		    {
+		      ScintillatorInit();
+		      ScintillatorUsed = true;
+		    }
+		  else if(LineBuffer.compare(0,2,"no") == 0)
+		    {
+		      ScintillatorUsed = false;
+		    }
+		  else
+		    {
+		      printf("Scintillator usage option not recognised\n");
+		    }
+		}
+	      else if(LineBuffer.compare(0,23,"ScintillatorADCChannels") == 0)
+		{
+		  if(ScintillatorADCChannelRead==false)ScintillatorADCChannelRead = true;
+		  else if(ScintillatorADCChannelRead==true)ScintillatorADCChannelRead = false;
+		}
+	      else if(LineBuffer.compare(0,23,"ScintillatorTDCChannels") == 0)
+		{
+		  if(ScintillatorTDCChannelRead==false)ScintillatorTDCChannelRead = true;
+		  else if(ScintillatorTDCChannelRead==true)ScintillatorTDCChannelRead = false;
 		}
 	      else if(LineBuffer.compare(0,4,"VDC1") == 0)
 		{
@@ -1283,6 +1354,46 @@ void ReadConfiguration()
 		  CloverTDCChannelsInit(num, start, stop);
 		}
 	    }
+	  if(ScintillatorADCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,23,"ScintillatorADCChannels") == 0)
+		{
+		  if(ScintillatorADCChannelRead==true)ScintillatorADCChannelRead = false;
+		}
+	      else
+		{
+		  printf("ScintillatorADCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  ScintillatorADCChannelsInit(start, stop);
+		}
+	    }
+
+	  if(ScintillatorTDCChannelRead)
+	    {
+	      int start = -1, stop = -1;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,23,"ScintillatorTDCChannels") == 0)
+		{
+		  if(ScintillatorTDCChannelRead==true)ScintillatorTDCChannelRead = false;
+		}
+	      else
+		{
+		  printf("ScintillatorTDCChannelRead: \t");
+		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
+		  start = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
+		  stop = atoi(LineBuffer.c_str());
+		  ScintillatorTDCChannelsInit(start, stop);
+		}
+	    }
+	    
 	}
     }
   else
