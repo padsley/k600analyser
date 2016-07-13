@@ -49,6 +49,10 @@ void CloverNumberInit();
 void CloverADCChannelsInit(int det, int start, int stop);
 void CloverTDCChannelsInit(int det, int start, int stop);
 
+void ScintillatorInit();
+void ScintillatorADCChannelsInit(int start, int stop);
+void ScintillatorTDCChannelsInit(int start, int stop);
+
 void CalibrationParametersInit();
 void PulseLimitsInit();
 

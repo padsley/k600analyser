@@ -43,7 +43,7 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
     if(CloverTDCTest(mTDC->GetChannel(k)))
       {
 	int DetNum = CloverTDCIdentifyDetector(mTDC->GetChannel(k));
-//  printf("+++++++++++++++++++DetNum %d\n",DetNum);
+ // printf("+++++++++++++++++++DetNum %d\n",DetNum);
   int Segm = CloverTDCIdentifySegment(mTDC->GetChannel(k));
  // printf("-------------Segm %d\n",Segm);
 	 if(DetNum>0)
@@ -52,7 +52,8 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 		      {
 			if(CloverADCTDCChannelCheck(i,mTDC->GetChannel(k)))
 			{
-			// 	  printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(n));
+  			 // printf("line 55");
+			  //printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(n));
 	  			double GammaEnergy = CloverEnergyCalc(i,ADC_import[i]);
 	  			if(GammaEnergy>0.1)
 	  			{

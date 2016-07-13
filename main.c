@@ -46,6 +46,9 @@
 #include "RawData.h"
 #include "FocalPlane.h"
 
+#include "CloverSort.h"
+#include "ScintillatorSort.h"
+
 /*------------Preprocessor Directives to change analysis------------*/
 //#define _POLARIZATION
 //#define _MOVIE
@@ -55,12 +58,13 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
-//#define _GAMMADATA
-//#define _HAGAR
-
+#define _GAMMADATA
+// #define _HAGAR
+#define _SCINTILLATOR
+// #define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -203,9 +207,9 @@ Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
 SiliconData *si;
 #endif
 
-#ifdef _CLOVERDATA
-CloverData *clov;
-#endif
+// #ifdef _CLOVERDATA
+// CloverData *clov;
+// #endif
 
 #ifdef _RAWDATA
 RawData *raw;
@@ -214,6 +218,11 @@ RawData *raw;
 #ifdef _GAMMADATA
 GammaData *gammy;
 #endif
+
+// #ifdef _SCINTILLATOR
+// ScintillatorData *scint;
+// #endif
+
 
 Int_t t_pulser=0;    // a pattern register equivalent
 
@@ -838,11 +847,21 @@ INT main_init(void)
   MMMInit();    // At this moment it only sets up the angle definitions
 #endif
 
-#ifdef _CLOVERDATA
+
+#ifdef _GAMMADATA
+  //printf("L2108\n");
   gROOT->ProcessLine(".L Parameters.c+");
-  gROOT->ProcessLine(".L CloverData.c+");
-  t1->Branch("CloverInfo","CloverData",&clov);
+  gROOT->ProcessLine("#include \"GammaData.h\"");
+  gROOT->ProcessLine(".L GammaData.c+");
+  t1->Branch("GammaInfo","GammaData",&gammy);
+  //MMMLoadCuts(si);
 #endif
+
+// #ifdef _CLOVERDATA
+//   gROOT->ProcessLine(".L Parameters.c+");
+//   gROOT->ProcessLine(".L CloverData.c+");
+//   t1->Branch("CloverInfo","CloverData",&clov);
+// #endif
   
 #ifdef _RAWDATA
   gROOT->ProcessLine(".L Parameters.c+");
@@ -1818,6 +1837,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
    //========================================================================================================================
 
+
+#ifdef _GAMMADATA
+gammy = new GammaData();
+#endif
+   
 #ifdef _RAWDATA
   if(raw)
   {
@@ -1861,6 +1885,14 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
   {
     GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
   }
+#endif
+
+#ifdef _SCINTILLATOR
+    if(gammy)
+    {
+      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      ScintillatorSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
+    }
 #endif
 
    //========================================================================================================================
