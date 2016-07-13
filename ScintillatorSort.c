@@ -52,10 +52,10 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
 	  			{
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
-				gammy->SetDetectorType("Scintillator");
+				gammy->SetDetectorType("Scintillator"); //the detector type will allow to choose between Hagar, Clover or Scintillator
 
-				int label= 20 + i - ScintillatorADCChannelLimits[0];
-				gammy->SetDetectorLabel(label);
+				int label= 1 + i - ScintillatorADCChannelLimits[0]; //the detector number starts from 1
+				gammy->SetDetectorLabel(label); 
 // 				gammy->SetGammaRawADC(ADC_import[i]);
 // 				gammy->SetGammaADCChannel(i);
 // 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
