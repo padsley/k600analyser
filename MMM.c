@@ -251,7 +251,7 @@ double MMMEnergyCalc(int Channel, double ADCValue)
 //---------------------------------------------------------------------
 double MMMThetaCalc(int FrontChannel, int BackChannel)
 {
-  //double result = 180;
+  /* //double result = 180;
   //return result;
 
   int ring,sector;
@@ -266,7 +266,7 @@ double MMMThetaCalc(int FrontChannel, int BackChannel)
       }
   }
 */
-	for(int k=0;k<NumberOfMMM;k++){
+  /*	for(int k=0;k<NumberOfMMM;k++){
  	  if(FrontChannel>=MMMADCChannelLimits[k][0] && FrontChannel<=MMMADCChannelLimits[k][1]) {  
 		detectori=k;
 		ring=FrontChannel - MMMADCChannelLimits[k][0] ;
@@ -278,7 +278,7 @@ double MMMThetaCalc(int FrontChannel, int BackChannel)
 		detectorj=k;
 		sector=BackChannel- MMMADCChannelLimits[k][2] ;
   	 }
-        }
+	 }*/
 
 //   if(FrontChannel<16) {  
 // 	detectori=0; 
@@ -314,13 +314,15 @@ double MMMThetaCalc(int FrontChannel, int BackChannel)
 // 	sector=BackChannel-104;
 //   }
 
-  if(detectori!=detectorj)  printf("something wrong: ring and sectors does not agree on detector nr. Bad frontback test");
+	// if(detectori!=detectorj)  printf("something wrong: ring and sectors does not agree on detector nr. Bad frontback test");
 
   //printf("detectori = %i : ring = %i,  sector = %i  theta = %f \n",detectori, ring, sector,GA_TIARA[detectori][ring][sector][0]);
   
-  return GA_TIARA[detectori][ring][sector][0]; 
+  // return GA_TIARA[detectori][ring][sector][0]; 
 //   double double_ring = (double)ring;
-//   return double_ring; 
+//   return double_ring; */
+
+	return 180;
 }
 
 
@@ -330,7 +332,7 @@ double MMMPhiCalc(int FrontChannel, int BackChannel)
 {
   //double result = 0;
   //return result;
-  int ring,sector;
+  /*int ring,sector;
   int detectori,detectorj;
 
 for(int k=0;k<NumberOfMMM;k++){
@@ -387,7 +389,8 @@ for(int k=0;k<NumberOfMMM;k++){
   return GA_TIARA[detectori][ring][sector][1]; 
   
 //   double double_sector = (double)sector;
-//   return double_sector;
+//   return double_sector;*/
+  return 180;
 }
 
 
