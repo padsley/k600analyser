@@ -55,8 +55,8 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
