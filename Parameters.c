@@ -86,7 +86,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-  TDCInit();
+//   TDCInit();
   PrintParameters();
   printf("\nFinished initialising parameters - to the sorting!\n");
 }
@@ -537,7 +537,7 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
-void TDCInit()
+void TDCOffsetsInit()
 {
   printf("TDCInit\n");
   TDCOffsets = new double[128*TDCModules];
@@ -586,10 +586,14 @@ void ReadTDCOffsets(std::string OffsetsFile)
 		  channel = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;
 		  offset = atof(LineBuffer.c_str());
-		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
+		  printf("TDC Channel: %d\tOffset: %f\n",channel,offset);
 		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
 		}
 	    }
+	}
+	else
+	{
+	  printf("!!!Config file did not open!!!\n");
 	}
     }
 }
@@ -674,6 +678,7 @@ void ReadConfiguration()
 		  TDCsize = 128*TDCModules;
 		  ChannelCounter = new int[128*TDCModules];
 		  GoodChannelCounter = new int[128*TDCModules];
+		  TDCOffsetsInit();
 		}
 	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
 		{
