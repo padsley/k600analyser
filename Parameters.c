@@ -1103,13 +1103,13 @@ void ReadConfiguration()
 	      printf("\n GATEAU wireplane: %d\t",atoi(LineBuffer.c_str()));
 	      plane = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Gateau Sector: %d\t",LineBuffer.c_str());
+	      printf("Gateau Sector: %d\t",atoi(LineBuffer.c_str()));
 	      sector = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Start: %d\t",LineBuffer.c_str());
+	      printf("Start: %d\t",atoi(LineBuffer.c_str()));
 	      start = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Stop: %d\t",LineBuffer.c_str());
+	      printf("Stop: %d\t",atoi(LineBuffer.c_str()));
 	      stop = atoi(LineBuffer.c_str());
 	      
 	      GateauSetChannelLimits(plane,sector,start,stop);

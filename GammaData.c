@@ -30,7 +30,7 @@ bool GammaData::TestEvent()
 
  //  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good and shizzle like that 
  unsigned int hits = GammaEnergy.size();
- if(GammaEnergy.size() != GammaHits){printf("Mismatch between GammaEnergy and GammaHits\n");result=false;}
+ if(GammaEnergy.size() != hits){printf("Mismatch between GammaEnergy and GammaHits\n");result=false;}
 
   //Check to see the same number of hits c.f. the energy hits. If you get a lot of warning messages from theta, phi, time here, that's likely because you're doing the energy hits wrong/differently
 //  if(GammaTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
