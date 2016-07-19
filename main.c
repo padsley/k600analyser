@@ -52,9 +52,9 @@
 //#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
-//#define _FULLANALYSIS
+#define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _RAWDATA
+//#define _RAWDATA
 //#define _SILICONDATA 
 //#define _MMM
 //#define _W1
@@ -1472,7 +1472,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      hU2_DriftLength->Fill(U2.dist[i]);
    }
    
-
+   //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
    //Gates on number of wires, number of missing wires etc
    if(X1hits_dt>=globals.min_x_wires  &&  X1hits_dt<globals.max_x_wires+1){
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hX1_EffID->Fill(ev_wiresperevent);
