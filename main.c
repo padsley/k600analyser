@@ -1285,7 +1285,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       // I want everything that goes into the TTree NOT to be affected by the PID gates set in the ODB.
       // But there are things that goes into the histograms that I want to be for PID gated events only.
       // Hence the lot of PID gate tests.
-	
+// 	printf("channelnew: %d \t globals.x2_1st_wire_chan: %d \t globals.x2_last_wire_chan: %d\n",channelnew,globals.x2_1st_wire_chan,globals.x2_last_wire_chan);
       if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){         
         //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
 	//  addwiregap=1;
@@ -1350,8 +1350,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	t_X2dt[X2hits]=offset_time;                                 
 	t_X2wire[X2hits]=wire;
 	#endif
-	X2hits++;
+// 	X2hits++;printf("X2hits: %d\n",X2hits);
+// 	printf("offset_time: %d\n",offset_time);
+// 	printf("gates.x2_driftt_low: %d \t gates.x2_driftt_hi: %d\n",gates.x2_driftt_low,gates.x2_driftt_hi);
 	if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate 
+// 	  printf("L1357\n");
 	  t_X2effdt=1; 
 	  X2.wire[X2hits_dt]=wire;
 	  X2.time[X2hits_dt]=offset_time;
@@ -1603,8 +1606,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        }
      }
    }
-
+// printf("globals.min_x_wires: %d \t globals.max_x_wires: %d\n",globals.min_x_wires,globals.max_x_wires);
+// printf("X2hits_dt: %d\n",X2hits_dt);
    if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
+//      printf("L1608\n");
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
      if(globals.misswires>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
@@ -1615,7 +1620,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 //       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
        if(X2flag==0) t_X2effgood=1;
 
-       t_X2pos=X2pos;         //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
+       t_X2pos=X2pos;  //printf("X2pos: %f\n",X2pos);       //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
        t_X2th=X2th;           //global scope.
        t_X2flag=X2flag;
        t_X2chisq=X2chisq;
@@ -1742,9 +1747,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    h_Y2->Fill(Y2);
    #endif
 
-   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
+   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFPx);
 
-   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   thetaSCAT = CalcThetaScat(X1pos,thetaFPx);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
    CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
