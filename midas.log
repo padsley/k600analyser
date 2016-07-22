@@ -15,3 +15,34 @@ Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERRO
 Wed Feb 10 16:59:33 2016 [ODBEdit,INFO] Program ODBEdit on host rnlap started
 Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
 Wed Feb 10 16:59:33 2016 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Sat Jul  9 16:44:46 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 24762, index 0 because the pid no longer exists
+Sat Jul  9 16:44:46 2016 [Analyzer,INFO] Deleted entry '/System/Clients/24762' for client 'Analyzer'
+Sat Jul  9 16:46:04 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Sat Jul  9 16:46:08 2016 [Analyzer,ERROR] [odb.c:8525:db_open_record,ERROR] struct size mismatch for "/" (72 instead of 0)
+Sat Jul  9 16:46:08 2016 [Analyzer,ERROR] [main.c:322:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+Sat Jul  9 16:46:08 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Sat Jul  9 16:46:09 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 25202, index 0 because the pid no longer exists
+Sat Jul  9 16:46:09 2016 [Analyzer,INFO] Deleted entry '/System/Clients/25202' for client 'Analyzer'
+Sat Jul  9 16:46:09 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Sat Jul  9 16:46:09 2016 [Analyzer,ERROR] [odb.c:8525:db_open_record,ERROR] struct size mismatch for "/" (72 instead of 0)
+Sat Jul  9 16:46:09 2016 [Analyzer,ERROR] [main.c:322:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+Sat Jul  9 16:46:09 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Sat Jul  9 16:48:44 2016 [ODBEdit,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 25386, index 1 because the pid no longer exists
+Sat Jul  9 16:48:44 2016 [ODBEdit,INFO] Deleted entry '/System/Clients/25386' for client 'Analyzer'
+Sat Jul  9 16:48:44 2016 [ODBEdit,INFO] Program ODBEdit on host arthur started
+Sat Jul  9 21:35:57 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer1', pid 14698, index 1 because the pid no longer exists
+Sat Jul  9 21:35:57 2016 [Analyzer,INFO] Deleted entry '/System/Clients/14698' for client 'Analyzer1'
+Sun Jul 10 13:52:55 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 22223, index 0 because the pid no longer exists
+Sun Jul 10 13:52:55 2016 [Analyzer,INFO] Deleted entry '/System/Clients/22223' for client 'Analyzer'
+Sun Jul 10 13:57:12 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 22442, index 1 because the pid no longer exists
+Sun Jul 10 13:57:12 2016 [Analyzer,INFO] Deleted entry '/System/Clients/22442' for client 'Analyzer'
+Mon Jul 11 16:47:51 2016 [ODBEdit,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13337, index 0 because the pid no longer exists
+Mon Jul 11 16:47:51 2016 [ODBEdit,INFO] Deleted entry '/System/Clients/13337' for client 'Analyzer'
+Mon Jul 11 16:48:11 2016 [ODBEdit,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13484, index 0 because the pid no longer exists
+Mon Jul 11 16:48:11 2016 [ODBEdit,INFO] Deleted entry '/System/Clients/13484' for client 'Analyzer'
+Tue Jul 12 11:48:36 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 30692, index 0 because the pid no longer exists
+Tue Jul 12 11:48:36 2016 [Analyzer,INFO] Deleted entry '/System/Clients/30692' for client 'Analyzer'
+Tue Jul 12 11:53:07 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 30733, index 1 because the pid no longer exists
+Tue Jul 12 11:53:07 2016 [Analyzer,INFO] Deleted entry '/System/Clients/30733' for client 'Analyzer'
+Thu Jul 21 11:12:50 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 26526, index 1 because the pid no longer exists
+Thu Jul 21 11:12:50 2016 [Analyzer,INFO] Deleted entry '/System/Clients/26526' for client 'Analyzer'
