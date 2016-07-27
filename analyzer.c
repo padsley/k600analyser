@@ -67,6 +67,7 @@ int qdc_counter1=0, qdc_counter2=0;
 int adc_counter1=0, adc_counter2=0;
 int tdc_counter=0;
 int scaler_counter=0;
+int beamline_counter=0;
 int trailer_TDCERR_counter=0;
 int trailer_triglost_counter=0;
 int trailer_bufoverflow_counter=0;
@@ -78,6 +79,12 @@ extern ANA_MODULE scaler_accum_module;
 extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
 extern ANA_MODULE adc_module;                    
+extern ANA_MODULE beamline_module;                    
+
+ANA_MODULE *beam_module[] = {
+   &beamline_module,
+   NULL
+};
 
 ANA_MODULE *scaler_module[] = {
    &scaler_accum_module,
@@ -118,6 +125,13 @@ BANK_LIST ana_scaler_bank_list[] = {
    {""},
 };
 
+BANK_LIST ana_beam_bank_list[] = {
+   // online banks 
+   {"MSRD", TID_FLOAT, N_MSRD, NULL},
+
+   {""},
+};
+
 
 
 /*-- Event request list --------------------------------------------*/
@@ -152,6 +166,23 @@ ANALYZE_REQUEST analyze_request[] = {
     100,                        /* RWNT buffer size */
     }
    ,
+
+
+   {"Beamline",                     /* equipment name */
+    {3,                         /* event ID */
+     TRIGGER_ALL,               /* trigger mask */
+     GET_ALL,                   /* get all events */
+     "SYSTEM",                  /* event buffer */
+     TRUE,                      /* enabled */
+     "", "",}
+    ,
+    NULL,                       /* analyzer routine */
+    beam_module,                /* module list */
+    ana_beam_bank_list,         /* bank list */
+    100,                        /* RWNT buffer size */
+    }
+   ,
+
 
    {""}
    ,
