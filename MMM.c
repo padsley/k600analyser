@@ -52,14 +52,16 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
-		    for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+		    //for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+		    int i = MMMADCChannelLimits[DetNum-1][0] + (TDC.GetChannel(k) - MMMTDCChannelLimits[DetNum-1][0]);
 		      {
 		        //printf("MMMSiliconSort L122 test\n");
 			//Don't want to run for events w
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 			  {
 			    //printf("MMMSiliconSort L126 test\n");
-			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+			    //for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+			    int j = MMMADCChannelLimits[DetNum-1][2] + (TDC.GetChannel(l) - MMMTDCChannelLimits[DetNum-1][2]);
 			      {
 			        //printf("MMMSiliconSort L129 test\n");
 				if(ADC_import[j]>0)
@@ -353,6 +355,7 @@ bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
      if(MMMTDCChannelLimits[i][0]==-1)result = true;
      if(MMMTDCChannelLimits[i][1]==-1)result = true;
      }
+     if(!result)printf("Well crap - MMMADCTDCChannelTestPSide\n");
   return result;
 }
 
@@ -376,6 +379,7 @@ bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel)
      if(MMMTDCChannelLimits[i][2]==-1)result = true;
      if(MMMTDCChannelLimits[i][3]==-1)result = true;
      }
+     if(!result)printf("Well crap - MMMADCTDCChannelTestNSide\n");
   return result;
 }
 
