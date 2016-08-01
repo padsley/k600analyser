@@ -208,6 +208,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 
 
 //   printf("Got to SUCCESS in adc.c\n");
+delete adc;
    return SUCCESS;
 }
 
