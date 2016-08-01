@@ -3,7 +3,7 @@
   Name:         beamline.c
   Created by:   R. Neveling
 
-  Contents:     This module looks for MSRD banks which hold info on beamline elements
+  Contents:     This module looks for DMND and MSRD banks which hold info on beamline elements
 
 \********************************************************************/
 
@@ -48,7 +48,8 @@ ANA_MODULE beamline_module = {
 };
 
 
-double beamline[N_MSRD];
+double beamline_msrd[N_MSRD];
+double beamline_dmnd[N_DMND];
 //int counter;
 
 /*-- Histogramming Data Structures ----------------------------------------*/
@@ -86,7 +87,7 @@ INT beam_init(void)
 /*-- BOR routine ---------------------------------------------------*/
 INT beam_clear(INT run_number)
 {
-   memset(beamline, 0, sizeof(beamline));
+   //memset(beamline_msrd, 0, sizeof(beamline_msrd));
    return SUCCESS;
 }
 
@@ -102,13 +103,14 @@ INT beam_event(EVENT_HEADER * pheader, void *pevent)
    INT n;
    //FLOAT *pmsrd;
    float *pmsrd;
+   float *pdmnd;
    extern int beamline_counter;		      // defined; declared in analyzer.c
  
    beamline_counter++;
 
    // look for MSRD bank ===========================================================================================
-   n = bk_locate(pevent, "MSRD", &pmsrd);   // n = number of data words in beamline bank
-   if (n == 0)  return 1;
+   //n = bk_locate(pevent, "MSRD", &pmsrd);   // n = number of data words in beamline bank
+   //if (n == 0)  return 1;
 
 /*
    printf("Beamline event # %i;  number of data words in beamline bank = %d \n",beamline_counter,n); 	
@@ -116,25 +118,18 @@ INT beam_event(EVENT_HEADER * pheader, void *pevent)
      printf("beamline nr= %d  ,  value= %f  \n",i,pmsrd[i]);
    }
 */
-   hK600D1->SetBinContent(beamline_counter,pmsrd[30]);
  
+   // look for DMND bank ===========================================================================================
+   n = bk_locate(pevent, "DMND", &pdmnd);   // n = number of data words in beamline bank
+   if (n == 0)  return 1;
 
-/* 
-   triggerU = pmsrd[0];
-   triggerI = pmsrd[32];
-   CIU = pmsrd[2];
-   CII = pmsrd[34];
- */
-
-   //==============================================================================================================
-
- /*
-   counter += 1;
-   runtime = counter;             // this is a value to be put in the tree structure. Hence I can
- 				  // cut on time as well in the tree
-   if(counter==14400) counter=1;  // afteu 14400sec=4h start filling the spectrum from chan0
-
- */
+   hK600D1->SetBinContent(beamline_counter,pdmnd[30]);
+   hK600D2->SetBinContent(beamline_counter,pdmnd[32]);
+   hK600K->SetBinContent(beamline_counter,pdmnd[33]);
+   hK600H->SetBinContent(beamline_counter,pdmnd[31]);
+   hK600Q->SetBinContent(beamline_counter,pdmnd[29]);
+   hSLIT9Xxgap->SetBinContent(beamline_counter,pdmnd[36]);
+   hSLIT12Xxgap->SetBinContent(beamline_counter,pdmnd[40]);
 
    return SUCCESS;
 }
