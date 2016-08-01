@@ -1353,8 +1353,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=603) ) {   //only for X2 wireplane
+      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
 						// chan 482 looks suspicious in white tune run 23088
 	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_X2effall=1; 	
@@ -1625,7 +1625,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
-     if(globals.misswires>(wrangeX2-X2hits_dt)){
+     if(globals.misswires+1>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
        t_X2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
