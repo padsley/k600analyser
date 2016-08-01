@@ -93,7 +93,7 @@ LIB = $(LIB_DIR)/libmidas.a
 # compiler
 CC = cc
 CXX = g++
-CFLAGS += -g -I$(INC_DIR) -I$(DRV_DIR) -I$(MODULES_DIR) -I$(VMEDRV_DIR)
+CFLAGS += -O2 -g -I$(INC_DIR) -I$(DRV_DIR) -I$(MODULES_DIR) -I$(VMEDRV_DIR)
 LDFLAGS += -L $(LIB)
 
 #all: $(UFE) analyzer 
