@@ -3272,7 +3272,7 @@ INT focal_event(EVENT_HEADER * pheader, void *pevent)
    //--------------------------------------------------------------------------------------------------------
    CalcThetaFP(X1pos,X2pos,&ThFPx);  
    CalcThetaFP(U1pos,U2pos,&ThFP);  
-   CalcThetaScat(ThFP,X1pos,&ThSCAT);
+   CalcThetaScat(ThFPx,X1pos,&ThSCAT);
    t_ThFP=ThFP;
    t_ThSCAT=ThSCAT;
    t_ThFPx=ThFPx;
