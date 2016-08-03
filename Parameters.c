@@ -86,7 +86,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-  TDCInit();
+//   TDCInit();
   PrintParameters();
   printf("\nFinished initialising parameters - to the sorting!\n");
 }
@@ -537,7 +537,7 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
-void TDCInit()
+void TDCOffsetsInit()
 {
   printf("TDCInit\n");
   TDCOffsets = new double[128*TDCModules];
@@ -586,10 +586,14 @@ void ReadTDCOffsets(std::string OffsetsFile)
 		  channel = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;
 		  offset = atof(LineBuffer.c_str());
-		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
+		  printf("TDC Channel: %d\tOffset: %f\n",channel,offset);
 		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
 		}
 	    }
+	}
+	else
+	{
+	  printf("!!!Config file did not open!!!\n");
 	}
     }
 }
@@ -634,8 +638,10 @@ void ReadConfiguration()
 
   std::ifstream input;
 
-  input.open("config.cfg");  //This is the line to change in order to change the configuration file
+  //input.open("config.cfg");  //This is the line to change in order to change the configuration file
 
+  input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+  
  if(input.is_open())
     {
       while(ConfigRead)
@@ -672,6 +678,7 @@ void ReadConfiguration()
 		  TDCsize = 128*TDCModules;
 		  ChannelCounter = new int[128*TDCModules];
 		  GoodChannelCounter = new int[128*TDCModules];
+		  TDCOffsetsInit();
 		}
 	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
 		{
@@ -1032,13 +1039,13 @@ void ReadConfiguration()
 	      printf("\n GATEAU wireplane: %d\t",atoi(LineBuffer.c_str()));
 	      plane = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Gateau Sector: %d\t",LineBuffer.c_str());
+	      printf("Gateau Sector: %d\t",atoi(LineBuffer.c_str()));
 	      sector = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Start: %d\t",LineBuffer.c_str());
+	      printf("Start: %d\t",atoi(LineBuffer.c_str()));
 	      start = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Stop: %d\t",LineBuffer.c_str());
+	      printf("Stop: %d\t",atoi(LineBuffer.c_str()));
 	      stop = atoi(LineBuffer.c_str());
 	      
 	      GateauSetChannelLimits(plane,sector,start,stop);

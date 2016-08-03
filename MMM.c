@@ -29,71 +29,6 @@ TCutG *MMMFrontBackEnergyCut;
 
 const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
-/*double TDCOffsets[64] = {2180.06,
-2177.38,
-2138.44,
-2116.34,
-2143.47,
-2134.65,
-2154.8,
-2145.37,
-2143.91,
-2106.59,
-2107.9,
-2115.07,
-2153.49,
-2096.72,
-2111.04,
-2089.38,
-2304.18,
-2295.5,
-2313.7,
-2258.54,
-2249.64,
-2237.04,
-2247.58,
-2275.4,
-2251.4,
-2261.99,
-2244.29,
-2201.36,
-2235.62,
-2256.41,
-2228.89,
-2179.46,
-1804,
-2202.34,
-2243.57,
-2238.94,
-2224.37,
-2179.97,
-2212.43,
-2211.06,
-2201.18,
-2209.8,
-2202.67,
-2183.57,
-2198.41,
-2146.87,
-2163.14,
-2208.32,
-2238.36,
-2164.76,
-2197.97,
-2176.16,
-2174.87,
-2147.11,
-2144.08,
-2142.6,
-2162.39,
-2116.09,
-2129.79,
-2107.31,
-2162.93,
-2157.17,
-2097.37,
-2106.41};*/
-
 //---------------------------------------------------------------------
 void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
@@ -138,8 +73,8 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 	                                //printf("MMMSiliconSort L134 test\n");
 					si->SetEnergy(energyi);
 
-					si->SetTheta(MMMThetaCalc(i,j)); // RN 7 March 16: I propose a different way
-					si->SetPhi(MMMPhiCalc(i,j));     // RN 7 March 16: I proposa a different way
+					si->SetTheta(MMMThetaCalc(i)); // RN 7 March 16: I propose a different way
+					si->SetPhi(MMMPhiCalc(DetNum,j));     // RN 7 March 16: I proposa a different way
 					
 					si->SetTime(mTDC.GetValue(k));
 					si->SetTimeFront(mTDC.GetValue(k));
@@ -249,112 +184,120 @@ double MMMEnergyCalc(int Channel, double ADCValue)
 
 
 //---------------------------------------------------------------------
-double MMMThetaCalc(int FrontChannel, int BackChannel)
+double MMMThetaCalc(int Channel)
 {
-  //double result = 180;
-  //return result;
-
-  int ring,sector;
-  int detectori,detectorj;
-
-/*
-  for(int i=0;i<NumberOfMMM;i++)
-  {
-    if(FrontChannel>=MMMADCChannelLimits[i][0] && FrontChannel<=MMMADCChannelLimits[i][1] && BackChannel>=MMMADCChannelLimits[i][2] && BackChannel<=MMMADCChannelLimits[i][3])
-      {
-	detectori = i;
-      }
-  }
-*/
-
-  if(FrontChannel<16) {  
-	detectori=0; 
-	ring=FrontChannel;
-  }
-  else if (FrontChannel<32){  
-	detectori=1;
-	ring=FrontChannel-16;
-  }
-  else if (FrontChannel<48) { 
-	detectori=2;
-	ring=FrontChannel-32;
-  }
-  else if  (FrontChannel<64) { 
-	detectori=3;
-	ring=FrontChannel-48;
-  }
-  	   
-  if(BackChannel>79 && BackChannel<88) {  
-	detectorj=0; 
-	sector=BackChannel-80;
-  }
-  else if (BackChannel>87 && BackChannel<96){  
-	detectorj=1;
-	sector=BackChannel-88;
-  }
-  else if (BackChannel>95 && BackChannel<104) { 
-	detectorj=2;
-	sector=BackChannel-96;
-  }
-  else if  (BackChannel>103 && BackChannel<112) { 
-	detectorj=3;
-	sector=BackChannel-104;
-  }
-
-  if(detectori!=detectorj)  printf("something wrong: ring and sectors does not agree on detector nr. Bad frontback test");
-
-  //printf("detectori = %i : ring = %i,  sector = %i  theta = %f \n",detectori, ring, sector,GA_TIARA[detectori][ring][sector][0]);
-  return GA_TIARA[detectori][ring][sector][0]; 
+   double theta = 180;
+  switch (Channel%16)//The MMM detectors run 0->15, 16->31 etc. If this changes, this theta calculation section will also be forced to change
+    {
+    case 0:
+      theta = 164.425240;
+      break;
+    case 1:
+      theta = 161.351428;
+      break;
+    case 2:
+      theta = 161.351428;
+      break;
+    case 3:
+      theta = 154.813167;
+      break;
+    case 4:
+      theta = 151.386395;
+      break;
+    case 5:
+      theta = 147.883131;
+      break;
+    case 6:
+      theta = 144.311153;
+      break;
+    case 7:
+      theta = 140.718818;
+      break;
+    case 8:
+      theta = 137.129755;
+      break;
+    case 9:
+      theta = 133.555311;
+      break;
+    case 10:
+      theta = 130.039133;
+      break;
+    case 11:
+      theta = 126.603074;
+      break;
+    case 12:
+      theta = 123.265031;
+      break;
+    case 13:
+      theta = 120.040891;
+      break;
+    case 14:
+      theta = 116.950276;
+      break;
+    case 15:
+      theta = 113.998884;
+      break;
+    default :
+      theta = 0;
+      printf("Theta value not found - you doggone fucked up, lad\n");
+    }
+  return theta;
 }
 
 
 
 //---------------------------------------------------------------------
-double MMMPhiCalc(int FrontChannel, int BackChannel)
+double MMMPhiCalc(int DetNum, int Channel)
 {
-  //double result = 0;
-  //return result;
-  int ring,sector;
-  int detectori,detectorj;
+ double phi = 0;
+//  int DetNum = MMMTDCIdentifyDetector();
+  int TempChannel = Channel - MMMADCChannelLimits[DetNum-1][2];
+  if(TempChannel<0 || TempChannel>7)printf("Impossible TempChannel in MMMPhiCalc: %d\n",TempChannel);
+  int trueChannel = -1;
+//   if(InvertedOhmic[DetNum-1])
+//     {
+//       trueChannel = 7 - TempChannel;
+//     }
+//   else
+//     {
+//       trueChannel = TempChannel;
+//     }
 
-  if(FrontChannel<16) {  
-	detectori=0; 
-	ring=FrontChannel;
-  }
-  else if (FrontChannel<32){  
-	detectori=1;
-	ring=FrontChannel-16;
-  }
-  else if (FrontChannel<48) { 
-	detectori=2;
-	ring=FrontChannel-32;
-  }
-  else if  (FrontChannel<64) { 
-	detectori=3;
-	ring=FrontChannel-48;
-  }
-  	   
-  if(BackChannel>79 && BackChannel<88) {  
-	detectorj=0; 
-	sector=BackChannel-80;
-  }
-  else if (BackChannel>87 && BackChannel<96){  
-	detectorj=1;
-	sector=BackChannel-88;
-  }
-  else if (BackChannel>95 && BackChannel<104) { 
-	detectorj=2;
-	sector=BackChannel-96;
-  }
-  else if  (BackChannel>103 && BackChannel<112) { 
-	detectorj=3;
-	sector=BackChannel-104;
-  }
+  switch (TempChannel)
+    {
+    case 0:
+      phi = 315.4;
+      break;
+    case 1:
+      phi = 323.2;
+      break;
+    case 2:
+      phi = 331.4;
+      break;
+    case 3:
+      phi = 339.7;
+      break;
+    case 4:
+      phi = 348.1;
+      break;
+    case 5:
+      phi = 356.4;
+      break;
+    case 6:
+      phi = 4.3;
+      break;
+    case 7:
+      phi = 12.1;
+      break;
+    default : 
+      phi = 0;
+      //printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
+    }
 
-  if(detectori!=detectorj)  printf("something wrong: ring and sectors does not agree on detector nr. Bad frontback test");
+  phi += (DetNum-1)*72;
+  if(phi>360)phi-=360;
 
-  //printf("detectori = %i : ring = %i,  sector = %i \n",detectori, ring, sector);
-  return GA_TIARA[detectori][ring][sector][1]; 
+  return phi;
 }
 
 
