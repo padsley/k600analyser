@@ -8,6 +8,7 @@ GammaData::GammaData()
 GammaData::~GammaData()
 {
   //Destructor
+  ClearEvent();
 }
 
 
