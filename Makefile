@@ -23,7 +23,7 @@ ifeq ($(ARCH),Linux)
 OS_DIR = linux
 OSFLAGS = -DOS_LINUX -Dextname
 #CFLAGS = -Wall -lrt
-CFLAGS = -Wno-cpp -lrt
+CFLAGS = -Wno-cpp -lrt -O2
 # add to compile in 32-bit mode
 # OSFLAGS += -m32
 LIBS = -lm -lz -lutil -lnsl -lpthread -lrt #-lgsl -lgslcblas #-lvme
@@ -68,7 +68,7 @@ SRC_DIR   = $(MIDASSYS)/src
 #-------------------------------------------------------------------
 # List of analyzer modules
 #
-MODULES   = adc.o qdc.o scaler.o SiliconData.o GammaData.o Parameters.o multiTDC.o MMM.o W1.o RawData.o HagarSort.o FocalPlane.o main.o
+MODULES   = adc.o qdc.o scaler.o SiliconData.o GammaData.o Parameters.o multiTDC.o MMM.o W1.o RawData.o HagarSort.o CloverSort.o ScintillatorSort.o FocalPlane.o main.o
 
 #-------------------------------------------------------------------
 # Hardware driver can be (camacnul, kcs2926, kcs2927, hyt1331)

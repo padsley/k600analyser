@@ -52,14 +52,16 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
-		    for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+		    //for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+		    int i = MMMADCChannelLimits[DetNum-1][0] + (mTDC.GetChannel(k) - MMMTDCChannelLimits[DetNum-1][0]);
 		      {
 		        //printf("MMMSiliconSort L122 test\n");
 			//Don't want to run for events w
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 			  {
 			    //printf("MMMSiliconSort L126 test\n");
-			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+			    //for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+			    int j = MMMADCChannelLimits[DetNum-1][2] + (mTDC.GetChannel(l) - MMMTDCChannelLimits[DetNum-1][2]);
 			      {
 			        //printf("MMMSiliconSort L129 test\n");
 				if(ADC_import[j]>0)
@@ -165,7 +167,7 @@ void MMMInit()//Initialise function which gets the information on the DAQ channe
 //---------------------------------------------------------------------
 bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
 {
-  if(Channel>128)
+  if(Channel>1000)
     return true;
   else
     return false;
@@ -249,19 +251,12 @@ double MMMThetaCalc(int Channel)
 //---------------------------------------------------------------------
 double MMMPhiCalc(int DetNum, int Channel)
 {
+
  double phi = 0;
 //  int DetNum = MMMTDCIdentifyDetector();
   int TempChannel = Channel - MMMADCChannelLimits[DetNum-1][2];
   if(TempChannel<0 || TempChannel>7)printf("Impossible TempChannel in MMMPhiCalc: %d\n",TempChannel);
   int trueChannel = -1;
-//   if(InvertedOhmic[DetNum-1])
-//     {
-//       trueChannel = 7 - TempChannel;
-//     }
-//   else
-//     {
-//       trueChannel = TempChannel;
-//     }
 
   switch (TempChannel)
     {
@@ -298,6 +293,7 @@ double MMMPhiCalc(int DetNum, int Channel)
   if(phi>360)phi-=360;
 
   return phi;
+
 }
 
 
@@ -361,6 +357,7 @@ bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
      if(MMMTDCChannelLimits[i][0]==-1)result = true;
      if(MMMTDCChannelLimits[i][1]==-1)result = true;
      }
+     if(!result)printf("Well crap - MMMADCTDCChannelTestPSide\n");
   return result;
 }
 
@@ -384,6 +381,7 @@ bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel)
      if(MMMTDCChannelLimits[i][2]==-1)result = true;
      if(MMMTDCChannelLimits[i][3]==-1)result = true;
      }
+     if(!result)printf("Well crap - MMMADCTDCChannelTestNSide\n");
   return result;
 }
 

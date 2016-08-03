@@ -19,6 +19,8 @@ extern int **W1TDCChannelLimits;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
+extern double *TDCOffsets;
+
 TCutG *W1FrontBackEnergyCut;
 
 void W1SiliconSort(float *ADC_import, int ntdc,
@@ -67,6 +69,8 @@ void W1SiliconSort(float *ADC_import, int ntdc,
                     si->SetEnergyBack(energyj);
                     si->SetTimeFront(mTDC.GetValue(k));
                     si->SetTimeBack(mTDC.GetValue(l));
+
+		    si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
 
                     si->SetDetectorHit(W1DetHitNumber(i,j));
                     si->SetStripFront(W1StripFront(i));
