@@ -128,6 +128,7 @@ BANK_LIST ana_scaler_bank_list[] = {
 BANK_LIST ana_beam_bank_list[] = {
    // online banks 
    {"MSRD", TID_FLOAT, N_MSRD, NULL},
+   {"DMND", TID_FLOAT, N_DMND, NULL},
 
    {""},
 };
