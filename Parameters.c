@@ -682,9 +682,9 @@ void ReadConfiguration()
 
   std::ifstream input;
 
-  //input.open("config.cfg");  //This is the line to change in order to change the configuration file
+  input.open("config.cfg");  //This is the line to change in order to change the configuration file
 
-  input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+//   input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
   
  if(input.is_open())
     {
