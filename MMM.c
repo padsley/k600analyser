@@ -42,22 +42,23 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 
   for(int k=0;k<mTDC.GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
   {
-    if(MMMTDCFrontTest(mTDC.GetChannel(k)))
+//     if(MMMTDCFrontTest(mTDC.GetChannel(k)))
       {
 	for(int l=0;l<mTDC.GetSize();l++)//Loop over all of the TDC values *again* but in this case, looking for the N sides
 	  {
-	    if(MMMTDCBackTest(mTDC.GetChannel(l)) && MMMTDCFrontBackTest(mTDC.GetChannel(k),mTDC.GetChannel(l)))
+	    if(MMMTDCBackTest(mTDC.GetChannel(l)))// && MMMTDCFrontBackTest(mTDC.GetChannel(k),mTDC.GetChannel(l)))
 	      { 
 		//printf("MMMSiliconSort L116 test\n");
-		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
+// 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
+		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
-		    //for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
-		    int i = MMMADCChannelLimits[DetNum-1][0] + (mTDC.GetChannel(k) - MMMTDCChannelLimits[DetNum-1][0]);
+		    for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+// 		    int i = MMMADCChannelLimits[DetNum-1][0] + (mTDC.GetChannel(k) - MMMTDCChannelLimits[DetNum-1][0]);
 		      {
 		        //printf("MMMSiliconSort L122 test\n");
 			//Don't want to run for events w
-			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
+			if(ADC_import[i]>0)
 			  {
 			    //printf("MMMSiliconSort L126 test\n");
 			    //for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
@@ -79,10 +80,10 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 					si->SetPhi(MMMPhiCalc(DetNum,j));     // RN 7 March 16: I proposa a different way
 					
 					si->SetTime(mTDC.GetValue(k));
-					si->SetTimeFront(mTDC.GetValue(k));
+					si->SetTimeFront(0);
 					si->SetTimeBack(mTDC.GetValue(l));
 
-					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
+					si->SetOffsetTime(mTDC.GetValue(l) - TDCOffsets[mTDC.GetChannel(l)]);
 					
 					si->SetDetectorHit(MMMDetHitNumber(i,j));
 					si->SetADCChannelFront(i);
@@ -90,19 +91,19 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 					si->SetStripFront(MMMStripFront(i));
 					si->SetStripBack(MMMStripBack(j));
 					  
-					si->SetTDCChannelFront(mTDC.GetChannel(k));
+					si->SetTDCChannelFront(-1);
 
 					si->SetTDCChannelBack(mTDC.GetChannel(l));
 
 					si->SetADCValueFront(ADC_import[i]);
 					si->SetADCValueBack(ADC_import[j]);
 					  
-					si->SetTDCValueFront(mTDC.GetValue(k));
+					si->SetTDCValueFront(0);
 					si->SetTDCValueBack(-1);
 					si->SetEnergyFront(energyi);
 					si->SetEnergyBack(energyj);
 					  
-					si->SetMult(mTDC.GetMult(k));
+					si->SetMult(mTDC.GetMult(l));
 				      }
 				  }
 			      }
@@ -451,12 +452,12 @@ bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
 }
   
 //---------------------------------------------------------------------
-int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel)
+int MMMTDCIdentifyDetector(int TDCBackChannel)
 {
   int result = -1;
   for(int i=0;i<NumberOfMMM;i++)
     {
-      if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
+      if(TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
 	{
 	  result = i+1;
 	}

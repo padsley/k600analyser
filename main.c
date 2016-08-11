@@ -58,8 +58,8 @@
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _RAWDATA
-// #define _SILICONDATA 
-// #define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
 // #define _GAMMADATA
 // #define _HAGAR
@@ -886,7 +886,7 @@ INT main_bor(INT run_number)
    
    GetODBGlobals();                // get globals that can be set in the ODB
    //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
-   //PrintODBstuff();
+   PrintODBstuff();
 
    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
    read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");         

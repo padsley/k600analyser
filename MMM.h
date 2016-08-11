@@ -42,7 +42,7 @@ bool MMMTDCFrontTest(int TDCChannel);
 bool MMMTDCBackTest(int TDCChannel);
 bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel);
 
-int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel);
+int MMMTDCIdentifyDetector(int TDCBackChannel);
 
 
 
