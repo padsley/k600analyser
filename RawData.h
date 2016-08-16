@@ -27,6 +27,8 @@ public :
   void SetADCCalibratedValue(int channel, double value) {ADCCalibratedValues.at(channel) = value;}
   void SetQDCValue(int channel, int value)	{QDCValues.at(channel) = value;}
   
+  
+  
   //Getters
   int GetADC(int channel)	{return ADCValues[channel];}
   int GetADCChannel(int n)	{return ADCChannels[n];}
@@ -45,4 +47,5 @@ public :
 };
 
 RawData *RawDataDump(float *ADC_import, int *ADCchan_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, float *QDC_import);
+double CalculateADCCalibratedValue(int, float);
 #endif

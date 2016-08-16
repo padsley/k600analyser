@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <TRandom3.h>
+#include <vector>
 
 extern int ADCModules;
 extern int ADCsize;
@@ -22,6 +23,8 @@ extern int **CloverTDCChannelLimits;
 
 extern double *ADCOffsets;
 extern double *ADCGains;
+
+extern std::vector<std::vector<double> > ADCCalibrationParameters;
 
 TRandom3 *randy = new TRandom3(0);
 
@@ -142,8 +145,20 @@ double CloverEnergyCalc(int Channel, double ADCValue)
  // printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
 // double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
 // double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum-0.5);
-   double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum);
+//    double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum);
 // printf("ADCValue: %f \n  rand(): %f \n  result: %f\n", ADCValue, randNum,result);  
+
+  double RandyADCValue = ADCValue+randNum;
+  
+  int npars = ADCCalibrationParameters.at(Channel).at(0);
+  
+  double result = 0;
+  
+  for(int i=1;i<npars+1;i++)
+  {
+    result += ADCCalibrationParameters.at(Channel).at(i) * pow(RandyADCValue,(double)i-1.);
+  }
+
   return result;
 }
 

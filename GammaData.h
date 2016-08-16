@@ -26,7 +26,7 @@ class GammaData
 
  private : 
   //The actual members of the class
-  int GammaHits;
+  unsigned int GammaHits;
 
  //Physical values which are generated
   std::vector<double> GammaEnergy;

@@ -1,4 +1,6 @@
 #include "RawData.h"
+#include <vector>
+#include <cmath>
 
 extern int ADCsize;
 extern int TDCsize;
@@ -6,6 +8,8 @@ extern int QDCsize;
 
 extern double *ADCOffsets;
 extern double *ADCGains;
+
+extern std::vector<std::vector<double> > ADCCalibrationParameters;
 
 RawData::RawData()
 {
@@ -68,7 +72,9 @@ RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC
   {
     raw->SetADCValue(i,ADC_import[i]);
     raw->SetADCChannel(i,ADCchan_import[i]);
-    raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
+//     raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i])
+    double value = CalculateADCCalibratedValue(i,ADC_import[i]);
+    raw->SetADCCalibratedValue(i,value);
   }
   //for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
   
@@ -80,4 +86,17 @@ RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC
   
   for(int i=0;i<QDCsize;i++)raw->SetQDCValue(i,QDC_import[i]);
   return raw;
+}
+
+double CalculateADCCalibratedValue(int channel, float value)
+{
+  double result = 0;
+  
+  int npars = ADCCalibrationParameters.at(channel).at(0);
+  
+  for(int i=1;i<npars+1;i++)
+  {
+    result += ADCCalibrationParameters.at(channel).at(i) * pow(value,(double)i+1.);
+  }
+  return result;
 }

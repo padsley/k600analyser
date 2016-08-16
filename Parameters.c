@@ -54,6 +54,8 @@ int *PulseLimits;//[2] = {-1e6, 1e6};
 double *ADCOffsets;
 double *ADCGains;
 
+std::vector<std::vector<double> > ADCCalibrationParameters;
+
 double *TDCOffsets;
 
 int *ChannelCounter;
@@ -435,7 +437,12 @@ void ReadCalibrationParameters(std::string CalibFile)
   if(CalibFile.compare(0,6,"ignore") == 0)
   {
     printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
-    for(int i=0;i<32*ADCModules;i++)printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+    for(int i=0;i<32*ADCModules;i++)
+    {
+      printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+      ADCCalibrationParameters.at(i).push_back(0);
+      ADCCalibrationParameters.at(i).push_back(1);
+    }
   }
   else
   {
@@ -449,22 +456,58 @@ void ReadCalibrationParameters(std::string CalibFile)
 	int channel = -1;
 	double offset = 0, gain = 1;
 	CalibInput >> LineBuffer;
+// 	std::cout << LineBuffer << std::endl;
 	if(LineBuffer.compare(0,3,"eof") == 0)
 	{
 	  CalibRead = false;
 	}
 	else
 	{
+	  std::vector<double> temp;
+	  int npars = -1;
 	  channel = atoi(LineBuffer.c_str());
+	  std::cout << "channel: " << LineBuffer << std::endl;
 	  CalibInput >> LineBuffer;
-	  offset = atof(LineBuffer.c_str());
-	  CalibInput >> LineBuffer;
-	  gain = atof(LineBuffer.c_str());
-	  printf("Channel: %d\tOffset: %f\tGain: %f\n",channel,offset,gain);
+	  std::cout << "npars: " << LineBuffer << std::endl;
+	  npars = atoi(LineBuffer.c_str());
+	  
+	  if(npars<0)printf("NOT FOUND NUMBER OF PARAMETERS!\n");
+	  
+	  temp.push_back(channel);
+	  
+	  for(int np=0;np<npars;np++)
+	  {
+	   CalibInput >> LineBuffer;
+// 	   ADCCalibrationParameters.at(channel).at(np) = atof(LineBuffer.c_str()); 
+	   temp.push_back(atof(LineBuffer.c_str()));
+	  }
+	  
+	  ADCCalibrationParameters.push_back(temp);
+	  
+	  if(npars==2)
+	  {
+	    printf("Two calibration parameters - save in the usual linear gain structure\n");
+	    offset = ADCCalibrationParameters.at(channel).at(1);
+	    gain = ADCCalibrationParameters.at(channel).at(2);
+	    
+	    printf("Channel: %d\tOffset: %f\tGain: %f\n",ADCCalibrationParameters.at(channel).at(0),offset,gain);
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
+	  }
 	}
       }
     }
+  }
+  
+  if(ADCCalibrationParameters.size()!=32*ADCModules)printf("Mismatched calibration size\n");
+  for(unsigned int i=0;i<32*ADCModules;i++)
+  {
+    printf("Channel: %d\t",i);
+    for(unsigned int j=0;j<ADCCalibrationParameters.at(i).size();j++)
+    {
+     printf("npars: %d\t",ADCCalibrationParameters.at(i).size()-1);
+     printf("parameter %d: %f\t",j,ADCCalibrationParameters.at(i).at(j));
+    }
+  printf("\n");
   }
   CalibInput.close();
   printf("Finished Calibration Parameters\n");
@@ -682,9 +725,9 @@ void ReadConfiguration()
 
   std::ifstream input;
 
-  //input.open("config.cfg");  //This is the line to change in order to change the configuration file
+  input.open("config.cfg");  //This is the line to change in order to change the configuration file
 
-  input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
+//   input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
   
  if(input.is_open())
     {
