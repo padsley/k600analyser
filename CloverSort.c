@@ -150,13 +150,13 @@ double CloverEnergyCalc(int Channel, double ADCValue)
 
   double RandyADCValue = ADCValue+randNum;
   
-  int npars = ADCCalibrationParameters.at(Channel).at(0);
+  int npars = ADCCalibrationParameters[Channel][0];
   
   double result = 0;
   
   for(int i=1;i<npars+1;i++)
   {
-    result += ADCCalibrationParameters.at(Channel).at(i) * pow(RandyADCValue,(double)i-1.);
+    result += ADCCalibrationParameters[Channel][i] * pow(RandyADCValue,(double)i-1.);
   }
 
   return result;

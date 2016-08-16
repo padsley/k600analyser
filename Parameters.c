@@ -54,7 +54,8 @@ int *PulseLimits;//[2] = {-1e6, 1e6};
 double *ADCOffsets;
 double *ADCGains;
 
-std::vector<std::vector<double> > ADCCalibrationParameters;
+// std::vector<std::vector<double> > ADCCalibrationParameters;
+double **ADCCalibrationParameters;
 
 double *TDCOffsets;
 
@@ -98,6 +99,7 @@ void ParameterInit()
   QDCInit();
 //   TDCInit();
   PrintParameters();
+//   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
   printf("\nFinished initialising parameters - to the sorting!\n");
 }
 
@@ -419,10 +421,21 @@ void CalibrationParametersInit()
   ADCOffsets = new double[32*ADCModules];
   ADCGains = new double[32*ADCModules];
   
+  ADCCalibrationParameters = new double*[32*ADCModules];
+  
   for(int i=0;i<32*ADCModules;i++)
   {
     ADCOffsets[i] = 0;//printf("ADCOffsets[%d]: %f\n",i,ADCOffsets[i]);
     ADCGains[i] = 1;//printf("ADCGains[%d]: %f\n",i,ADCGains[i]);
+//     std::vector<double> temp;
+//     temp.push_back(2);
+//     temp.push_back(0);
+//     temp.push_back(1);
+//     ADCCalibrationParameters.push_back(temp);
+    ADCCalibrationParameters[i] = new double[3];
+    ADCCalibrationParameters[i][0] = 2;
+    ADCCalibrationParameters[i][1] = 0;
+    ADCCalibrationParameters[i][2] = 1;
   }
 }
 
@@ -440,8 +453,8 @@ void ReadCalibrationParameters(std::string CalibFile)
     for(int i=0;i<32*ADCModules;i++)
     {
       printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
-      ADCCalibrationParameters.at(i).push_back(0);
-      ADCCalibrationParameters.at(i).push_back(1);
+//       ADCCalibrationParameters.at(i).push_back(0);
+//       ADCCalibrationParameters.at(i).push_back(1);
     }
   }
   else
@@ -463,34 +476,38 @@ void ReadCalibrationParameters(std::string CalibFile)
 	}
 	else
 	{
-	  std::vector<double> temp;
 	  int npars = -1;
 	  channel = atoi(LineBuffer.c_str());
-	  std::cout << "channel: " << LineBuffer << std::endl;
+// 	  std::cout << "channel: " << LineBuffer << std::endl;
 	  CalibInput >> LineBuffer;
-	  std::cout << "npars: " << LineBuffer << std::endl;
+// 	  std::cout << "npars: " << LineBuffer << std::endl;
 	  npars = atoi(LineBuffer.c_str());
+// 	  printf("npars: %d\n",npars);
 	  
 	  if(npars<0)printf("NOT FOUND NUMBER OF PARAMETERS!\n");
 	  
-	  temp.push_back(channel);
+	  if(npars>0)
+	  {
+	    delete ADCCalibrationParameters[channel];
+	    ADCCalibrationParameters[channel] = new double[npars+1];
+	  }
+	  
+	  ADCCalibrationParameters[channel][0] = npars;
+// 	  printf("ADCCalibrationParameters[channel][0]: %d\n",(int)ADCCalibrationParameters[channel][0]);
 	  
 	  for(int np=0;np<npars;np++)
 	  {
 	   CalibInput >> LineBuffer;
-// 	   ADCCalibrationParameters.at(channel).at(np) = atof(LineBuffer.c_str()); 
-	   temp.push_back(atof(LineBuffer.c_str()));
+	   ADCCalibrationParameters[channel][np+1] = atof(LineBuffer.c_str());
 	  }
-	  
-	  ADCCalibrationParameters.push_back(temp);
 	  
 	  if(npars==2)
 	  {
 	    printf("Two calibration parameters - save in the usual linear gain structure\n");
-	    offset = ADCCalibrationParameters.at(channel).at(1);
-	    gain = ADCCalibrationParameters.at(channel).at(2);
+	    offset = ADCCalibrationParameters[channel][1];
+	    gain = ADCCalibrationParameters[channel][2];
 	    
-	    printf("Channel: %d\tOffset: %f\tGain: %f\n",ADCCalibrationParameters.at(channel).at(0),offset,gain);
+	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain);
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
 	  }
 	}
@@ -498,14 +515,14 @@ void ReadCalibrationParameters(std::string CalibFile)
     }
   }
   
-  if(ADCCalibrationParameters.size()!=32*ADCModules)printf("Mismatched calibration size\n");
   for(unsigned int i=0;i<32*ADCModules;i++)
   {
     printf("Channel: %d\t",i);
-    for(unsigned int j=0;j<ADCCalibrationParameters.at(i).size();j++)
+    printf("npars: %d\t",(int)ADCCalibrationParameters[i][0]);
+    for(unsigned int j=0;j<ADCCalibrationParameters[i][0];j++)
     {
-     printf("npars: %d\t",ADCCalibrationParameters.at(i).size()-1);
-     printf("parameter %d: %f\t",j,ADCCalibrationParameters.at(i).at(j));
+     
+     printf("parameter %d: %f\t",j,ADCCalibrationParameters[i][j+1]);
     }
   printf("\n");
   }

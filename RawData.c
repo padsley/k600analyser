@@ -9,7 +9,7 @@ extern int QDCsize;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
-extern std::vector<std::vector<double> > ADCCalibrationParameters;
+extern double **ADCCalibrationParameters;
 
 RawData::RawData()
 {
@@ -91,12 +91,26 @@ RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC
 double CalculateADCCalibratedValue(int channel, float value)
 {
   double result = 0;
+//    printf("channel: %d\n",channel);
+  int npars = ADCCalibrationParameters[channel][0];
   
-  int npars = ADCCalibrationParameters.at(channel).at(0);
+//   printf("npars: %d\n",npars);
   
   for(int i=1;i<npars+1;i++)
   {
-    result += ADCCalibrationParameters.at(channel).at(i) * pow(value,(double)i+1.);
+    result += ADCCalibrationParameters[channel][i] * pow(value,(double)i-1.);
   }
   return result;
 }
+
+//   int npars = ADCCalibrationParameters.at(Channel).at(0);
+//   
+//   double result = 0;
+//   
+//   for(int i=1;i<npars+1;i++)
+//   {
+//     result += ADCCalibrationParameters.at(Channel).at(i) * pow(RandyADCValue,(double)i-1.);
+//   }
+// 
+//   return result;
+// }
