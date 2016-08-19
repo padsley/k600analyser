@@ -198,7 +198,7 @@ double MMMThetaCalc(int Channel)
       theta = 161.351428;
       break;
     case 2:
-      theta = 161.351428;
+      theta = 157.984833;
       break;
     case 3:
       theta = 154.813167;
