@@ -97,3 +97,52 @@ Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Program ODBEdit on host anukul-HP-EliteD
 Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 4566 does not exist
 >>>>>>> b8822634d7faaaaa7ed2923a2df0bb359225c027
 >>>>>>> 6e499cb1ab3f33e186ccef99a826c05c1efb2972
+Thu Sep  8 12:04:23 2016 [Analyzer,INFO] Program Analyzer on host Tonalli started
+Thu Sep  8 12:04:23 2016 [Analyzer,ERROR] [odb.c:9460:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+Thu Sep  8 12:04:23 2016 [Analyzer,ERROR] [main.c:331:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+Thu Sep  8 12:04:23 2016 [Analyzer,ERROR] [midas.c:1914:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Sep  8 12:09:05 2016 [Analyzer,ERROR] [odb.c:1223:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22697 does not exists
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Corrected 8 ODB entries
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Deleted entry '/System/Clients/22697' for client 'Analyzer' because it is not connected to ODB
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Program Analyzer on host Tonalli started
+Thu Sep  8 12:09:05 2016 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22697 does not exist
+Thu Sep  8 12:09:05 2016 [Analyzer,ERROR] [odb.c:9460:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+Thu Sep  8 12:09:05 2016 [Analyzer,ERROR] [main.c:331:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+Thu Sep  8 12:09:05 2016 [Analyzer,ERROR] [midas.c:1914:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Sep  8 12:11:12 2016 [ODBEdit,ERROR] [odb.c:1223:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22934 does not exists
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Experiment/Run Parameters"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Corrected 8 ODB entries
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Deleted entry '/System/Clients/22934' for client 'Analyzer' because it is not connected to ODB
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Program ODBEdit on host Tonalli started
+Thu Sep  8 12:11:12 2016 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22934 does not exist
