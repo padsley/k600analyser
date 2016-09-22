@@ -1685,7 +1685,7 @@ double CalcThetaScat(double X1, double ThFP)
   {
     if(i==0) result = result;
     if(i>0)  result += ThFP * ThFPSCATSlope[i] * pow(X1,i-1);
-    //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, ThFPSCATSlope[i],result,X1);
+    //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f ... ThFP: %f \n",i, ThFPSCATSlope[i],result,X1, ThFP);
   }
 
   //printf("\n\n");

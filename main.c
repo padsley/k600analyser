@@ -1771,9 +1771,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    h_Y2->Fill(Y2);
    #endif
 
-   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFPx);
+   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
-   thetaSCAT = CalcThetaScat(X1pos,thetaFPx);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
    CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
