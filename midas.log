@@ -96,4 +96,9 @@ Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Deleted entry '/System/Clients/4566' for
 Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Program ODBEdit on host anukul-HP-EliteDesk-800-G1-TWR started
 Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 4566 does not exist
 >>>>>>> b8822634d7faaaaa7ed2923a2df0bb359225c027
+<<<<<<< HEAD
 >>>>>>> 6e499cb1ab3f33e186ccef99a826c05c1efb2972
+=======
+Fri Jul 29 19:53:36 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13757, index 0 because the pid no longer exists
+Fri Jul 29 19:53:36 2016 [Analyzer,INFO] Deleted entry '/System/Clients/13757' for client 'Analyzer'
+>>>>>>> ab586da90c6a6ad00202db44bfaf1edc43a0305f

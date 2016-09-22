@@ -50,17 +50,17 @@
 #include "ScintillatorSort.h"
 
 /*------------Preprocessor Directives to change analysis------------*/
-//#define _POLARIZATION
-//#define _MOVIE
-//#define _JJAUTOTRIM
-//#define _PRINTTOSCREEN
-//#define _VDCRESCALCS
+// #define _POLARIZATION
+// #define _MOVIE
+// #define _JJAUTOTRIM
+// #define _PRINTTOSCREEN
+// #define _VDCRESCALCS
 #define _FULLANALYSIS
-//#define _MISALIGNTIME
+// #define _MISALIGNTIME
 #define _RAWDATA
 #define _SILICONDATA 
 #define _MMM
-//#define _W1
+// #define _W1
 #define _GAMMADATA
 // #define _HAGAR
 #define _SCINTILLATOR
@@ -1358,8 +1358,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=603) ) {   //only for X2 wireplane
+      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
 						// chan 482 looks suspicious in white tune run 23088
 	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_X2effall=1; 	
@@ -1635,7 +1635,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
 //      printf("L1608\n");
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
-     if(globals.misswires>(wrangeX2-X2hits_dt)){
+     if(globals.misswires+1>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
        t_X2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
@@ -1754,10 +1754,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   thetaFPx = CalcThetaFP(X1pos,X2pos);
-   t_thetaFPx = thetaFPx;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
-   t_thetaFP   = thetaFP;
+   thetaFP = CalcThetaFP(X1pos,X2pos);
+   t_thetaFP = thetaFP;
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
    t_Y1=Y1;

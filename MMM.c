@@ -29,6 +29,7 @@ TCutG *MMMFrontBackEnergyCut;
 
 const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
+
 //---------------------------------------------------------------------
 void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
@@ -53,7 +54,9 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 		if(DetNum>0)
 		  {	
 		    //for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+
 		    int i = MMMADCChannelLimits[DetNum-1][0] + (mTDC.GetChannel(k) - MMMTDCChannelLimits[DetNum-1][0]);
+
 		      {
 		        //printf("MMMSiliconSort L122 test\n");
 			//Don't want to run for events w
@@ -61,7 +64,9 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 			  {
 			    //printf("MMMSiliconSort L126 test\n");
 			    //for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+
 			    int j = MMMADCChannelLimits[DetNum-1][2] + (mTDC.GetChannel(l) - MMMTDCChannelLimits[DetNum-1][2]);
+
 			      {
 			        //printf("MMMSiliconSort L129 test\n");
 				if(ADC_import[j]>0)
