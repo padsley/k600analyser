@@ -331,14 +331,19 @@ void GetODBGlobals()
       cm_msg(MERROR,  (char *)"analyzer_init",  (char *)"Cannot open \"/Analyzer/Parameters/GLOBAL\" tree in ODB");
       exit(1);//return 0;
    }
-   //printf("ODB test : %d  \n",globals.misswires);
+   printf("ODB test : %d  \n",globals.misswires);
    
    db_close_record(hDB,hKey);
 
-   //printf("globals.x1_1st_wire_chan: %d  \n",globals.x1_1st_wire_chan);
-   //printf("globals.x2_1st_wire_chan: %d  \n",globals.x2_1st_wire_chan);  
-   //printf("globals.u1_1st_wire_chan: %d  \n",globals.u1_1st_wire_chan);  
-   //printf("globals.u2_1st_wire_chan: %d  \n",globals.u2_1st_wire_chan);
+   printf("globals.x1_1st_wire_chan: %d  \n",globals.x1_1st_wire_chan);
+   printf("globals.x2_1st_wire_chan: %d  \n",globals.x2_1st_wire_chan);  
+   printf("globals.u1_1st_wire_chan: %d  \n",globals.u1_1st_wire_chan);  
+   printf("globals.u2_1st_wire_chan: %d  \n",globals.u2_1st_wire_chan);
+
+   printf("globals.x1_last_wire_chan: %d  \n",globals.x1_last_wire_chan);
+   printf("globals.x2_last_wire_chan: %d  \n",globals.x2_last_wire_chan);  
+   printf("globals.u1_last_wire_chan: %d  \n",globals.u1_last_wire_chan);  
+   printf("globals.u2_last_wire_chan: %d  \n",globals.u2_last_wire_chan);
 
 }
 
@@ -1304,7 +1309,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       // I want everything that goes into the TTree NOT to be affected by the PID gates set in the ODB.
       // But there are things that goes into the histograms that I want to be for PID gated events only.
       // Hence the lot of PID gate tests.
-// 	printf("channelnew: %d \t globals.x2_1st_wire_chan: %d \t globals.x2_last_wire_chan: %d\n",channelnew,globals.x2_1st_wire_chan,globals.x2_last_wire_chan);
+      //	printf("channelnew: %d \t globals.x2_1st_wire_chan: %d \t globals.x2_last_wire_chan: %d\n",channelnew,globals.x2_1st_wire_chan,globals.x2_last_wire_chan);
       if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){         
         //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
 	//  addwiregap=1;

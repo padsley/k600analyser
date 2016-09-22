@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Mon Jul 18 16:07:52 2016
+  Created on:   Thu Sep 22 13:48:00 2016
 
 \********************************************************************/
 
@@ -33,170 +33,13 @@ typedef struct {
 "",\
 NULL }
 
-#ifndef EXCL_FOCALPLANE
-
-#define FOCALPLANE_PARAM_DEFINED
-
-typedef struct {
-  INT       x1_driftt_low;
-  INT       x1_driftt_hi;
-  INT       x2_driftt_low;
-  INT       u1_driftt_low;
-  INT       u2_driftt_low;
-  INT       x2_driftt_hi;
-  INT       u2_driftt_hi;
-  INT       u1_driftt_hi;
-  INT       lowtof;
-  INT       hitof;
-  INT       lowpad1;
-  INT       lowpad2;
-  INT       hipad1;
-  INT       hipad2;
-  float     a0;
-  float     a1;
-  float     a2;
-  float     b0;
-  float     b1;
-  float     b2;
-  float     a0xcorr;
-  float     a1xcorr;
-  float     c00;
-  float     c01;
-  float     c02;
-  float     c11;
-  float     c10;
-  float     c12;
-  float     c20;
-  float     c21;
-  float     c22;
-  float     c30;
-  float     c31;
-  float     c32;
-  float     d00;
-  float     d01;
-  float     d02;
-  float     d10;
-  float     d11;
-  float     d12;
-  float     d20;
-  float     d21;
-  float     d22;
-  float     d30;
-  float     d31;
-  float     d32;
-  float     a2xcorr;
-  float     b0xcorr;
-  float     b1xcorr;
-  float     b2xcorr;
-  float     a3xcorr;
-  float     c0;
-  float     c1;
-  float     c2;
-  float     d0;
-  float     d1;
-  float     d2;
-  float     c0xcorr;
-  float     c1xcorr;
-  float     c2xcorr;
-  float     d0xcorr;
-  float     d1xcorr;
-  float     d2xcorr;
-  float     a4xcorr;
-  float     yoffset;
-  float     f0xcorr;
-  float     f1xcorr;
-  float     x0;
-  float     mtarget;
-  float     calpa;
-  float     calpb;
-  float     calpc;
-} FOCALPLANE_PARAM;
-
-#define FOCALPLANE_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"x1_driftt_low = INT : 6300",\
-"x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6300",\
-"u1_driftt_low = INT : 6300",\
-"u2_driftt_low = INT : 6300",\
-"x2_driftt_hi = INT : 8050",\
-"u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 2000",\
-"hitof = INT : 6000",\
-"lowpad1 = INT : 1",\
-"lowpad2 = INT : 0",\
-"hipad1 = INT : 4100",\
-"hipad2 = INT : 4000",\
-"a0 = FLOAT : -1.05242",\
-"a1 = FLOAT : 0.00022768",\
-"a2 = FLOAT : 0",\
-"b0 = FLOAT : 35.0792",\
-"b1 = FLOAT : -0.0119133",\
-"b2 = FLOAT : 0",\
-"a0xcorr = FLOAT : 3.5",\
-"a1xcorr = FLOAT : 0.5",\
-"c00 = FLOAT : -0.149905",\
-"c01 = FLOAT : 0.000190706",\
-"c02 = FLOAT : -1.00038e-07",\
-"c11 = FLOAT : -1.01008e-05",\
-"c10 = FLOAT : 0.0120318",\
-"c12 = FLOAT : -6.39233e-09",\
-"c20 = FLOAT : 0.0141237",\
-"c21 = FLOAT : -4.05089e-05",\
-"c22 = FLOAT : 3.25848e-08",\
-"c30 = FLOAT : -0.00243223",\
-"c31 = FLOAT : -8.68271e-06",\
-"c32 = FLOAT : 1.58795e-08",\
-"d00 = FLOAT : -0.686069",\
-"d01 = FLOAT : -0.000487973",\
-"d02 = FLOAT : 9.36511e-07",\
-"d10 = FLOAT : 0.13385",\
-"d11 = FLOAT : -0.000277455",\
-"d12 = FLOAT : 1.41865e-07",\
-"d20 = FLOAT : -0.0221455",\
-"d21 = FLOAT : 0.000187413",\
-"d22 = FLOAT : -2.33532e-07",\
-"d30 = FLOAT : -0.0231652",\
-"d31 = FLOAT : -5.69357e-05",\
-"d32 = FLOAT : 1.16068e-07",\
-"a2xcorr = FLOAT : 0",\
-"b0xcorr = FLOAT : 0.08",\
-"b1xcorr = FLOAT : 0",\
-"b2xcorr = FLOAT : 0",\
-"a3xcorr = FLOAT : 0",\
-"c0 = FLOAT : -0.0388196",\
-"c1 = FLOAT : -2.31421e-05",\
-"c2 = FLOAT : 0",\
-"d0 = FLOAT : 0.269372",\
-"d1 = FLOAT : 0.000451383",\
-"d2 = FLOAT : 0",\
-"c0xcorr = FLOAT : 0",\
-"c1xcorr = FLOAT : 0",\
-"c2xcorr = FLOAT : 0",\
-"d0xcorr = FLOAT : 0",\
-"d1xcorr = FLOAT : 0",\
-"d2xcorr = FLOAT : 0",\
-"a4xcorr = FLOAT : 0",\
-"yoffset = FLOAT : 5",\
-"f0xcorr = FLOAT : 0",\
-"f1xcorr = FLOAT : 0",\
-"x0 = FLOAT : 647.505",\
-"mtarget = FLOAT : 15.99492",\
-"calpa = FLOAT : -1.5768e-05",\
-"calpb = FLOAT : 0.126985",\
-"calpc = FLOAT : 1119.45",\
-"",\
-NULL }
-
-#endif
-
 #ifndef EXCL_GLOBAL
 
 #define GLOBAL_PARAM_DEFINED
 
 typedef struct {
   INT       misswires;
+  INT       max_tdc_channels;
   INT       min_x_wires;
   INT       min_u_wires;
   INT       max_x_wires;
@@ -213,12 +56,12 @@ typedef struct {
   INT       u1_last_wire_chan;
   INT       u2_1st_wire_chan;
   INT       u2_last_wire_chan;
-  INT       max_tdc_channels;
 } GLOBAL_PARAM;
 
 #define GLOBAL_PARAM_STR(_name) char *_name[] = {\
 "[.]",\
 "misswires = INT : 2",\
+"max_tdc_channels = INT : 1000",\
 "min_x_wires = INT : 3",\
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
@@ -235,79 +78,6 @@ typedef struct {
 "u1_last_wire_chan = INT : 443",\
 "u2_1st_wire_chan = INT : 800",\
 "u2_last_wire_chan = INT : 943",\
-"max_tdc_channels = INT : 1000",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_ADC
-
-#define ADC_PARAM_DEFINED
-
-typedef struct {
-  INT       software_gain[16];
-  short     histogram_threshold;
-  INT       adc_threshold;
-} ADC_PARAM;
-
-#define ADC_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"Software Gain = INT[16] :",\
-"[0] 0",\
-"[1] 0",\
-"[2] 0",\
-"[3] 0",\
-"[4] 0",\
-"[5] 0",\
-"[6] 0",\
-"[7] 0",\
-"[8] 0",\
-"[9] 0",\
-"[10] 0",\
-"[11] 0",\
-"[12] 0",\
-"[13] 0",\
-"[14] 0",\
-"[15] 0",\
-"Histogram Threshold = SHORT : 6",\
-"adc_threshold = INT : 5",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_QDC
-
-#define QDC_PARAM_DEFINED
-
-typedef struct {
-  INT       software_gain[16];
-  short     histogram_threshold;
-  INT       adc_threshold;
-} QDC_PARAM;
-
-#define QDC_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"Software Gain = INT[16] :",\
-"[0] 0",\
-"[1] 0",\
-"[2] 0",\
-"[3] 0",\
-"[4] 0",\
-"[5] 0",\
-"[6] 0",\
-"[7] 0",\
-"[8] 0",\
-"[9] 0",\
-"[10] 0",\
-"[11] 0",\
-"[12] 0",\
-"[13] 0",\
-"[14] 0",\
-"[15] 0",\
-"Histogram Threshold = SHORT : 6",\
-"adc_threshold = INT : 5",\
 "",\
 NULL }
 
@@ -2554,6 +2324,26 @@ typedef struct {
 "Frontend host = STRING : [32] vmevmic2",\
 "Frontend name = STRING : [32] K600 frontend",\
 "Frontend file name = STRING : [256] k600frontend.c",\
+"",\
+NULL }
+
+#endif
+
+#ifndef EXCL_BEAMLINE
+
+#define BEAMLINE_COMMON_DEFINED
+
+typedef struct {
+  WORD      event_id;
+  INT       type;
+  char      format[80];
+} BEAMLINE_COMMON;
+
+#define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
+"[.]",\
+"Event ID = WORD : 1",\
+"Type = INT : 2",\
+"Format = STRING : [80] ",\
 "",\
 NULL }
 

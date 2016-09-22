@@ -764,7 +764,7 @@ void getRidOfHotWire(Int_t *_hits,Int_t *_hits2, Int_t wire[], Int_t time[])
 	 hotcount++;
       }
    }
-   //printf("--------------hotcount %i \n\n",hotcount);
+   printf("--------------hotcount %i \n\n",hotcount);
 
    // now you have a list of wires that appear at least twice.
    // Your list may have a signel wire showing a couple of times.
