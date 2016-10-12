@@ -24,6 +24,7 @@ OS_DIR = linux
 OSFLAGS = -DOS_LINUX -Dextname
 #CFLAGS = -Wall -lrt
 CFLAGS = -Wno-cpp -lrt -O2
+CFLAGS = -Wno-write-strings
 # add to compile in 32-bit mode
 # OSFLAGS += -m32
 LIBS = -lm -lz -lutil -lnsl -lpthread -lrt #-lgsl -lgslcblas #-lvme
