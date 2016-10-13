@@ -453,6 +453,7 @@ void ReadCalibrationParameters(std::string CalibFile)
     for(int i=0;i<32*ADCModules;i++)
     {
       printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+      printf("ADCCalibrationParameters[%d][1]: %f\tADCCalibrationParameters[%d][2]: %f\n",i,ADCCalibrationParameters[i][1],i,ADCCalibrationParameters[i][2]);
 //       ADCCalibrationParameters.at(i).push_back(0);
 //       ADCCalibrationParameters.at(i).push_back(1);
     }
@@ -492,7 +493,7 @@ void ReadCalibrationParameters(std::string CalibFile)
 	    ADCCalibrationParameters[channel] = new double[npars+1];
 	  }
 	  
-	  ADCCalibrationParameters[channel][0] = npars;
+	  ADCCalibrationParameters[channel][0] = (double)npars;
 // 	  printf("ADCCalibrationParameters[channel][0]: %d\n",(int)ADCCalibrationParameters[channel][0]);
 	  
 	  for(int np=0;np<npars;np++)
@@ -519,7 +520,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   {
     printf("Channel: %d\t",i);
     printf("npars: %d\t",(int)ADCCalibrationParameters[i][0]);
-    for(unsigned int j=0;j<ADCCalibrationParameters[i][0];j++)
+    for(unsigned int j=0;j<(int)ADCCalibrationParameters[i][0];j++)
     {
      
      printf("parameter %d: %f\t",j,ADCCalibrationParameters[i][j+1]);

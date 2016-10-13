@@ -150,7 +150,7 @@ double CloverEnergyCalc(int Channel, double ADCValue)
 
   double RandyADCValue = ADCValue+randNum;
   
-  int npars = ADCCalibrationParameters[Channel][0];
+  int npars = (int)ADCCalibrationParameters[Channel][0];
   
   double result = 0;
   
