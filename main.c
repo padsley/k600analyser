@@ -58,13 +58,13 @@
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
+//#define _SILICONDATA 
+//#define _MMM
 //#define _W1
 #define _GAMMADATA
 // #define _HAGAR
 #define _SCINTILLATOR
-// #define _CLOVER
+#define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h

@@ -97,3 +97,169 @@ Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Program ODBEdit on host anukul-HP-EliteD
 Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 4566 does not exist
 >>>>>>> b8822634d7faaaaa7ed2923a2df0bb359225c027
 >>>>>>> 6e499cb1ab3f33e186ccef99a826c05c1efb2972
+Tue Oct 11 14:17:52 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13041, index 0 because the pid no longer exists
+Tue Oct 11 14:17:52 2016 [Analyzer,INFO] Deleted entry '/System/Clients/13041' for client 'Analyzer'
+Tue Oct 11 14:35:37 2016 [ODBEdit,INFO] Program ODBEdit on host arthur stopped
+Tue Oct 11 14:35:45 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Tue Oct 11 14:35:45 2016 [Analyzer,ERROR] [odb.c:8525:db_open_record,ERROR] struct size mismatch for "/Analyzer/Parameters/main" (56 instead of 288)
+Tue Oct 11 14:35:45 2016 [Analyzer,ERROR] [mana.c:3705:init_module_parameters,ERROR] Cannot open "/Analyzer/Parameters/main" parameters in ODB
+Tue Oct 11 14:35:45 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Tue Oct 11 14:56:40 2016 [ODBEdit,INFO] Program ODBEdit on host arthur started
+Tue Oct 11 14:57:35 2016 [ODBEdit,INFO] Program ODBEdit on host arthur stopped
+Tue Oct 11 14:58:27 2016 [ODBEdit,INFO] Program ODBEdit on host arthur started
+Tue Oct 11 15:00:01 2016 [ODBEdit,INFO] Program ODBEdit on host arthur stopped
+Tue Oct 11 15:00:11 2016 [ODBEdit,INFO] Program ODBEdit on host arthur started
+Tue Oct 11 15:00:27 2016 [ODBEdit,INFO] Program ODBEdit on host arthur stopped
+Tue Oct 11 15:02:45 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Tue Oct 11 15:02:45 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Tue Oct 11 15:07:59 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 15531, index 0 because the pid no longer exists
+Tue Oct 11 15:07:59 2016 [Analyzer,INFO] Deleted entry '/System/Clients/15531' for client 'Analyzer'
+Tue Oct 11 15:07:59 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Tue Oct 11 15:08:05 2016 [Analyzer,INFO] Set run number 1028 in ODB
+Tue Oct 11 15:08:06 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Tue Oct 11 15:10:56 2016 [ODBEdit,INFO] Program ODBEdit on host arthur started
+Tue Oct 11 15:12:11 2016 [ODBEdit,INFO] Program ODBEdit on host arthur stopped
+Tue Oct 11 15:20:09 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Tue Oct 11 15:20:09 2016 [Analyzer,ERROR] [odb.c:8525:db_open_record,ERROR] struct size mismatch for "/Analyzer/Parameters/main" (56 instead of 288)
+Tue Oct 11 15:20:09 2016 [Analyzer,ERROR] [mana.c:3705:init_module_parameters,ERROR] Cannot open "/Analyzer/Parameters/main" parameters in ODB
+Tue Oct 11 15:20:09 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Tue Oct 11 15:20:39 2016 [ODBEdit,INFO] Program ODBEdit on host arthur started
+Tue Oct 11 15:44:08 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 19119, index 0 because the pid no longer exists
+Tue Oct 11 15:44:08 2016 [Analyzer,INFO] Deleted entry '/System/Clients/19119' for client 'Analyzer'
+Tue Oct 11 15:52:36 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 19239, index 1 because the pid no longer exists
+Tue Oct 11 15:52:36 2016 [Analyzer,INFO] Deleted entry '/System/Clients/19239' for client 'Analyzer'
+Tue Oct 11 15:54:28 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 19806, index 0 because the pid no longer exists
+Tue Oct 11 15:54:28 2016 [Analyzer,INFO] Deleted entry '/System/Clients/19806' for client 'Analyzer'
+Tue Oct 11 15:59:11 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 20807, index 0 because the pid no longer exists
+Tue Oct 11 15:59:11 2016 [Analyzer,INFO] Deleted entry '/System/Clients/20807' for client 'Analyzer'
+Wed Oct 12 12:02:47 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 21683, index 1 because the pid no longer exists
+Wed Oct 12 12:02:47 2016 [Analyzer,INFO] Deleted entry '/System/Clients/21683' for client 'Analyzer'
+Wed Oct 12 12:03:41 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 15895, index 1 because the pid no longer exists
+Wed Oct 12 12:03:41 2016 [Analyzer,INFO] Deleted entry '/System/Clients/15895' for client 'Analyzer'
+Wed Oct 12 12:03:41 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 12:03:42 2016 [Analyzer,INFO] Set run number 1075 in ODB
+Wed Oct 12 12:03:43 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Wed Oct 12 12:04:28 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 7757, index 0 because the pid no longer exists
+Wed Oct 12 12:04:28 2016 [Analyzer,INFO] Deleted entry '/System/Clients/7757' for client 'Analyzer'
+Wed Oct 12 12:04:28 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 12:04:29 2016 [Analyzer,INFO] Set run number 1075 in ODB
+Wed Oct 12 12:10:53 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Wed Oct 12 12:11:27 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 12:11:27 2016 [Analyzer,INFO] Set run number 1074 in ODB
+Wed Oct 12 12:14:29 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Wed Oct 12 12:15:21 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 12:15:21 2016 [Analyzer,INFO] Set run number 1074 in ODB
+Wed Oct 12 12:15:22 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Wed Oct 12 12:16:01 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 8352, index 0 because the pid no longer exists
+Wed Oct 12 12:16:01 2016 [Analyzer,INFO] Deleted entry '/System/Clients/8352' for client 'Analyzer'
+Wed Oct 12 12:16:01 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 12:16:02 2016 [Analyzer,INFO] Set run number 1074 in ODB
+Wed Oct 12 12:19:04 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Wed Oct 12 12:35:00 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 12:35:00 2016 [Analyzer,INFO] Set run number 1075 in ODB
+Wed Oct 12 12:41:26 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Wed Oct 12 14:13:27 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 14:13:44 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Wed Oct 12 14:17:24 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 16857, index 0 because the pid no longer exists
+Wed Oct 12 14:17:24 2016 [Analyzer,INFO] Deleted entry '/System/Clients/16857' for client 'Analyzer'
+Wed Oct 12 14:17:24 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 14:17:25 2016 [Analyzer,INFO] Set run number 1074 in ODB
+Wed Oct 12 14:20:26 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Wed Oct 12 14:46:53 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Wed Oct 12 14:46:53 2016 [Analyzer,INFO] Set run number 1074 in ODB
+Wed Oct 12 14:49:53 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 09:41:25 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 30987, index 0 because the pid no longer exists
+Thu Oct 13 09:41:25 2016 [Analyzer,INFO] Deleted entry '/System/Clients/30987' for client 'Analyzer'
+Thu Oct 13 09:42:04 2016 [ODBEdit,INFO] Program ODBEdit on host arthur stopped
+Thu Oct 13 09:42:07 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:42:07 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:42:17 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 09:42:38 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:42:39 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:42:40 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 09:46:05 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 671, index 0 because the pid no longer exists
+Thu Oct 13 09:46:05 2016 [Analyzer,INFO] Deleted entry '/System/Clients/671' for client 'Analyzer'
+Thu Oct 13 09:46:05 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:46:05 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:46:07 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 09:47:34 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 991, index 1 because the pid no longer exists
+Thu Oct 13 09:47:34 2016 [Analyzer,INFO] Deleted entry '/System/Clients/991' for client 'Analyzer'
+Thu Oct 13 09:47:34 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:47:35 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:47:36 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 09:48:59 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 1170, index 0 because the pid no longer exists
+Thu Oct 13 09:48:59 2016 [Analyzer,INFO] Deleted entry '/System/Clients/1170' for client 'Analyzer'
+Thu Oct 13 09:48:59 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:48:59 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:49:01 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 09:51:28 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 1406, index 1 because the pid no longer exists
+Thu Oct 13 09:51:28 2016 [Analyzer,INFO] Deleted entry '/System/Clients/1406' for client 'Analyzer'
+Thu Oct 13 09:51:28 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:51:29 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:51:30 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 09:51:42 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 1808, index 0 because the pid no longer exists
+Thu Oct 13 09:51:42 2016 [Analyzer,INFO] Deleted entry '/System/Clients/1808' for client 'Analyzer'
+Thu Oct 13 09:51:42 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 09:51:42 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 09:51:44 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:15:54 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:15:55 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 12:16:01 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:16:04 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:16:05 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 12:16:07 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:16:26 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:16:26 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 12:16:28 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:19:02 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 12343, index 0 because the pid no longer exists
+Thu Oct 13 12:19:02 2016 [Analyzer,INFO] Deleted entry '/System/Clients/12343' for client 'Analyzer'
+Thu Oct 13 12:19:02 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:19:02 2016 [Analyzer,INFO] Set run number 1083 in ODB
+Thu Oct 13 12:19:04 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:19:42 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 12512, index 1 because the pid no longer exists
+Thu Oct 13 12:19:42 2016 [Analyzer,INFO] Deleted entry '/System/Clients/12512' for client 'Analyzer'
+Thu Oct 13 12:19:42 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:19:43 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:19:44 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:20:22 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 12630, index 0 because the pid no longer exists
+Thu Oct 13 12:20:22 2016 [Analyzer,INFO] Deleted entry '/System/Clients/12630' for client 'Analyzer'
+Thu Oct 13 12:20:22 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:20:22 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:20:23 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:20:59 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 12940, index 1 because the pid no longer exists
+Thu Oct 13 12:20:59 2016 [Analyzer,INFO] Deleted entry '/System/Clients/12940' for client 'Analyzer'
+Thu Oct 13 12:20:59 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:21:00 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:21:01 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:21:14 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13086, index 0 because the pid no longer exists
+Thu Oct 13 12:21:14 2016 [Analyzer,INFO] Deleted entry '/System/Clients/13086' for client 'Analyzer'
+Thu Oct 13 12:21:14 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:21:15 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:21:16 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:22:38 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13219, index 1 because the pid no longer exists
+Thu Oct 13 12:22:38 2016 [Analyzer,INFO] Deleted entry '/System/Clients/13219' for client 'Analyzer'
+Thu Oct 13 12:22:38 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:22:39 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:22:40 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:26:00 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 13349, index 0 because the pid no longer exists
+Thu Oct 13 12:26:00 2016 [Analyzer,INFO] Deleted entry '/System/Clients/13349' for client 'Analyzer'
+Thu Oct 13 12:26:00 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:26:03 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:26:04 2016 [Analyzer,ERROR] [midas.c:1766:,ERROR] cm_disconnect_experiment not called at end of program
+Thu Oct 13 12:27:30 2016 [Analyzer,ERROR] [odb.c:1061:db_open_database,ERROR] Removing client 'Analyzer', pid 14074, index 1 because the pid no longer exists
+Thu Oct 13 12:27:30 2016 [Analyzer,INFO] Deleted entry '/System/Clients/14074' for client 'Analyzer'
+Thu Oct 13 12:27:30 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:27:32 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:28:05 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:28:25 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:28:26 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:28:29 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:28:43 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:28:44 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:29:11 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:29:15 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:29:16 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:32:20 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Thu Oct 13 12:33:27 2016 [Analyzer,INFO] Program Analyzer on host arthur started
+Thu Oct 13 12:33:29 2016 [Analyzer,INFO] Set run number 1082 in ODB
+Thu Oct 13 12:33:32 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped

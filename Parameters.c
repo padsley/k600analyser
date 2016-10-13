@@ -54,7 +54,6 @@ int *PulseLimits;//[2] = {-1e6, 1e6};
 double *ADCOffsets;
 double *ADCGains;
 
-// std::vector<std::vector<double> > ADCCalibrationParameters;
 double **ADCCalibrationParameters;
 
 double *TDCOffsets;
@@ -508,12 +507,12 @@ void ReadCalibrationParameters(std::string CalibFile)
 	    gain = ADCCalibrationParameters[channel][2];
 	    
 	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain);
+	  }
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
 	  }
 	}
       }
     }
-  }
   
   for(unsigned int i=0;i<32*ADCModules;i++)
   {
@@ -521,7 +520,6 @@ void ReadCalibrationParameters(std::string CalibFile)
     printf("npars: %d\t",(int)ADCCalibrationParameters[i][0]);
     for(unsigned int j=0;j<ADCCalibrationParameters[i][0];j++)
     {
-     
      printf("parameter %d: %f\t",j,ADCCalibrationParameters[i][j+1]);
     }
   printf("\n");
