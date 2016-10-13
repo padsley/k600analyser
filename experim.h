@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Wed Oct 12 16:12:51 2016
+  Created on:   Thu Oct 13 13:45:54 2016
 
 \********************************************************************/
 
@@ -32,6 +32,48 @@ typedef struct {
 "Comment = STRING : [80] Analysis",\
 "",\
 NULL }
+
+#ifndef EXCL_MAIN
+
+#define MAIN_PARAM_DEFINED
+
+typedef struct {
+  INT       x1_driftt_low;
+  INT       x1_driftt_hi;
+  INT       x2_driftt_low;
+  INT       u1_driftt_low;
+  INT       u2_driftt_low;
+  INT       x2_driftt_hi;
+  INT       u2_driftt_hi;
+  INT       u1_driftt_hi;
+  INT       lowtof;
+  INT       hitof;
+  INT       lowpad1;
+  INT       lowpad2;
+  INT       hipad1;
+  INT       hipad2;
+} MAIN_PARAM;
+
+#define MAIN_PARAM_STR(_name) char *_name[] = {\
+"[.]",\
+"x1_driftt_low = INT : 6100",\
+"x1_driftt_hi = INT : 8050",\
+"x2_driftt_low = INT : 6100",\
+"u1_driftt_low = INT : 6100",\
+"u2_driftt_low = INT : 6100",\
+"x2_driftt_hi = INT : 8050",\
+"u2_driftt_hi = INT : 8050",\
+"u1_driftt_hi = INT : 8050",\
+"lowtof = INT : 123",\
+"hitof = INT : 7000",\
+"lowpad1 = INT : 123",\
+"lowpad2 = INT : 0",\
+"hipad1 = INT : 4096",\
+"hipad2 = INT : 4096",\
+"",\
+NULL }
+
+#endif
 
 #ifndef EXCL_GLOBAL
 
@@ -78,48 +120,6 @@ typedef struct {
 "u1_last_wire_chan = INT : 443",\
 "u2_1st_wire_chan = INT : 800",\
 "u2_last_wire_chan = INT : 943",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_MAIN
-
-#define MAIN_PARAM_DEFINED
-
-typedef struct {
-  INT       x1_driftt_low;
-  INT       x1_driftt_hi;
-  INT       x2_driftt_low;
-  INT       u1_driftt_low;
-  INT       u2_driftt_low;
-  INT       x2_driftt_hi;
-  INT       u2_driftt_hi;
-  INT       u1_driftt_hi;
-  INT       lowtof;
-  INT       hitof;
-  INT       lowpad1;
-  INT       lowpad2;
-  INT       hipad1;
-  INT       hipad2;
-} MAIN_PARAM;
-
-#define MAIN_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"x1_driftt_low = INT : 6100",\
-"x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6100",\
-"u1_driftt_low = INT : 6100",\
-"u2_driftt_low = INT : 6100",\
-"x2_driftt_hi = INT : 8050",\
-"u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 123",\
-"hitof = INT : 7000",\
-"lowpad1 = INT : 123",\
-"lowpad2 = INT : 0",\
-"hipad1 = INT : 4096",\
-"hipad2 = INT : 4096",\
 "",\
 NULL }
 

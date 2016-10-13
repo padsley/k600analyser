@@ -24,7 +24,7 @@ extern int **CloverTDCChannelLimits;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
-extern std::vector<std::vector<double> > ADCCalibrationParameters;
+extern double **ADCCalibrationParameters;
 
 TRandom3 *randy = new TRandom3(0);
 
@@ -56,7 +56,8 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 			if(CloverADCTDCChannelCheck(i,mTDC->GetChannel(k)))
 			{
   			 // printf("line 55");
-			  //printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(n));
+			  //printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(k));
+
 	  			double GammaEnergy = CloverEnergyCalc(i,ADC_import[i]);
 	  			if(GammaEnergy>0.1)
 	  			{
@@ -141,21 +142,25 @@ double CloverEnergyCalc(int Channel, double ADCValue)
 		  
       double randNum = randy->Rndm();
 
- // printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
- // printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
+  //printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
+  //printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
 // double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
 // double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum-0.5);
 //    double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum);
 // printf("ADCValue: %f \n  rand(): %f \n  result: %f\n", ADCValue, randNum,result);  
 
   double RandyADCValue = ADCValue+randNum;
+
   
   int npars = (int)ADCCalibrationParameters[Channel][0];
   
+
   double result = 0;
-  
+  //printf("npars: %d\n",npars);
   for(int i=1;i<npars+1;i++)
   {
+	//printf("i: %d\n",i);
+	//printf("ADCCalibrationParameters[%d][%d]: %f\n",Channel,i,ADCCalibrationParameters[Channel][i]);
     result += ADCCalibrationParameters[Channel][i] * pow(RandyADCValue,(double)i-1.);
   }
 
