@@ -1227,7 +1227,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
-      //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
+      //if(channel%128!=0 && )printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
       //TDC_channel_export[i] = channel;
       //TDC_value_export[i] = offset_time;
       TDCChannelExportStore.push_back(channel);

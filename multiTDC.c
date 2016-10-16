@@ -15,7 +15,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 
   for(int n=0;n<ntdc;n++)
   {
-    //printf("n: %d \t TDC_channel_import: %d \t TDC_value_import: %d \n",n,TDC_channel_import[n],TDC_value_import[n]);
+    //if(TDC_channel_import[n]>=864 && TDC_channel_import[n]<=895)printf("n: %d \t TDC_channel_import: %d \t TDC_value_import: %f \n",n,TDC_channel_import[n],TDC_value_import[n]);
 
     //if(TDC_channel_import[n]==845)printf("1: TDC_channel_import[n]: %d \t ChannelCounter: %d\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
     ChannelCounter[TDC_channel_import[n]]++;
