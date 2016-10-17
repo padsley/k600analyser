@@ -25,7 +25,7 @@ extern double *ADCGains;
 
 extern double **ADCCalibrationParameters;
 
-TRandom3 *randy = new TRandom3(0);
+TRandom3 *randyScint = new TRandom3(0);
 
 
 
@@ -49,10 +49,11 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
           	{
 		  for(int i=DetNum-2;i<NumberOfScintillator+1;i=i+2)
 		      {
-                       int j = ScintillatorADCChannels[i];
+                       int j = ScintillatorADCChannels[i-1];
+			 //	  printf("Det: %d; \tADCChannel: %d\n",i,j);                       
 			if(ScintillatorADCTDCChannelCheck(j,mTDC->GetChannel(k)))
 			{
-			// 	  printf("ADCChannel: %d \t TDCChannel: %d\n",j,mTDC->GetChannel(n));
+			 //	  printf("Det: %d; \tADCChannel: %d \t TDCChannel: %d\n",i,j,mTDC->GetChannel(k));
 	  			double GammaEnergy = ScintillatorEnergyCalc(j,ADC_import[j]);
 	  			if(GammaEnergy>0.1)
 	  			{
@@ -62,10 +63,10 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
 
 				int label= i; //the detector number starts from 1
 				gammy->SetDetectorLabel(label); 
-// 				gammy->SetGammaRawADC(ADC_import[j]);
-// 				gammy->SetGammaADCChannel(j);
-// 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
-// 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
+ 				gammy->SetGammaRawADC(ADC_import[j]);
+ 				gammy->SetGammaADCChannel(j);
+ 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
+ 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
 	  			} 
 			 }
       		      }
@@ -109,7 +110,7 @@ int ScintillatorTDCIdentifyDetector(int TDCChannel)
 // 			printf("testresult = %d\n",testresult);
    }
 //  printf("result = %d\n",result);
- return result; //WATCHOUT we have the same TDCChannel associated with two ADCChannels. At this point this will always give 3 and 4 as the hit detectors.
+ return result; //WATCHOUT we have the same TDC Channel associated with two ADC Channels. At this point this will always give 3 and 4 as the hit detectors.
 }
 
 
@@ -117,7 +118,7 @@ double ScintillatorEnergyCalc(int Channel, double ADCValue)
 {
 
 		  
-  double randNum = randy->Rndm();
+  double randNum = randyScint->Rndm();
 
   double RandyADCValue = ADCValue+randNum;
 

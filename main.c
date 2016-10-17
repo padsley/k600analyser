@@ -84,7 +84,7 @@ RUNINFO runinfo2;
 INT main_event(EVENT_HEADER *, void *);
 INT main_bor(INT run_number);
 INT main_eor(INT run_number);
-
+INT main_init(void);
 
 //FOCALPLANE_PARAM_STR(focalplane_param_str);
 MAIN_PARAM_STR(main_param_str);
@@ -873,6 +873,9 @@ INT main_init(void)
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
+
+hTDCValue_vs_TDCChannels = new TH2F("hTDCValue_vs_TDCChannels", "hTDCValue_vs_TDCChannels", 500, 0., 500., 500., 0., 500.);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
+
    return SUCCESS;
 }
 
@@ -1858,7 +1861,7 @@ gammy = new GammaData();
     //printf("made it in main.c to RawDataDump\n");
     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
     
-    hTDCValue_vs_TDCChannels = new TH2F("hTDCValue_vs_TDCChannels", "hTDCValue_vs_TDCChannels", 500, 0., 500., 500., 0., 500.);
+    
     for(int i=0; i<TDCChannelExportStore.size(); i++)
     {
         for(int j=0; j<TDCValueExportStore.size(); j++)
