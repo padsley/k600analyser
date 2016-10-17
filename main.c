@@ -35,6 +35,7 @@
 #include <TFile.h>
 #include <TRandom3.h>
 #include <TMath.h>
+#include "TGraph.h"
 
 /* home-made includes */
 #include "Parameters.h"
@@ -53,7 +54,7 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-//#define _PRINTTOSCREEN
+#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
@@ -83,7 +84,7 @@ RUNINFO runinfo2;
 INT main_event(EVENT_HEADER *, void *);
 INT main_bor(INT run_number);
 INT main_eor(INT run_number);
-INT main_init(void);
+
 
 //FOCALPLANE_PARAM_STR(focalplane_param_str);
 MAIN_PARAM_STR(main_param_str);
@@ -264,6 +265,7 @@ static TH1F *hEventID, *hEventID2;
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
 TH2F **hTDC2DModule;
+TH2F *hTDCValue_vs_TDCChannels;
 
 static TH1F *hTDCPerEventRaw;
 //static TH1F *hTDCPerEvent;
@@ -309,6 +311,8 @@ static TH1F *hU2_Chisq, *hU2_Eff, *hU2_Res;
 static TH2F *hU2_Res2dRCNP, *hU2_Res2diTL;
 
 static TH1F *h_Y1, *h_Y2;
+
+
 #endif
 
 
@@ -564,7 +568,8 @@ INT main_init(void)
 	  sprintf(title,"hTDC2DModule %d ",counter);
           hTDC2DModule[counter]=new TH2F(name,title, 4000, -8000, 14999,128,0,128);
    }
-
+   
+    
    hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
@@ -1227,7 +1232,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
-      //if(channel%128!=0 && )printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
+      //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
       //TDC_channel_export[i] = channel;
       //TDC_value_export[i] = offset_time;
       TDCChannelExportStore.push_back(channel);
@@ -1777,7 +1782,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
-   //t_Ex = CalcExDirect(Xcorr);
+   //t_Ex = CalcExDirect(Xcorr);‘TDCValues’
    t_Ex = CalcEx(Xcorr);
 
    extern double *masses;
@@ -1836,8 +1841,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
    for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
 
-
-
+  
+   
    //========================================================================================================================
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
    //========================================================================================================================
@@ -1852,11 +1857,20 @@ gammy = new GammaData();
   {
     //printf("made it in main.c to RawDataDump\n");
     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+    
+    hTDCValue_vs_TDCChannels = new TH2F("hTDCValue_vs_TDCChannels", "hTDCValue_vs_TDCChannels", 500, 0., 500., 500., 0., 500.);
+    for(int i=0; i<TDCChannelExportStore.size(); i++)
+    {
+        for(int j=0; j<TDCValueExportStore.size(); j++)
+        {
+            hTDCValue_vs_TDCChannels->Fill(TDC_channel_export[i], TDC_value_export[j]);
+        }
+    }
   }
 #endif
   
 #ifdef _MMM
-    if(si)
+    if(si)‘TDCValues’
     {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }

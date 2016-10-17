@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 
+
 extern int ADCsize;
 extern int TDCsize;
 extern int QDCsize;
@@ -85,6 +86,8 @@ RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC
   }
   
   for(int i=0;i<QDCsize;i++)raw->SetQDCValue(i,QDC_import[i]);
+  
+  
   return raw;
 }
 

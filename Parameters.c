@@ -37,8 +37,8 @@ int ***GateauTDCChannelLimits;
 
 int NumberOfScintillator;
 
-int *ScintillatorADCChannelLimits;
-int *ScintillatorTDCChannelLimits;
+int *ScintillatorADCChannels;
+int *ScintillatorTDCChannels;
 
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
@@ -344,7 +344,7 @@ void CloverTDCChannelsInit(int det, int start, int stop)
     }
   else
     {
-      printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+      printf("TDC: Detector number is higher than the number of Clover detectors - skipped enabling this detector\n");
     }
 }
 
@@ -375,40 +375,60 @@ void PulseLimitsInit()
   printf("\nPulseLimitsInit\n");
   
   PulseLimits = new int[2];
-  PulseLimits[0] = -100000;
+  PulseLimits[0] = 4000;
   PulseLimits[1] = 100000;
 }
 
 /*-------------------------------------------------*/
-void ScintillatorInit()
+//void ScintillatorInit()
+void ScintillatorNumberInit()
 {
 
   printf("\nScintillatorParameterInit\n");
   
-  ScintillatorADCChannelLimits = new int[2];
-  ScintillatorTDCChannelLimits = new int[2];
+  ScintillatorADCChannels = new int[NumberOfScintillator];
+  ScintillatorTDCChannels = new int[NumberOfScintillator];
 
-    for(int j=0;j<2;j++)
+    for(int j=0;j<NumberOfScintillator;j++)
     {
-      ScintillatorTDCChannelLimits[j] = -1;
-      ScintillatorADCChannelLimits[j] = -1;
+      ScintillatorTDCChannels[j] = -1;
+      ScintillatorADCChannels[j] = -1;
     }  
   
   printf("\nScintillatorParameterInit - end\n");
 }
 
+
+
 /*-------------------------------------------------*/
-void ScintillatorADCChannelsInit(int start, int stop)
+void ScintillatorADCChannelsInit(int det, int start)
 {
-  ScintillatorADCChannelLimits[0] = start;
-  ScintillatorADCChannelLimits[1] = stop;
+  if(det<=NumberOfScintillator)
+{
+  ScintillatorADCChannels[det-1] = start;
+//  ScintillatorADCChannelLimits[1] = stop;
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of Scintillator detectors - skipped enabling this detector\n");
+  }
+
+
 }
 
 /*-------------------------------------------------*/
-void ScintillatorTDCChannelsInit(int start, int stop)
+void ScintillatorTDCChannelsInit(int det, int start)
 {
-  ScintillatorTDCChannelLimits[0] = start;
-  ScintillatorTDCChannelLimits[1] = stop;
+  if(det<=NumberOfScintillator)
+{
+  ScintillatorTDCChannels[det-1] = start;
+//  ScintillatorTDCChannelLimits[1] = stop;
+  }
+  else
+  {
+    printf("TDC: Detector number is higher than the number of Scintillator detectors - skipped enabling this detector\n");
+  }
+
 }
 
 /* ----------------------------------------------- */
@@ -868,7 +888,7 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  if(LineBuffer.compare(0,3,"yes") == 0)
 		    {
-		      ScintillatorInit();
+		    //  ScintillatorInit();
 		      ScintillatorUsed = true;
 		    }
 		  else if(LineBuffer.compare(0,2,"no") == 0)
@@ -880,6 +900,12 @@ void ReadConfiguration()
 		      printf("Scintillator usage option not recognised\n");
 		    }
 		}
+              else if(LineBuffer.compare(0,20,"NumberOfScintillator") == 0)
+                {
+                  input >> LineBuffer;
+                  NumberOfScintillator = atoi(LineBuffer.c_str());
+                  ScintillatorNumberInit();
+                }
 	      else if(LineBuffer.compare(0,23,"ScintillatorADCChannels") == 0)
 		{
 		  if(ScintillatorADCChannelRead==false)ScintillatorADCChannelRead = true;
@@ -1440,9 +1466,30 @@ void ReadConfiguration()
 		}
 	    }
 
+          if(ScintillatorADCChannelRead)
+            {
+              int num = 0, value = -1;
+              std::string side = "";
+              input >> LineBuffer;
+              printf("%s\n",LineBuffer.c_str());
+              if(LineBuffer.compare(0,23,"ScintillatorADCChannels") == 0)
+                {
+                  if(ScintillatorADCChannelRead==true)ScintillatorADCChannelRead = false;
+                }
+              else
+                {
+                  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+                  num = atoi(LineBuffer.c_str());
+                  input>> LineBuffer;
+                  printf("Value: %d\t",atoi(LineBuffer.c_str()));
+                  value = atoi(LineBuffer.c_str());
+                  ScintillatorADCChannelsInit(num, value);
+                }
+            }
+
 	  if(ScintillatorTDCChannelRead)
 	    {
-	      int start = -1, stop = -1;
+	      int num = -1, value = -1;
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,23,"ScintillatorTDCChannels") == 0)
 		{
@@ -1450,13 +1497,12 @@ void ReadConfiguration()
 		}
 	      else
 		{
-		  printf("ScintillatorTDCChannelRead: \t");
-		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
-		  start = atoi(LineBuffer.c_str());
-		  input >> LineBuffer;
-		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
-		  stop = atoi(LineBuffer.c_str());
-		  ScintillatorTDCChannelsInit(start, stop);
+                  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+                  num = atoi(LineBuffer.c_str());
+                  input>> LineBuffer;
+                  printf("Value: %d\t",atoi(LineBuffer.c_str()));
+                  value = atoi(LineBuffer.c_str());
+                  ScintillatorTDCChannelsInit(num, value);
 		}
 	    }
 	    
