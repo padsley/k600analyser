@@ -44,16 +44,18 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 
 
   double *EnergyAddback = new double[NumberOfClover]; // Energy of the Addback
-  int *EventAddback = new int[NumberOfClover]; // Segment with maximum Energy deposit in the Clover (considered the first segment hit)
-  int *SegmentAddback = new int[NumberOfClover]; // Segment with maximum Energy deposit in the Clover (considered the first segment hit)
-  double *MaxEnerAddback = new double[NumberOfClover]; // Maximum energy deposit in a segment
+  int *EventAddback = new int[NumberOfClover]; // Event number in gammy in which the maximum energy deposition took place (per clover)
+  //int *SegmentAddback = new int[NumberOfClover]; // Segment with maximum Energy deposit in the Clover (considered the first segment hit)
+  double *MaxEnerAddback = new double[NumberOfClover]; // Maximum energy deposit in a segment for each clover
+  int   *NSegmentsAddback = new int[NumberOfClover]; // Number of crystals contributing to the addback.
 
   for (int i=0; i<NumberOfClover;i++) 
   {
          EnergyAddback[i] = 0.;
          EventAddback[i] = -1;
-         SegmentAddback[i] = -1;
+       //  SegmentAddback[i] = -1;
          MaxEnerAddback[i] = 0.;
+         NSegmentsAddback[i] = 0;
   }
   
   for(int k=0;k<mTDC->GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
@@ -88,11 +90,12 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 				gammy->SetDetectorLabel(DetNum);
 				
 				EnergyAddback[DetNum-1] += GammaEnergy;
+				NSegmentsAddback[DetNum-1]++;
 				if (GammaEnergy > MaxEnerAddback[DetNum-1])
 				{
-				 // EventAddback[DetNum-1] = gammy->SizeOfEvent();
-				  SegmentAddback[DetNum-1] = Segm;
+				  EventAddback[DetNum-1] = gammy->SizeOfEvent()-1;
 				  MaxEnerAddback[DetNum-1] = GammaEnergy;
+			//	  printf("In. Size %d, Det %d, EvtAddBack%d,\n", gammy->SizeOfEvent(), DetNum, EventAddback[DetNum-1]);
 				}
 				
 				
@@ -103,11 +106,13 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
 				
-				//printf("k: %d, GetSize: %d; \n",k, gammy->SizeOfEvent());
-				//printf("k: %d, GetSize: %d; GammaEnergy: %f, gammyEnergy: %f, Segm: %d, gammySegm: %d",k, gammy->SizeOfEvent(),GammaEnergy,
-				//gammy->GetEnergy(1), Segm, gammy->GetSegm(1));
-				//gammy->GetEnergy(gammy->SizeOfEvent()-1), Segm, gammy->GetSegm(gammy->SizeOfEvent()-1));
-				
+				/*
+				printf("GetSize: %d;\n",gammy->SizeOfEvent());
+				printf("EventN: %d; \n",EventAddback[DetNum-1]);
+				printf("GammaEnergy: %f, gammyEnergy: %f \n",GammaEnergy,gammy->GetEnergy(EventAddback[DetNum-1]));
+				printf("GammaEnergy: %f, gammyEnergy: %f \n",GammaEnergy,gammy->GetEnergy(gammy->SizeOfEvent()));
+				printf("Segm: %d, gammySegm: %d \n", Segm, gammy->GetDetectorSegm(EventAddback[DetNum-1]));
+				*/
 	  			} 
 			 }
       		       }
@@ -115,21 +120,24 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 	}
     }
   
- 
+
+   
   for(int i=0;i<NumberOfClover;i++)
   {
-//    if(EventAddback[i] > -1)
-    if(SegmentAddback[i] > -1)
+    if(EventAddback[i] > -1)
         {
   	gammy->SetEnergy(EnergyAddback[i]);
   	gammy->SetDetectorType("Addback");
   	gammy->SetDetectorLabel(i+1);
-  	gammy->SetDetectorSegm(SegmentAddback[i]);
+  	// printf("gammy DetNum: %d, index DetNum: %d;\n",gammy->GetDetectorLabel(EventAddback[i]),i+1);
+  	gammy->SetDetectorSegm(gammy->GetDetectorSegm(EventAddback[i]));
   	
-	gammy->SetGammaRawADC(-1);
-	gammy->SetGammaADCChannel(-1);
-	gammy->SetGammaTDCChannel(-1);
-	gammy->SetGammaTDCMultiplicity(-1);
+	gammy->SetGammaRawADC(gammy->GetGammaRawADC(EventAddback[i]));
+	gammy->SetGammaADCChannel(gammy->GetGammaADCChannel(EventAddback[i]));
+	gammy->SetGammaTDCChannel(gammy->GetGammaTDCChannel(EventAddback[i]));
+	//gammy->SetGammaTDCMultiplicity(gammy->GetGammaTDCMultiplicity(EventAddback[i]));
+	gammy->SetGammaTDCMultiplicity(NSegmentsAddback[i]);
+
     }
   }
   
@@ -140,8 +148,9 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
   
   delete EnergyAddback;
   delete MaxEnerAddback;
-  delete SegmentAddback;
+  //delete SegmentAddback;
   delete EventAddback;
+  delete NSegmentsAddback;
   
   
   //return gammy;
