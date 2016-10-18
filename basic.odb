@@ -1,8 +1,8 @@
-[/System/Clients/173849]
+[/System/Clients/231270]
 Name = STRING : [32] ODBEdit
 Host = STRING : [256] localhost
 Hardware type = INT : 44
-Server Port = INT : 41938
+Server Port = INT : 39914
 
 [/System]
 Client Notify = INT : 0
@@ -3844,7 +3844,7 @@ min_x_wires = INT : 3
 min_u_wires = INT : 3
 max_x_wires = INT : 9
 max_u_wires = INT : 8
-lut_x1_offset = INT : -20
+lut_x1_offset = INT : -10
 lut_u1_offset = INT : 0
 lut_x2_offset = INT : -60
 lut_u2_offset = INT : 0
