@@ -72,6 +72,7 @@ public :
   double GetTime(int i){return GammaTime.at(i);}
   std::string GetType(int i){return GammaDetectorType.at(i);}
   double GetLabel(int i){return GammaDetectorLabel.at(i);}
+  double GetSegm(int i){return GammaDetectorSegm.at(i);}
  // double GetDetectorHit(int i){return DetectorHit.at(i);}
 
 //Should add Getters for the diagnostic values in case people want to use them to test events themselves under certain conditions

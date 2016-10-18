@@ -42,6 +42,20 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
   mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);	
 //printf("mTDC->GetSize(): %d\n",mTDC->GetSize());
 
+
+  double *EnergyAddback = new double[NumberOfClover]; // Energy of the Addback
+  int *EventAddback = new int[NumberOfClover]; // Segment with maximum Energy deposit in the Clover (considered the first segment hit)
+  int *SegmentAddback = new int[NumberOfClover]; // Segment with maximum Energy deposit in the Clover (considered the first segment hit)
+  double *MaxEnerAddback = new double[NumberOfClover]; // Maximum energy deposit in a segment
+
+  for (int i=0; i<NumberOfClover;i++) 
+  {
+         EnergyAddback[i] = 0.;
+         EventAddback[i] = -1;
+         SegmentAddback[i] = -1;
+         MaxEnerAddback[i] = 0.;
+  }
+  
   for(int k=0;k<mTDC->GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
    {CountGammaHits[0]++;
     if(CloverTDCTest(mTDC->GetChannel(k)))
@@ -72,21 +86,62 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 				gammy->SetDetectorType("Clover");
 
 				gammy->SetDetectorLabel(DetNum);
+				
+				EnergyAddback[DetNum-1] += GammaEnergy;
+				if (GammaEnergy > MaxEnerAddback[DetNum-1])
+				{
+				 // EventAddback[DetNum-1] = gammy->SizeOfEvent();
+				  SegmentAddback[DetNum-1] = Segm;
+				  MaxEnerAddback[DetNum-1] = GammaEnergy;
+				}
+				//printf("k: %d, GetSize: %d; \n",k, gammy->SizeOfEvent());
+				//printf("k: %d, GetSize: %d; GammaEnergy: %f, gammyEnergy: %f, Segm: %d, gammySegm: %d",k, gammy->SizeOfEvent(),GammaEnergy,
+				//gammy->GetEnergy(1), Segm, gammy->GetSegm(1));
+				//gammy->GetEnergy(gammy->SizeOfEvent()-1), Segm, gammy->GetSegm(gammy->SizeOfEvent()-1));
+				
+				
 				gammy->SetDetectorSegm(Segm);
 				gammy->SetGammaRawADC(ADC_import[i]);
 				gammy->SetGammaADCChannel(i);
 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
+				
 	  			} 
 			 }
       		       }
     		}
 	}
     }
+  
+ 
+  for(int i=0;i<NumberOfClover;i++)
+  {
+//    if(EventAddback[i] > -1)
+    if(SegmentAddback[i] > -1)
+        {
+  	gammy->SetEnergy(EnergyAddback[i]);
+  	gammy->SetDetectorType("Addback");
+  	gammy->SetDetectorLabel(i+1);
+  	gammy->SetDetectorSegm(SegmentAddback[i]);
+  	
+	gammy->SetGammaRawADC(-1);
+	gammy->SetGammaADCChannel(-1);
+	gammy->SetGammaTDCChannel(-1);
+	gammy->SetGammaTDCMultiplicity(-1);
+    }
+  }
+  
 	//for(int i=0;i<6;i++)printf("CountGammaHits[%d]: %d\n",i,CountGammaHits[i]);
   gammy->SetHits(gammy->SizeOfEvent());
   mTDC->ClearEvent();
   delete mTDC;
+  
+  delete EnergyAddback;
+  delete MaxEnerAddback;
+  delete SegmentAddback;
+  delete EventAddback;
+  
+  
   //return gammy;
 
 }
