@@ -15,19 +15,13 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 
   for(int n=0;n<ntdc;n++)
   {
-    //if(TDC_channel_import[n]>=864 && TDC_channel_import[n]<=895)printf("n: %d \t TDC_channel_import: %d \t TDC_value_import: %f \n",n,TDC_channel_import[n],TDC_value_import[n]);
-
-    //if(TDC_channel_import[n]==845)printf("1: TDC_channel_import[n]: %d \t ChannelCounter: %d\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
-    ChannelCounter[TDC_channel_import[n]]++;
-    //if(TDC_channel_import[n]==845)printf("2: TDC_channel_import[n]: %d \t ChannelCounter: %d\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
+       ChannelCounter[TDC_channel_import[n]]++;
 
     if(TDC_channel_import[n]>0 && TDC_channel_import[n]<128*TDCModules && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1])GoodChannelCounter[TDC_channel_import[n]]+=1;
-    //if(TDC_channel_import[n]==845)printf("3: TDC_channel_import[n]: %d \t ChannelCounter: %d\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
   }
 
   for(int n=0;n<ntdc;n++)//Loop over and dispose of the simple events (the single hit events)
   {
-    //if(TDC_channel_import[n]==845)printf("4: TDC_channel_import[n]: %d \t ChannelCounter: %d\n",TDC_channel_import[n],ChannelCounter[TDC_channel_import[n]]);
     if(TDC_channel_import[n]>=0 && TDC_channel_import[n]<128*TDCModules)
     {
       if(ChannelCounter[TDC_channel_import[n]]==0)
@@ -39,12 +33,10 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
       else if(ChannelCounter[TDC_channel_import[n]]==1)
       {
 	//The reason that we do this this way is to look at how many events fall outside the good beampulse - only when we have multiple hits do we need to worry about the multiple hits and this should be quicker 
-	//printf("\n ChannelCounter[%d]==1 \n",TDC_channel_import[n]);
 	SetChannel(TDC_channel_import[n]);
 	SetValue(TDC_value_import[n]);
 	SetMult(ChannelCounter[TDC_channel_import[n]]);
 	TDChits++;
-	//printf("\n ChannelCounter[%d]==1 \n",TDC_channel_import[n]);
       }
       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==1 && TDC_value_import[n]>PulseLimits[0] && TDC_value_import[n]<PulseLimits[1])
       {
@@ -53,11 +45,26 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
 	SetMult(ChannelCounter[TDC_channel_import[n]]);
 	TDChits++;
       }
-//       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==2
       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]>1)
       {
-	printf("The number of TDC hits within the user-defined 'good pulse' is greater than 1; the number of hits is %d in channel %d. The code currently doesn't deal with this.\n",GoodChannelCounter[TDC_channel_import[n]],TDC_channel_import[n]);
-	if(TDC_channel_import[n]==895)printf("Badger\n");
+	//printf("The number of TDC hits within the user-defined 'good pulse' is greater than 1; the number of hits is %d in channel %d. The code currently doesn't deal with this.\n",GoodChannelCounter[TDC_channel_import[n]],TDC_channel_import[n]);
+	int whichTDChit = n;
+	float whichTDCvalue = TDC_value_import[n];
+	for(int nn=0;nn<ntdc;nn++)
+	{
+		if(TDC_channel_import[n]==TDC_channel_import[nn])
+		{
+			if(TDC_value_import[nn]>whichTDCvalue)
+			{
+				whichTDChit = nn;
+				whichTDCvalue = TDC_value_import[nn];
+			}
+		}
+	}
+	SetChannel(TDC_channel_import[whichTDChit]);
+	SetValue(TDC_value_import[whichTDChit]);
+	TDChits++;
+	SetMult(ChannelCounter[TDC_channel_import[whichTDChit]]);
       }
       else if(ChannelCounter[TDC_channel_import[n]]>1 && GoodChannelCounter[TDC_channel_import[n]]==0)
       {
