@@ -925,7 +925,10 @@ INT main_bor(INT run_number)
    // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
    // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
    // in terms of kinematics. So now I use the O calibration but offsets the X1pos to compensate...
-	case 1085: x1offset=0.; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+	case 1079: x1offset=-0.333; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+	case 1080: x1offset=-0.333; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+	case 1081: x1offset=-1.666; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+	case 1085: x1offset= 0.   ; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
 	case 1086: x1offset=-0.333; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
 	case 1087: x1offset=-0.333; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
 	case 1088: x1offset=-1.666; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
