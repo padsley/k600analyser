@@ -265,7 +265,7 @@ static TH1F *hEventID, *hEventID2;
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
 TH2F **hTDC2DModule;
-TH2F *hTDCValue_vs_TDCChannels;
+TH2F *hADCChannels_vs_TDCChannels;
 
 static TH1F *hTDCPerEventRaw;
 //static TH1F *hTDCPerEvent;
@@ -874,8 +874,9 @@ INT main_init(void)
   t1->Branch("RawInfo","RawData",&raw);
 #endif
 
-hTDCValue_vs_TDCChannels = new TH2F("hTDCValue_vs_TDCChannels", "hTDCValue_vs_TDCChannels", 500, 0., 500., 500., 0., 500.);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
+hADCChannels_vs_TDCChannels = new TH2F("hADCChannels_vs_TDCChannels", "hADCChannels_vs_TDCChannels", 128*TDCModules, 0., 128*TDCModules, 32*ADCModules, 0., 32*ADCModules);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
 
+   
    return SUCCESS;
 }
 
@@ -1861,15 +1862,19 @@ gammy = new GammaData();
     //printf("made it in main.c to RawDataDump\n");
     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
     
-    
-    for(int i=0; i<TDCChannelExportStore.size(); i++)
+    for(int i=0; i<TDCValueExportStore.size(); i++)
     {
-        for(int j=0; j<TDCValueExportStore.size(); j++)
+        for(int j=0; j<sizeof(ADCchannel); j++)
         {
-            hTDCValue_vs_TDCChannels->Fill(TDC_channel_export[i], TDC_value_export[j]);
+			if(ADC[j]>0.0)
+			{
+				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
+			}
+				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
         }
     }
   }
+  
 #endif
   
 #ifdef _MMM

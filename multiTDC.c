@@ -49,6 +49,7 @@ void multiTDC::multiTDCSort(int ntdc, int *TDC_channel_import, float *TDC_value_
       {
 	//printf("The number of TDC hits within the user-defined 'good pulse' is greater than 1; the number of hits is %d in channel %d. The code currently doesn't deal with this.\n",GoodChannelCounter[TDC_channel_import[n]],TDC_channel_import[n]);
 	int whichTDChit = n;
+	
 	float whichTDCvalue = TDC_value_import[n];
 	for(int nn=0;nn<ntdc;nn++)
 	{
