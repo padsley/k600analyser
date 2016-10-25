@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-for COUNT in {2036..2054}
+for COUNT in {2283..2285}
 
 
 do
@@ -27,19 +27,24 @@ do
   echo $FILE
   if [ $COUNT -lt 10 ]
   then
-      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted0000"$COUNT".root"
+#      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted0000"$COUNT".root"
+      FILE2="../sortedfiles/sorted0000"$COUNT".root"
   elif [ $COUNT -lt 100 ]
   then
-      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted000"$COUNT".root"
+#      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted000"$COUNT".root"
+      FILE2="../sortedfiles/sorted000"$COUNT".root"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted00"$COUNT".root"
+#      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted00"$COUNT".root"
+      FILE2="../sortedfiles/sorted00"$COUNT".root"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted0"$COUNT".root"
+#      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted0"$COUNT".root"
+      FILE2="../sortedfiles/sorted0"$COUNT".root"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted"$COUNT".root"
+#      FILE2="/vicepda/althome/k600user/PR251/2016/sortedfiles/sorted"$COUNT".root"
+      FILE2="../sortedfiles/sorted"$COUNT".root"
   else
       echo "This might not work"
   fi
