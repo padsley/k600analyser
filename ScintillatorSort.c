@@ -56,10 +56,10 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
 
 				int label= 1 + i - ScintillatorADCChannelLimits[0]; //the detector number starts from 1
 				gammy->SetDetectorLabel(label); 
-// 				gammy->SetGammaRawADC(ADC_import[i]);
-// 				gammy->SetGammaADCChannel(i);
-// 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
-// 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
+ 				gammy->SetGammaRawADC(ADC_import[i]);
+ 				gammy->SetGammaADCChannel(i);
+ 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
+ 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
 	  			} 
 			 }
       		       }
