@@ -226,6 +226,7 @@ GammaData *gammy;
 
 
 Int_t t_pulser=0;    // a pattern register equivalent
+Int_t t_cloverpulser=0;
 
 #ifdef _POLARIZATION  
 Int_t t_polu=0, t_pold=0;   // a pattern register equivalent
@@ -466,6 +467,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    #endif
 
    t_pulser=0;
+   t_cloverpulser=0;
 
 
    #ifdef _MOVIE 
@@ -810,6 +812,7 @@ INT main_init(void)
   t1->Branch("Y1",&t_Y1,"t_Y1/D");
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
+  t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
@@ -1249,6 +1252,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
+
+		case 14: t_cloverpulser=1;break;
 
 		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
