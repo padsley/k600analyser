@@ -33,6 +33,7 @@ class GammaData
  // std::vector<double> GammaTheta;
 //  std::vector<double> GammaPhi;
   std::vector<double> GammaTime;
+  std::vector<double> GammaTimeOffset;
   std::vector<std::string> GammaDetectorType;//This is a particular thing in this class which isn't in the SiliconData type. It defines the type of the gamma detector. E.g. HPGeClover, HPGe, Hagar, NaI, CsI, Eyeball, BGO, Kudu, peacock.
   //It's a STRING... i.e., type what you want in there and then test for that later on
   std::vector<int> GammaDetectorLabel;
@@ -56,6 +57,7 @@ public :
 //  void SetTheta(double thet){GammaTheta.push_back(thet);}
  // void SetPhi(double ph){GammaPhi.push_back(ph);}
   void SetTime(double tim){GammaTime.push_back(tim);}
+  void SetOffsetTime(double tim) { GammaTimeOffset.push_back(tim); }
   void SetDetectorType(std::string type){GammaDetectorType.push_back(type);}
   void SetDetectorLabel(int label){GammaDetectorLabel.push_back(label);}//"clover1" "hagar" "LaBr1" DATA->Draw("GammaEnergy:Ex","GammaDetectorLabel==\"clover1\"","")
   //void SetDetectorSegm(std::string label){GammaDetectorSegm.push_back(label);}

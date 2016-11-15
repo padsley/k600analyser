@@ -22,6 +22,7 @@ extern int *ScintillatorTDCChannelLimits;
 
 extern double *ADCOffsets;
 extern double *ADCGains;
+extern double *TDCOffsets;
 
 TRandom3 *randy2 = new TRandom3(0);
 
@@ -52,6 +53,7 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
 	  			{
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
+				gammy->SetOffsetTime(mTDC->GetValue(k) - TDCOffsets[mTDC->GetChannel(k)]);
 				gammy->SetDetectorType("Scintillator"); //the detector type will allow to choose between Hagar, Clover or Scintillator
 
 				int label= 1 + i - ScintillatorADCChannelLimits[0]; //the detector number starts from 1

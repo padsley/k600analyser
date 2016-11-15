@@ -36,6 +36,7 @@ bool GammaData::TestEvent()
 //  if(GammaTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
  // if(GammaPhi.size() != hits){printf("Mismatched size: Phi\n"); result = false;}
   if(GammaTime.size() != hits){printf("Mismatched size: Time\n"); result = false;}
+  if(GammaTimeOffset.size() != hits){printf("Mismatched size: Offset Time\n"); result = false;}
   if(GammaDetectorType.size() != hits){printf("Mismatched size: GammaDetectorType\n"); result=false;}
   if(GammaDetectorLabel.size() != hits){printf("Mismatched size: GammaDetectorLabel\n"); result=false;}
   if(GammaDetectorSegm.size() != hits){printf("Mismatched size: GammaDetectorSegm\n"); result=false;}
@@ -53,6 +54,7 @@ void GammaData::ClearEvent()
 //  GammaTheta.clear();
 //  GammaPhi.clear();
   GammaTime.clear();
+  GammaTimeOffset.clear();
   GammaDetectorType.clear();
   GammaDetectorLabel.clear();
   GammaDetectorSegm.clear();
