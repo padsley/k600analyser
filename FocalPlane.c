@@ -1724,11 +1724,10 @@ double CalcThetaFP(double X1, double X2)
    double x;
    double result =-1;
    extern double z_x1x2, x_x1x2;
-//   printf("X1=%f \t X2=%f\n",X1,X2);
+
    x=(X2 + x_x1x2) - X1 ;               
    result=57.29578*atan(z_x1x2/x);
-//    printf("z_x1x2=%f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
-//    printf("x=%f,\t result=%f\n",x,result);
+   //printf("z_x1x2=%f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
   
    return result;
 }
