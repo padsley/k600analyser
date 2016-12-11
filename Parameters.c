@@ -60,6 +60,7 @@ int *ChannelCounter;
 int *GoodChannelCounter;
 
 bool VDC1_new, VDC2_new;
+bool VDC1_new_UX, VDC2_new_UX;
 
 int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
 double *XThetaCorr;//pointer array to store the terms from above
@@ -94,7 +95,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-//   TDCInit();
+  TDCInit();
   PrintParameters();
   printf("\nFinished initialising parameters - to the sorting!\n");
 }
@@ -578,7 +579,7 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
-void TDCOffsetsInit()
+void TDCInit()
 {
   printf("TDCInit\n");
   TDCOffsets = new double[128*TDCModules];
@@ -627,14 +628,10 @@ void ReadTDCOffsets(std::string OffsetsFile)
 		  channel = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;
 		  offset = atof(LineBuffer.c_str());
-		  printf("TDC Channel: %d\tOffset: %f\n",channel,offset);
+		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
 		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
 		}
 	    }
-	}
-	else
-	{
-	  printf("!!!Config file did not open!!!\n");
 	}
     }
 }
@@ -683,7 +680,7 @@ void ReadConfiguration()
   std::ifstream input;
 
   input.open("config.cfg");  //This is the line to change in order to change the configuration file
-  
+
  if(input.is_open())
     {
       while(ConfigRead)
@@ -720,7 +717,6 @@ void ReadConfiguration()
 		  TDCsize = 128*TDCModules;
 		  ChannelCounter = new int[128*TDCModules];
 		  GoodChannelCounter = new int[128*TDCModules];
-		  TDCOffsetsInit();
 		}
 	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
 		{
@@ -842,6 +838,12 @@ void ReadConfiguration()
 		      printf("VDC1 is an old-type wire chamber\n");
 		      VDC1_new = false;
 		    }
+		  if(LineBuffer.compare(3,2,"ux") == 0)
+		    {
+		      printf("VDC1 is an new-type wire chamber, U wires first\n");
+		      VDC1_new_UX = true;
+		    }
+	  
 		}
 	      else if(LineBuffer.compare(0,4,"VDC2") == 0)
 		{
@@ -855,6 +857,11 @@ void ReadConfiguration()
 		    {
 		      printf("VDC2 is an old-type wire chamber\n");
 		      VDC2_new = false;
+		    }
+		  if(LineBuffer.compare(3,2,"ux") == 0)
+		    {
+		      printf("VDC1 is an new-type wire chamber, U wires first\n");
+		      VDC2_new_UX = true;
 		    }
 		}
 	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
@@ -1108,13 +1115,13 @@ void ReadConfiguration()
 	      printf("\n GATEAU wireplane: %d\t",atoi(LineBuffer.c_str()));
 	      plane = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Gateau Sector: %d\t",atoi(LineBuffer.c_str()));
+	      printf("Gateau Sector: %d\t",LineBuffer.c_str());
 	      sector = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Start: %d\t",atoi(LineBuffer.c_str()));
+	      printf("Start: %d\t",LineBuffer.c_str());
 	      start = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Stop: %d\t",atoi(LineBuffer.c_str()));
+	      printf("Stop: %d\t",LineBuffer.c_str());
 	      stop = atoi(LineBuffer.c_str());
 	      
 	      GateauSetChannelLimits(plane,sector,start,stop);

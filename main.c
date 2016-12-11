@@ -50,20 +50,20 @@
 #include "ScintillatorSort.h"
 
 /*------------Preprocessor Directives to change analysis------------*/
-//#define _POLARIZATION
-//#define _MOVIE
-//#define _JJAUTOTRIM
-//#define _PRINTTOSCREEN
-//#define _VDCRESCALCS
-#define _FULLANALYSIS
-//#define _MISALIGNTIME
-#define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
-//#define _W1
-#define _GAMMADATA
+// #define _POLARIZATION
+// #define _MOVIE
+// #define _JJAUTOTRIM
+// #define _PRINTTOSCREEN
+// #define _VDCRESCALCS
+// #define _FULLANALYSIS
+// #define _MISALIGNTIME
+// #define _RAWDATA
+// #define _SILICONDATA 
+// #define _MMM
+// #define _W1
+// #define _GAMMADATA
 // #define _HAGAR
-#define _SCINTILLATOR
+// #define _SCINTILLATOR
 // #define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -492,12 +492,16 @@ INT main_init(void)
    //ParameterInit();     // now called inside init routine of analyzer.c
 
    extern bool VDC1_new, VDC2_new;
+   extern bool VDC1_new_UX, VDC2_new_UX;
 
    if(VDC1_new)
      {
        if(VDC2_new)
 	 {
- 	   setupchannel2wireXUXU(Channel2Wire);
+	   if(VDC1_new_UX && VDC2_new_UX){
+	       setupchannel2wire(Channel2Wire);
+	     }
+	   else setupchannel2wireXUXU(Channel2Wire);
 	 }
        else
 	 {
@@ -1304,7 +1308,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       // I want everything that goes into the TTree NOT to be affected by the PID gates set in the ODB.
       // But there are things that goes into the histograms that I want to be for PID gated events only.
       // Hence the lot of PID gate tests.
-// 	printf("channelnew: %d \t globals.x2_1st_wire_chan: %d \t globals.x2_last_wire_chan: %d\n",channelnew,globals.x2_1st_wire_chan,globals.x2_last_wire_chan);
+	
       if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){         
         //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
 	//  addwiregap=1;
@@ -1353,8 +1357,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=604) ) {   //only for X2 wireplane
+      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
 						// chan 482 looks suspicious in white tune run 23088
 	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_X2effall=1; 	
@@ -1369,11 +1373,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	t_X2dt[X2hits]=offset_time;                                 
 	t_X2wire[X2hits]=wire;
 	#endif
-// 	X2hits++;printf("X2hits: %d\n",X2hits);
-// 	printf("offset_time: %d\n",offset_time);
-// 	printf("gates.x2_driftt_low: %d \t gates.x2_driftt_hi: %d\n",gates.x2_driftt_low,gates.x2_driftt_hi);
+	X2hits++;
 	if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate 
-// 	  printf("L1357\n");
 	  t_X2effdt=1; 
 	  X2.wire[X2hits_dt]=wire;
 	  X2.time[X2hits_dt]=offset_time;
@@ -1625,12 +1626,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        }
      }
    }
-// printf("globals.min_x_wires: %d \t globals.max_x_wires: %d\n",globals.min_x_wires,globals.max_x_wires);
-// printf("X2hits_dt: %d\n",X2hits_dt);
+
    if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
-//      printf("L1608\n");
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
-     if(globals.misswires>(wrangeX2-X2hits_dt)){
+     if(globals.misswires+1>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
        t_X2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
@@ -1639,7 +1638,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 //       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
        if(X2flag==0) t_X2effgood=1;
 
-       t_X2pos=X2pos;  //printf("X2pos: %f\n",X2pos);       //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
+       t_X2pos=X2pos;         //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
        t_X2th=X2th;           //global scope.
        t_X2flag=X2flag;
        t_X2chisq=X2chisq;
@@ -1749,10 +1748,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   thetaFPx = CalcThetaFP(X1pos,X2pos);
-   t_thetaFPx = thetaFPx;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
-   t_thetaFP   = thetaFP;
+   thetaFP = CalcThetaFP(X1pos,X2pos);
+   t_thetaFP = thetaFP;
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
    t_Y1=Y1;
@@ -1766,9 +1765,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    h_Y2->Fill(Y2);
    #endif
 
-   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFPx);
+   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
-   thetaSCAT = CalcThetaScat(X1pos,thetaFPx);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
    CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
