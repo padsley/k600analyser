@@ -52,18 +52,18 @@
 /*------------Preprocessor Directives to change analysis------------*/
 // #define _POLARIZATION
 // #define _MOVIE
- #define _JJAUTOTRIM
+// #define _JJAUTOTRIM
 // #define _PRINTTOSCREEN
 // #define _VDCRESCALCS
-//#define _FULLANALYSIS
+// #define _FULLANALYSIS
 // #define _MISALIGNTIME
-//#define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
-//#define _W1
-//#define _GAMMADATA
+// #define _RAWDATA
+// #define _SILICONDATA 
+// #define _MMM
+// #define _W1
+// #define _GAMMADATA
 // #define _HAGAR
-//#define _SCINTILLATOR
+// #define _SCINTILLATOR
 // #define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
@@ -492,12 +492,16 @@ INT main_init(void)
    //ParameterInit();     // now called inside init routine of analyzer.c
 
    extern bool VDC1_new, VDC2_new;
+   extern bool VDC1_new_UX, VDC2_new_UX;
 
    if(VDC1_new)
      {
        if(VDC2_new)
 	 {
- 	   setupchannel2wireXUXU(Channel2Wire);
+	   if(VDC1_new_UX && VDC2_new_UX){
+	       setupchannel2wire(Channel2Wire);
+	     }
+	   else setupchannel2wireXUXU(Channel2Wire);
 	 }
        else
 	 {
