@@ -1627,6 +1627,25 @@ double CorrectEx(double mEx)
 }
 
 //--------------------------------------------------------------------------------------
+double CalcYFPforUX(double x, double u, double thFP)
+{
+  double sinu=0.766044443; //sin(U_WIRE_ANGLE/57.2957); 
+  double tanu=1.191753593; //tan(U_WIRE_ANGLE/57.2957);
+  double tmp1,tmp2;
+  double tanfp=tan(thFP/57.2957);
+  double y=0;
+
+// for UX configuration. See RN K600 book6 p20-23
+  tmp1=(u*tanfp+sinu*16);    
+  tmp2=sinu*tanfp;
+  y=-1*((tmp1/tmp2-x)*tanu+76.27);  // the 76.27 is the offset due to first u and x wires not sharing the same origin
+  //y=1*((tmp1/tmp2-x)*tanu+76.27 -50.);  // the 76.27 is the offset due to first u and x wires not sharing the same origin
+				      // the -50 is to put it around zero
+ 
+  //printf("x=%f  u=%f  ThFP=%f  sinu=%f  tanu=%f tanThFP=%f  y=%f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
+  //printf("%f %f %f %f %f %f %f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
+  return y;
+}
 
 //--------------------------------------------------------------------------------------
 double CalcYFP(double x, double u, double thFP)

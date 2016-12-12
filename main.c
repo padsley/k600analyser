@@ -56,7 +56,7 @@
 // #define _PRINTTOSCREEN
 // #define _VDCRESCALCS
 // #define _FULLANALYSIS
-// #define _MISALIGNTIME
+ #define _MISALIGNTIME
 // #define _RAWDATA
 // #define _SILICONDATA 
 // #define _MMM
@@ -1753,13 +1753,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //thetaFP  = CalcThetaFP(U1pos,U2pos);
    //t_thetaFP   = thetaFP;
 
-   Y1=CalcYFP(X1pos,U1pos,X1th);  
+   Y1=CalcYFPforUX(X1pos,U1pos,X1th);  
    t_Y1=Y1;
    #ifdef _FULLANALYSIS
    h_Y1->Fill(Y1);
    #endif
 
-   Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
+   Y2=CalcYFPforUX(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
    t_Y2=Y2;
    #ifdef _FULLANALYSIS
    h_Y2->Fill(Y2);
