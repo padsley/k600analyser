@@ -86,6 +86,14 @@ static TH1F *hBLM5;
 static TH1F *hBLM6;
 static TH1F *hBLM7;
 static TH1F *hBLM8;
+static TH1F *hTDCBUF1;
+static TH1F *hTDCBUF2;
+static TH1F *hTDCBUF3;
+static TH1F *hTDCBUF4;
+static TH1F *hTDCBUF5;
+static TH1F *hTDCBUF6;
+static TH1F *hTDCBUF7;
+static TH1F *hQDCBUF;
 
 
 /*-- init routine --------------------------------------------------*/
@@ -116,6 +124,15 @@ INT scaler_init(void)
    hBLM6  = H1_BOOK("Scaler_BLM6","BLM scaler 6",7200,0,7200);
    hBLM7  = H1_BOOK("Scaler_BLM7","BLM scaler 7",7200,0,7200);
    hBLM8  = H1_BOOK("Scaler_BLM8","BLM scaler 8",7200,0,7200);
+
+   hTDCBUF1 = H1_BOOK("Scaler_TDCBUF1","TDCBUF1",7200,0,7200);
+   hTDCBUF2 = H1_BOOK("Scaler_TDCBUF2","TDCBUF2",7200,0,7200);
+   hTDCBUF3 = H1_BOOK("Scaler_TDCBUF3","TDCBUF3",7200,0,7200);
+   hTDCBUF4 = H1_BOOK("Scaler_TDCBUF4","TDCBUF4",7200,0,7200);
+   hTDCBUF5 = H1_BOOK("Scaler_TDCBUF5","TDCBUF5",7200,0,7200);
+   hTDCBUF6 = H1_BOOK("Scaler_TDCBUF6","TDCBUF6",7200,0,7200);
+   hTDCBUF7 = H1_BOOK("Scaler_TDCBUF7","TDCBUF7",7200,0,7200);
+   hQDCBUF = H1_BOOK("Scaler_QDCBUF","QDCBUF",7200,0,7200);
 
    return SUCCESS;
 }
@@ -228,6 +245,42 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    triggerI = psclr[14];
    CIU = psclr[2];
    CII = psclr[17];
+
+
+   // look for SCLD bank ===========================================================================================
+   n = bk_locate(pevent, "SCLD", &psclr);   // n = number of data words in scaler bank
+   if (n == 0)  return 1;
+
+   for(unsigned int j = 0; j <psclr[7]; j++) {
+     hTDCBUF1->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[8]; j++) {
+     hTDCBUF2->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[9]; j++) {
+     hTDCBUF3->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[10]; j++) {
+     hTDCBUF4->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[11]; j++) {
+     hTDCBUF5->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[12]; j++) {
+     hTDCBUF6->Fill(counter);
+   }
+   for(unsigned int j = 0; j <psclr[13]; j++) {
+     hTDCBUF7->Fill(counter);
+   }
+   for(int j = 0; j <psclr[14]; j++) {
+     hQDCBUF->Fill(counter);
+   }
+
+
+
+
+
+
 
    //==============================================================================================================
    counter += 1;
