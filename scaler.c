@@ -29,6 +29,12 @@
 #include "TH1F.h"
 
 
+/*------------Preprocessor Directives to change analysis------------*/
+#define _MISALIGNTIME
+
+
+
+
 /*-- variables to be used in f-plane.c as extern variables----------*/
 int runtime;
 int CII,CIU,triggerU,triggerI;
@@ -60,6 +66,8 @@ ANA_MODULE scaler_accum_module = {
 double scaler[N_SCLR], oldscaler[N_SCLR];
 int counter;
 //Double_t oldtrigI,oldtrigU;
+
+
 
 /*-- Histogramming Data Structures ----------------------------------------*/
 static TH1F *hClockI;
@@ -109,7 +117,6 @@ INT scaler_init(void)
    hBLM7  = H1_BOOK("Scaler_BLM7","BLM scaler 7",7200,0,7200);
    hBLM8  = H1_BOOK("Scaler_BLM8","BLM scaler 8",7200,0,7200);
 
-
    return SUCCESS;
 }
 
@@ -138,6 +145,15 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    INT n;
    DWORD *psclr;
    extern int scaler_counter;		      // defined; declared in analyzer.c
+   extern int misaligntime; 		      // declared in main.c
+
+   #ifdef _MISALIGNTIME
+   if (counter>misaligntime) {
+	return SUCCESS;         // stop analysis if we have misalignment beyond time misaligntime
+   }
+   #endif 
+
+
  
    scaler_counter++;
 
