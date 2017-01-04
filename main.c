@@ -917,7 +917,9 @@ INT main_bor(INT run_number)
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 
-   switch(runinfo2.run_number){
+	
+   extern int RunNumber;  //defined in Parameter.c
+   switch(RunNumber){
    // in case of analysis of 12C data
    // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
    // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
