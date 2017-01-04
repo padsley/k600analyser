@@ -72,7 +72,7 @@ MAIN_PARAM gates;     // these are to be found in experim.h
 GLOBAL_PARAM globals;
 WIRECHAMBER_SETTINGS WireChamberSettings;
 RUNINFO runinfo2;
-  // At present we use 2 methods to get to ODB data:
+  // At present we use 2 methods to get to ODB data:/
   // -the globals we get through GetODBGlobals() subroutine
   // -the gates we used to get directly from the ODB, see focalplane_module declaration
   // below. The gates will thus change upon changing an ODB entry 'on-the-fly' 
@@ -159,7 +159,8 @@ Double_t t_X1th=-100.0, t_X2th=-100.0,  t_U1th=-100.0,  t_U2th=-100.0;
 Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
-Double_t t_X1posC=-100.0;
+Double_t t_X1posO=-100.0;  // for offset added position
+Double_t t_X1posC=-100.0;  // for lineshape corrected position
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -423,6 +424,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1hits = -100; t_X2hits = -100; t_U1hits = -100; t_U2hits = -100;
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
+   t_X1posO=-100.;
    t_X1posC=-100.;
    t_Ex=-1.;
    t_ExC = -1.;
@@ -810,6 +812,7 @@ INT main_init(void)
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+  t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
   t1->Branch("T3",&t_T3,"t_T3/D");
@@ -1517,7 +1520,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // Remember: X1hits_dt goes into raytrace as a fixed nr. But after raytrace this does not
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
-       t_X1pos=X1pos - x1offset;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
+       t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
+       t_X1posO=X1pos - x1offset;         
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
