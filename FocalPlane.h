@@ -19,7 +19,8 @@ void setupchannel2wireXoldXold(unsigned int chan2wire[]);
 void setupchannel2wireXoldXU(unsigned int chan2wire[]);
 void setupchannel2wireXUXU(unsigned int chan2wire[]) ;
 void setupchannel2wireXUXold(unsigned int chan2wire[]);
-void setupchannel2wire(unsigned int chan2wire[]) ;
+void setupchannel2wireUXUX(unsigned int chan2wire[]) ;
+void setupchannel2wirePR170(unsigned int chan2wire[]) ;
 
 void getRefTimes(int time[], int ntdc, DWORD ptdc[]);
 void sortTDCs(Int_t hits, Int_t wire[], Int_t time[]);

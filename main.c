@@ -364,7 +364,7 @@ void GetODBRunInfo()
    printf("\n==================================================================== %i  \n\n",runinfo2.run_number);
    extern int RunNumber;
    RunNumber = runinfo2.run_number;
-   printf("RunNumber: \t%d\n",RunNumber);
+   printf("Extracted from the ODB: RunNumber: \t%d\n",RunNumber);
    //LoadExCorrection(RunNumber);               // not used at present
    db_close_record(hDB,hKey);
 }
@@ -499,13 +499,16 @@ INT main_init(void)
        if(VDC2_new)
 	 {
 	   if(VDC1_new_UX && VDC2_new_UX){
-	       setupchannel2wire(Channel2Wire);
+	       setupchannel2wireUXUX(Channel2Wire);
 	     }
 	   else setupchannel2wireXUXU(Channel2Wire);
 	 }
        else
 	 {
- 	   setupchannel2wireXUXold(Channel2Wire);
+	   if(VDC1_new_UX){
+	       setupchannel2wirePR170(Channel2Wire);
+	     }
+ 	   else setupchannel2wireXUXold(Channel2Wire);
 	   //printf("Probably not implemented");
 	 }
      }
@@ -917,62 +920,67 @@ INT main_bor(INT run_number)
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 
-   switch(runinfo2.run_number){
-   // in case of analysis of 12C data
-   // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
-   // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
-   // in terms of kinematics. So now I use the O calibration but offsets the X1pos to compensate...
-        case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1090: x1offset=-0.9-0.109863; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1091: x1offset=-0.9-0.15863; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1092: x1offset=-0.9-0.207886; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1093: x1offset=-0.9-0.0908203; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1094: x1offset=-0.9-0.138123; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1095: x1offset=-0.9-0.057; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1096: x1offset=-0.9-0.0791626; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1099: x1offset=-0.9+0.0325928; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1100: x1offset=-0.9-0.0883179; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1101: x1offset=-0.9-0.0873413; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1106: x1offset=-0.9-0.195862; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1029: x1offset=-0.9-0.125366; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1035: x1offset=-0.9-0.230042; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1045: x1offset=-0.9+0.150452; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1046: x1offset=-0.9+0.278992; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1062: x1offset=-0.9+0.251282; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1080: x1offset=-0.9-0.211487; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
 
-   // in case of analysis of LiCO data
-        case 1023: x1offset=0; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1024: x1offset=-0.0103149; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1025: x1offset=-0.0167236; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1026: x1offset=-0.0152588; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1030: x1offset=-0.00427246; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1032: x1offset=-0.00457764; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1033: x1offset=-0.0109253; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1034: x1offset=-0.0296631; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1036: x1offset=-0.0206909; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1039: x1offset=-0.0289307; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1041: x1offset=-0.0429688; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1043: x1offset=-0.0498657; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1044: x1offset=-0.0682983; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1047: x1offset=-0.0731812; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1048: x1offset=-0.0797119; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1052: x1offset=0.0429688; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1053: x1offset=0.0273438; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1056: x1offset=0.0322876; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1058: x1offset=0.0302124; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1059: x1offset=0.0234375; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1060: x1offset=0.0203857; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1070: x1offset=-0.0385132; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1071: x1offset=-0.0546265; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1073: x1offset=-0.0177612; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1075: x1offset=0.00714111; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1078: x1offset=0.0237427; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1079: x1offset=0.0909424; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1084: x1offset=0.233093; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1085: x1offset=0.71875; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1086: x1offset=0.379822; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
-        case 1087: x1offset=0.154419; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;  
+   extern int RunNumber;  //declared in Parameter.c
+   switch(RunNumber){
+   // in case of analysis of tgt 4 data, PR170
+        case 21350: x1offset=0; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21351: x1offset=-0.123413; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21352: x1offset=-0.241898; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21359: x1offset=-0.631027; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21360: x1offset=-0.871582; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21361: x1offset=-1.61966; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21363: x1offset=-1.00426; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21364: x1offset=-1.44727; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break; 
+
+   // in case of analysis of tgt 6 data, PR170
+        case 21366: x1offset=-1.3587; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21368: x1offset=-2.199; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21369: x1offset=-1.953; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21370: x1offset=-1.03059; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21371: x1offset=-1.2626; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21392: x1offset=-0.569061; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21393: x1offset=-0.707214; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21394: x1offset=-0.325027; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21395: x1offset=-0.444; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+ 
+   // in case of analysis of tgt 5 data, PR170, before run 21407
+        case 21373: x1offset=-1.6259; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21374: x1offset=-1.85262; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21375: x1offset=-1.70496; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21376: x1offset=-1.43877; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21381: x1offset=-1.09039; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21382: x1offset=-1.23654; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21383: x1offset=-0.742035; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;
+ 
+   // in case of analysis of tgt 5 data, PR170, after run 21407
+        case 21407: x1offset=-13.8847; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21408: x1offset=-13.6466; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21441: x1offset=-14.1942; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21442: x1offset=-14.06; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break; 
+
+   // in case of analysis of tgt 5 data, PR170, after run 21443
+        case 21444: x1offset=38.7475; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21445: x1offset=39.165; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21446: x1offset=39.0393; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21447: x1offset=39.1173; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21448: x1offset=39.0149; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21449: x1offset=39.0352; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21450: x1offset=38.5161; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21451: x1offset=39.0422; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21452: x1offset=39.2166; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21453: x1offset=39.4259; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21455: x1offset=39.1574; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21456: x1offset=39.3399; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21457: x1offset=39.4769; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21458: x1offset=38.2334; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21462: x1offset=39.6469; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21463: x1offset=39.6571; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21467: x1offset=39.465; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21468: x1offset=39.4891; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21469: x1offset=39.2319; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21470: x1offset=39.022; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
+        case 21471: x1offset=39.0799; printf("run %d: x1 offset= %f \n",runinfo2.run_number,x1offset); break;   
 
    }
    return SUCCESS;
