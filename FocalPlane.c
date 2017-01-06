@@ -1597,24 +1597,33 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
+  extern int NXThetaXCorr;
+  extern double *XThetaXCorr;
   extern int NXY1Corr;
   extern double *XY1Corr;
 
+  //printf("X to start with: %f\n",X);
+
   *Xcorr = 0;
-  for(int i=0;i<NXThetaCorr;i++)
-  {
+  for(int i=0;i<NXThetaCorr;i++){
     if(i==0)result = X;
     if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
-      //printf("Xcorr: %f\n",*Xcorr);
   }
+  //printf("Xcorr from ThetaCorr: %f\n",result);
+
+  for(int i=0;i<NXThetaXCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XThetaXCorr[i] * pow(ThetaSCAT,i) * pow(X,i);
+  }
+  //printf("Xcorr from ThetaXCorr: %f\n",result);
 
   //At this point, result is X1posC after the ThSCAT correction
-
-  for(int i=0;i<NXY1Corr;i++)
-    {
+  for(int i=0;i<NXY1Corr;i++){
       if(i==0)result = result;
       if(i>0)result += XY1Corr[i] * pow(Y,i);
-    }
+  }
+  //printf("Xcorr from YCorr: %f\n",result);
+  //printf("------------------------------------------\n");
 
   *Xcorr = result;
 }
