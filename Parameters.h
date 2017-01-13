@@ -62,7 +62,7 @@ void ADCClear();
 
 void ReadCalibrationParameters(std::string CalibFile);
 
-void TDCOffsetsInit();
+void TDCInit();
 void TDCOffsetsClear();
 void ReadTDCOffsets(std::string OffsetsFile);
 
