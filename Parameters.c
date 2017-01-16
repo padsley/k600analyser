@@ -64,6 +64,8 @@ bool VDC1_new_UX, VDC2_new_UX;
 
 int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
 double *XThetaCorr;//pointer array to store the terms from above
+int NXThetaXCorr;//Number of terms to correct the X1 position with ThSCAT
+double *XThetaXCorr;//pointer array to store the terms from above
 int NXY1Corr;
 double *XY1Corr;
 int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
@@ -671,6 +673,7 @@ void ReadConfiguration()
   bool ScintillatorADCChannelRead = false;
   bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
+  bool ThSCATXCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
@@ -686,7 +689,7 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -891,6 +894,16 @@ void ReadConfiguration()
 		  for(int c=0;c<NXThetaCorr;c++)XThetaCorr[c] = 0;
 		  ThSCATCorrectionParametersRead = true;
 		}
+	      else if(LineBuffer.compare(0,22,"ThSCATXCorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for the ThSCAT*X position correction\n",atoi(LineBuffer.c_str()));
+		  NXThetaXCorr = atoi(LineBuffer.c_str());
+		  XThetaXCorr = new double[NXThetaXCorr];
+		  for(int c=0;c<NXThetaXCorr;c++)XThetaXCorr[c] = 0;
+		  ThSCATXCorrectionParametersRead = true;
+		}
+
 	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
 		{
 		  input >> LineBuffer;
@@ -1029,7 +1042,25 @@ void ReadConfiguration()
 		  XThetaCorr[npar] = valpar;
 		}
 	    }
-		
+	
+	  if(ThSCATXCorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,25,"EndThSCATXCorrectionTerms") == 0 && ThSCATXCorrectionParametersRead) ThSCATXCorrectionParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XThetaXCorr[npar] = valpar;
+		}
+	    }
+
+	
 	  if(Y1CorrectionParametersRead)
 	    {
 	      int npar = -1;
