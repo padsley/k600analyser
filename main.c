@@ -501,7 +501,7 @@ INT main_init(void)
        if(VDC2_new)
 	 {
 	   if(VDC1_new_UX && VDC2_new_UX){
-	       setupchannel2wire(Channel2Wire);
+	       setupchannel2wireUXUX(Channel2Wire);
 	     }
 	   else setupchannel2wireXUXU(Channel2Wire);
 	 }
