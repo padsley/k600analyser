@@ -1,45 +1,45 @@
 #!/bin/bash
 
 
-for COUNT in {10350..10351}
+for COUNT in {01069,01070,01071,01072,01076,01077,01078,01082,01084,01085,01087,01088,01090,01091,01092,01093,01098,01099,01100}
 
 
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/experiment-data/PR238/2016/run0000"$COUNT".mid.gz"
+      FILE="/media/lindsay/Elements/Backups/Linux/DATA2/MID/run0000"$COUNT".mid"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/experiment-data/PR238/2016/run000"$COUNT".mid.gz"
+      FILE="/media/lindsay/Elements/Backups/Linux/DATA2/MID/run000"$COUNT".mid"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/experiment-data/PR238/2016/run00"$COUNT".mid.gz"
+      FILE="/media/lindsay/Elements/Backups/Linux/DATA2/MID/run00"$COUNT".mid"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/experiment-data/PR238/2016/run0"$COUNT".mid.gz"
+      FILE="/media/lindsay/Elements/Backups/Linux/DATA2/MID/run0"$COUNT".mid"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE="/experiment-data/PR238/2016/run"$COUNT".mid.gz"
+      FILE="/media/lindsay/Elements/Backups/Linux/DATA2/MID/run"$COUNT".mid"
   else
       echo "This might not work"
   fi
   echo $FILE
   if [ $COUNT -lt 10 ]
   then
-      FILE2="/vicepda/althome/k600user/PR238_2016/sortedRuns/sorted0000"$COUNT".root"
+      FILE2="/home/lindsay/K600/DATA/PR217/sorted0000"$COUNT".root"
   elif [ $COUNT -lt 100 ]
   then
-      FILE2="/vicepda/althome/k600user/PR238_2016/sortedRuns/sorted000"$COUNT".root"
+      FILE2="/home/lindsay/K600/DATA/PR217/sorted000"$COUNT".root"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE2="/vicepda/althome/k600user/PR238_2016/sortedRuns/sorted00"$COUNT".root"
+      FILE2="/home/lindsay/K600/DATA/PR217/sorted00"$COUNT".root"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE2="/vicepda/althome/k600user/PR238_2016/sortedRuns/sorted0"$COUNT".root"
+      FILE2="/home/lindsay/K600/DATA/PR217/sorted0"$COUNT".root"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE2="/vicepda/althome/k600user/PR238_2016/sortedRuns/sorted"$COUNT".root"
+      FILE2="/home/lindsay/K600/DATA/PR217/sorted"$COUNT".root"
   else
       echo "This might not work"
   fi
