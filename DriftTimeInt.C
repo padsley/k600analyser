@@ -21,7 +21,7 @@
   TH1F *hU2 = new TH1F("hU2","drifttime",14999,0.,14999.);
 
   for(Int_t r=0;r<nrofruns;r++) {
-      sprintf(namerun,"/home/lindsay/K600/DATA/PR217/run0%d.root",run_no[r]);
+      sprintf(namerun,"/home/lindsay/K600/DATA/PR217/sorted0%d.root",run_no[r]);
       //cout << "run #: "<<run_no[r] <<endl;
       TFile *runfile = TFile::Open(namerun);
 
