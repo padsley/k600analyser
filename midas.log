@@ -97,3 +97,10 @@ Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Program ODBEdit on host anukul-HP-EliteD
 Wed Jul 13 13:36:27 2016 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 4566 does not exist
 >>>>>>> b8822634d7faaaaa7ed2923a2df0bb359225c027
 >>>>>>> 6e499cb1ab3f33e186ccef99a826c05c1efb2972
+Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:1015:ss_shm_delete,ERROR] shm_unlink(/Default_ODB_SHM) errno 2 (No such file or directory)
+Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Tue Jan 17 11:02:05 2017 [ODBEdit,INFO] Program ODBEdit on host rnlap started
+Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:1015:ss_shm_delete,ERROR] shm_unlink(/Default_SYSMSG_SHM) errno 2 (No such file or directory)
+Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name

@@ -55,7 +55,7 @@
 // #define _JJAUTOTRIM
 // #define _PRINTTOSCREEN
 // #define _VDCRESCALCS
-// #define _FULLANALYSIS
+ #define _FULLANALYSIS
 // #define _MISALIGNTIME
 // #define _RAWDATA
 // #define _SILICONDATA 
@@ -893,7 +893,7 @@ INT main_bor(INT run_number)
    
    GetODBGlobals();                // get globals that can be set in the ODB
    //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
-   //PrintODBstuff();
+   PrintODBstuff();
 
    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
    read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");         
