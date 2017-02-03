@@ -59,8 +59,8 @@
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
 #define _GAMMADATA
 // #define _HAGAR
@@ -1883,7 +1883,8 @@ gammy = new GammaData();
 #endif
   
 #ifdef _MMM
-    if(si)‘TDCValues’
+    if(si)
+    //‘TDCValues’
     {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }

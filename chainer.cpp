@@ -1,33 +1,39 @@
 {
-  bool Li2CO3 = true;
-  bool Carbon = false;
+  bool Mg24 = false;
+  bool O16 = true;
 
   TChain *ch = new TChain("DATA");
 
   vector<int> runlist;
 
-  if(Li2CO3)
+  if(O16)
     {
       ifstream input;
-      input.open("Li2CO3_runs.dat");
+      input.open("16O_runs.dat");
 
       while(!input.eof())
 	{
 	  int dummy = 0;
 	  input >> dummy;
-	  runlist.push_back(dummy);
+          if(dummy>1)
+	  {
+	    runlist.push_back(dummy);
+          }
 	}
     }
-  else if(Carbon)
+  else if(Mg24)
     {
       ifstream input;
-      input.open("C12_runs.dat");
+      input.open("24Mg_runs.dat");
       
       while(!input.eof())
 	{
 	  int dummy = 0;
 	  input >> dummy;
-	  runlist.push_back(dummy);
+          if(dummy>1)
+	  {
+ 	    runlist.push_back(dummy);
+	  }
 	}
     }
 
@@ -36,7 +42,7 @@
   for(int i=0;i<(int)runlist.size();i++)
     {
       char buffer[256];
-      sprintf(buffer,"/media/Elements/PR226/sorted0%d.root",runlist[i]);
+      sprintf(buffer,"/vicepda/althome/k600user/PR263/sortedfiles/sorted0%d.root",runlist[i]);
       cout << buffer << endl;
       TFile *f = TFile::Open(buffer);
 
@@ -45,4 +51,7 @@
 	  ch->Add(buffer);
 	}
     }
+
+gROOT->ProcessLine(".x /vicepda/althome/k600user/PR263/sortedfiles/padtof1047.C"); // USE THIS KIND OF LINE FOR CUTS SAVED AS C FILES ".C"
+DATA->SetAlias("fpEnergy","X1pos*7.995-4374.9");
 }

@@ -70,7 +70,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 				    double energyj = MMMEnergyCalc(j,ADC_import[j]);
 				    
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
-				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>400)
+				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>200)
 				      {				
 	                                //printf("MMMSiliconSort L134 test\n");
 					si->SetEnergy(energyi);
@@ -268,6 +268,7 @@ double MMMPhiCalc(int DetNum, int Channel)
       break;
     case 2:
       phi = 331.4;
+
       break;
     case 3:
       phi = 339.7;
@@ -316,6 +317,10 @@ bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, dou
 	  {
 	    result = true;//They are -> it's a good event
 	  }
+//	  else
+//	  {
+//	  	  printf("Energy Front: %f \t Energy Back: %f\n",FrontEnergy, BackEnergy);	  	
+//	  }
       }
   }
   //   printf("FrontBackTest End");

@@ -72,7 +72,7 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 		  for(int i=CloverADCChannelLimits[DetNum-1][0];i<=CloverADCChannelLimits[DetNum-1][1];i++)
 		      {//printf("Test2\n");
 		      CountGammaHits[3]++;
-			if(CloverADCTDCChannelCheck(i,mTDC->GetChannel(k)))
+			if((CloverADCTDCChannelCheck(i,mTDC->GetChannel(k)))||(i==23 && mTDC->GetChannel(k)==880))
 			{//printf("Test3\n");
 			CountGammaHits[4]++;
   			 // printf("line 55");

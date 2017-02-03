@@ -1,26 +1,26 @@
 #!/bin/bash
 
+LOCATION0=/experiment-data/PR263/2016/
 
-for COUNT in {2462..2464}
-
+for COUNT in {2196..2205}
 
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/experiment-data/PR251/2016/run0000"$COUNT".mid.gz"
+      FILE=$LOCATION0"run0000"$COUNT".mid.gz"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/experiment-data/PR251/2016/run000"$COUNT".mid.gz"
+      FILE=$LOCATION0"run000"$COUNT".mid.gz"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/experiment-data/PR251/2016/run00"$COUNT".mid.gz"
+      FILE=$LOCATION0"run00"$COUNT".mid.gz"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/experiment-data/PR251/2016/run0"$COUNT".mid.gz"
+      FILE=$LOCATION0"run0"$COUNT".mid.gz"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE="/experiment-data/PR251/2016/run"$COUNT".mid.gz"
+      FILE=$LOCATION0"run"$COUNT".mid.gz"
   else
       echo "This might not work"
   fi
