@@ -64,6 +64,7 @@ bool VDC1_new_UX, VDC2_new_UX;
 
 int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n
 double *XThetaCorr;//pointer array to store the terms from above
+
 int NXThetaXCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n*(X)^n
 double *XThetaXCorr;//pointer array to store the terms from above
 int NXThetaXLoffCorr; //Number of terms to correct the X1 position (with offset) with ThSCAT with power progression for ThSCAT only i.e. ((ThSCAT)^n)*(X-X_LSOffset)
@@ -677,6 +678,7 @@ void ReadConfiguration()
   bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
   bool ThSCATXCorrectionParametersRead = false;
+
   bool ThSCATXLoffCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
@@ -693,6 +695,7 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
+
 	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead)
 	    {
 	      input >> LineBuffer;
@@ -907,6 +910,7 @@ void ReadConfiguration()
 		  for(int c=0;c<NXThetaXCorr;c++)XThetaXCorr[c] = 0;
 		  ThSCATXCorrectionParametersRead = true;
 		}
+
 	      
 	      else if(LineBuffer.compare(0,26,"ThSCATXLoffCorrectionTerms") == 0)
 		{
@@ -919,6 +923,7 @@ void ReadConfiguration()
 			ThSCATXLoffCorrectionParametersRead = true;
 					
 		}
+
 
 	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
 		{
@@ -1073,6 +1078,7 @@ void ReadConfiguration()
 		}
 	    }
 
+
   	  if(ThSCATXLoffCorrectionParametersRead)
 	    {
 	      int npar = -1;
@@ -1100,6 +1106,7 @@ void ReadConfiguration()
 			}
 		}
 	     }
+
 	
 	  if(Y1CorrectionParametersRead)
 	    {
