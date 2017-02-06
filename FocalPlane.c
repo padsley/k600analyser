@@ -1599,10 +1599,9 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   extern double *XThetaCorr;
   extern int NXThetaXCorr;
   extern double *XThetaXCorr;
-
   extern int NXThetaXLoffCorr;
   extern double *XThetaXLoffCorr;
-  extern doubl
+  extern double X_LSOffset;
   extern int NXY1Corr;
   extern double *XY1Corr;
   
@@ -1627,7 +1626,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 
   for(int i=0;i<NXThetaXLoffCorr;i++){
     if(i==0)result = result;
-    if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) *(X-X_LSOffset);
+    if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) * (X-X_LSOffset);
   }
   //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
 
