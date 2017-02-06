@@ -893,7 +893,7 @@ INT main_bor(INT run_number)
    
    GetODBGlobals();                // get globals that can be set in the ODB
    //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
-   PrintODBstuff();
+   //PrintODBstuff();
 
    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
    read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");         
@@ -927,24 +927,24 @@ INT main_bor(INT run_number)
    // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
    // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
    // in terms of kinematics. So now I use the O calibration but offsets the X1pos to compensate...
-        case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1090: x1offset=-0.9-0.109863; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1091: x1offset=-0.9-0.15863; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1092: x1offset=-0.9-0.207886; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1093: x1offset=-0.9-0.0908203; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1094: x1offset=-0.9-0.138123; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1095: x1offset=-0.9-0.057; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1096: x1offset=-0.9-0.0791626; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1099: x1offset=-0.9+0.0325928; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1100: x1offset=-0.9-0.0883179; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1101: x1offset=-0.9-0.0873413; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1106: x1offset=-0.9-0.195862; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1029: x1offset=-0.9-0.125366; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1035: x1offset=-0.9-0.230042; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1045: x1offset=-0.9+0.150452; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1046: x1offset=-0.9+0.278992; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1062: x1offset=-0.9+0.251282; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        case 1080: x1offset=-0.9-0.211487; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1090: x1offset=-0.9-0.109863; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1091: x1offset=-0.9-0.15863; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1092: x1offset=-0.9-0.207886; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1093: x1offset=-0.9-0.0908203; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1094: x1offset=-0.9-0.138123; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1095: x1offset=-0.9-0.057; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1096: x1offset=-0.9-0.0791626; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+       //case 1099: x1offset=-0.9+0.0325928; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1100: x1offset=-0.9-0.0883179; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1101: x1offset=-0.9-0.0873413; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1106: x1offset=-0.9-0.195862; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1029: x1offset=-0.9-0.125366; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1035: x1offset=-0.9-0.230042; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1045: x1offset=-0.9+0.150452; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1046: x1offset=-0.9+0.278992; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1062: x1offset=-0.9+0.251282; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+        //case 1080: x1offset=-0.9-0.211487; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
 
    }
    return SUCCESS;
@@ -1721,10 +1721,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   thetaFP = CalcThetaFP(X1pos,X2pos);
-   t_thetaFP = thetaFP;
-   //thetaFP  = CalcThetaFP(U1pos,U2pos);
-   //t_thetaFP   = thetaFP;
+   //thetaFP = CalcThetaFP(X1pos,X2pos);
+   //t_thetaFP = thetaFP;
+   thetaFP  = CalcThetaFP(U1pos,U2pos);
+   t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
    t_Y1=Y1;
