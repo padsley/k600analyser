@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Fri Jan 27 15:47:58 2017
+  Created on:   Mon Feb  6 16:16:33 2017
 
 \********************************************************************/
 
@@ -117,48 +117,6 @@ typedef struct {
 "lowtof = INT : 2000",\
 "hitof = INT : 6000",\
 "lowpad1 = INT : 1",\
-"lowpad2 = INT : 0",\
-"hipad1 = INT : 4096",\
-"hipad2 = INT : 4096",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_FOCALPLANE
-
-#define FOCALPLANE_PARAM_DEFINED
-
-typedef struct {
-  INT       x1_driftt_low;
-  INT       x1_driftt_hi;
-  INT       x2_driftt_low;
-  INT       u1_driftt_low;
-  INT       u2_driftt_low;
-  INT       x2_driftt_hi;
-  INT       u2_driftt_hi;
-  INT       u1_driftt_hi;
-  INT       lowtof;
-  INT       hitof;
-  INT       lowpad1;
-  INT       lowpad2;
-  INT       hipad1;
-  INT       hipad2;
-} FOCALPLANE_PARAM;
-
-#define FOCALPLANE_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"x1_driftt_low = INT : 6100",\
-"x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6100",\
-"u1_driftt_low = INT : 6100",\
-"u2_driftt_low = INT : 6100",\
-"x2_driftt_hi = INT : 8050",\
-"u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 2000",\
-"hitof = INT : 7000",\
-"lowpad1 = INT : 0",\
 "lowpad2 = INT : 0",\
 "hipad1 = INT : 4096",\
 "hipad2 = INT : 4096",\
