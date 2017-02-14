@@ -972,7 +972,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
-   extern double x1offset;			// from Parameters.c
  
    int *TDC_channel_export;
    float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
