@@ -144,7 +144,6 @@ Int_t    t_k600;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
-Double_t x1offset=0.0;
 Int_t    t_triggerI=0;
 Int_t    t_triggerU=0;
 Int_t    t_CII=0;
@@ -248,7 +247,8 @@ Double_t U1wirefit[10], U1distfit[10];
 Double_t X2wirefit[10], X2distfit[10];      
 Double_t U2wirefit[10], U2distfit[10];  
 
-
+Double_t x1offset=0.0;
+Int_t TOFoffset=0;
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -924,13 +924,23 @@ INT main_bor(INT run_number)
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
    extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
+   extern int *TOFOffsets;	        // from Parameters.c 
+   extern int *RunNrForTOFOffsets;       // from Parameters.c  
+   extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
    printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
+
+
+   TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
+       if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+
 
 
    return SUCCESS;
@@ -1203,7 +1213,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
 
-		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time+TOFoffset; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
