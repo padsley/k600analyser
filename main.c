@@ -964,7 +964,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
    Int_t reftimes[10]; 
-   Int_t tof=0,toftdc1=0;toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
+   Int_t tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
@@ -1217,7 +1217,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
-						 t_toftdc1=toftdc1} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
