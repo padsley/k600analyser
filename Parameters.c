@@ -62,9 +62,16 @@ int *ChannelCounter;
 int *GoodChannelCounter;
 
 bool VDC1_new, VDC2_new;
+bool VDC1_new_UX, VDC2_new_UX;
 
 int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
 double *XThetaCorr;//pointer array to store the terms from above
+
+int NXThetaXCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n*(X)^n
+double *XThetaXCorr;//pointer array to store the terms from above
+int NXThetaXLoffCorr; //Number of terms to correct the X1 position (with offset) with ThSCAT with power progression for ThSCAT only i.e. ((ThSCAT)^n)*(X-X_LSOffset)
+double *XThetaXLoffCorr; //pointer array to store the terms from above
+double X_LSOffset; //Offset for lineshape correction of the form (ThSCAT^n)*(X-X_loff)
 int NXY1Corr;
 double *XY1Corr;
 int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
@@ -74,6 +81,15 @@ double *ThFPSCATSlope; //pointer array to store the terms from above
 
 int NXRigidityPars;
 double *XRigidityPars;
+
+int NrOfRunsForX1Offsets;
+int *RunNrForX1Offsets;
+double *X1Offsets;
+
+int NrOfRunsForTOFOffsets;
+int *RunNrForTOFOffsets;
+int *TOFOffsets;
+
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -550,6 +566,108 @@ void ReadCalibrationParameters(std::string CalibFile)
 }
 
 /*-------------------------------------------------*/
+void ReadX1Offsets(std::string X1offsetsFile)
+{
+  //printf("Read X1Offsets using file %s\n",X1offsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(X1offsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
+    RunNrForX1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfX1Offsets")"
+    X1Offsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(X1offsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForX1Offsets[counter]=runnr;
+          X1Offsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d X1offsets\n",counter);
+}
+
+
+/*-------------------------------------------------*/
+void ReadTOFOffsets(std::string TOFoffsetsFile)
+{
+  //printf("Read TOFOffsets using file %s\n",TOFoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(TOFoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
+    RunNrForTOFOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfTOFOffsets")"
+    TOFOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(TOFoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForTOFOffsets[counter]=runnr;
+          TOFOffsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d TOFoffsets\n",counter);
+}
+
+
+
+
+/*-------------------------------------------------*/
 void ExRunCorrectionsInit(int runs)
 {
   ExCorrTerms = new double*[runs];
@@ -753,11 +871,16 @@ void ReadConfiguration()
   bool ScintillatorADCChannelRead = false;
   bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
+  bool ThSCATXCorrectionParametersRead = false;
+  
+  bool ThSCATXLoffCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
   bool ThFPSCATOffsetParametersRead = false;
   bool ThFPSCATSlopeParametersRead = false;
+  bool X1OffsetParametersRead = false;
+  bool TOFOffsetParametersRead = false;
 
   std::ifstream input;
 
@@ -770,7 +893,9 @@ void ReadConfiguration()
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead)
+
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead)
+
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -929,6 +1054,12 @@ void ReadConfiguration()
 		      printf("VDC1 is an old-type wire chamber\n");
 		      VDC1_new = false;
 		    }
+		  if(LineBuffer.compare(3,2,"ux") == 0)
+		    {
+		      printf("VDC1 is an new-type wire chamber, U wires first\n");
+		      VDC1_new_UX = true;
+		    }
+	  
 		}
 	      else if(LineBuffer.compare(0,4,"VDC2") == 0)
 		{
@@ -943,6 +1074,11 @@ void ReadConfiguration()
 		      printf("VDC2 is an old-type wire chamber\n");
 		      VDC2_new = false;
 		    }
+		  if(LineBuffer.compare(3,2,"ux") == 0)
+		    {
+		      printf("VDC1 is an new-type wire chamber, U wires first\n");
+		      VDC2_new_UX = true;
+		    }
 		}
 	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 		{
@@ -950,6 +1086,41 @@ void ReadConfiguration()
 		  printf("Using calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
 		}
+
+//===============================================================================================
+	      else if(LineBuffer.compare(0,13,"NrOfX1Offsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d X1offsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForX1Offsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForX1Offsets<1) NrOfRunsForX1Offsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  RunNrForX1Offsets = new int[NrOfRunsForX1Offsets];
+                  X1Offsets = new double[NrOfRunsForX1Offsets];
+	        }
+	      else if(LineBuffer.compare(0,12,"XOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using X1offsets file: %s\n",LineBuffer.c_str());
+		  ReadX1Offsets(LineBuffer);
+		}
+//===============================================================================================
+	      else if(LineBuffer.compare(0,14,"NrOfTOFOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d TOFoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForTOFOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForTOFOffsets<1) NrOfRunsForTOFOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  RunNrForTOFOffsets = new int[NrOfRunsForTOFOffsets];
+                  TOFOffsets = new int[NrOfRunsForTOFOffsets];
+	        }
+	      else if(LineBuffer.compare(0,14,"TOFOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using TOFoffsets file: %s\n",LineBuffer.c_str());
+		  ReadTOFOffsets(LineBuffer);
+		}
+//===============================================================================================
+
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
@@ -971,6 +1142,27 @@ void ReadConfiguration()
 		  for(int c=0;c<NXThetaCorr;c++)XThetaCorr[c] = 0;
 		  ThSCATCorrectionParametersRead = true;
 		}
+
+	      else if(LineBuffer.compare(0,22,"ThSCATXCorrectionTerms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for the ThSCAT*X position correction\n",atoi(LineBuffer.c_str()));
+		  NXThetaXCorr = atoi(LineBuffer.c_str());
+		  XThetaXCorr = new double[NXThetaXCorr];
+		  for(int c=0;c<NXThetaXCorr;c++)XThetaXCorr[c] = 0;
+		  ThSCATXCorrectionParametersRead = true;
+		}
+
+	      else if(LineBuffer.compare(0,26,"ThSCATXLoffCorrectionTerms") == 0)
+		{		  				
+			input >> LineBuffer;
+		  	printf("Using %d terms for the ThSCAT^n*(X position-offset) correction\n",atoi(LineBuffer.c_str()));
+		  	NXThetaXLoffCorr = atoi(LineBuffer.c_str());
+		  	XThetaXLoffCorr = new double[NXThetaXLoffCorr];
+		  	for(int c=0;c<NXThetaXLoffCorr;c++)XThetaXLoffCorr[c] = 0;
+			ThSCATXLoffCorrectionParametersRead = true;			
+		}
+
 	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
 		{
 		  input >> LineBuffer;
@@ -1011,7 +1203,6 @@ void ReadConfiguration()
 		  printf("VDCSeparationDistanceX: %f \n",atof(LineBuffer.c_str()));
 		  x_x1x2 = atof(LineBuffer.c_str());
 		}
-
 
 
 	      else if(LineBuffer.compare(0,5,"mass1") == 0)
@@ -1110,6 +1301,52 @@ void ReadConfiguration()
 		}
 	    }
 		
+	  if(ThSCATXCorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,25,"EndThSCATXCorrectionTerms") == 0 && ThSCATXCorrectionParametersRead) ThSCATXCorrectionParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XThetaXCorr[npar] = valpar;
+		}
+	    }
+
+
+  	  if(ThSCATXLoffCorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,29,"EndThSCATXLoffCorrectionTerms") == 0 && ThSCATXLoffCorrectionParametersRead) ThSCATXLoffCorrectionParametersRead = false;
+	      else
+		{ 
+			if(LineBuffer.compare(0,16,"XLineshapeOffset") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("XLineshapeOffset: %f \n",atof(LineBuffer.c_str()));
+		  			 X_LSOffset = atof(LineBuffer.c_str());
+					 //printf("X_LSOffset: %f \n",X_LSOffset);
+			       	}
+
+		 else
+			{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XThetaXLoffCorr[npar] = valpar;
+			}
+		}
+	     }
+
 	  if(Y1CorrectionParametersRead)
 	    {
 	      int npar = -1;

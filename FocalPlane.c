@@ -565,7 +565,7 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
 
 
 /* ---------------------------------------------------------------------------------------*/
-void setupchannel2wire(unsigned int chan2wire[])
+void setupchannel2wireUXUX(unsigned int chan2wire[])
 // hack the mapping of wires to channels for UXUX setup
 // See camac-vme-cabling.xls
 // This is fairly complicated due to design mistakes on the PCB's
@@ -576,7 +576,7 @@ void setupchannel2wire(unsigned int chan2wire[])
 // chan 800-943 = U wires VDC2
 
 {
-   printf("setupchannel2wire() - UXUX\n");
+   printf("setupchannel2wireUXUX()\n");
   int input,tdcmodulecounter,preampnum,channelstart,basecount;
   int preampcount=0;
   int preampbase=0;
@@ -670,6 +670,117 @@ void setupchannel2wire(unsigned int chan2wire[])
       }
   }
 }
+
+
+/* ---------------------------------------------------------------------------------------*/
+void setupchannel2wirePR170(unsigned int chan2wire[])
+// Specific for the Oct 2011 beamtime of PR170:
+// The detectors were set up with an old VDC and then new UX/
+// Unfortunately the cabling was such that they look like 
+// VDC1 a new UX, then VDC2 the old VDC.
+// To work around this I will first take the data as given to the TDCs
+// i.e. I assume VDC1 ix UX VDC is old X. Then afterwars I will swap things around.
+
+// chan 0-207   = X wires VDC1
+// chan 300-443 = U wires VDC1
+// chan 500-707 = X wires VDC2
+// chan 800-943 = U wires VDC2
+
+{
+  printf("setupchannel2wirePR170()\n");
+  int input,tdcmodulecounter,preampnum,channelstart,basecount;
+  int preampcount=0;
+  int preampbase=0;
+  //int channel=0;
+  int tdcchan;
+
+  for(input=0;input<896;input++) chan2wire[input]=-1;
+
+  for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+      for(input=1;input<8;input++){
+	   channelstart=0;
+	   preampnum=(tdcmodulecounter*7)+input;
+	   //printf("tdc %d   input %d   preamp %d  \n",tdcmodulecounter,input,preampnum);
+	   if(preampcount<13) { // wireplane X1  =================================================
+	      	basecount=500;
+	       	preampbase=0;
+		channelstart=basecount+(preampcount-preampbase)*16;
+		if(preampcount==0){		    
+		  chan2wire[16]=510;
+		  chan2wire[17]=511;
+		  chan2wire[18]=512;
+		  chan2wire[19]=513;
+		  chan2wire[20]=514;
+		  chan2wire[21]=515;
+		  for(int i=22;i<31;i++){
+		    chan2wire[i]=0;
+		  }
+		  channelstart=basecount+(preampcount-preampbase)*16;
+		  for(int i=channelstart;i<channelstart+16;i++){
+		    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+		  }
+		}
+		else {
+		  for(int i=channelstart;i<channelstart+16;i++){
+		    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+		    chan2wire[tdcchan]=i;
+		  }
+		}
+	   }
+	   else if(preampcount<22){ // wireplane U1  =================================================
+	       	basecount=800;
+	       	preampbase=13;
+		channelstart=basecount+(preampcount-preampbase)*16;
+		int counter=1;
+		for(int i=channelstart;i<channelstart+16;i++){
+		  tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+		  chan2wire[tdcchan]=(channelstart+16) - counter;
+		  counter++;
+		}
+	   }
+
+           else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
+	  	basecount=8;
+	  	preampbase=23;
+	  	channelstart=basecount + (preampcount-preampbase)*16;
+	  	if(preampcount==22){
+	    		chan2wire[424]=0;
+		        chan2wire[425]=1;
+	    		chan2wire[426]=2;
+	    		chan2wire[427]=3;
+	    		chan2wire[428]=4;
+	    		chan2wire[429]=5;
+	    		chan2wire[430]=6;
+	    		chan2wire[431]=7;            
+	    		//for(int i=424;i<432;i++){
+	      			//tdcchan=i;
+	      			//printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
+	      			//printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
+	    		//}
+	  	}
+	  	else{
+	    		for(int i=channelstart;i<channelstart+16;i++){
+	      			tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+	      			chan2wire[tdcchan]=i;
+	      			//printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+	    		}
+	  	}
+    	   }
+    	   preampcount++;   
+  	}
+  }
+
+
+  //for(int i=0;i<900;i++){
+  //	printf(" raw chan %d    chan2wire %d  \n",i,chan2wire[i]);
+  //}
+
+
+}
+
+
+
+
 
 //---------------------------------------------------------------------------------------------//
 void getRefTimes(int time[], int ntdc, DWORD ptdc[])
@@ -1486,24 +1597,46 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
+  extern int NXThetaXCorr;
+  extern double *XThetaXCorr;
+  extern int NXThetaXLoffCorr;
+  extern double *XThetaXLoffCorr;
+  extern double X_LSOffset;
   extern int NXY1Corr;
   extern double *XY1Corr;
+  
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+  //printf("X to start with: %f\n",X);
+
+  //printf("X to start with: %f\n",X);
 
   *Xcorr = 0;
-  for(int i=0;i<NXThetaCorr;i++)
-  {
+  for(int i=0;i<NXThetaCorr;i++){
     if(i==0)result = X;
     if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
-      //printf("Xcorr: %f\n",*Xcorr);
   }
+  //printf("Xcorr from ThetaCorr: %f\n",result);
+
+  for(int i=0;i<NXThetaXCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XThetaXCorr[i] * pow(ThetaSCAT,i) * pow(X,i);
+  }
+  //printf("Xcorr from ThetaXCorr: %f\n",result);
+
+
+  for(int i=0;i<NXThetaXLoffCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) * (X-X_LSOffset);
+  }
+  //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
 
   //At this point, result is X1posC after the ThSCAT correction
-
-  for(int i=0;i<NXY1Corr;i++)
-    {
+  for(int i=0;i<NXY1Corr;i++){
       if(i==0)result = result;
       if(i>0)result += XY1Corr[i] * pow(Y,i);
-    }
+  }
+  //printf("Xcorr from YCorr: %f\n",result);
+  //printf("------------------------------------------\n");
 
   *Xcorr = result;
 }
@@ -1627,6 +1760,25 @@ double CorrectEx(double mEx)
 }
 
 //--------------------------------------------------------------------------------------
+double CalcYFPforUX(double x, double u, double thFP)
+{
+  double sinu=0.766044443; //sin(U_WIRE_ANGLE/57.2957); 
+  double tanu=1.191753593; //tan(U_WIRE_ANGLE/57.2957);
+  double tmp1,tmp2;
+  double tanfp=tan(thFP/57.2957);
+  double y=0;
+
+// for UX configuration. See RN K600 book6 p20-23
+  tmp1=(u*tanfp+sinu*16);    
+  tmp2=sinu*tanfp;
+  y=-1*((tmp1/tmp2-x)*tanu+76.27);  // the 76.27 is the offset due to first u and x wires not sharing the same origin
+  //y=1*((tmp1/tmp2-x)*tanu+76.27 -50.);  // the 76.27 is the offset due to first u and x wires not sharing the same origin
+				      // the -50 is to put it around zero
+ 
+  //printf("x=%f  u=%f  ThFP=%f  sinu=%f  tanu=%f tanThFP=%f  y=%f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
+  //printf("%f %f %f %f %f %f %f \n",x,u,thFP,sinu,tanu,tanfp,(x-tmp1/tmp2)*tanu);
+  return y;
+}
 
 //--------------------------------------------------------------------------------------
 double CalcYFP(double x, double u, double thFP)
@@ -1724,11 +1876,10 @@ double CalcThetaFP(double X1, double X2)
    double x;
    double result =-1;
    extern double z_x1x2, x_x1x2;
-//   printf("X1=%f \t X2=%f\n",X1,X2);
+
    x=(X2 + x_x1x2) - X1 ;               
    result=57.29578*atan(z_x1x2/x);
-//    printf("z_x1x2=%f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
-//    printf("x=%f,\t result=%f\n",x,result);
+   //printf("z_x1x2=%f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
   
    return result;
 }
