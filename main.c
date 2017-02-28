@@ -1228,7 +1228,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
 		case 14: t_cloverpulser=1;break;
 
-		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; 
+		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
 						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
