@@ -1588,7 +1588,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
-//lineshape correction
+//lineshape correction when you have a well defined thetaSCAT
 {
    //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
   //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
@@ -1597,14 +1597,21 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
+
   extern int NXThetaXCorr;
   extern double *XThetaXCorr;
+
   extern int NXThetaXLoffCorr;
   extern double *XThetaXLoffCorr;
   extern double X_LSOffset;
+
   extern int NXY1Corr;
   extern double *XY1Corr;
-  
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+ 
   //printf("XLineshapeOffset = %f\n",X_LSOffset);
   //printf("X to start with: %f\n",X);
 
@@ -1623,7 +1630,6 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   }
   //printf("Xcorr from ThetaXCorr: %f\n",result);
 
-
   for(int i=0;i<NXThetaXLoffCorr;i++){
     if(i==0)result = result;
     if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) * (X-X_LSOffset);
@@ -1638,8 +1644,47 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
+
   *Xcorr = result;
 }
+
+
+//--------------------------------------------------------------------------------------
+void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
+//lineshape correction when using only 1 detector
+{
+
+  double result = 0;
+
+  extern int NXY1Corr;
+  extern double *XY1Corr;
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+ 
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+
+  //At this point, result is X1posC after the ThSCAT correction
+  for(int i=0;i<NXY1Corr;i++){
+      if(i==0)result = X;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+  }
+  //printf("Xcorr from YCorr: %f\n",result);
+  //printf("------------------------------------------\n");
+
+  for(int i=0;i<NXTOFCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i);
+  }
+  //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
+
+  *Xcorr = result;
+}
+
+
+
+
 
 //--------------------------------------------------------------------------------------
 double CalcQBrho(double Xcorr)

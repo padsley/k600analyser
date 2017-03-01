@@ -160,7 +160,7 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
-Double_t t_X1posC=-100.0;
+Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -431,7 +431,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posO=-100.;
-   t_X1posC=-100.;
+   t_X1posC=-100., t_X1posCTOF=-100.;
    t_Ex=-1.;
    t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
@@ -818,6 +818,7 @@ INT main_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+  t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
   t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
@@ -1036,7 +1037,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Double_t thetaFPx=-100;
    Double_t thetaSCAT=-100, phiSCAT=-100;
    Double_t Y1=-100.0,Y2=-100.0;
-   Double_t Xcorr=-100;
+   Double_t Xcorr=-100, Xcorr2=-100;
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
    Int_t X1doublewires=0,X2doublewires=0,U1doublewires=0,U2doublewires=0;
    Int_t X1multiplemin=0,X2multiplemin=0,U1multiplemin=0,U2multiplemin=0;
@@ -1765,15 +1766,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
+   CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2);
+   t_X1posCTOF=Xcorr2;
+
+
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
    //t_Ex = CalcExDirect(Xcorr);‘TDCValues’
-   t_Ex = CalcEx(Xcorr);
+   t_Ex = CalcEx(Xcorr2);
 
    extern double *masses;
-   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
-   t_rigidity3 = CalcQBrho(Xcorr);
+   t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
+   t_rigidity3 = CalcQBrho(Xcorr2);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
