@@ -93,6 +93,10 @@ int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
 int *TOFOffsets;
 
+int NrOfRunsForPadOffsets;
+int *RunNrForPadOffsets;
+int *PadOffsets;
+
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -668,6 +672,54 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
 }
 
 
+/*-------------------------------------------------*/
+void ReadPadOffsets(std::string PadoffsetsFile)
+{
+  //printf("Read PadOffsets using file %s\n",PadoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(PadoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: Pad offsets for all runs are left at 0 **********\n");
+    RunNrForPadOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfPadOffsets")"
+    PadOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(PadoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForPadOffsets[counter]=runnr;
+          PadOffsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d TPadoffsets\n",counter);
+}
 
 
 /*-------------------------------------------------*/
@@ -884,6 +936,7 @@ void ReadConfiguration()
   bool ThFPSCATSlopeParametersRead = false;
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
+  bool PadOffsetParametersRead = false;
 
   std::ifstream input;
 
@@ -897,7 +950,7 @@ void ReadConfiguration()
 	{
 	  std::string LineBuffer;
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
 
 	    {
 	      input >> LineBuffer;
@@ -1123,7 +1176,22 @@ void ReadConfiguration()
 		  ReadTOFOffsets(LineBuffer);
 		}
 //===============================================================================================
-
+	      else if(LineBuffer.compare(0,14,"NrOfPadOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d Padoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForPadOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForPadOffsets<1) NrOfRunsForPadOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  RunNrForPadOffsets = new int[NrOfRunsForPadOffsets];
+                  PadOffsets = new int[NrOfRunsForPadOffsets];
+	        }
+	      else if(LineBuffer.compare(0,14,"PadOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
+		  ReadPadOffsets(LineBuffer);
+		}
+//===============================================================================================
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;

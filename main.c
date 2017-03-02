@@ -137,7 +137,7 @@ VDC U2;
 
 
 // general TDC variables for TTree, all with prefix "t_"
-Double_t t_pad1,t_pad2;        
+Double_t t_pad1,t_pad2, t_pad1raw; //padoffsets correction LUNA       
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
@@ -251,7 +251,7 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-
+Double_t Padoffset=0;
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -687,6 +687,7 @@ INT main_init(void)
 
   t1->Branch("pad1",&t_pad1,"t_pad1/D");
   t1->Branch("pad2",&t_pad2,"t_pad2/D");
+  t1->Branch("pad1raw",&t_pad1raw,"t_pad1raw/D"); //padoffsets correction LUNA
   t1->Branch("pad1hiP",&t_pad1hiP,"t_pad1hiP/D");
   t1->Branch("pad1lowP",&t_pad1lowP,"t_pad1lowP/D");
   t1->Branch("pad2hiP",&t_pad2hiP,"t_pad2hiP/D");
@@ -938,6 +939,9 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
+   extern int *PadOffsets;	        // from Parameters.c 
+   extern int *RunNrForPadOffsets;       // from Parameters.c  
+   extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
@@ -952,7 +956,11 @@ INT main_bor(INT run_number)
    }
    printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
-
+   Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForPadOffsets;i++){
+       if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: TOF offset= %d \n",RunNumber,Padoffset);
 
 
 
@@ -982,6 +990,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
+   Double_t pad1raw=0; ref_pad1=0; //padoffsets correction LUNA
    float PsideTDC[80];
 
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
@@ -1077,7 +1086,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_triggerU=triggerU;
    t_CII=CII;
    t_CIU=CIU;
-
+   
 
    //----------------------------------------------------------------------
    // look for TDC0 bank 
@@ -1233,6 +1242,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
 						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+		case 15: if(t_pad1==0) {pad1raw=ref_pad1; 
+						 pad1=ref_pad1+Padoffset; 
+						 t_pad1=pad1;
+						 t_pad1raw=pad1raw;} break;  // padoffsets correction LUNA
+
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
