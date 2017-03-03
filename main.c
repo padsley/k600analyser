@@ -137,7 +137,7 @@ VDC U2;
 
 
 // general TDC variables for TTree, all with prefix "t_"
-Double_t t_pad1,t_pad2, t_pad1raw; //padoffsets correction LUNA       
+Double_t t_pad1=0,t_pad2=0, t_pad1raw=0; //padoffsets correction        
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
@@ -422,6 +422,7 @@ void ZeroFPWireTimeDist(void)
 void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
 {
    t_tdcsperevent=0;
+   t_pad1=-1;  t_pad2=-1;  t_pad1raw=-1; 
    t_pad1hiP=-1;  t_pad1lowP=-1;  t_pad2hiP=-1;  t_pad2lowP=-1;
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
    t_tof=0; t_toftdc1=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
@@ -687,7 +688,7 @@ INT main_init(void)
 
   t1->Branch("pad1",&t_pad1,"t_pad1/D");
   t1->Branch("pad2",&t_pad2,"t_pad2/D");
-  t1->Branch("pad1raw",&t_pad1raw,"t_pad1raw/D"); //padoffsets correction LUNA
+  t1->Branch("pad1raw",&t_pad1raw,"t_pad1raw/D"); //padoffsets correction 
   t1->Branch("pad1hiP",&t_pad1hiP,"t_pad1hiP/D");
   t1->Branch("pad1lowP",&t_pad1lowP,"t_pad1lowP/D");
   t1->Branch("pad2hiP",&t_pad2hiP,"t_pad2hiP/D");
@@ -990,7 +991,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
-   Double_t pad1raw=0; ref_pad1=0; //padoffsets correction LUNA
+   float pad1raw=0; //padoffsets correction
    float PsideTDC[80];
 
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
@@ -1075,7 +1076,14 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    ZeroTTreeVariables();         // zero the values to be used in TTree
    ZeroFPWireTimeDist();         // zero the values of the struct X1 X2 U1 U2
 
+   // padoffsets correction the pad1 will be the corrected and pad1raw not
+   pad1raw=pad1; 
+   pad1=pad1raw+Padoffset; 
    t_pad1=pad1;
+   t_pad1raw=pad1raw; 
+
+
+//   t_pad1=pad1;
    t_pad2=pad2;	       
    t_pad1hiP=pad1hip;
    t_pad1lowP=pad1lowp;	    
@@ -1242,11 +1250,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
 						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
-		case 15: if(t_pad1==0) {pad1raw=ref_pad1; 
-						 pad1=ref_pad1+Padoffset; 
-						 t_pad1=pad1;
-						 t_pad1raw=pad1raw;} break;  // padoffsets correction LUNA
-
+	
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
