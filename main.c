@@ -35,6 +35,7 @@
 #include <TFile.h>
 #include <TRandom3.h>
 #include <TMath.h>
+#include "TGraph.h"
 
 /* home-made includes */
 #include "Parameters.h"
@@ -50,21 +51,21 @@
 #include "ScintillatorSort.h"
 
 /*------------Preprocessor Directives to change analysis------------*/
-// #define _POLARIZATION
-// #define _MOVIE
-// #define _JJAUTOTRIM
-// #define _PRINTTOSCREEN
-// #define _VDCRESCALCS
-// #define _FULLANALYSIS
-// #define _MISALIGNTIME
-// #define _RAWDATA
-// #define _SILICONDATA 
-// #define _MMM
-// #define _W1
-// #define _GAMMADATA
+//#define _POLARIZATION
+//#define _MOVIE
+//#define _JJAUTOTRIM
+#define _PRINTTOSCREEN
+//#define _VDCRESCALCS
+#define _FULLANALYSIS
+//#define _MISALIGNTIME
+#define _RAWDATA
+//#define _SILICONDATA 
+//#define _MMM
+//#define _W1
+#define _GAMMADATA
 // #define _HAGAR
-// #define _SCINTILLATOR
-// #define _CLOVER
+#define _SCINTILLATOR
+#define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -136,7 +137,7 @@ VDC U2;
 
 
 // general TDC variables for TTree, all with prefix "t_"
-Double_t t_pad1,t_pad2;        
+Double_t t_pad1=0,t_pad2=0, t_pad1raw=0; //padoffsets correction        
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
@@ -159,7 +160,11 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
+<<<<<<< HEAD
+Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
+=======
 Double_t t_X1posC=-100.0;  // for lineshape corrected position
+>>>>>>> master
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -225,6 +230,7 @@ GammaData *gammy;
 
 
 Int_t t_pulser=0;    // a pattern register equivalent
+Int_t t_cloverpulser=0;
 
 #ifdef _POLARIZATION  
 Int_t t_polu=0, t_pold=0;   // a pattern register equivalent
@@ -249,6 +255,10 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
+<<<<<<< HEAD
+Double_t Padoffset=0;
+=======
+>>>>>>> master
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -265,6 +275,7 @@ static TH1F *hEventID, *hEventID2;
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
 TH2F **hTDC2DModule;
+TH2F *hADCChannels_vs_TDCChannels;
 
 static TH1F *hTDCPerEventRaw;
 //static TH1F *hTDCPerEvent;
@@ -310,6 +321,8 @@ static TH1F *hU2_Chisq, *hU2_Eff, *hU2_Res;
 static TH2F *hU2_Res2dRCNP, *hU2_Res2diTL;
 
 static TH1F *h_Y1, *h_Y2;
+
+
 #endif
 
 
@@ -416,6 +429,7 @@ void ZeroFPWireTimeDist(void)
 void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
 {
    t_tdcsperevent=0;
+   t_pad1=-1;  t_pad2=-1;  t_pad1raw=-1; 
    t_pad1hiP=-1;  t_pad1lowP=-1;  t_pad2hiP=-1;  t_pad2lowP=-1;
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
    t_tof=0; t_toftdc1=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
@@ -425,7 +439,11 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posO=-100.;
+<<<<<<< HEAD
+   t_X1posC=-100., t_X1posCTOF=-100.;
+=======
    t_X1posC=-100.;
+>>>>>>> master
    t_Ex=-1.;
    t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
@@ -464,6 +482,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    #endif
 
    t_pulser=0;
+   t_cloverpulser=0;
 
 
    #ifdef _MOVIE 
@@ -570,7 +589,8 @@ INT main_init(void)
 	  sprintf(title,"hTDC2DModule %d ",counter);
           hTDC2DModule[counter]=new TH2F(name,title, 4000, -8000, 14999,128,0,128);
    }
-
+   
+    
    hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
@@ -683,6 +703,7 @@ INT main_init(void)
 
   t1->Branch("pad1",&t_pad1,"t_pad1/D");
   t1->Branch("pad2",&t_pad2,"t_pad2/D");
+  t1->Branch("pad1raw",&t_pad1raw,"t_pad1raw/D"); //padoffsets correction 
   t1->Branch("pad1hiP",&t_pad1hiP,"t_pad1hiP/D");
   t1->Branch("pad1lowP",&t_pad1lowP,"t_pad1lowP/D");
   t1->Branch("pad2hiP",&t_pad2hiP,"t_pad2hiP/D");
@@ -812,7 +833,12 @@ INT main_init(void)
   t1->Branch("Y1",&t_Y1,"t_Y1/D");
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
+  t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+<<<<<<< HEAD
+  t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
+=======
+>>>>>>> master
   t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
@@ -876,6 +902,10 @@ INT main_init(void)
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
+
+hADCChannels_vs_TDCChannels = new TH2F("hADCChannels_vs_TDCChannels", "hADCChannels_vs_TDCChannels", 128*TDCModules, 0., 128*TDCModules, 32*ADCModules, 0., 32*ADCModules);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
+
+   
    return SUCCESS;
 }
 
@@ -935,12 +965,45 @@ INT main_bor(INT run_number)
    }
    printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
 
+<<<<<<< HEAD
+   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+   extern double *X1Offsets;	        // from Parameters.c 
+   extern int *RunNrForX1Offsets;       // from Parameters.c  
+   extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
+   extern int *TOFOffsets;	        // from Parameters.c 
+   extern int *RunNrForTOFOffsets;       // from Parameters.c  
+   extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
+   extern int *PadOffsets;	        // from Parameters.c 
+   extern int *RunNrForPadOffsets;       // from Parameters.c  
+   extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
+
+   x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForX1Offsets;i++){
+       if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
+   }
+   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
+
 
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
        if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+
+   Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForPadOffsets;i++){
+       if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: TOF offset= %d \n",RunNumber,Padoffset);
+
+=======
+
+   TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
+       if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+>>>>>>> master
 
 
 
@@ -969,6 +1032,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
+   float pad1raw=0; //padoffsets correction
    float PsideTDC[80];
 
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
@@ -1024,7 +1088,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Double_t thetaFPx=-100;
    Double_t thetaSCAT=-100, phiSCAT=-100;
    Double_t Y1=-100.0,Y2=-100.0;
-   Double_t Xcorr=-100;
+   Double_t Xcorr=-100, Xcorr2=-100;
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
    Int_t X1doublewires=0,X2doublewires=0,U1doublewires=0,U2doublewires=0;
    Int_t X1multiplemin=0,X2multiplemin=0,U1multiplemin=0,U2multiplemin=0;
@@ -1053,7 +1117,14 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    ZeroTTreeVariables();         // zero the values to be used in TTree
    ZeroFPWireTimeDist();         // zero the values of the struct X1 X2 U1 U2
 
+   // padoffsets correction the pad1 will be the corrected and pad1raw not
+   pad1raw=pad1; 
+   pad1=pad1raw+Padoffset; 
    t_pad1=pad1;
+   t_pad1raw=pad1raw; 
+
+
+//   t_pad1=pad1;
    t_pad2=pad2;	       
    t_pad1hiP=pad1hip;
    t_pad1lowP=pad1lowp;	    
@@ -1064,7 +1135,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_triggerU=triggerU;
    t_CII=CII;
    t_CIU=CIU;
-
+   
 
    //----------------------------------------------------------------------
    // look for TDC0 bank 
@@ -1214,10 +1285,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
 
+<<<<<<< HEAD
+		case 14: t_cloverpulser=1;break;
+
+=======
+>>>>>>> master
 		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
 						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+<<<<<<< HEAD
+	
+=======
+>>>>>>> master
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
@@ -1488,7 +1568,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
+<<<<<<< HEAD
+       t_X1posO=X1pos - x1offset;     
+=======
        t_X1posO=X1pos - x1offset;         
+>>>>>>> master
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
@@ -1746,15 +1830,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
+   CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2);
+   t_X1posCTOF=Xcorr2;
+
+
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
-   //t_Ex = CalcExDirect(Xcorr);
-   t_Ex = CalcEx(Xcorr);
+   //t_Ex = CalcExDirect(Xcorr);‘TDCValues’
+   t_Ex = CalcEx(Xcorr2);
 
    extern double *masses;
-   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
-   t_rigidity3 = CalcQBrho(Xcorr);
+   t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
+   t_rigidity3 = CalcQBrho(Xcorr2);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
@@ -1808,8 +1896,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
    for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
 
-
-
+  
+   
    //========================================================================================================================
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
    //========================================================================================================================
@@ -1824,11 +1912,24 @@ gammy = new GammaData();
   {
     //printf("made it in main.c to RawDataDump\n");
     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+    
+    for(int i=0; i<TDCValueExportStore.size(); i++)
+    {
+        for(int j=0; j<sizeof(ADCchannel); j++)
+        {
+			if(ADC[j]>0.0)
+			{
+				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
+			}
+				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
+        }
+    }
   }
+  
 #endif
   
 #ifdef _MMM
-    if(si)
+    if(si)‘TDCValues’
     {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }

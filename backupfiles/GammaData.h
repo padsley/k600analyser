@@ -70,14 +70,9 @@ public :
 //  double GetTheta(int i){return GammaTheta.at(i);}
 //  double GetPhi(int i){return GammaPhi.at(i);}
   double GetTime(int i){return GammaTime.at(i);}
-  std::string GetDetectorType(int i){return GammaDetectorType.at(i);}
-  int GetDetectorLabel(int i){return GammaDetectorLabel.at(i);}
-  int GetDetectorSegm(int i){return GammaDetectorSegm.at(i);}
+  std::string GetType(int i){return GammaDetectorType.at(i);}
+  double GetLabel(int i){return GammaDetectorLabel.at(i);}
  // double GetDetectorHit(int i){return DetectorHit.at(i);}
-  int GetGammaRawADC(int i){return GammaRawADC.at(i);}
-  int GetGammaADCChannel(int i){return GammaADCChannel.at(i);}
-  int GetGammaTDCChannel(int i){return GammaTDCChannel.at(i);}
-  int GetGammaTDCMultiplicity(int i){return GammaTDCMultiplicity.at(i);}
 
 //Should add Getters for the diagnostic values in case people want to use them to test events themselves under certain conditions
   void PrintEvent();

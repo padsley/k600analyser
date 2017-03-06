@@ -17,7 +17,6 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Tue Jan 17 11:07:15 2017
 
 \********************************************************************/
 
@@ -2344,6 +2343,26 @@ typedef struct {
 "Frontend host = STRING : [32] vmevmic2",\
 "Frontend name = STRING : [32] K600 frontend",\
 "Frontend file name = STRING : [256] k600frontend.c",\
+"",\
+NULL }
+
+#endif
+
+#ifndef EXCL_BEAMLINE
+
+#define BEAMLINE_COMMON_DEFINED
+
+typedef struct {
+  WORD      event_id;
+  INT       type;
+  char      format[80];
+} BEAMLINE_COMMON;
+
+#define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
+"[.]",\
+"Event ID = WORD : 1",\
+"Type = INT : 2",\
+"Format = STRING : [80] ",\
 "",\
 NULL }
 
