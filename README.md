@@ -1,4 +1,4 @@
-# k6600analyser 
+# k600analyser 
 
 We no longer have a file called f-plane.c; it is replaced with main.c
 

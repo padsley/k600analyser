@@ -73,7 +73,7 @@ MAIN_PARAM gates;     // these are to be found in experim.h
 GLOBAL_PARAM globals;
 WIRECHAMBER_SETTINGS WireChamberSettings;
 RUNINFO runinfo2;
-  // At present we use 2 methods to get to ODB data:
+  // At present we use 2 methods to get to ODB data:/
   // -the globals we get through GetODBGlobals() subroutine
   // -the gates we used to get directly from the ODB, see focalplane_module declaration
   // below. The gates will thus change upon changing an ODB entry 'on-the-fly' 
@@ -160,7 +160,11 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
+<<<<<<< HEAD
 Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
+=======
+Double_t t_X1posC=-100.0;  // for lineshape corrected position
+>>>>>>> master
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -251,7 +255,10 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
+<<<<<<< HEAD
 Double_t Padoffset=0;
+=======
+>>>>>>> master
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -432,7 +439,11 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posO=-100.;
+<<<<<<< HEAD
    t_X1posC=-100., t_X1posCTOF=-100.;
+=======
+   t_X1posC=-100.;
+>>>>>>> master
    t_Ex=-1.;
    t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
@@ -502,12 +513,16 @@ INT main_init(void)
    //ParameterInit();     // now called inside init routine of analyzer.c
 
    extern bool VDC1_new, VDC2_new;
+   extern bool VDC1_new_UX, VDC2_new_UX;
 
    if(VDC1_new)
      {
        if(VDC2_new)
 	 {
- 	   setupchannel2wireXUXU(Channel2Wire);
+	   if(VDC1_new_UX && VDC2_new_UX){
+	       setupchannel2wireUXUX(Channel2Wire);
+	     }
+	   else setupchannel2wireXUXU(Channel2Wire);
 	 }
        else
 	 {
@@ -820,7 +835,10 @@ INT main_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+<<<<<<< HEAD
   t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
+=======
+>>>>>>> master
   t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
@@ -932,7 +950,22 @@ INT main_bor(INT run_number)
    printf("lut u1 offset: %d \n",globals.lut_u1_offset);
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+	
+   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+   extern double *X1Offsets;	        // from Parameters.c 
+   extern int *RunNrForX1Offsets;       // from Parameters.c  
+   extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
+   extern int *TOFOffsets;	        // from Parameters.c 
+   extern int *RunNrForTOFOffsets;       // from Parameters.c  
+   extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
 
+   x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForX1Offsets;i++){
+       if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
+   }
+   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
+
+<<<<<<< HEAD
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
@@ -963,6 +996,14 @@ INT main_bor(INT run_number)
    }
    printf("run %d: TOF offset= %d \n",RunNumber,Padoffset);
 
+=======
+
+   TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
+       if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+>>>>>>> master
 
 
 
@@ -1006,7 +1047,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
-
+ 
    int *TDC_channel_export;
    float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
@@ -1244,13 +1285,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
 
+<<<<<<< HEAD
 		case 14: t_cloverpulser=1;break;
 
+=======
+>>>>>>> master
 		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
 						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+<<<<<<< HEAD
 	
+=======
+>>>>>>> master
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
@@ -1313,7 +1360,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       // I want everything that goes into the TTree NOT to be affected by the PID gates set in the ODB.
       // But there are things that goes into the histograms that I want to be for PID gated events only.
       // Hence the lot of PID gate tests.
-// 	printf("channelnew: %d \t globals.x2_1st_wire_chan: %d \t globals.x2_last_wire_chan: %d\n",channelnew,globals.x2_1st_wire_chan,globals.x2_last_wire_chan);
+	
       if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){         
         //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
 	//  addwiregap=1;
@@ -1362,8 +1409,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=604) ) {   //only for X2 wireplane
+      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
 						// chan 482 looks suspicious in white tune run 23088
 	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_X2effall=1; 	
@@ -1378,11 +1425,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	t_X2dt[X2hits]=offset_time;                                 
 	t_X2wire[X2hits]=wire;
 	#endif
-// 	X2hits++;printf("X2hits: %d\n",X2hits);
-// 	printf("offset_time: %d\n",offset_time);
-// 	printf("gates.x2_driftt_low: %d \t gates.x2_driftt_hi: %d\n",gates.x2_driftt_low,gates.x2_driftt_hi);
+	X2hits++;
 	if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate 
-// 	  printf("L1357\n");
 	  t_X2effdt=1; 
 	  X2.wire[X2hits_dt]=wire;
 	  X2.time[X2hits_dt]=offset_time;
@@ -1524,7 +1568,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
+<<<<<<< HEAD
        t_X1posO=X1pos - x1offset;     
+=======
+       t_X1posO=X1pos - x1offset;         
+>>>>>>> master
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
@@ -1635,12 +1683,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        }
      }
    }
-// printf("globals.min_x_wires: %d \t globals.max_x_wires: %d\n",globals.min_x_wires,globals.max_x_wires);
-// printf("X2hits_dt: %d\n",X2hits_dt);
+
    if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
-//      printf("L1608\n");
      if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
-     if(globals.misswires>(wrangeX2-X2hits_dt)){
+     if(globals.misswires+1>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
        t_X2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
@@ -1649,7 +1695,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 //       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
        if(X2flag==0) t_X2effgood=1;
 
-       t_X2pos=X2pos;  //printf("X2pos: %f\n",X2pos);       //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
+       t_X2pos=X2pos;         //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
        t_X2th=X2th;           //global scope.
        t_X2flag=X2flag;
        t_X2chisq=X2chisq;
@@ -1759,8 +1805,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   thetaFPx = CalcThetaFP(X1pos,X2pos);
-   t_thetaFPx = thetaFPx;
+   //thetaFP = CalcThetaFP(X1pos,X2pos);
+   //t_thetaFP = thetaFP;
    thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
@@ -1776,9 +1822,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    h_Y2->Fill(Y2);
    #endif
 
-   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFPx);
+   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
-   thetaSCAT = CalcThetaScat(X1pos,thetaFPx);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
    CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);

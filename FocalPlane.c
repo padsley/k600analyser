@@ -1597,6 +1597,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
+<<<<<<< HEAD
 
   extern int NXThetaXCorr;
   extern double *XThetaXCorr;
@@ -1605,8 +1606,20 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   extern double *XThetaXLoffCorr;
   extern double X_LSOffset;
 
+=======
+  extern int NXThetaXCorr;
+  extern double *XThetaXCorr;
+  extern int NXThetaXLoffCorr;
+  extern double *XThetaXLoffCorr;
+  extern double X_LSOffset;
+>>>>>>> master
   extern int NXY1Corr;
   extern double *XY1Corr;
+  
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+  //printf("X to start with: %f\n",X);
+
+  //printf("X to start with: %f\n",X);
 
   extern int NXTOFCorr;
   extern double *XTOFCorr;
@@ -1630,6 +1643,10 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   }
   //printf("Xcorr from ThetaXCorr: %f\n",result);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
   for(int i=0;i<NXThetaXLoffCorr;i++){
     if(i==0)result = result;
     if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) * (X-X_LSOffset);
@@ -1643,6 +1660,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   }
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
+<<<<<<< HEAD
 
 
   *Xcorr = result;
@@ -1678,6 +1696,8 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
     if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i);
   }
   //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
+=======
+>>>>>>> master
 
   *Xcorr = result;
 }

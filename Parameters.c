@@ -64,9 +64,10 @@ int *GoodChannelCounter;
 bool VDC1_new, VDC2_new;
 bool VDC1_new_UX, VDC2_new_UX;
 
-int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT
+int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n
 double *XThetaCorr;//pointer array to store the terms from above
-int NXThetaXCorr;//Number of terms to correct X1 pos with ThSCAT i.e. (ThSCAT)^n*(X)^n
+int NXThetaXCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n*(X)^n
+
 double *XThetaXCorr;//pointer array to store the terms from above
 int NXThetaXLoffCorr; //Number of terms to correct the X1 position (with offset) with ThSCAT with power progression for ThSCAT only i.e. ((ThSCAT)^n)*(X-X_LSOffset)
 double *XThetaXLoffCorr; //pointer array to store the terms from above
@@ -119,7 +120,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-//   TDCInit();
+  TDCInit();
   PrintParameters();
 //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
   printf("\nFinished initialising parameters - to the sorting!\n");
@@ -499,6 +500,7 @@ void ReadCalibrationParameters(std::string CalibFile)
 //       ADCCalibrationParameters.at(i).push_back(0);
 //       ADCCalibrationParameters.at(i).push_back(1);
     }
+
   }
   else
   {
@@ -571,6 +573,108 @@ void ReadCalibrationParameters(std::string CalibFile)
   CalibInput.close();
   printf("Finished Calibration Parameters\n");
 }
+
+
+/*-------------------------------------------------*/
+void ReadX1Offsets(std::string X1offsetsFile)
+{
+  //printf("Read X1Offsets using file %s\n",X1offsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(X1offsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
+    RunNrForX1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfX1Offsets")"
+    X1Offsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(X1offsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForX1Offsets[counter]=runnr;
+          X1Offsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d X1offsets\n",counter);
+}
+
+
+/*-------------------------------------------------*/
+void ReadTOFOffsets(std::string TOFoffsetsFile)
+{
+  //printf("Read TOFOffsets using file %s\n",TOFoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(TOFoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
+    RunNrForTOFOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfTOFOffsets")"
+    TOFOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(TOFoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForTOFOffsets[counter]=runnr;
+          TOFOffsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d TOFoffsets\n",counter);
+}
+
+
 
 /*-------------------------------------------------*/
 void ReadX1Offsets(std::string X1offsetsFile)
@@ -830,7 +934,7 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
-void TDCOffsetsInit()
+void TDCInit()
 {
   printf("TDCInit\n");
   TDCOffsets = new double[128*TDCModules];
@@ -879,14 +983,10 @@ void ReadTDCOffsets(std::string OffsetsFile)
 		  channel = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;
 		  offset = atof(LineBuffer.c_str());
-		  printf("TDC Channel: %d\tOffset: %f\n",channel,offset);
+		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
 		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
 		}
 	    }
-	}
-	else
-	{
-	  printf("!!!Config file did not open!!!\n");
 	}
     }
 }
@@ -926,9 +1026,11 @@ void ReadConfiguration()
   bool ScintillatorADCChannelRead = false;
   bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
+
   bool ThSCATXCorrectionParametersRead = false; 
   bool ThSCATXLoffCorrectionParametersRead = false;
   bool TOFXCorrectionParametersRead = false;
+
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
@@ -936,22 +1038,21 @@ void ReadConfiguration()
   bool ThFPSCATSlopeParametersRead = false;
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
+
   bool PadOffsetParametersRead = false;
 
   std::ifstream input;
 
   input.open("config.cfg");  //This is the line to change in order to change the configuration file
 
-//   input.open("/home/padsley/data/PR244/Mg24Coinc/configPR244Coincidences.cfg");
-  
  if(input.is_open())
     {
       while(ConfigRead)
 	{
 	  std::string LineBuffer;
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
 
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -982,7 +1083,6 @@ void ReadConfiguration()
 		  TDCsize = 128*TDCModules;
 		  ChannelCounter = new int[128*TDCModules];
 		  GoodChannelCounter = new int[128*TDCModules];
-		  TDCOffsetsInit();
 		}
 	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
 		{
@@ -1175,7 +1275,6 @@ void ReadConfiguration()
 		  printf("Using TOFoffsets file: %s\n",LineBuffer.c_str());
 		  ReadTOFOffsets(LineBuffer);
 		}
-//===============================================================================================
 	      else if(LineBuffer.compare(0,14,"NrOfPadOffsets") == 0)
                 {
 		  input >> LineBuffer;
@@ -1191,7 +1290,6 @@ void ReadConfiguration()
 		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
 		  ReadPadOffsets(LineBuffer);
 		}
-//===============================================================================================
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
@@ -1213,7 +1311,6 @@ void ReadConfiguration()
 		  for(int c=0;c<NXThetaCorr;c++)XThetaCorr[c] = 0;
 		  ThSCATCorrectionParametersRead = true;
 		}
-
 	      else if(LineBuffer.compare(0,22,"ThSCATXCorrectionTerms") == 0)
 		{
 		  input >> LineBuffer;
@@ -1271,7 +1368,6 @@ void ReadConfiguration()
 		  ThFPSCATSlopeParametersRead = true;
 		}
 
-
 	      else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
 		{
 		  input >> LineBuffer;
@@ -1284,8 +1380,6 @@ void ReadConfiguration()
 		  printf("VDCSeparationDistanceX: %f \n",atof(LineBuffer.c_str()));
 		  x_x1x2 = atof(LineBuffer.c_str());
 		}
-
-
 	      else if(LineBuffer.compare(0,5,"mass1") == 0)
 		{
 		  input >> LineBuffer;
@@ -1381,7 +1475,7 @@ void ReadConfiguration()
 		  XThetaCorr[npar] = valpar;
 		}
 	    }
-		
+
 	  if(ThSCATXCorrectionParametersRead)
 	    {
 	      int npar = -1;
@@ -1398,6 +1492,7 @@ void ReadConfiguration()
 		  XThetaXCorr[npar] = valpar;
 		}
 	    }
+
 
   	  if(ThSCATXLoffCorrectionParametersRead)
 	    {
@@ -1428,6 +1523,7 @@ void ReadConfiguration()
 	     }
 
 
+
   	  if(TOFXCorrectionParametersRead)
 	    {
 	      int npar = -1;
@@ -1455,7 +1551,6 @@ void ReadConfiguration()
 			}
 		}
 	     }
-
 
 	  if(Y1CorrectionParametersRead)
 	    {
@@ -1542,13 +1637,13 @@ void ReadConfiguration()
 	      printf("\n GATEAU wireplane: %d\t",atoi(LineBuffer.c_str()));
 	      plane = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Gateau Sector: %d\t",atoi(LineBuffer.c_str()));
+	      printf("Gateau Sector: %d\t",LineBuffer.c_str());
 	      sector = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Start: %d\t",atoi(LineBuffer.c_str()));
+	      printf("Start: %d\t",LineBuffer.c_str());
 	      start = atoi(LineBuffer.c_str());
 	      input >> LineBuffer;
-	      printf("Stop: %d\t",atoi(LineBuffer.c_str()));
+	      printf("Stop: %d\t",LineBuffer.c_str());
 	      stop = atoi(LineBuffer.c_str());
 	      
 	      GateauSetChannelLimits(plane,sector,start,stop);
