@@ -160,11 +160,7 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
-<<<<<<< HEAD
 Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
-=======
-Double_t t_X1posC=-100.0;  // for lineshape corrected position
->>>>>>> master
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -255,10 +251,8 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-<<<<<<< HEAD
 Double_t Padoffset=0;
-=======
->>>>>>> master
+
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -439,11 +433,8 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posO=-100.;
-<<<<<<< HEAD
    t_X1posC=-100., t_X1posCTOF=-100.;
-=======
-   t_X1posC=-100.;
->>>>>>> master
+
    t_Ex=-1.;
    t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
@@ -835,10 +826,9 @@ INT main_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
-<<<<<<< HEAD
+
   t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
-=======
->>>>>>> master
+
   t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
@@ -965,7 +955,6 @@ INT main_bor(INT run_number)
    }
    printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
 
-<<<<<<< HEAD
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
@@ -995,17 +984,6 @@ INT main_bor(INT run_number)
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: TOF offset= %d \n",RunNumber,Padoffset);
-
-=======
-
-   TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-   for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
-       if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
-   }
-   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
->>>>>>> master
-
-
 
    return SUCCESS;
 }
@@ -1284,20 +1262,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
-
-<<<<<<< HEAD
 		case 14: t_cloverpulser=1;break;
 
-=======
->>>>>>> master
 		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
 						 tof=ref_time+TOFoffset; 
 						 t_tof=tof;
 						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
-<<<<<<< HEAD
-	
-=======
->>>>>>> master
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
@@ -1568,11 +1538,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
-<<<<<<< HEAD
+
        t_X1posO=X1pos - x1offset;     
-=======
-       t_X1posO=X1pos - x1offset;         
->>>>>>> master
+
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
