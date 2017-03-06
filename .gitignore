@@ -4,4 +4,9 @@
 *.pcm
 analyzer
 output.root
-
+.*.SHM
+*.png
+*.ps
+neveling_lenghts/*
+backupfiles/*
+*.SHM
