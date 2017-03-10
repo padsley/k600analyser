@@ -9,3 +9,4 @@ output.root
 *.ps
 neveling_lenghts/*
 backupfiles/*
+.*.SHM
