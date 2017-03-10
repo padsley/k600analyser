@@ -1874,7 +1874,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _GAMMADATA
 gammy = new GammaData();
 #endif
-   
+
+#ifdef _SILICONDATA
+si = new SiliconData();
+#endif
+
+
+  
 #ifdef _RAWDATA
   if(raw)
   {
@@ -1958,6 +1964,7 @@ gammy = new GammaData();
 
 #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
+   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
    
 #ifdef _GAMMADATA
@@ -1992,9 +1999,12 @@ gammy = new GammaData();
 //================================================================================================
 INT main_eor(INT run_number)
 {
+
+/*
 #ifdef _SILICONDATA
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
+*/
 
    return SUCCESS;
 }
