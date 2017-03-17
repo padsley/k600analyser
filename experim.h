@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Mon Oct 17 17:36:42 2016
+  Created on:   Wed Mar  8 12:02:58 2017
 
 \********************************************************************/
 
@@ -106,17 +106,17 @@ typedef struct {
 
 #define MAIN_PARAM_STR(_name) char *_name[] = {\
 "[.]",\
-"x1_driftt_low = INT : 6100",\
-"x1_driftt_hi = INT : 8050",\
+"x1_driftt_low = INT : 2600",\
+"x1_driftt_hi = INT : 5000",\
 "x2_driftt_low = INT : 6100",\
-"u1_driftt_low = INT : 6100",\
+"u1_driftt_low = INT : 2600",\
 "u2_driftt_low = INT : 6100",\
 "x2_driftt_hi = INT : 8050",\
 "u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 123",\
-"hitof = INT : 7000",\
-"lowpad1 = INT : 123",\
+"u1_driftt_hi = INT : 5000",\
+"lowtof = INT : 0",\
+"hitof = INT : 5000",\
+"lowpad1 = INT : 0",\
 "lowpad2 = INT : 0",\
 "hipad1 = INT : 4096",\
 "hipad2 = INT : 4096",\
@@ -2334,15 +2334,11 @@ NULL }
 #define BEAMLINE_COMMON_DEFINED
 
 typedef struct {
-  WORD      event_id;
-  INT       type;
   char      format[80];
 } BEAMLINE_COMMON;
 
 #define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
-"Event ID = WORD : 1",\
-"Type = INT : 2",\
 "Format = STRING : [80] ",\
 "",\
 NULL }
