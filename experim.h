@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Tue Jan 17 11:07:15 2017
+  Created on:   Thu Mar 16 16:22:58 2017
 
 \********************************************************************/
 
@@ -27,11 +27,53 @@ typedef struct {
   char      comment[80];
 } EXP_PARAM;
 
-#define EXP_PARAM_STR(_name) char*_name[] = {\
+#define EXP_PARAM_STR(_name) char *_name[] = {\
 "[.]",\
 "Comment = STRING : [80] Analysis",\
 "",\
 NULL }
+
+#ifndef EXCL_MAIN
+
+#define MAIN_PARAM_DEFINED
+
+typedef struct {
+  INT       x1_driftt_low;
+  INT       x1_driftt_hi;
+  INT       x2_driftt_low;
+  INT       u1_driftt_low;
+  INT       u2_driftt_low;
+  INT       x2_driftt_hi;
+  INT       u2_driftt_hi;
+  INT       u1_driftt_hi;
+  INT       lowtof;
+  INT       hitof;
+  INT       lowpad1;
+  INT       lowpad2;
+  INT       hipad1;
+  INT       hipad2;
+} MAIN_PARAM;
+
+#define MAIN_PARAM_STR(_name) char *_name[] = {\
+"[.]",\
+"x1_driftt_low = INT : 6100",\
+"x1_driftt_hi = INT : 8050",\
+"x2_driftt_low = INT : 6100",\
+"u1_driftt_low = INT : 6100",\
+"u2_driftt_low = INT : 6100",\
+"x2_driftt_hi = INT : 8050",\
+"u2_driftt_hi = INT : 8050",\
+"u1_driftt_hi = INT : 8050",\
+"lowtof = INT : 4600",\
+"hitof = INT : 5900",\
+"lowpad1 = INT : 0",\
+"lowpad2 = INT : 0",\
+"hipad1 = INT : 4000",\
+"hipad2 = INT : 4000",\
+"",\
+NULL }
+
+#endif
 
 #ifndef EXCL_GLOBAL
 
@@ -58,7 +100,7 @@ typedef struct {
   INT       u2_last_wire_chan;
 } GLOBAL_PARAM;
 
-#define GLOBAL_PARAM_STR(_name) char*_name[] = {\
+#define GLOBAL_PARAM_STR(_name) char *_name[] = {\
 "[.]",\
 "misswires = INT : 2",\
 "max_tdc_channels = INT : 1000",\
@@ -66,10 +108,10 @@ typedef struct {
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
-"lut_x1_offset = INT : -15",\
-"lut_u1_offset = INT : -2",\
-"lut_x2_offset = INT : -37",\
-"lut_u2_offset = INT : -20",\
+"lut_x1_offset = INT : -16",\
+"lut_u1_offset = INT : 2",\
+"lut_x2_offset = INT : -38",\
+"lut_u2_offset = INT : -12",\
 "x1_1st_wire_chan = INT : 0",\
 "x1_last_wire_chan = INT : 200",\
 "x2_1st_wire_chan = INT : 500",\
@@ -83,69 +125,27 @@ NULL }
 
 #endif
 
-#ifndef EXCL_MAIN
-
-#define MAIN_PARAM_DEFINED
-
-typedef struct {
-  INT       x1_driftt_low;
-  INT       x1_driftt_hi;
-  INT       x2_driftt_low;
-  INT       u1_driftt_low;
-  INT       u2_driftt_low;
-  INT       x2_driftt_hi;
-  INT       u2_driftt_hi;
-  INT       u1_driftt_hi;
-  INT       lowtof;
-  INT       hitof;
-  INT       lowpad1;
-  INT       lowpad2;
-  INT       hipad1;
-  INT       hipad2;
-} MAIN_PARAM;
-
-#define MAIN_PARAM_STR(_name) char*_name[] = {\
-"[.]",\
-"x1_driftt_low = INT : 6100",\
-"x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6100",\
-"u1_driftt_low = INT : 6100",\
-"u2_driftt_low = INT : 6100",\
-"x2_driftt_hi = INT : 8050",\
-"u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 123",\
-"hitof = INT : 7000",\
-"lowpad1 = INT : 123",\
-"lowpad2 = INT : 0",\
-"hipad1 = INT : 4096",\
-"hipad2 = INT : 4096",\
-"",\
-NULL }
-
-#endif
-
 #ifndef EXCL_TRIGGER
 
 #define TRIGGER_COMMON_DEFINED
 
 typedef struct {
+  char      format[80];
   WORD      event_id;
   INT       type;
   INT       log_history;
   char      frontend_name[256];
   WORD      trigger_mask;
-  char      format[80];
 } TRIGGER_COMMON;
 
-#define TRIGGER_COMMON_STR(_name) char*_name[] = {\
+#define TRIGGER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [80] MIDAS",\
 "Event ID = WORD : 0",\
 "Type = INT : 2",\
 "Log history = INT : 0",\
 "Frontend name = STRING : [256] K600 frontend",\
 "Trigger mask = WORD : 0",\
-"Format = STRING : [80] MIDAS",\
 "",\
 NULL }
 
@@ -156,12 +156,12 @@ NULL }
 #define SCALER_COMMON_DEFINED
 
 typedef struct {
+  char      format[8];
   WORD      event_id;
   INT       type;
   WORD      trigger_mask;
   char      buffer[32];
   INT       source;
-  char      format[8];
   BOOL      enabled;
   INT       read_on;
   INT       period;
@@ -173,14 +173,14 @@ typedef struct {
   char      frontend_file_name[256];
 } SCALER_COMMON;
 
-#define SCALER_COMMON_STR(_name) char*_name[] = {\
+#define SCALER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [8] MIDAS",\
 "Event ID = WORD : 2",\
 "Type = INT : 33",\
 "Trigger mask = WORD : 0",\
 "Buffer = STRING : [32] SYSTEM",\
 "Source = INT : 0",\
-"Format = STRING : [8] MIDAS",\
 "Enabled = BOOL : y",\
 "Read on = INT : 377",\
 "Period = INT : 1000",\
@@ -199,7 +199,7 @@ typedef struct {
   char      names[8][32];
 } SCALER_SETTINGS;
 
-#define SCALER_SETTINGS_STR(_name) char*_name[] = {\
+#define SCALER_SETTINGS_STR(_name) char *_name[] = {\
 "[.]",\
 "Names = STRING[8] :",\
 "[32] scaler1",\
@@ -220,16 +220,16 @@ NULL }
 #define BEAMLINE_COMMON_DEFINED
 
 typedef struct {
+  char      format[80];
   WORD      event_id;
   INT       type;
-  char      format[80];
 } BEAMLINE_COMMON;
 
-#define BEAMLINE_COMMON_STR(_name) char*_name[] = {\
+#define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [80] ",\
 "Event ID = WORD : 2",\
 "Type = INT : 33",\
-"Format = STRING : [80] ",\
 "",\
 NULL }
 
@@ -432,7 +432,7 @@ typedef struct {
   INT       channel2wire[896];
 } WIRECHAMBER_SETTINGS;
 
-#define WIRECHAMBER_SETTINGS_STR(_name) char*_name[] = {\
+#define WIRECHAMBER_SETTINGS_STR(_name) char *_name[] = {\
 "[V1190A_0]",\
 "BaseAddress = DWORD : 0",\
 "ModuleType = STRING : [7] ",\
@@ -2327,7 +2327,7 @@ typedef struct {
   char      frontend_file_name[256];
 } WIRECHAMBER_COMMON;
 
-#define WIRECHAMBER_COMMON_STR(_name) char*_name[] = {\
+#define WIRECHAMBER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
 "Event ID = WORD : 1",\
 "Trigger mask = WORD : 0",\
