@@ -61,6 +61,8 @@ void SetADCChannelCalibration(int channel, double offset, double gain);
 void ADCClear();
 
 void ReadCalibrationParameters(std::string CalibFile);
+void ReadX1Offsets(std::string X1offsetsFile);
+void ReadTOFOffsets(std::string TOFoffsetsFile);
 
 void TDCInit();
 void TDCOffsetsClear();
