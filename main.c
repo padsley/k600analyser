@@ -1538,13 +1538,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
-<<<<<<< HEAD
+
        t_X1posO=X1pos + x1offset;     
-=======
 
-       t_X1posO=X1pos - x1offset;     
-
->>>>>>> 4268a52d9bd10030b125d66cb37dfeadd2ecfff2
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
@@ -1878,21 +1874,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _GAMMADATA
 gammy = new GammaData();
 #endif
-<<<<<<< HEAD
+
    
 #ifdef _SILICONDATA
 si = new SiliconData();
 #endif
    
-=======
 
-#ifdef _SILICONDATA
-si = new SiliconData();
-#endif
-
-
-  
->>>>>>> 4268a52d9bd10030b125d66cb37dfeadd2ecfff2
 #ifdef _RAWDATA
   if(raw)
   {
@@ -1976,11 +1964,8 @@ si = new SiliconData();
 
 #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
-<<<<<<< HEAD
-   delete si;
-=======
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
->>>>>>> 4268a52d9bd10030b125d66cb37dfeadd2ecfff2
+
 #endif
    
 #ifdef _GAMMADATA
@@ -2015,18 +2000,12 @@ si = new SiliconData();
 //================================================================================================
 INT main_eor(INT run_number)
 {
-<<<<<<< HEAD
-//#ifdef _SILICONDATA
-//   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
-//#endif
-=======
-
 /*
 #ifdef _SILICONDATA
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
 */
->>>>>>> 4268a52d9bd10030b125d66cb37dfeadd2ecfff2
+
 
    return SUCCESS;
 }
