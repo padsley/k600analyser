@@ -1524,7 +1524,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
-       t_X1posO=X1pos - x1offset;     
+       t_X1posO=X1pos + x1offset;     
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
@@ -1781,10 +1781,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFPx);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2);
+   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
 
@@ -1861,6 +1861,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 gammy = new GammaData();
 #endif
    
+#ifdef _SILICONDATA
+si = new SiliconData();
+#endif
+   
 #ifdef _RAWDATA
   if(raw)
   {
@@ -1883,7 +1887,7 @@ gammy = new GammaData();
 #endif
   
 #ifdef _MMM
-    if(si)‘TDCValues’
+    if(si)
     {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }
@@ -1944,6 +1948,7 @@ gammy = new GammaData();
 
 #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
+   delete si;
 #endif
    
 #ifdef _GAMMADATA
@@ -1978,9 +1983,9 @@ gammy = new GammaData();
 //================================================================================================
 INT main_eor(INT run_number)
 {
-#ifdef _SILICONDATA
-   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
-#endif
+//#ifdef _SILICONDATA
+//   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
+//#endif
 
    return SUCCESS;
 }

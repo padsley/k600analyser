@@ -1662,6 +1662,10 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
   extern int NXTOFCorr;
   extern double *XTOFCorr;
   extern double TOF_LSOffset;
+
+  extern double X1_LSOffset;  
+  extern double X1_refnocorr;
+
  
   //printf("XLineshapeOffset = %f\n",X_LSOffset);
 
@@ -1669,20 +1673,41 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
   for(int i=0;i<NXY1Corr;i++){
       if(i==0)result = X;
       if(i>0)result += XY1Corr[i] * pow(Y,i);
+    /*  if(X>740) 
+       {
+        printf("----------------------------> XY1Corr[i] * pow(Y,i) = : %f\n", XY1Corr[i] * pow(Y,i)); 
+        printf("----------------------------> XY1Corr[i] = : %f\n",XY1Corr[i]);
+        printf("----------------------------> pow(Y,i) = : %f\n",pow(Y,i));
+       }*/
   }
+
+ /* if(X>740) 
+     {
+       printf("----------------------------> X1posO = : %f\n",X); 
+       printf("----------------------------> Y = : %f\n",Y);
+       printf("----------------------------> Xcorr from YCorr = : %f\n",result);
+     }*/
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
   for(int i=0;i<NXTOFCorr;i++){
     if(i==0)result = result;
-    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i);
+    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i)*(X-X1_refnocorr)/(X1_LSOffset-X1_refnocorr);
+
   }
+  
+/*  if(X>740) 
+     {
+       printf("----------------------------> X1posO = : %f\n",X); 
+       printf("----------------------------> X1posCTOF = : %f\n",result);
+       printf("----------------------------> TOF-TOF_LSOffset = : %f\n",TOF-TOF_LSOffset);
+     }
+*/
+
   //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
 
   *Xcorr = result;
 }
-
-
 
 
 

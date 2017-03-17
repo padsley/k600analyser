@@ -76,6 +76,9 @@ double *XY1Corr;
 int NXTOFCorr; //Number of terms to correct X1pos (with offset) with TOF-TOF_LSOffset
 double *XTOFCorr; //pointer array to store the terms from above
 double TOF_LSOffset; //Offset for TOF to place it around 0
+double X1_LSOffset; //Offset for TOF to place it around 0
+double X1_refnocorr; //X1 reference peak where the correction is not needed
+
 
 int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
 double *ThFPSCATOffset;  //pointer array to store the terms from above
@@ -1442,6 +1445,20 @@ void ReadConfiguration()
 		 			 printf("TOFLineshapeOffset: %f \n",atof(LineBuffer.c_str()));
 		  			 TOF_LSOffset = atof(LineBuffer.c_str());
 					 //printf("X_LSOffset: %f \n",X_LSOffset);
+			       	}
+			else if(LineBuffer.compare(0,17,"X1LineshapeOffset") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("X1LineshapeOffset: %f \n",atof(LineBuffer.c_str()));
+		  			 X1_LSOffset = atof(LineBuffer.c_str());
+					// printf("X1_LSOffset: %f \n",X1_LSOffset);
+			       	}
+			else if(LineBuffer.compare(0,15,"X1refpeaknocorr") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("X1refpeaknocorr: %f \n",atof(LineBuffer.c_str()));
+		  			 X1_refnocorr = atof(LineBuffer.c_str());
+					// printf("X1_refnocorr: %f \n",X1_refnocorr);
 			       	}
 
 		 else
