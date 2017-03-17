@@ -1,0 +1,28 @@
+15:13:21.695 2017/03/17 [Analyzer,INFO] Program Analyzer on host localhost started
+15:13:21.912 2017/03/17 [Analyzer,INFO] Set run number 2464 in ODB
+15:13:29.062 2017/03/17 [Analyzer,ERROR] [midas.c:1999:,ERROR] cm_disconnect_experiment not called at end of program
+15:14:13.084 2017/03/17 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 32435 does not exists
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:14:13.084 2017/03/17 [Analyzer,INFO] Corrected 9 ODB entries
+15:14:13.084 2017/03/17 [Analyzer,INFO] Deleted entry '/System/Clients/32435' for client 'Analyzer' because it is not connected to ODB
+15:14:13.084 2017/03/17 [Analyzer,INFO] Program Analyzer on host localhost started
+15:14:13.084 2017/03/17 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 32435 does not exist
+15:14:13.313 2017/03/17 [Analyzer,INFO] Set run number 2464 in ODB
+15:14:29.129 2017/03/17 [Analyzer,INFO] Program Analyzer on host localhost stopped
