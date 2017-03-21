@@ -40,9 +40,9 @@ endif
 # ROOT flags and libs
 #
 ifdef ROOTSYS
-ROOTCFLAGS := $(shell  $(ROOTSYS)/bin/root-config --cflags)
+ROOTCFLAGS := $(shell  /usr/bin/root-config --cflags)
 ROOTCFLAGS += -DHAVE_ROOT -DUSE_ROOT
-ROOTLIBS   := $(shell  $(ROOTSYS)/bin/root-config --libs) -Wl,-rpath,$(ROOTSYS)/lib
+ROOTLIBS   := $(shell  /usr/bin/root-config --libs) -Wl,-rpath,/usr/lib64/root
 ROOTLIBS   += -lThread
 #SiliconDataDict.cxx:	SiliconDataDict.h
 #	rootcint -f $@ -c $^
