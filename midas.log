@@ -26,3 +26,115 @@
 15:14:13.084 2017/03/17 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 32435 does not exist
 15:14:13.313 2017/03/17 [Analyzer,INFO] Set run number 2464 in ODB
 15:14:29.129 2017/03/17 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:30:37.380 2017/03/17 [ODBEdit,INFO] Program ODBEdit on host localhost started
+15:30:52.237 2017/03/17 [ODBEdit,INFO] Program ODBEdit on host localhost stopped
+15:13:12.577 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+15:13:12.802 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+15:13:30.851 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:17:57.130 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+15:17:57.388 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+15:17:59.851 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:18:45.575 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+15:18:45.805 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+15:19:04.376 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:23:56.078 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+15:23:56.336 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+15:23:59.213 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:01:40.125 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:01:40.349 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:01:58.306 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:03:30.591 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:03:30.816 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:03:32.129 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:03:49.334 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:03:49.556 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:03:51.725 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:05:12.298 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:05:12.524 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:05:17.372 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:06:29.900 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:06:30.157 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:06:34.232 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:07:47.745 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:07:47.968 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:07:51.078 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:09:00.894 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:09:01.118 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:09:05.175 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:24:21.778 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:24:21.992 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:24:23.298 2017/03/20 [Analyzer,ERROR] [midas.c:1999:,ERROR] cm_disconnect_experiment not called at end of program
+16:25:16.887 2017/03/20 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 2816 does not exists
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+16:25:16.888 2017/03/20 [Analyzer,INFO] Corrected 9 ODB entries
+16:25:16.888 2017/03/20 [Analyzer,INFO] Deleted entry '/System/Clients/2816' for client 'Analyzer' because it is not connected to ODB
+16:25:16.888 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:25:16.888 2017/03/20 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 2816 does not exist
+16:25:17.088 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:25:21.098 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:26:23.528 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+16:26:23.743 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+16:26:40.260 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+17:01:28.175 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+17:01:28.393 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+17:01:44.644 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+17:02:54.111 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost started
+17:02:54.325 2017/03/20 [Analyzer,INFO] Set run number 2464 in ODB
+17:03:10.703 2017/03/20 [Analyzer,INFO] Program Analyzer on host localhost stopped
+11:00:26.618 2017/03/22 [Analyzer,INFO] Program Analyzer on host localhost started
+11:00:26.834 2017/03/22 [Analyzer,INFO] Set run number 2464 in ODB
+11:00:43.460 2017/03/22 [Analyzer,INFO] Program Analyzer on host localhost stopped
+11:36:08.640 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost started
+11:36:08.916 2017/03/28 [Analyzer,INFO] Set run number 2464 in ODB
+11:36:26.409 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost stopped
+11:49:58.077 2017/03/28 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 15099 does not exists
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Runinfo"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Runinfo"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+11:49:58.077 2017/03/28 [Analyzer,INFO] Corrected 4 ODB entries
+11:49:58.078 2017/03/28 [Analyzer,INFO] Deleted entry '/System/Clients/15099' for client 'Analyzer' because it is not connected to ODB
+11:49:58.078 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost started
+11:49:58.291 2017/03/28 [Analyzer,INFO] Set run number 2464 in ODB
+11:50:00.071 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost stopped
+11:51:01.148 2017/03/28 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 15129 does not exists
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Runinfo"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Runinfo"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+11:51:01.148 2017/03/28 [Analyzer,INFO] Corrected 4 ODB entries
+11:51:01.148 2017/03/28 [Analyzer,INFO] Deleted entry '/System/Clients/15129' for client 'Analyzer' because it is not connected to ODB
+11:51:01.148 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost started
+11:51:01.362 2017/03/28 [Analyzer,INFO] Set run number 2464 in ODB
+11:51:17.967 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:34:01.608 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost started
+16:34:01.810 2017/03/28 [Analyzer,INFO] Set run number 2464 in ODB
+16:34:04.806 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost stopped
+16:34:49.854 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost started
+16:34:50.068 2017/03/28 [Analyzer,INFO] Set run number 2464 in ODB
+16:35:07.374 2017/03/28 [Analyzer,INFO] Program Analyzer on host localhost stopped

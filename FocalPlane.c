@@ -1718,7 +1718,7 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
 
 
 //--------------------------------------------------------------------------------------
-double CalcQBrho(double Xcorr)
+double CalcQBrho(double Xcorr)  
 {
   //double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
   //double rig = 3.78562 + 0.000351737*Xcorr - 1.95361e-10*Xcorr*Xcorr;
@@ -1743,11 +1743,12 @@ double CalcTfromXcorr(double Xcorr, double mass)
   double T = 0;
 
   double rig = CalcQBrho(Xcorr);
+//  std::cout << "mass: " << mass << std::endl;
 
-  double p = rig * TMath::C()/1e6;
-  //std::cout << "p3: " << p3 << std::endl;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
+ // std::cout << "p3: " << p << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
-  //std::cout << "T3: " << T << std::endl;
+ // std::cout << "T3: " << T << std::endl;
   return T;
 }
 
@@ -1756,7 +1757,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1788,6 +1789,7 @@ double CalcEx(double Xcorr)
 
   extern double theta3;
   double theta4 = 0;
+  double Q =0;
 
   extern bool TestInelastic;
   if(TestInelastic)
@@ -1798,10 +1800,14 @@ double CalcEx(double Xcorr)
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9; //concersion factor to obtain the momentum in MeV/c if rigidity calculated with SPANC
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
+  Q = masses[0] + masses[1] - masses[2] -masses[3];
+//  std::cout << "Q: " << Q << std::endl;
+
+
   if(theta3 == 0)
     {
       theta4 = 0;
@@ -1817,13 +1823,49 @@ double CalcEx(double Xcorr)
       p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
       T4 = CalcTfromP(p4,masses[3]);
       //std::cout << "T4: " << T4 << std::endl;
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   //std::cout << "exE: " << exE << std::endl;
   if(exE<0)exE=0;
   if(Xcorr>800)exE=0;
   return exE;
 }
+
+//--------------------------------------------------------------------------------------
+/*double CalcEx(double Xcorr)
+{
+  double exE = 0;
+  extern double T1;
+  double  T2 = 0, T3 = 0, T4 = 0;//Energies in MeV
+
+  double p1, p2, p3, p4; //Momenta for each particle
+
+  extern double *masses;//This is a pointer array containing the information on the particle masses involved in the reaction
+
+  extern double theta3;
+  double theta4 = 0;
+
+  extern bool TestInelastic;
+  if(TestInelastic)
+    {
+      masses[2] = masses[0];
+      masses[3] = masses[1];
+    }
+
+  p1 = sqrt(T1 * (T1 + 2*masses[0]));
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9; //conversion factor to obtain the momentum in MeV/c if rigidity calculated with SPANC
+//  std::cout << "masses[0]: " << masses[0] << std::endl;
+//  std::cout << "T1: " << T1 << std::endl;
+//  std::cout << "p1: " << p1 << std::endl;
+//  std::cout << "p3: " << p3 << std::endl;
+  theta4 = 0;
+  exE = T1 + masses[0]+ masses[1] - sqrt(p3*p3+masses[2]*masses[2])-sqrt(p1*p1+p3*p3-2*p1*p3*cos(theta3*TMath::Pi()/180.)+masses[3]*masses[3]);
+
+ // std::cout << "exE: " << exE << std::endl;
+  if(exE<0)exE=0;
+  if(Xcorr>800)exE=0;
+  return exE;
+}*/
 
 //--------------------------------------------------------------------------------------
 double CorrectEx(double mEx)
