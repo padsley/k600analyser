@@ -1666,9 +1666,9 @@ double CalcTfromXcorr(double Xcorr, double mass)
 {
   double T = 0;
 
-  double rig = CalcQBrho(Xcorr);
+  double rig = CalcQBrho(Xcorr); 
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; // for QBrho calculated using NukeSim
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
@@ -1680,7 +1680,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9;  //Obtain momentum for QBrho in (T.mm) from NukeSim
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1722,7 +1722,7 @@ double CalcEx(double Xcorr)
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9; // For QBrho (T.mm) calculated with NukeSim
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
