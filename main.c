@@ -941,7 +941,7 @@ INT main_bor(INT run_number)
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 	
-   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+/*   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
    extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
@@ -954,7 +954,7 @@ INT main_bor(INT run_number)
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
    printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
-
+*/
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
@@ -962,7 +962,7 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
-   extern int *PadOffsets;	        // from Parameters.c 
+   extern double *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
@@ -981,9 +981,10 @@ INT main_bor(INT run_number)
 
    Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForPadOffsets;i++){
-       if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
+       if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i];
+     //  printf("------------------PAD offset= %f \n",PadOffsets[i]); // as defined in Parameter.c 
    }
-   printf("run %d: TOF offset= %d \n",RunNumber,Padoffset);
+   printf("run %d: PAD offset= %f \n",RunNumber,Padoffset);
 
    return SUCCESS;
 }

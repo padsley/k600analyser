@@ -1733,7 +1733,7 @@ double CalcQBrho(double Xcorr)
       //printf("XRigidityPars[%d]: %e\n",i,XRigidityPars[i]);
       rig += XRigidityPars[i] * pow(Xcorr,(double)i);
     }
-  //std::cout << "rig: " << rig << std::endl;
+//  std::cout << "rig: " << rig << std::endl;
   return rig;
 }
 
@@ -1801,11 +1801,19 @@ double CalcEx(double Xcorr)
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
   p3 = CalcQBrho(Xcorr) * TMath::C()/1e9; //concersion factor to obtain the momentum in MeV/c if rigidity calculated with SPANC
-  //std::cout << "p3: " << p3 << std::endl;
+
+/*  std::cout << "masses[0]: " << masses[0] << std::endl;
+  std::cout << "masses[1]: " << masses[1] << std::endl;
+  std::cout << "masses[2]: " << masses[2] << std::endl;
+  std::cout << "masses[3]: " << masses[3] << std::endl;
+  std::cout << "p1: " << p1 << std::endl;
+  std::cout << "p2: " << p2 << std::endl;
+  std::cout << "p3: " << p3 << std::endl;
+*/
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
-  //std::cout << "T3: " << T3 << std::endl;
+//  std::cout << "T3: " << T3 << std::endl;
   Q = masses[0] + masses[1] - masses[2] -masses[3];
-//  std::cout << "Q: " << Q << std::endl;
+ // std::cout << "Q: " << Q << std::endl;
 
 
   if(theta3 == 0)
@@ -1813,8 +1821,11 @@ double CalcEx(double Xcorr)
       theta4 = 0;
       
       p4 = p1 - p3;
+    //  std::cout << "p4: " << p4 << std::endl;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-      exE = T1 - T3 - T4;
+   //   std::cout << "T4: " << T4 << std::endl;
+   //   std::cout << "T1: " << T1 << std::endl;
+      exE = T1 - T3 - T4 + Q;
     }
   else
     {
@@ -1825,7 +1836,7 @@ double CalcEx(double Xcorr)
       //std::cout << "T4: " << T4 << std::endl;
       exE = T1 - T3 - T4 + Q;
     }
-  //std::cout << "exE: " << exE << std::endl;
+ // std::cout << "exE: " << exE << std::endl;
   if(exE<0)exE=0;
   if(Xcorr>800)exE=0;
   return exE;
