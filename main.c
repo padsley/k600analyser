@@ -1805,7 +1805,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
-   //t_Ex = CalcExDirect(Xcorr);‘TDCValues’
+   //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr2);
 
    extern double *masses;
@@ -1904,7 +1904,7 @@ si = new SiliconData();
 #endif
   
 #ifdef _MMM
-    if(si)‘TDCValues’
+    if(si)
     {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
     }
