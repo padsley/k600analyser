@@ -54,18 +54,18 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-#define _PRINTTOSCREEN
+//#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
 #define _RAWDATA
-//#define _SILICONDATA 
-//#define _MMM
+#define _SILICONDATA 
+#define _MMM
 //#define _W1
-#define _GAMMADATA
+//#define _GAMMADATA
 // #define _HAGAR
-#define _SCINTILLATOR
-#define _CLOVER
+//#define _SCINTILLATOR
+//#define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -1773,9 +1773,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   //thetaFP = CalcThetaFP(X1pos,X2pos);
+   thetaFP = CalcThetaFP(X1pos,X2pos);
    //t_thetaFP = thetaFP;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
