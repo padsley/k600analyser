@@ -1719,7 +1719,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
 
   double rig = CalcQBrho(Xcorr);
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
@@ -1731,7 +1731,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1773,17 +1773,19 @@ double CalcEx(double Xcorr)
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
+  Q = masses[0] + masses[1] - masses[2] -masses[3];
+
   if(theta3 == 0)
     {
       theta4 = 0;
       
       p4 = p1 - p3;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   else
     {
@@ -1792,7 +1794,7 @@ double CalcEx(double Xcorr)
       p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
       T4 = CalcTfromP(p4,masses[3]);
       //std::cout << "T4: " << T4 << std::endl;
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   //std::cout << "exE: " << exE << std::endl;
   if(exE<0)exE=0;
