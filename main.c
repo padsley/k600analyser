@@ -983,7 +983,7 @@ INT main_bor(INT run_number)
    for (int i = 0; i< NrOfRunsForPadOffsets;i++){
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
    }
-   printf("run %d: TOF offset= %d \n",RunNumber,Padoffset);
+   printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
 
    return SUCCESS;
 }
