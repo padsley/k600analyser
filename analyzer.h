@@ -24,6 +24,8 @@
 #define N_TDC               896
 #define N_SCLR              16    //Note; this number corresponds to 2x enabled channels/scaler
 #define N_PAT               16
+#define N_MSRD		    54
+#define N_DMND		    54
 
 
 /*-- Histo ID bases ------------------------------------------------*/

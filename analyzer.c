@@ -30,6 +30,11 @@
 #include <TTree.h>
 #include <TFile.h>
 
+/* home-made includes */
+#include "Parameters.h"
+
+
+
 /*                   // what is this!?! I thought we are working with ROOT? 
 #ifdef HAVE_HBOOK
 #include <cfortran.h>
@@ -62,6 +67,7 @@ int qdc_counter1=0, qdc_counter2=0;
 int adc_counter1=0, adc_counter2=0;
 int tdc_counter=0;
 int scaler_counter=0;
+int beamline_counter=0;
 int trailer_TDCERR_counter=0;
 int trailer_triglost_counter=0;
 int trailer_bufoverflow_counter=0;
@@ -70,9 +76,15 @@ int trailer_bufoverflow_counter=0;
 
 /*-- Module declarations -------------------------------------------*/
 extern ANA_MODULE scaler_accum_module;
-extern ANA_MODULE focalplane_module;
+extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
-extern ANA_MODULE adc_module;                     //RN
+extern ANA_MODULE adc_module;                    
+extern ANA_MODULE beamline_module;                    
+
+ANA_MODULE *beam_module[] = {
+   &beamline_module,
+   NULL
+};
 
 ANA_MODULE *scaler_module[] = {
    &scaler_accum_module,
@@ -80,23 +92,21 @@ ANA_MODULE *scaler_module[] = {
 };
 
 ANA_MODULE *trigger_module[] = {
-   &adc_module,					 //RN
+   &adc_module,					
    &qdc_module,
-   &focalplane_module,
+   &main_module,
    NULL
 };
 
 
 
 /*-- Bank definitions ----------------------------------------------*/
-//ASUM_BANK_STR(asum_bank_str);
 
 BANK_LIST ana_trigger_bank_list[] = {
     // online banks 
-    //{"ADC0", TID_DWORD, N_ADC, NULL},           //RN
-    {"QDC0", TID_DWORD, N_ADC, NULL},
+    {"ADC0", TID_DWORD, N_ADC, NULL},         
+    {"QDC0", TID_DWORD, N_QDC, NULL},
     {"TDC0", TID_DWORD, N_TDC, NULL},
-    //{"PAT0", TID_DWORD, N_PAT, NULL},
 
     // calculated banks 
     //{"CADC", TID_FLOAT, N_ADC, NULL},
@@ -111,6 +121,14 @@ BANK_LIST ana_scaler_bank_list[] = {
 
    // calculated banks 
    //   {"ACUM", TID_DOUBLE, N_ADC, NULL},
+
+   {""},
+};
+
+BANK_LIST ana_beam_bank_list[] = {
+   // online banks 
+   {"MSRD", TID_FLOAT, N_MSRD, NULL},
+   {"DMND", TID_FLOAT, N_DMND, NULL},
 
    {""},
 };
@@ -150,6 +168,23 @@ ANALYZE_REQUEST analyze_request[] = {
     }
    ,
 
+
+   {"Beamline",                     /* equipment name */
+    {3,                         /* event ID */
+     TRIGGER_ALL,               /* trigger mask */
+     GET_ALL,                   /* get all events */
+     "SYSTEM",                  /* event buffer */
+     TRUE,                      /* enabled */
+     "", "",}
+    ,
+    NULL,                       /* analyzer routine */
+    beam_module,                /* module list */
+    ana_beam_bank_list,         /* bank list */
+    100,                        /* RWNT buffer size */
+    }
+   ,
+
+
    {""}
    ,
 };
@@ -188,6 +223,9 @@ INT analyzer_init()
 
    //printf("\n---testing testing 123----------------------------------------------- %i  \n\n\n\n ",runinfo.run_number);
    //runnr=runinfo.run_number;
+
+
+   ParameterInit();
 
 
    return SUCCESS;
@@ -283,9 +321,8 @@ INT ana_end_of_run(INT run_number, char *error)
 
 
    // close the root file (that containst the trees) created in f-plane.c
-   extern TFile *f1;  // declared in f-plane.c
-   extern TTree *t1;  // declared in f-plane.c
-   extern TTree *t2;  // declared in f-plane.c
+   extern TFile *f1;  // declared in main.c
+   extern TTree *t1;  // declared in main.c
    f1->cd();
    f1->Write();
    f1->Close();
