@@ -14,12 +14,17 @@
 #include <cmath>
 #include "multiTDC.h"
 
-SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+//SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import);
+void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si);
 
 bool MMMSuppressChannel(int Channel);
 double MMMEnergyCalc(int Channel, double ADCValue);
+// double MMMThetaCalc(int FrontChannel, int BackChannel);
+//(int Channel);
+// double MMMPhiCalc(int FrontChannel, int BackChannel);
 double MMMThetaCalc(int Channel);
-double MMMPhiCalc(int Channel);
+//double MMMPhiCalc(int Channel);
+double MMMPhiCalc(int DetNum, int Channel);
 bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si);
 bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel);
 bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel);
@@ -38,5 +43,7 @@ bool MMMTDCBackTest(int TDCChannel);
 bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel);
 
 int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel);
+
+
 
 #endif
