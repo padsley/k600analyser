@@ -13,7 +13,7 @@ SiliconData::~SiliconData()
 void SiliconData::PrintEvent()//Print out the 'proper' information about an event
 {
   //Want to print out the number of valid silicon hits
-  printf("Silicon hits: %d\n",SizeOfEvent());
+  printf("SiliconData PrintEvent routine: Silicon hits: %d\n",SizeOfEvent());
   
   for(unsigned int i=0;i<SizeOfEvent();i++)
   {
@@ -25,8 +25,8 @@ void SiliconData::PrintEvent()//Print out the 'proper' information about an even
 bool SiliconData::TestEvent()
 {
   bool result = true;
-//  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good and shizzle like that 
- unsigned int hits = SiliconEnergy.size();
+//  Test the output data: do we have the same number of hits in each thing (energy, time etc.) and are the events good
+  unsigned int hits = SiliconEnergy.size();
 
   //Check to see the same number of hits c.f. the energy hits. If you get a lot of warning messages from theta, phi, time here, that's likely because you're doing the energy hits wrong/differently
   if(SiliconTheta.size() != hits){printf("Mismatched size: Theta\n"); result = false;}
@@ -34,12 +34,13 @@ bool SiliconData::TestEvent()
   if(SiliconTime.size() != hits){printf("Mismatched size: Time\n"); result = false;}
   if(SiliconTimeFront.size() != hits){printf("Mismatched size: Front Time\n"); result = false;}
   if(SiliconTimeBack.size() != hits){printf("Mismatched size: Back Time\n"); result = false;}
+  if(SiliconTimeOffset.size() != hits){printf("Mismatched size: Offset Time\n"); result = false;}
   //Check to see that the calculated energy value lies within the right region - i.e. between the front and back energy stored for that channel
   for(unsigned int i=0; i<hits; i++)
   {
 //     if(!((SiliconEnergy.at(i)>EnergyFront.at(i) && SiliconEnergy.at(i)<EnergyBack.at(i)) || (SiliconEnergy.at(i)<EnergyFront.at(i) && SiliconEnergy.at(i)>EnergyBack.at(i))))printf("SiliconEnergy doesn't fall between the front and back energies");
   //Check to see that the computed angle is reasonable and that nothing weird is going on - you need to add you own checks here as detector positions will change
-    if(SiliconTheta.at(i)<90){printf("SiliconTheta suggests a silicon detector at forward angles - problem in angle computation\n"); result = false;}
+    if(SiliconTheta.at(i)<90) {printf("SiliconTheta suggests a silicon detector at forward angles - problem in angle computation\n"); result = false;}
   }
   
   if(DetectorHit.size() != hits){printf("Mismatched size: DetectorHit"); result = false;}
@@ -66,6 +67,9 @@ void SiliconData::ClearEvent()
   SiliconTheta.clear();
   SiliconPhi.clear();
   SiliconTime.clear();
+  SiliconTimeFront.clear();
+  SiliconTimeBack.clear();
+  SiliconTimeOffset.clear();
   
   DetectorHit.clear();
   ADCChannelFront.clear();

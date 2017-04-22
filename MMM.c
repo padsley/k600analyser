@@ -10,6 +10,8 @@
 
 #include "SiliconData.h"
 #include "MMM.h"
+#include "MMManglecalibration.h"     // a file from Kevin, based on his GEANT simlulations. Can be exp specific.
+#include "ADCPedestal.h"
 
 extern int ADCModules;
 extern int ADCsize;
@@ -21,14 +23,16 @@ extern int **MMMTDCChannelLimits;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
+extern double *TDCOffsets;
+
 TCutG *MMMFrontBackEnergyCut;
 
-const double sigma = 30;//keV - silicon energy resolution - used for the front-back energy cut condition
+const double sigma = 100;//keV - silicon energy resolution - used for the front-back energy cut condition
 
-SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
+//---------------------------------------------------------------------
+void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, SiliconData *si)
 {
-  SiliconData *si = new SiliconData();
-
+  //SiliconData *si = new SiliconData();
   //Loop over ADC and TDC events and do the following:
   //Check whether there are front-back coincidences for a detector and test the energies
   //Check to see whether there's a TDC event for the same channel as the front hit ADC - TDCs are apparently in single-hit mode. Don't need to worry about multihits
@@ -43,32 +47,42 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 	for(int l=0;l<mTDC.GetSize();l++)//Loop over all of the TDC values *again* but in this case, looking for the N sides
 	  {
 	    if(MMMTDCBackTest(mTDC.GetChannel(l)) && MMMTDCFrontBackTest(mTDC.GetChannel(k),mTDC.GetChannel(l)))
-	      {
+	      { 
+		//printf("MMMSiliconSort L116 test\n");
 		int DetNum = MMMTDCIdentifyDetector(mTDC.GetChannel(k),mTDC.GetChannel(l));
 		if(DetNum>0)
 		  {	
-		    for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+		    //for(int i=MMMADCChannelLimits[DetNum-1][0];i<=MMMADCChannelLimits[DetNum-1][1];i++)
+		    int i = MMMADCChannelLimits[DetNum-1][0] + (mTDC.GetChannel(k) - MMMTDCChannelLimits[DetNum-1][0]);
 		      {
+		        //printf("MMMSiliconSort L122 test\n");
 			//Don't want to run for events w
 			if(MMMADCTDCChannelTestPSide(i,mTDC.GetChannel(k)) && ADC_import[i]>0)
 			  {
-			    for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+			    //printf("MMMSiliconSort L126 test\n");
+			    //for(int j=MMMADCChannelLimits[DetNum-1][2];j<=MMMADCChannelLimits[DetNum-1][3];j++)
+			    int j = MMMADCChannelLimits[DetNum-1][2] + (mTDC.GetChannel(l) - MMMTDCChannelLimits[DetNum-1][2]);
 			      {
+			        //printf("MMMSiliconSort L129 test\n");
 				if(ADC_import[j]>0)
-				  {
+				  {//printf("test\n");
 				    double energyi = MMMEnergyCalc(i,ADC_import[i]);
 				    double energyj = MMMEnergyCalc(j,ADC_import[j]);
 				    
 				    //Test whether the hits are in the front and back of the same detector and whether the energies are good
 				    if(MMMFrontBackTest(i,j,energyi,energyj,si) && MMMADCTDCChannelTestNSide(j,mTDC.GetChannel(l)) && 0.5*(energyi+energyj)>400)
-				      {
-					si->SetEnergy(0.5*(energyi+energyj));
-					si->SetTheta(MMMThetaCalc(i));
-					si->SetPhi(MMMPhiCalc(j));
+				      {				
+	                                //printf("MMMSiliconSort L134 test\n");
+					si->SetEnergy(energyi);
+
+					si->SetTheta(MMMThetaCalc(i)); // RN 7 March 16: I propose a different way
+					si->SetPhi(MMMPhiCalc(DetNum,j));     // RN 7 March 16: I proposa a different way
 					
 					si->SetTime(mTDC.GetValue(k));
 					si->SetTimeFront(mTDC.GetValue(k));
 					si->SetTimeBack(mTDC.GetValue(l));
+
+					si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
 					
 					si->SetDetectorHit(MMMDetHitNumber(i,j));
 					si->SetADCChannelFront(i);
@@ -77,7 +91,9 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
 					si->SetStripBack(MMMStripBack(j));
 					  
 					si->SetTDCChannelFront(mTDC.GetChannel(k));
-					si->SetTDCChannelBack(-1);
+
+					si->SetTDCChannelBack(mTDC.GetChannel(l));
+
 					si->SetADCValueFront(ADC_import[i]);
 					si->SetADCValueBack(ADC_import[j]);
 					  
@@ -99,14 +115,19 @@ SiliconData *MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import
   }
   
   si->SetHits(si->SizeOfEvent());
-  if(!si->TestEvent())si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
-  //printf("MMM.c L88");
+  //printf("SiliconData PrintEvent routine: Silicon hits: %d\n",si->SizeOfEvent());
+  //si->PrintEvent();
+  //printf("MMM.c L180\n");
+  if(!si->TestEvent()) si->ClearEvent(); //If the event fails for some reason, we void it and clear it here. The number of these should be logged and, ideally, should be zero. A VOIDED EVENT IS ONE IN WHICH ALL SILICON DATA ARE THROWN AWAY BECAUSE THE RESULT IS **WRONG**. There are more energy hits than theta hits, for example. IT THEY ARE HAPPENING, THEN YOU'VE DONE IT WRONG.
+  //printf("MMM.c L182\n");
   //MMMGhostBuster(SiliconData *si);
 
   mTDC.ClearEvent();
-  return si;
+  //return si;
+
 }
 
+//---------------------------------------------------------------------
 void MMMLoadCuts(SiliconData *si)
 {
   printf("Load MMM Front-Back Energy cut\n");
@@ -115,6 +136,7 @@ void MMMLoadCuts(SiliconData *si)
   cutg->SetVarY("EnergyFront");
   cutg->SetTitle("Graph");
   cutg->SetFillColor(1);
+/*
   cutg->SetPoint(0,8625.54,9448.89);
   cutg->SetPoint(1,9436.42,9393.27);
   cutg->SetPoint(2,9398.71,8336.6);
@@ -123,23 +145,35 @@ void MMMLoadCuts(SiliconData *si)
   cutg->SetPoint(5,516.703,912.076);
   cutg->SetPoint(6,8625.54,9143.01);
   cutg->SetPoint(7,8625.54,9448.89);
+*/
+  cutg->SetPoint(0,500.,0.);   
+  cutg->SetPoint(1,0.,500.);   
+  cutg->SetPoint(2,14500.,15000.);   
+  cutg->SetPoint(3,15000.,14500.);   
+  cutg->SetPoint(4,500.,0.);   
+
   
   MMMFrontBackEnergyCut = cutg;
 }
 
+//---------------------------------------------------------------------
 void MMMInit()//Initialise function which gets the information on the DAQ channels->Physical channels
 { 
+     initialize_Angles();
+     initialize_pedestal();
 //This bit is currently doing nowt but may be called at the beginning of each 'event' to set up useful things for other bits of the code.
 }
 
+//---------------------------------------------------------------------
 bool MMMSuppressChannel(int Channel)//If the ADC channel is one which we wish to suppress, we do that here. Use if(Channel = 12)return true to suppress channel 12. Load of else ifs for the other suppressed channels. Then else return false.
 {
-  if(Channel>128)
+  if(Channel>1000)
     return true;
   else
     return false;
 }
 
+//---------------------------------------------------------------------
 double MMMEnergyCalc(int Channel, double ADCValue)
 {
   //define the silicon calibration parameters
@@ -149,9 +183,12 @@ double MMMEnergyCalc(int Channel, double ADCValue)
   return result;
 }
 
+
+
+//---------------------------------------------------------------------
 double MMMThetaCalc(int Channel)
 {
-  double theta = 180;
+   double theta = 180;
   switch (Channel%16)//The MMM detectors run 0->15, 16->31 etc. If this changes, this theta calculation section will also be forced to change
     {
     case 0:
@@ -161,7 +198,7 @@ double MMMThetaCalc(int Channel)
       theta = 161.351428;
       break;
     case 2:
-      theta = 161.351428;
+      theta = 157.984833;
       break;
     case 3:
       theta = 154.813167;
@@ -209,43 +246,59 @@ double MMMThetaCalc(int Channel)
   return theta;
 }
 
-double MMMPhiCalc(int Channel)
+
+
+//---------------------------------------------------------------------
+double MMMPhiCalc(int DetNum, int Channel)
 {
-  double phi = 0;
-  switch ((Channel-64)%8)
+
+ double phi = 0;
+//  int DetNum = MMMTDCIdentifyDetector();
+  int TempChannel = Channel - MMMADCChannelLimits[DetNum-1][2];
+  if(TempChannel<0 || TempChannel>7)printf("Impossible TempChannel in MMMPhiCalc: %d\n",TempChannel);
+  int trueChannel = -1;
+
+  switch (TempChannel)
     {
     case 0:
-      phi = 26.270786;
+      phi = 315.4;
       break;
     case 1:
-      phi = 34.409036;
+      phi = 323.2;
       break;
     case 2:
-      phi = 42.881504;
+      phi = 331.4;
       break;
     case 3:
-      phi = 51.563195;
+      phi = 339.7;
       break;
     case 4:
-      phi = 60.289173;
+      phi = 348.1;
       break;
     case 5:
-      phi = 68.896820;
+      phi = 356.4;
       break;
     case 6:
-      phi = 77.234830;
+      phi = 4.3;
       break;
     case 7:
-      phi = 85.188565;
+      phi = 12.1;
       break;
     default : 
       phi = 0;
       //printf("Phi value not found - you doggone fucked up, lad... Phi switch case is %d\n",(Channel-80)%8);
     }
-    phi = 0;
+
+  phi += (DetNum-1)*72;
+  if(phi>360)phi-=360;
+
   return phi;
+
 }
 
+
+
+//---------------------------------------------------------------------
 bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, double BackEnergy, SiliconData *si)
 {
   bool result = false;
@@ -270,6 +323,7 @@ bool MMMFrontBackTest(int FrontChannel, int BackChannel, double FrontEnergy, dou
 }
 
 
+//---------------------------------------------------------------------
 int MMMDetHitNumber(int FrontChannel, int BackChannel)
 {
   int result = 0;
@@ -283,6 +337,7 @@ int MMMDetHitNumber(int FrontChannel, int BackChannel)
   return result;
 }
 
+//---------------------------------------------------------------------
 bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
 { 
   bool result = false;
@@ -302,9 +357,11 @@ bool MMMADCTDCChannelTestPSide(int ADCChannel, int TDCChannel)
      if(MMMTDCChannelLimits[i][0]==-1)result = true;
      if(MMMTDCChannelLimits[i][1]==-1)result = true;
      }
+     if(!result)printf("Well crap - MMMADCTDCChannelTestPSide\n");
   return result;
 }
 
+//---------------------------------------------------------------------
 bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel)
 { 
   bool result = false;
@@ -324,9 +381,11 @@ bool MMMADCTDCChannelTestNSide(int ADCChannel, int TDCChannel)
      if(MMMTDCChannelLimits[i][2]==-1)result = true;
      if(MMMTDCChannelLimits[i][3]==-1)result = true;
      }
+     if(!result)printf("Well crap - MMMADCTDCChannelTestNSide\n");
   return result;
 }
 
+//---------------------------------------------------------------------
 int MMMStripFront(int FrontChannel)
 {
   int result = 0;
@@ -334,6 +393,7 @@ int MMMStripFront(int FrontChannel)
   return result;
 }
 
+//---------------------------------------------------------------------
 int MMMStripBack(int BackChannel)
 {
   int result = 0;
@@ -341,6 +401,7 @@ int MMMStripBack(int BackChannel)
   return result;
 }
 
+//---------------------------------------------------------------------
 bool MMMTDCFrontTest(int TDCChannel)
 {
   bool result = false;
@@ -357,6 +418,7 @@ bool MMMTDCFrontTest(int TDCChannel)
   return result;
 }
 
+//---------------------------------------------------------------------
 bool MMMTDCBackTest(int TDCChannel)
 {
   bool result = false;
@@ -372,6 +434,7 @@ bool MMMTDCBackTest(int TDCChannel)
   return result;
 }
 
+//---------------------------------------------------------------------
 bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
 {
   bool result = false;
@@ -380,11 +443,14 @@ bool MMMTDCFrontBackTest(int TDCFrontChannel, int TDCBackChannel)
       if(TDCFrontChannel>=MMMTDCChannelLimits[i][0] && TDCFrontChannel<=MMMTDCChannelLimits[i][1] && TDCBackChannel>=MMMTDCChannelLimits[i][2] && TDCBackChannel<=MMMTDCChannelLimits[i][3])
 	{
 	  result = true;
+	  //printf("TDC F-B true\n");
 	}
+      //else printf("TDC F-B false\n");
     }
   return result;
 }
   
+//---------------------------------------------------------------------
 int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel)
 {
   int result = -1;
@@ -398,3 +464,7 @@ int MMMTDCIdentifyDetector(int TDCFrontChannel, int TDCBackChannel)
   //printf("result = %d\n",result);
   return result;
 }
+
+
+
+

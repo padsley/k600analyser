@@ -1588,7 +1588,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
-//lineshape correction
+//lineshape correction when you have a well defined thetaSCAT
 {
    //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
   //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
@@ -1597,14 +1597,26 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
+
   extern int NXThetaXCorr;
   extern double *XThetaXCorr;
+
   extern int NXThetaXLoffCorr;
   extern double *XThetaXLoffCorr;
   extern double X_LSOffset;
+
   extern int NXY1Corr;
   extern double *XY1Corr;
   
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+  //printf("X to start with: %f\n",X);
+
+  //printf("X to start with: %f\n",X);
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+ 
   //printf("XLineshapeOffset = %f\n",X_LSOffset);
   //printf("X to start with: %f\n",X);
 
@@ -1638,8 +1650,47 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
+
   *Xcorr = result;
 }
+
+
+//--------------------------------------------------------------------------------------
+void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
+//lineshape correction when using only 1 detector
+{
+
+  double result = 0;
+
+  extern int NXY1Corr;
+  extern double *XY1Corr;
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+ 
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+
+  //At this point, result is X1posC after the ThSCAT correction
+  for(int i=0;i<NXY1Corr;i++){
+      if(i==0)result = X;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+  }
+  //printf("Xcorr from YCorr: %f\n",result);
+  //printf("------------------------------------------\n");
+
+  for(int i=0;i<NXTOFCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i);
+  }
+  //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
+
+  *Xcorr = result;
+}
+
+
+
+
 
 //--------------------------------------------------------------------------------------
 double CalcQBrho(double Xcorr)
@@ -1668,7 +1719,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
 
   double rig = CalcQBrho(Xcorr);
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
@@ -1680,7 +1731,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1722,17 +1773,20 @@ double CalcEx(double Xcorr)
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
+  double Q;
+  Q = masses[0] + masses[1] - masses[2] -masses[3];
+
   if(theta3 == 0)
     {
       theta4 = 0;
       
       p4 = p1 - p3;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   else
     {
@@ -1741,7 +1795,7 @@ double CalcEx(double Xcorr)
       p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
       T4 = CalcTfromP(p4,masses[3]);
       //std::cout << "T4: " << T4 << std::endl;
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   //std::cout << "exE: " << exE << std::endl;
   if(exE<0)exE=0;
