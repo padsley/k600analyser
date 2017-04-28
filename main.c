@@ -55,11 +55,11 @@
 // #define _JJAUTOTRIM
 // #define _PRINTTOSCREEN
 // #define _VDCRESCALCS
-// #define _FULLANALYSIS
+ #define _FULLANALYSIS
 // #define _MISALIGNTIME
 // #define _RAWDATA
-// #define _SILICONDATA 
-// #define _MMM
+ #define _SILICONDATA 
+ #define _MMM
 // #define _W1
 // #define _GAMMADATA
 // #define _HAGAR
@@ -1819,11 +1819,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 gammy = new GammaData();
 #endif
    
-#ifdef _SILICONDATA
-si = new SiliconData();
-#endif
-
-
 #ifdef _RAWDATA
   if(raw)
   {
@@ -1894,7 +1889,6 @@ si = new SiliconData();
 
 #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
-   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
    
 #ifdef _GAMMADATA
