@@ -2,45 +2,46 @@
 
 
 
-#for COUNT in {1069,1070,1071,1072,1076,1077,1078,1082,1084,1085,1087,1088,1090,1091,1092,1093,1098,1099,1100}
-for COUNT in {1069,1072,1078,1085,1090,1091,1098}
+#for COUNT in {32206,32207,32208,32211,32212,32216,32217,32219,32220,32224,32225,32226,32231,32232,32234,32235,32238}
+#for COUNT in {32199,32213,32222,32230,32237}
+for COUNT in {32206,32207,32208,32212,32216}
 
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/run/media/lmdonaldson/Elements/PR217/run0000"$COUNT".mid.gz"
+      FILE="/media/lmdonaldson/Elements/Backups/Linux/DATA-PR184/MID/run0000"$COUNT".mid.gz"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/run/media/lmdonaldson/PR217/run000"$COUNT".mid.gz"
+      FILE="/media/lmdonaldson/Elements/Backups/Linux/DATA-PR184/MID/run000"$COUNT".mid.gz"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/run/media/lmdonaldson/Elements/PR217/run00"$COUNT".mid.gz"
+      FILE="/media/lmdonaldson/Elements/Backups/Linux/DATA-PR184/MID/run00"$COUNT".mid.gz"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/run/media/lmdonaldson/Elements/PR217/run0"$COUNT".mid.gz"
+      FILE="/media/lmdonaldson/Elements/Backups/Linux/DATA-PR184/MID/run0"$COUNT".mid.gz"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE="/run/media/lmdonaldson/Elements/PR217/run"$COUNT".mid.gz"
+      FILE="/media/lmdonaldson/Elements/Backups/Linux/DATA-PR184/MID/run"$COUNT".mid.gz"
   else
       echo "This might not work"
   fi
   echo $FILE
   if [ $COUNT -lt 10 ]
   then
-      FILE2="/home/lmdonaldson/K600/DATA/PR217/sorted0000"$COUNT".root"
+      FILE2="/home/lmdonaldson/K600/DATA/PR184/sorted0000"$COUNT".root"
   elif [ $COUNT -lt 100 ]
   then
-      FILE2="/home/lmdonaldson/K600/DATA/PR217/sorted000"$COUNT".root"
+      FILE2="/home/lmdonaldson/K600/DATA/PR184/sorted000"$COUNT".root"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE2="/home/lmdonaldson/K600/DATA/PR217/sorted00"$COUNT".root"
+      FILE2="/home/lmdonaldson/K600/DATA/PR184/sorted00"$COUNT".root"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE2="/home/lmdonaldson/K600/DATA/PR217/sorted0"$COUNT".root"
+      FILE2="/home/lmdonaldson/K600/DATA/PR184/sorted0"$COUNT".root"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE2="/home/lmdonaldson/K600/DATA/PR217/sorted"$COUNT".root"
+      FILE2="/home/lmdonaldson/K600/DATA/PR184/sorted"$COUNT".root"
   else
       echo "This might not work"
   fi
