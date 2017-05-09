@@ -522,14 +522,37 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
 	  } 
       }
       else if(preampcount<22){ // wireplane U1  =================================================
-	  basecount=300;
-	  preampbase=13;
-	  channelstart=basecount+(preampcount-preampbase)*16;
-	  for(int i=channelstart;i<channelstart+16;i++){
-	    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
-	    chan2wire[tdcchan]=i;
-	    //printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
-	  }
+	  	basecount=300;
+	  	preampbase=13;
+	  	channelstart=basecount+(preampcount-preampbase)*16;
+	  	for(int i=channelstart;i<channelstart+16;i++){
+	    	tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	    	chan2wire[tdcchan]=i;
+	    	//printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
+	  	}
+	  
+	  	//	PR240
+	  	//	A modification to the wire-to-channel mapping
+	  	//	This is because preamp4 was not properly plugged in, 
+	  	//	This resulted in a dangling channel that did not receive information from it's intended wire
+	    chan2wire[304]=349;
+	    chan2wire[305]=350;
+	    chan2wire[306]=351;
+	    chan2wire[307]=352;
+	    chan2wire[308]=353;
+	    chan2wire[309]=354;
+	    chan2wire[310]=355;
+	    chan2wire[311]=356;
+	    chan2wire[312]=357;
+	    chan2wire[313]=358;
+	    chan2wire[314]=359;
+	    chan2wire[315]=360;
+	    chan2wire[316]=361;
+	    chan2wire[317]=362;
+	    chan2wire[318]=363;
+	    chan2wire[319]=348;
+
+	  
       }
       else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
 	  basecount=508;
