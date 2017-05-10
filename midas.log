@@ -104,3 +104,14 @@ Tue Jan 17 11:02:05 2017 [ODBEdit,INFO] Program ODBEdit on host rnlap started
 Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:1015:ss_shm_delete,ERROR] shm_unlink(/Default_SYSMSG_SHM) errno 2 (No such file or directory)
 Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
 Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERROR] cannot get host name
+14:42:14.916 2017/05/09 [ODBEdit,INFO] Program ODBEdit on host localhost started
+14:42:43.313 2017/05/09 [ODBEdit,INFO] Program ODBEdit on host localhost stopped
+14:42:47.762 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost started
+14:42:48.650 2017/05/09 [Analyzer,INFO] Set run number 1128 in ODB
+14:43:05.659 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:43:05.859 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost started
+14:43:06.281 2017/05/09 [Analyzer,INFO] Set run number 3133 in ODB
+14:43:19.146 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:43:19.340 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost started
+14:43:19.758 2017/05/09 [Analyzer,INFO] Set run number 3151 in ODB
+14:44:05.556 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost stopped
