@@ -1777,7 +1777,7 @@ double CalcEx(double Xcorr)
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
-  Q = masses[0] + masses[1] - masses[2] -masses[3];
+  double Q = masses[0] + masses[1] - masses[2] -masses[3];
 
   if(theta3 == 0)
     {
