@@ -138,12 +138,12 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    INT n;
    DWORD *psclr;
    extern int scaler_counter;		      // defined; declared in analyzer.c
- 
-   scaler_counter++;
 
    // look for SCLR bank ===========================================================================================
    n = bk_locate(pevent, "SCLR", &psclr);   // n = number of data words in scaler bank
    if (n == 0)  return 1;
+
+   scaler_counter++;   // ensures scaler counter increase only for SCLR banks that has data in it
 
    //printf("number of data words in scaler bank = %d \n",n); 
    //printf("                                    readout %d:",counter);
