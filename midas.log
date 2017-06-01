@@ -3723,3 +3723,334 @@
 03:16:02.546 2017/05/21 [Analyzer,INFO] Program Analyzer on host localhost started
 03:16:02.818 2017/05/21 [Analyzer,INFO] Set run number 1236 in ODB
 03:23:47.586 2017/05/21 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:54:57.194 2017/05/29 [Analyzer,INFO] Program Analyzer on host localhost started
+14:54:57.482 2017/05/29 [Analyzer,INFO] Set run number 1236 in ODB
+14:54:58.606 2017/05/29 [Analyzer,ERROR] [midas.c:1999:,ERROR] cm_disconnect_experiment not called at end of program
+14:55:08.748 2017/05/29 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 6852 does not exists
+14:55:08.748 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+14:55:08.748 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+14:55:08.748 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+14:55:08.748 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+14:55:08.749 2017/05/29 [Analyzer,INFO] Corrected 9 ODB entries
+14:55:08.749 2017/05/29 [Analyzer,INFO] Deleted entry '/System/Clients/6852' for client 'Analyzer' because it is not connected to ODB
+14:55:08.749 2017/05/29 [Analyzer,INFO] Program Analyzer on host localhost started
+14:55:08.749 2017/05/29 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 6852 does not exist
+14:55:08.991 2017/05/29 [Analyzer,INFO] Set run number 2227 in ODB
+14:55:34.557 2017/05/29 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:00:32.060 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:00:32.285 2017/05/30 [Analyzer,INFO] Set run number 2227 in ODB
+15:00:35.244 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:02:41.209 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:02:41.408 2017/05/30 [Analyzer,INFO] Set run number 2227 in ODB
+15:02:43.852 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:15:58.200 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:15:58.412 2017/05/30 [Analyzer,INFO] Set run number 2227 in ODB
+15:16:23.563 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:16:23.903 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:16:24.135 2017/05/30 [Analyzer,INFO] Set run number 2233 in ODB
+15:16:48.430 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:16:48.714 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:16:48.958 2017/05/30 [Analyzer,INFO] Set run number 2238 in ODB
+15:17:14.526 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:17:14.866 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:17:15.087 2017/05/30 [Analyzer,INFO] Set run number 2243 in ODB
+15:17:45.471 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:17:45.767 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:17:45.999 2017/05/30 [Analyzer,INFO] Set run number 2250 in ODB
+15:18:10.657 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:18:10.932 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:18:11.187 2017/05/30 [Analyzer,INFO] Set run number 2256 in ODB
+15:18:38.064 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:18:38.336 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:18:38.554 2017/05/30 [Analyzer,INFO] Set run number 2272 in ODB
+15:18:58.080 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:18:58.360 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:18:58.588 2017/05/30 [Analyzer,INFO] Set run number 2281 in ODB
+15:19:16.143 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:19:16.413 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:19:16.656 2017/05/30 [Analyzer,INFO] Set run number 2290 in ODB
+15:19:42.494 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:19:42.922 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:19:43.139 2017/05/30 [Analyzer,INFO] Set run number 2307 in ODB
+15:20:10.467 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:20:10.738 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:20:10.958 2017/05/30 [Analyzer,INFO] Set run number 2320 in ODB
+15:20:19.932 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:20:20.329 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:20:20.550 2017/05/30 [Analyzer,INFO] Set run number 2321 in ODB
+15:20:23.894 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:20:24.153 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:20:24.376 2017/05/30 [Analyzer,INFO] Set run number 2322 in ODB
+15:21:09.018 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:21:09.339 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:21:09.565 2017/05/30 [Analyzer,INFO] Set run number 2328 in ODB
+15:21:27.385 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:21:27.671 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:21:27.897 2017/05/30 [Analyzer,INFO] Set run number 2336 in ODB
+15:21:47.810 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:21:48.140 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:21:48.367 2017/05/30 [Analyzer,INFO] Set run number 2356 in ODB
+15:22:06.750 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:22:07.025 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:22:07.248 2017/05/30 [Analyzer,INFO] Set run number 2362 in ODB
+15:22:25.390 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:22:25.744 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:22:25.967 2017/05/30 [Analyzer,INFO] Set run number 2370 in ODB
+15:22:43.354 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:22:43.625 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:22:43.845 2017/05/30 [Analyzer,INFO] Set run number 2376 in ODB
+15:23:04.537 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:23:04.806 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:23:05.026 2017/05/30 [Analyzer,INFO] Set run number 2383 in ODB
+15:23:23.887 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:23:24.151 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:23:24.379 2017/05/30 [Analyzer,INFO] Set run number 2398 in ODB
+15:23:47.686 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:23:47.957 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:23:48.180 2017/05/30 [Analyzer,INFO] Set run number 2403 in ODB
+15:24:13.639 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:24:13.909 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:24:14.142 2017/05/30 [Analyzer,INFO] Set run number 2408 in ODB
+15:24:36.672 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:24:36.944 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:24:37.159 2017/05/30 [Analyzer,INFO] Set run number 2412 in ODB
+15:24:58.321 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:24:58.603 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:24:58.859 2017/05/30 [Analyzer,INFO] Set run number 2426 in ODB
+15:25:14.098 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:25:14.379 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:25:14.615 2017/05/30 [Analyzer,INFO] Set run number 2431 in ODB
+15:25:32.251 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:25:32.510 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:25:32.737 2017/05/30 [Analyzer,INFO] Set run number 2435 in ODB
+15:25:47.440 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:25:47.713 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:25:47.931 2017/05/30 [Analyzer,INFO] Set run number 2442 in ODB
+15:26:09.930 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:26:10.192 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:26:10.440 2017/05/30 [Analyzer,INFO] Set run number 2446 in ODB
+15:26:33.143 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:26:33.423 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:26:33.681 2017/05/30 [Analyzer,INFO] Set run number 2450 in ODB
+15:26:54.768 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:26:55.045 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:26:55.305 2017/05/30 [Analyzer,INFO] Set run number 2455 in ODB
+15:27:11.511 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:27:11.793 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:27:12.043 2017/05/30 [Analyzer,INFO] Set run number 2459 in ODB
+15:27:29.397 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:27:29.667 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost started
+15:27:29.892 2017/05/30 [Analyzer,INFO] Set run number 2464 in ODB
+15:27:46.184 2017/05/30 [Analyzer,INFO] Program Analyzer on host localhost stopped
+13:53:17.517 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:53:17.729 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+13:53:21.581 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+13:53:22.406 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:53:22.406 2017/06/01 [Analyzer,ERROR] [midas.c:1999:,ERROR] cm_disconnect_experiment not called at end of program
+13:53:23.160 2017/06/01 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 8567 does not exists
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+13:53:23.160 2017/06/01 [Analyzer,INFO] Corrected 9 ODB entries
+13:53:23.160 2017/06/01 [Analyzer,INFO] Deleted entry '/System/Clients/8567' for client 'Analyzer' because it is not connected to ODB
+13:53:23.161 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:53:23.161 2017/06/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 8567 does not exist
+13:53:23.395 2017/06/01 [Analyzer,INFO] Set run number 2238 in ODB
+13:53:24.783 2017/06/01 [Analyzer,ERROR] [midas.c:1999:,ERROR] cm_disconnect_experiment not called at end of program
+13:53:34.942 2017/06/01 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 8601 does not exists
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+13:53:34.942 2017/06/01 [Analyzer,INFO] Corrected 9 ODB entries
+13:53:34.943 2017/06/01 [Analyzer,INFO] Deleted entry '/System/Clients/8601' for client 'Analyzer' because it is not connected to ODB
+13:53:34.943 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:53:34.943 2017/06/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 8601 does not exist
+13:53:35.154 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+13:53:36.606 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+13:56:29.591 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:56:29.803 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+13:56:33.915 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+13:57:31.278 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:57:31.490 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+13:57:34.667 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+13:58:45.772 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+13:58:45.972 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+13:58:48.468 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:09:25.724 2017/06/01 [Analyzer,ERROR] [odb.c:1229:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 9237 does not exists
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Runinfo"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Runinfo"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+14:09:25.724 2017/06/01 [Analyzer,INFO] Corrected 4 ODB entries
+14:09:25.724 2017/06/01 [Analyzer,INFO] Deleted entry '/System/Clients/9237' for client 'Analyzer' because it is not connected to ODB
+14:09:25.724 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:09:25.923 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:09:28.588 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:10:56.504 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:10:56.703 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:10:59.335 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:11:54.903 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:11:55.104 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:11:57.374 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:12:50.729 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:12:50.928 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:13:16.058 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:13:51.479 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:13:51.691 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:14:16.886 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:36:22.361 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:36:22.573 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:36:26.014 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:40:50.504 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:40:50.717 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:40:53.280 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:49:23.498 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:49:23.713 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:49:49.242 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:50:23.581 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:50:23.797 2017/06/01 [Analyzer,INFO] Set run number 2227 in ODB
+14:50:49.301 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:50:49.600 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:50:49.851 2017/06/01 [Analyzer,INFO] Set run number 2233 in ODB
+14:51:15.152 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:51:15.453 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:51:15.667 2017/06/01 [Analyzer,INFO] Set run number 2238 in ODB
+14:51:41.449 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:51:41.723 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:51:41.955 2017/06/01 [Analyzer,INFO] Set run number 2243 in ODB
+14:52:12.351 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:52:12.626 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:52:12.854 2017/06/01 [Analyzer,INFO] Set run number 2250 in ODB
+14:52:37.914 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:52:38.233 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:52:38.496 2017/06/01 [Analyzer,INFO] Set run number 2256 in ODB
+14:53:05.784 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:53:06.060 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:53:06.285 2017/06/01 [Analyzer,INFO] Set run number 2272 in ODB
+14:53:26.022 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:53:26.308 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:53:26.529 2017/06/01 [Analyzer,INFO] Set run number 2281 in ODB
+14:53:44.673 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:53:44.952 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:53:45.197 2017/06/01 [Analyzer,INFO] Set run number 2290 in ODB
+14:54:12.136 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:54:12.425 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:54:12.656 2017/06/01 [Analyzer,INFO] Set run number 2307 in ODB
+14:54:41.472 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:54:41.745 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:54:41.996 2017/06/01 [Analyzer,INFO] Set run number 2320 in ODB
+14:54:51.370 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:54:51.666 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:54:51.896 2017/06/01 [Analyzer,INFO] Set run number 2321 in ODB
+14:54:55.420 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:54:55.686 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:54:55.922 2017/06/01 [Analyzer,INFO] Set run number 2322 in ODB
+14:55:41.855 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:55:42.140 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:55:42.364 2017/06/01 [Analyzer,INFO] Set run number 2328 in ODB
+14:56:00.961 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:56:01.274 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:56:01.507 2017/06/01 [Analyzer,INFO] Set run number 2336 in ODB
+14:56:22.342 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:56:22.618 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:56:22.840 2017/06/01 [Analyzer,INFO] Set run number 2356 in ODB
+14:56:42.081 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:56:42.384 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:56:42.643 2017/06/01 [Analyzer,INFO] Set run number 2362 in ODB
+14:57:01.509 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:57:01.806 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:57:02.028 2017/06/01 [Analyzer,INFO] Set run number 2370 in ODB
+14:57:20.161 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:57:20.456 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:57:20.682 2017/06/01 [Analyzer,INFO] Set run number 2376 in ODB
+14:57:41.741 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:57:42.049 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:57:42.296 2017/06/01 [Analyzer,INFO] Set run number 2383 in ODB
+14:58:01.970 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:58:02.247 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:58:02.468 2017/06/01 [Analyzer,INFO] Set run number 2398 in ODB
+14:58:26.591 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:58:26.876 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:58:27.102 2017/06/01 [Analyzer,INFO] Set run number 2403 in ODB
+14:58:53.142 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:58:53.418 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:58:53.641 2017/06/01 [Analyzer,INFO] Set run number 2408 in ODB
+14:59:16.442 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:59:16.717 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:59:16.947 2017/06/01 [Analyzer,INFO] Set run number 2412 in ODB
+14:59:38.601 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:59:38.876 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:59:39.125 2017/06/01 [Analyzer,INFO] Set run number 2426 in ODB
+14:59:54.756 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+14:59:55.055 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+14:59:55.302 2017/06/01 [Analyzer,INFO] Set run number 2431 in ODB
+15:00:13.540 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:00:13.816 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:00:14.054 2017/06/01 [Analyzer,INFO] Set run number 2435 in ODB
+15:00:29.284 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:00:29.570 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:00:29.792 2017/06/01 [Analyzer,INFO] Set run number 2442 in ODB
+15:00:52.218 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:00:52.497 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:00:52.722 2017/06/01 [Analyzer,INFO] Set run number 2446 in ODB
+15:01:15.717 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:01:15.995 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:01:16.219 2017/06/01 [Analyzer,INFO] Set run number 2450 in ODB
+15:01:37.200 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:01:37.507 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:01:37.744 2017/06/01 [Analyzer,INFO] Set run number 2455 in ODB
+15:01:54.243 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:01:54.506 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:01:54.724 2017/06/01 [Analyzer,INFO] Set run number 2459 in ODB
+15:02:11.518 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped
+15:02:11.805 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:02:12.041 2017/06/01 [Analyzer,INFO] Set run number 2464 in ODB
+15:02:28.118 2017/06/01 [Analyzer,INFO] Program Analyzer on host localhost stopped

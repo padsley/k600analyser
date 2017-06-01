@@ -25,9 +25,13 @@ extern double *ADCGains;
 
 extern double **ADCCalibrationParameters;
 
+extern double *GammaTimeOffsets;	        // from Parameters.c 
+extern int *DetNrForGammaTimeOffsets;       // from Parameters.c  
+extern int NrOfDetForGammaTimeOffsets;     // nr of Det for which we have GammaTimeoffsets read it via Parameters.c
+
 TRandom3 *randyScint = new TRandom3(0);
 
-
+Double_t GammaTimeScintoffset=0;
 
 //GammaData *ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy)
@@ -45,23 +49,37 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
     if(ScintillatorTDCTest(mTDC->GetChannel(k)))
       {
           int DetNum = ScintillatorTDCIdentifyDetector(mTDC->GetChannel(k));
+      
           if(DetNum>0)
           	{
 		  for(int i=DetNum-2;i<NumberOfScintillator+1;i=i+2)
 		      {
+		    //  printf("DetNum: %d; \i: %d\n",DetNum,i);
                        int j = ScintillatorADCChannels[i-1];
 			 //	  printf("Det: %d; \tADCChannel: %d\n",i,j);                       
 			if(ScintillatorADCTDCChannelCheck(j,mTDC->GetChannel(k)))
 			{
+				int label= i; //the detector number starts from 1
+				
+				// alignement of the GammaTime value+++++++++++++++
+				GammaTimeScintoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+				//printf("------------------NrOfDetForGammaTimeOffsets= %d \n",NrOfDetForGammaTimeOffsets); // as defined in Parameter.c 
+				for (int n = 0; n< NrOfDetForGammaTimeOffsets;n++){
+				 if( DetNrForGammaTimeOffsets[n] == (label+100)) GammaTimeScintoffset=GammaTimeOffsets[n];
+			        //printf("------------------GammaTime offset= %f \n",GammaTimeOffsets[n]); // as defined in Parameter.c 
+			        }
+			        //printf("Det Scint %d: GammaTime offset= %f \n",label,GammaTimeScintoffset);
+			        //++++++++++++++++++
+			        
 			 //	  printf("Det: %d; \tADCChannel: %d \t TDCChannel: %d\n",i,j,mTDC->GetChannel(k));
 	  			double GammaEnergy = ScintillatorEnergyCalc(j,ADC_import[j]);
 	  			if(GammaEnergy>0.1)
 	  			{
 	    			gammy->SetEnergy(GammaEnergy);
-	    			gammy->SetTime(mTDC->GetValue(k));
+	    			gammy->SetTime(mTDC->GetValue(k)-GammaTimeScintoffset);	    			  
 				gammy->SetDetectorType("Scintillator"); //the detector type will allow to choose between Hagar, Clover or Scintillator
 
-				int label= i; //the detector number starts from 1
+				
 				gammy->SetDetectorLabel(label); 
  				gammy->SetGammaRawADC(ADC_import[j]);
  				gammy->SetGammaADCChannel(j);

@@ -26,9 +26,15 @@ extern double *ADCGains;
 
 extern double **ADCCalibrationParameters;
 
+extern double *GammaTimeOffsets;	        // from Parameters.c 
+extern int *DetNrForGammaTimeOffsets;       // from Parameters.c  
+extern int NrOfDetForGammaTimeOffsets;     // nr of Det for which we have GammaTimeoffsets read it via Parameters.c
+
+
 TRandom3 *randy = new TRandom3(0);
 
 int CountGammaHits[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+Double_t GammaTimeCloveroffset=0;
 
 //GammaData *CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy)
@@ -84,7 +90,18 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 	  			//printf("Test4\n");
 	  			CountGammaHits[5]++;
 	    			gammy->SetEnergy(GammaEnergy);
-	    			gammy->SetTime(mTDC->GetValue(k));
+	    			
+	    			// alignement of the GammaTime value+++++++++++++++
+				GammaTimeCloveroffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+				//printf("------------------NrOfDetForGammaTimeOffsets= %d \n",NrOfDetForGammaTimeOffsets); // as defined in Parameter.c 
+				for (int n = 0; n< NrOfDetForGammaTimeOffsets;n++){
+				       if( DetNrForGammaTimeOffsets[n] == (Segm+(DetNum-1)*4)) GammaTimeCloveroffset=GammaTimeOffsets[n];
+			        //printf("------------------GammaTime offset= %f \n",GammaTimeOffsets[n]); // as defined in Parameter.c 
+			        }
+			      //  printf("Det %d Segm %d: GammaTime offset= %f \n",DetNum, Segm,GammaTimeCloveroffset);
+			        //++++++++++++++++++
+	    			
+	    			gammy->SetTime(mTDC->GetValue(k)-GammaTimeCloveroffset);
 				gammy->SetDetectorType("Clover");
 
 				gammy->SetDetectorLabel(DetNum);

@@ -101,6 +101,10 @@ int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
 double *PadOffsets;
 
+int NrOfDetForGammaTimeOffsets;
+int *DetNrForGammaTimeOffsets;
+double *GammaTimeOffsets;
+
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -828,6 +832,55 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   printf("Finished reading %d TPadoffsets\n",counter);
 }
 
+/*-------------------------------------------------*/
+void ReadGammaTimeOffsets(std::string GammaTimeoffsetsFile)
+{
+  printf("Read GammaTimeOffsets using file %s\n",GammaTimeoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(GammaTimeoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: GammaTime offsets for all runs are left at 0 **********\n");
+    DetNrForGammaTimeOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfGammaTimeOffsets")"
+    GammaTimeOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(GammaTimeoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int detnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  detnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Detnr: %d\tOffset: %f\t \n",detnr,offset);          
+          DetNrForGammaTimeOffsets[counter]=detnr;
+          GammaTimeOffsets[counter]= offset;
+          counter++;
+          
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d GammaTimeoffsets\n",counter);
+}
 
 /*-------------------------------------------------*/
 void ExRunCorrectionsInit(int runs)
@@ -1041,8 +1094,9 @@ void ReadConfiguration()
   bool ThFPSCATSlopeParametersRead = false;
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
-
   bool PadOffsetParametersRead = false;
+  bool GammaTimeOffsetParametersRead = false;
+
 
   std::ifstream input;
 
@@ -1292,6 +1346,21 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
 		  ReadPadOffsets(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,20,"NrOfGammaTimeOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d GammaTimeoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfDetForGammaTimeOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfDetForGammaTimeOffsets<1) NrOfDetForGammaTimeOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  DetNrForGammaTimeOffsets = new int[NrOfDetForGammaTimeOffsets];
+                  GammaTimeOffsets = new double[NrOfDetForGammaTimeOffsets];
+	        }
+	      else if(LineBuffer.compare(0,20,"GammaTimeOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using GammaTimeoffsets file: %s\n",LineBuffer.c_str());
+		  ReadGammaTimeOffsets(LineBuffer);
 		}
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
