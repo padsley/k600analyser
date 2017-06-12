@@ -576,10 +576,10 @@ INT main_init(void)
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
-   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 896, 0, 896);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelengths offsets incl)", 1200, 4000, 10000, 896, 0, 896);
+   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelengths offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
 
    hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
    hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -598,17 +598,17 @@ INT main_init(void)
 
    #ifdef _FULLANALYSIS
    hDriftTimeRawAll  = new TH1F("hDriftTimeRawAll","All drifttimes (before subtracting ref times), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hDriftTimeOffsetAll  = new TH1F("hDriftTimeOffsetAll","All drifttimes (cablelenghts offsets included), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hDriftTimeOffsetAll  = new TH1F("hDriftTimeOffsetAll","All drifttimes (cablelengths offsets included), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
    hX1_DriftTimeRef  = new TH1F("hX1_DriftTimeRef","X1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hX2_DriftTimeRef  = new TH1F("hX2_DriftTimeRef","X2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hU1_DriftTimeRef  = new TH1F("hU1_DriftTimeRef","U1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hU2_DriftTimeRef  = new TH1F("hU2_DriftTimeRef","U2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
-   hX1_DriftTimeOffset = new TH1F("hX1_DriftTimeOff","X1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hX2_DriftTimeOffset = new TH1F("hX2_DriftTimeOff","X2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU1_DriftTimeOffset = new TH1F("hU1_DriftTimeOff","U1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU2_DriftTimeOffset = new TH1F("hU2_DriftTimeOff","U2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX1_DriftTimeOffset = new TH1F("hX1_DriftTimeOff","X1 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX2_DriftTimeOffset = new TH1F("hX2_DriftTimeOff","X2 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU1_DriftTimeOffset = new TH1F("hU1_DriftTimeOff","U1 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU2_DriftTimeOffset = new TH1F("hU2_DriftTimeOff","U2 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
    hX1_Hits  = new TH1F("hX1_Hits","X1 wires/event (all X1 events)",20,0,20);
    hX2_Hits  = new TH1F("hX2_Hits","X2 wires/event (all U1 events)",20,0,20);
@@ -1444,27 +1444,27 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t wrangeU1 = 1 + U1.wire[U1hits_dt-1]-U1.wire[0];
    Int_t wrangeU2 = 1 + U2.wire[U2hits_dt-1]-U2.wire[0];
 
-   //DriftLength spectra fill
+   //DriftLength calculation
    Int_t drifttime=0;
    for(int i = 0; i < X1hits_dt ; i++) { 
      drifttime=X1.time[i];
-     X1.dist[i]=lutx1[drifttime]*DRIFTLENGTH;     //X1.dist is driftlength in actual mm
-     hX1_DriftLength->Fill(X1.dist[i]);
+     X1.dist[i]=lutx1[drifttime]*DRIFTLENGTH;     // X1.dist is driftlength in actual mm
+ //    hX1_DriftLength->Fill(X1.dist[i]);  			  // DriftLength filled only after X1flag==0 conditions are known after raytrace
    }
    for(int i = 0; i < X2hits_dt ; i++) { 
      drifttime=X2.time[i];
      X2.dist[i]=lutx2[drifttime]*DRIFTLENGTH;
-     hX2_DriftLength->Fill(X2.dist[i]);
+//     hX2_DriftLength->Fill(X2.dist[i]);
    }
    for(int i = 0; i < U1hits_dt ; i++) { 
      drifttime=U1.time[i];
      U1.dist[i]=lutu1[drifttime]*DRIFTLENGTH;
-     hU1_DriftLength->Fill(U1.dist[i]);
+//     hU1_DriftLength->Fill(U1.dist[i]);
    }
    for(int i = 0; i < U2hits_dt ; i++) { 
      drifttime=U2.time[i];
      U2.dist[i]=lutu2[drifttime]*DRIFTLENGTH;
-     hU2_DriftLength->Fill(U2.dist[i]);
+//     hU2_DriftLength->Fill(U2.dist[i]);
    }
    
    //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
@@ -1525,7 +1525,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hEventID->Fill(ev_id_X1_good);  // good X1 events 
 	   for(int i = 0; i < X1hits_dt ; i++) { 
 		//if(X1pos>0 && X1pos<249){
-	     hX1_DriftTimeGood->Fill(X1.time[i]);	
+	     hX1_DriftTimeGood->Fill(X1.time[i]);
+	   //  hX1_DriftLength->Fill(X1.dist[i]);	
                 //}
 	   }
 	   #ifdef _FULLANALYSIS
@@ -1586,7 +1587,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hU1_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_U1_good);  // good U1 events 
 	   for(int i = 0; i < U1hits_dt ; i++) { 
-	     hU1_DriftTimeGood->Fill(U1.time[i]);	
+	     hU1_DriftTimeGood->Fill(U1.time[i]);
+	   //  hU1_DriftLength->Fill(U1.dist[i]);	
 	   }
 	   #ifdef _FULLANALYSIS
 	   hU1_Chisq->Fill(U1chisq);
@@ -1644,7 +1646,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hX2_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_X2_good);  // good X2 events 
 	   for(int i = 0; i < X2hits_dt ; i++) { 
-	     hX2_DriftTimeGood->Fill(X2.time[i]);	
+	     hX2_DriftTimeGood->Fill(X2.time[i]);
+	  //   hX2_DriftLength->Fill(X2.dist[i]);	
 	   }
 	   #ifdef _FULLANALYSIS
 	   hX2_Chisq->Fill(X2chisq);
@@ -1703,7 +1706,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hU2_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_U2_good);  // good U2 events 	 
 	   for(int i = 0; i < U2hits_dt ; i++) { 
-	     hU2_DriftTimeGood->Fill(U2.time[i]);	
+	     hU2_DriftTimeGood->Fill(U2.time[i]);
+	   //  hU2_DriftLength->Fill(U2.dist[i]);	
 	   }
 	   #ifdef _FULLANALYSIS
 	   hU2_Chisq->Fill(U2chisq);
@@ -1716,7 +1720,33 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        }  
      }
    }   
-
+   
+   // Fill DriftLength histograms
+   
+   if(X1flag==0) {
+		for(int i = 0; i < X1hits_dt ; i++) {    	
+   	hX1_DriftLength->Fill(X1.dist[i]);
+   	}
+   }
+   	
+   if(X2flag==0) {
+		for(int i = 0; i < X2hits_dt ; i++) {    	
+   	hX2_DriftLength->Fill(X2.dist[i]);
+   	}
+	}
+	
+	if(U1flag==0) {
+		for(int i = 0; i < U1hits_dt ; i++) { 
+		hU1_DriftLength->Fill(U1.dist[i]);
+		}
+	}		
+	if(U2flag==0) {
+		for(int i = 0; i < U2hits_dt ; i++) { 
+		hU2_DriftLength->Fill(U2.dist[i]);
+		}
+	}
+		
+		
    //--------------------------------------------------------------------------------------------------------
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
