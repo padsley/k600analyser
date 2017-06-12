@@ -1525,7 +1525,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
 
-       t_X1posO=X1pos - x1offset;     
+       t_X1posO=X1pos + x1offset;     
 
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
@@ -1781,10 +1781,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2);
+   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
 
