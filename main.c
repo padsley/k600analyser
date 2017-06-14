@@ -1449,22 +1449,22 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    for(int i = 0; i < X1hits_dt ; i++) { 
      drifttime=X1.time[i];
      X1.dist[i]=lutx1[drifttime]*DRIFTLENGTH;     // X1.dist is driftlength in actual mm
- //    hX1_DriftLength->Fill(X1.dist[i]);  			  // DriftLength filled only after X1flag==0 conditions are known after raytrace
+     hX1_DriftLength->Fill(X1.dist[i]); 
    }
    for(int i = 0; i < X2hits_dt ; i++) { 
      drifttime=X2.time[i];
      X2.dist[i]=lutx2[drifttime]*DRIFTLENGTH;
-//     hX2_DriftLength->Fill(X2.dist[i]);
+     hX2_DriftLength->Fill(X2.dist[i]);
    }
    for(int i = 0; i < U1hits_dt ; i++) { 
      drifttime=U1.time[i];
      U1.dist[i]=lutu1[drifttime]*DRIFTLENGTH;
-//     hU1_DriftLength->Fill(U1.dist[i]);
+     hU1_DriftLength->Fill(U1.dist[i]);
    }
    for(int i = 0; i < U2hits_dt ; i++) { 
      drifttime=U2.time[i];
      U2.dist[i]=lutu2[drifttime]*DRIFTLENGTH;
-//     hU2_DriftLength->Fill(U2.dist[i]);
+     hU2_DriftLength->Fill(U2.dist[i]);
    }
    
    //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
@@ -1720,7 +1720,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        }  
      }
    }   
-   
+/*   
    // Fill DriftLength histograms
    
    if(X1flag==0) {
@@ -1745,7 +1745,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		hU2_DriftLength->Fill(U2.dist[i]);
 		}
 	}
-		
+*/		
 		
    //--------------------------------------------------------------------------------------------------------
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
