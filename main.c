@@ -55,7 +55,7 @@
 // #define _JJAUTOTRIM
 // #define _PRINTTOSCREEN
 // #define _VDCRESCALCS
- #define _FULLANALYSIS
+// #define _FULLANALYSIS
 // #define _MISALIGNTIME
 // #define _RAWDATA
 // #define _SILICONDATA 
@@ -139,12 +139,11 @@ VDC U2;
 Double_t t_pad1,t_pad2;        
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
-Int_t    t_tof,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
+Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
 Int_t    t_k600;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
-Double_t x1offset=0.0;
 Int_t    t_triggerI=0;
 Int_t    t_triggerU=0;
 Int_t    t_CII=0;
@@ -248,7 +247,8 @@ Double_t U1wirefit[10], U1distfit[10];
 Double_t X2wirefit[10], X2distfit[10];      
 Double_t U2wirefit[10], U2distfit[10];  
 
-
+Double_t x1offset=0.0;
+Int_t TOFoffset=0;
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -418,7 +418,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_tdcsperevent=0;
    t_pad1hiP=-1;  t_pad1lowP=-1;  t_pad2hiP=-1;  t_pad2lowP=-1;
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
-   t_tof=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
+   t_tof=0; t_toftdc1=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
    t_k600=0; t_runtime=-1;
    t_triggerI=0, t_triggerU=0, t_CII=0, t_CIU=0;
    t_X1hits = -100; t_X2hits = -100; t_U1hits = -100; t_U2hits = -100;
@@ -671,6 +671,7 @@ INT main_init(void)
   t1->Branch("CII",&t_CII,"t_CII/I");
 
   t1->Branch("tof",&t_tof,"t_tof/I");
+  t1->Branch("toftdc1",&t_toftdc1,"t_toftdc1/I");
   t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/I");
   t1->Branch("toftdc3",&t_toftdc3,"t_toftdc3/I");
   t1->Branch("toftdc4",&t_toftdc4,"t_toftdc4/I");
@@ -919,34 +920,30 @@ INT main_bor(INT run_number)
    printf("lut u1 offset: %d \n",globals.lut_u1_offset);
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
-
 	
-   extern int RunNumber;  //defined in Parameter.c
-   switch(RunNumber){
-   // in case of analysis of 12C data
-   // I have to improve things so that ALL the WE2 data of PR226 are aligned to one run
-   // NOTE: the -0.9mm is to ensure the Ex calibration is ok, since we calibrate with O states and that is approx 40 keV different
-   // in terms of kinematics. So now I use the O calibration but offsets the X1pos to compensate...
-       //case 1089: x1offset=-0.9; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1090: x1offset=-0.9-0.109863; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1091: x1offset=-0.9-0.15863; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1092: x1offset=-0.9-0.207886; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1093: x1offset=-0.9-0.0908203; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1094: x1offset=-0.9-0.138123; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1095: x1offset=-0.9-0.057; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1096: x1offset=-0.9-0.0791626; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-       //case 1099: x1offset=-0.9+0.0325928; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1100: x1offset=-0.9-0.0883179; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1101: x1offset=-0.9-0.0873413; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1106: x1offset=-0.9-0.195862; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1029: x1offset=-0.9-0.125366; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1035: x1offset=-0.9-0.230042; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1045: x1offset=-0.9+0.150452; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1046: x1offset=-0.9+0.278992; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1062: x1offset=-0.9+0.251282; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
-        //case 1080: x1offset=-0.9-0.211487; printf("run %d: x1 offset= %f \n",RunNumber,x1offset); break;   
+   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+   extern double *X1Offsets;	        // from Parameters.c 
+   extern int *RunNrForX1Offsets;       // from Parameters.c  
+   extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
+   extern int *TOFOffsets;	        // from Parameters.c 
+   extern int *RunNrForTOFOffsets;       // from Parameters.c  
+   extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
 
+   x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForX1Offsets;i++){
+       if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
+   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
+
+
+   TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
+       if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+
+
+
    return SUCCESS;
 }
 
@@ -967,7 +964,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
    Int_t reftimes[10]; 
-   Int_t tof=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
+   Int_t tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
@@ -986,7 +983,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
-
+ 
    int *TDC_channel_export;
    float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
@@ -1217,7 +1214,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
 
-		case TOF_TDC_CHAN: if(t_tof==0) {tof=ref_time; t_tof=tof;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
+						 tof=ref_time+TOFoffset; 
+						 t_tof=tof;
+						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
 		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
 		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
 		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
@@ -1488,7 +1488,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
 
        t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
-       t_X1posO=X1pos - x1offset;         
+       t_X1posO=X1pos + x1offset;         
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
        t_X1chisq=X1chisq;
@@ -1747,7 +1747,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos-x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
