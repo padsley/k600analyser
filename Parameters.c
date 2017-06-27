@@ -90,12 +90,13 @@ int NrOfRunsForX1Offsets;
 int *RunNrForX1Offsets;
 double *X1Offsets;
 
-std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters;
+bool X1MappingDefined;
+std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_cache;
+std::tuple<int, std::vector<double>> X1MappingParameters;
 
 std::vector<std::vector<int>> TLCRunRanges_cache;
 std::vector<std::vector<int>> TLCCorrectionTypes_cache;
 std::vector<std::vector<std::vector<std::vector<double>>>> TLCParameters_cache;
-
 std::vector<int> TLCRunRanges;
 std::vector<int> TLCCorrectionTypes;
 std::vector<std::vector<std::vector<double>>> TLCParameters;
@@ -615,7 +616,7 @@ void ReadX1Mapping(std::string X1mappingFile)
             InputFile >> LineBuffer;
         }
         
-        X1MappingParameters.push_back(std::make_tuple(runNr,X1MappingParameters_perRun));
+        X1MappingParameters_cache.push_back(std::make_tuple(runNr,X1MappingParameters_perRun));
     }
 
     InputFile.close();

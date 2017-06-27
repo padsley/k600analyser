@@ -953,18 +953,22 @@ INT main_bor(INT run_number)
     extern int *RunNrForPadOffsets;       // from Parameters.c
     extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
     
-    extern std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters;
-    
-    
-    for(auto i = X1MappingParameters.begin(); i != X1MappingParameters.end(); ++i)
-    {
-        std::cout << "Run: " << std::get<0>((*i));
+    extern bool X1MappingDefined;
+    extern std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_cache;
+    extern std::tuple<int, std::vector<double>> X1MappingParameters;
 
+    X1MappingDefined = false;
+    
+    for(auto i = X1MappingParameters_cache.begin(); i != X1MappingParameters_cache.end(); ++i)
+    {
         if(std::get<0>((*i))==RunNumber)
         {
-            std::cout << "//----------------------------//" << std::endl;
-            std::cout << "      X1MappingParameters" << std::endl;
-            std::cout << "Run: " << std::get<0>((*i));
+            X1MappingDefined = true;
+            X1MappingParameters = (*i);
+            
+            std::cout << "//------------------------------//" << std::endl;
+            std::cout << "      X1 Mapping Parameters" << std::endl;
+            std::cout << "Mapping parameters: " << std::get<0>((*i));
             auto pars = std::get<1>((*i));
             
             for(int j=0; j<pars.size(); j++)
@@ -976,8 +980,8 @@ INT main_bor(INT run_number)
         std::cout << std::endl;
     }
 
-    std::cout << "//----------------------------//" << std::endl;
-    std::cout << "      TLC " << std::endl;
+    std::cout << "//----------------------//" << std::endl;
+    std::cout << "      TLC Parameters" << std::endl;
     
     extern std::vector<std::vector<int>> TLCRunRanges_cache;
     extern std::vector<std::vector<int>> TLCCorrectionTypes_cache;
@@ -1004,9 +1008,6 @@ INT main_bor(INT run_number)
         }
     }
     
-    std::cout << "//--------------------------------" << std::endl;
-    std::cout << "//        PRINTOUT BEGIN" << std::endl;
-
     std::cout << "TLCCorrectionTypes: ";
     for(int j=0; j<(int) TLCCorrectionTypes.size(); j++)
     {
@@ -1027,11 +1028,13 @@ INT main_bor(INT run_number)
     //----------------------------------------
     for(int i=0; i<(int) TLCParameters.size(); i++)
     {
-        std::cout << "correctionType: " << TLCCorrectionTypes[i] << std::endl;
+        std::cout << "Correction Type (" << TLCCorrectionTypes[i] << "): ";
+        if(TLCCorrectionTypes[i]==0) {std::cout << "thetSCAT" << std::endl;}
+        if(TLCCorrectionTypes[i]==1) {std::cout << "Y1" << std::endl;}
         
         for(int j=0; j<(int) TLCParameters[i].size(); j++)
         {
-            std::cout << "TLCParameters: ";
+            std::cout << "Polynomial coefficient order (" << j << "): ";
             
             for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
             {
@@ -1043,9 +1046,8 @@ INT main_bor(INT run_number)
         }
     }
 
-    std::cout << "//--------------------------------" << std::endl;
-    std::cout << "//        PRINTOUT END" << std::endl;
-
+    std::cout << "//------------------------" << std::endl;
+    
     //----------------------------------------------------------------
     
     
@@ -1878,9 +1880,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore
     t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
     
+    //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
-    TotalLineshapeCorrection(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
+    
+    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr); // New sign convention
+    Xcorr = X1Mapping(Xcorr);
     t_X1posC=Xcorr;
+    
     
     //CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2); // Old sign convention
     CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2); // New sign convention

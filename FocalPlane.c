@@ -1608,6 +1608,29 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 }
 
 //--------------------------------------------------------------------------------------
+double X1Mapping(Double_t X)
+{
+    double mappedPosition = 0.0;
+    
+    extern bool X1MappingDefined;
+    extern std::tuple<int, std::vector<double>> X1MappingParameters;
+    
+    std::vector<double> pars = std::get<1>(X1MappingParameters);
+    
+    if((int) pars.size()==0)
+    {
+        mappedPosition = X + pars[0];
+    }
+    else
+    {
+        for(int i=0; i<(int) pars.begin(); i++)
+        {
+            mappedPosition += pars[i]*pow(X, i);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------------------
 void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 {
     extern std::vector<int> TLCCorrectionTypes;
