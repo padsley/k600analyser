@@ -1607,6 +1607,73 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    }
 }
 
+//--------------------------------------------------------------------------------------
+void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
+{
+    extern std::vector<int> TLCCorrectionTypes;
+    extern std::vector<std::vector<std::vector<double>>> TLCParameters;
+ 
+    double correctedPosition = 0.0;
+
+    for(int i=0; i<(int) TLCParameters.size(); i++)
+    {
+        double previousCorrectedPosition;
+        std::vector<double> correctionPars_PolCoefficients;
+        
+        if(i==0)
+        {
+            previousCorrectedPosition = X;
+        }
+        else
+        {
+            previousCorrectedPosition = correctedPosition;
+        }
+        
+        //--------------------------------------------------------------------
+        for(int j=0; j<(int) TLCParameters[i].size(); j++)
+        {
+            double correctionPar_PolCoefficient = 0.0;
+            
+            //--------------------------------------------------------------------
+            for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
+            {
+                if(TLCCorrectionTypes[i]==0)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(ThetaSCAT, k);
+                }
+                
+                if(TLCCorrectionTypes[i]==1)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(Y, k);
+                }
+                
+            }
+            
+            correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
+        }
+        
+        correctedPosition = 0.0;
+        
+        for(int j=0; j<(int) correctionPars_PolCoefficients.size(); j++)
+        {
+            if((int) correctionPars_PolCoefficients.size()==1)
+            {
+                correctedPosition = previousCorrectedPosition + correctionPars_PolCoefficients[j];
+            }
+            else
+            {
+                correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+            }
+        }
+    }
+    
+    if(TLCParameters.empty())
+    {
+        correctedPosition = X;
+    }
+    
+    *Xcorr = correctedPosition;
+}
 
 
 //--------------------------------------------------------------------------------------
