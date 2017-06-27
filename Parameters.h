@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <limits>
 #include <vector>
+#include <tuple>
+#include <stdio.h>
 
 // Originally declared as constants, sinc I tried to make a distinction
 // between things one can change and things one should not change at all ... RN
@@ -62,7 +64,7 @@ void SetADCChannelCalibration(int channel, double offset, double gain);
 void ADCClear();
 
 void ReadCalibrationParameters(std::string CalibFile);
-void ReadX1Offsets(std::string X1offsetsFile);
+void ReadX1Mapping(std::string X1mappingFile);
 void ReadTOFOffsets(std::string TOFoffsetsFile);
 
 void TDCInit();
