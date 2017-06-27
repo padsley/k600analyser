@@ -1623,7 +1623,7 @@ double X1Mapping(Double_t X)
     }
     else
     {
-        for(int i=0; i<(int) pars.begin(); i++)
+        for(int i=0; i<(int) pars.size(); i++)
         {
             mappedPosition += pars[i]*pow(X, i);
         }
