@@ -1,16 +1,16 @@
 [/Analyzer/Parameters/main]
 x1_driftt_low = INT : 3100
 x1_driftt_hi = INT : 5100
-x2_driftt_low = INT : 3100
+x2_driftt_low = INT : 3150
 u1_driftt_low = INT : 3100
-u2_driftt_low = INT : 3100
+u2_driftt_low = INT : 3150
 x2_driftt_hi = INT : 5100
 u2_driftt_hi = INT : 5100
 u1_driftt_hi = INT : 5100
-lowtof = INT : 2266
-hitof = INT : 2290
-lowpad1 = INT : 350
+lowtof = INT : 0
+hitof = INT : 3000
+lowpad1 = INT : 0
 lowpad2 = INT : 0
-hipad1 = INT : 700
-hipad2 = INT : 4096
+hipad1 = INT : 2000
+hipad2 = INT : 2000
 
