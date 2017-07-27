@@ -63,7 +63,7 @@
 //#define _MMM
 //#define _W1
 //#define _GAMMADATA
-// #define _HAGAR
+//#define _HAGAR
 //#define _SCINTILLATOR
 //#define _CLOVER
 
@@ -252,7 +252,7 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-Double_t Padoffset=0;
+Double_t Padoffset=0.0;
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -952,11 +952,57 @@ INT main_bor(INT run_number)
     extern int *PadOffsets;	        // from Parameters.c
     extern int *RunNrForPadOffsets;       // from Parameters.c
     extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
+
+    
+    //----------------------------------------------------------------------------
+    //      thetaSCAT Mapping Parameters
+    //      To map thetaFP to thetaSCAT
+    
+    extern std::vector<std::vector<int>> thetaSCATMappingPars_RunRanges_cache;
+    extern std::vector<std::vector<std::vector<double>>> thetaSCATMappingPars_cache;
+    extern std::vector<std::vector<double>> thetaSCATMappingPars;
+    
+    for(int i=0; i<(int) thetaSCATMappingPars_RunRanges_cache.size(); i++)
+    {
+        bool found = false;
+        
+        for(int j=0; j<(int) thetaSCATMappingPars_RunRanges_cache[i].size(); j++)
+        {
+            if(thetaSCATMappingPars_RunRanges_cache[i][j]==RunNumber)
+            {
+                found = true;
+            }
+        }
+        
+        if(found)
+        {
+            thetaSCATMappingPars = thetaSCATMappingPars_cache[i];
+            
+            std::cout << "//------------------------------------//" << std::endl;
+            std::cout << "      thetaSCAT Mapping Parameters" << std::endl;
+
+            for(int j=0; j<(int) thetaSCATMappingPars_cache[i].size(); j++)
+            {
+                std::cout << "pol" << j << " coefficients:";
+
+                for(int k=0; k<(int) thetaSCATMappingPars_cache[i][j].size(); k++)
+                {
+                    std::cout << " " << thetaSCATMappingPars_cache[i][j][k];
+                }
+                
+                std::cout << std::endl;
+            }
+        }
+    }
+    
+    //----------------------------------------------------------------------------
+    //      X1 Mapping Parameters
+    //      To map X1pos (post TotalLineshapeCorrection)
     
     extern bool X1MappingDefined;
     extern std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_cache;
-    extern std::tuple<int, std::vector<double>> X1MappingParameters;
-
+    extern std::vector<double> X1MappingParameters;
+    
     X1MappingDefined = false;
     
     for(auto i = X1MappingParameters_cache.begin(); i != X1MappingParameters_cache.end(); ++i)
@@ -964,33 +1010,59 @@ INT main_bor(INT run_number)
         if(std::get<0>((*i))==RunNumber)
         {
             X1MappingDefined = true;
-            X1MappingParameters = (*i);
-            
+            X1MappingParameters = std::get<1>((*i));
+
             std::cout << "//------------------------------//" << std::endl;
             std::cout << "      X1 Mapping Parameters" << std::endl;
-            std::cout << "Mapping parameters: " << std::get<0>((*i));
-            auto pars = std::get<1>((*i));
             
-            for(int j=0; j<pars.size(); j++)
+            std::cout << "Run: " << std::get<0>((*i));
+            for(int j=0; j<X1MappingParameters.size(); j++)
             {
-                std::cout << ", Par(" << j << "): " << pars[j];
+                std::cout << ", Par(" << j << "): " << X1MappingParameters[j];
             }
         }
-
-        std::cout << std::endl;
     }
 
-    std::cout << "//----------------------//" << std::endl;
-    std::cout << "      TLC Parameters" << std::endl;
+    //----------------------------------------------------------------------------
+    //      Y1 offset Parameters
+    
+    extern std::vector<std::tuple<int, double>> Y1offsets;
+    extern double Y1offset;
+    
+    Y1offset = 0.0;
+    
+    if((int) Y1offsets.size()>0)
+    {
+        std::cout << "//------------------//" << std::endl;
+        std::cout << "      Y1 offsets" << std::endl;
+    }
+
+    for(int i=0; i<(int) Y1offsets.size(); i++)
+    {
+        if(std::get<0>(Y1offsets[i])==RunNumber)
+        {
+            Y1offset = std::get<1>(Y1offsets[i]);
+            std::cout << "Run: " << std::get<0>(Y1offsets[i]) << ", Offset: " << std::get<1>(Y1offsets[i]) << std::endl;
+        }
+    }
+    
+    //----------------------------------------------------------------------------
+    //      Total Lineshape Correction Parameters
     
     extern std::vector<std::vector<int>> TLCRunRanges_cache;
     extern std::vector<std::vector<int>> TLCCorrectionTypes_cache;
     extern std::vector<std::vector<std::vector<std::vector<double>>>> TLCParameters_cache;
-
+    
     extern std::vector<int> TLCRunRanges;
     extern std::vector<int> TLCCorrectionTypes;
     extern std::vector<std::vector<std::vector<double>>> TLCParameters;
 
+    if((int) TLCRunRanges_cache.size()>0)
+    {
+        std::cout << "//----------------------//" << std::endl;
+        std::cout << "      TLC Parameters" << std::endl;
+    }
+    
     TLCRunRanges.clear();
     TLCCorrectionTypes.clear();
     TLCParameters.clear();
@@ -1045,31 +1117,28 @@ INT main_bor(INT run_number)
             std::cout << std::endl;
         }
     }
-
-    std::cout << "//------------------------" << std::endl;
     
     //----------------------------------------------------------------
+    std::cout << "//------------------------" << std::endl;
     
-    
-    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+    x1offset = 0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
     for (int i = 0; i< NrOfRunsForX1Offsets;i++){
         if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];
     }
     printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
-    
-    
-    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+        
+    TOFoffset = 0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
     for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
         if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c
     }
     printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
     
-    Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+    Padoffset = 0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
     for (int i = 0; i< NrOfRunsForPadOffsets;i++){
         if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c
     }
-    printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
-    
+    printf("run %d: Paddle offset= %f \n",RunNumber,Padoffset);
+
     return SUCCESS;
 }
 
@@ -1863,8 +1932,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //thetaFP  = CalcThetaFP(U1pos,U2pos);
     t_thetaFP   = thetaFP;
     
+    extern double Y1offset;
+    
     Y1=CalcYFP(X1pos,U1pos,X1th);
-    t_Y1=Y1;
+    t_Y1=Y1+Y1offset;
 #ifdef _FULLANALYSIS
     h_Y1->Fill(Y1);
 #endif
@@ -1883,8 +1954,15 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
-    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr); // New sign convention
-    Xcorr = X1Mapping(Xcorr);
+    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
+    
+    extern bool X1MappingDefined;
+    
+    if(X1MappingDefined)
+    {
+        Xcorr = X1Mapping(Xcorr);
+    }
+    
     t_X1posC=Xcorr;
     
     
@@ -1897,10 +1975,28 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     t_theta = CalcTheta(Xcorr, thetaFP, Y1);
     
     //t_Ex = CalcExDirect(Xcorr);‘TDCValues’
-    t_Ex = CalcEx(Xcorr2);
+    //t_Ex = CalcEx(Xcorr2);
+
+    extern bool momentumCalibrationRead;
+    extern std::vector<double> momentumCalPars;
+    extern std::vector<double> m;
+    extern std::vector<double> T;
+    extern std::vector<double> E;
+    extern std::vector<double> p;
+    extern std::vector<double> polarScatteringAngles;
+
+    if(momentumCalibrationRead)
+    {
+        t_Ex = CalcEx(&m[0], &T[0], &E[0], &p[0], t_X1posC, polarScatteringAngles[2], momentumCalPars);
+    }
+    else
+    {
+        t_Ex = 0.0;
+    }
+        
+    //extern double *masses;
+    //t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
     
-    extern double *masses;
-    t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
     t_rigidity3 = CalcQBrho(Xcorr2);
     
     //--------------------------------------------------------------------------------------------------------
