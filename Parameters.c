@@ -90,9 +90,16 @@ int NrOfRunsForX1Offsets;
 int *RunNrForX1Offsets;
 double *X1Offsets;
 
+std::vector<std::vector<int>> thetaSCATMappingPars_RunRanges_cache;
+std::vector<std::vector<std::vector<double>>> thetaSCATMappingPars_cache;
+std::vector<std::vector<double>> thetaSCATMappingPars;
+
 bool X1MappingDefined;
 std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_cache;
-std::tuple<int, std::vector<double>> X1MappingParameters;
+std::vector<double> X1MappingParameters;
+
+std::vector<std::tuple<int, double>> Y1offsets;
+double Y1offset;
 
 std::vector<std::vector<int>> TLCRunRanges_cache;
 std::vector<std::vector<int>> TLCCorrectionTypes_cache;
@@ -101,6 +108,16 @@ std::vector<int> TLCRunRanges;
 std::vector<int> TLCCorrectionTypes;
 std::vector<std::vector<std::vector<double>>> TLCParameters;
 
+bool momentumCalibrationRead;
+std::vector<double> momentumCalPars;
+std::vector<double> m;
+std::vector<double> T;
+std::vector<double> E;
+std::vector<double> p;
+std::vector<double> polarScatteringAngles;
+
+double z_x1x2,x_x1x2;
+
 int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
 int *TOFOffsets;
@@ -108,13 +125,6 @@ int *TOFOffsets;
 int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
 int *PadOffsets;
-
-
-bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
-double *masses;
-double T1;
-double theta3 = 0;//Scattering angle for the light ion in the spectrometer - default to scattering angle of 0
-double z_x1x2,x_x1x2;
 
 int RunNumber = 0;
 int TotalRunsNumber = 0;
@@ -126,7 +136,13 @@ double ExCorrection = 0.;
 void ParameterInit()
 {
     printf("\n ParameterInit\n");
-    masses = new double[4];
+    
+    m = std::vector<double>(4, 0);
+    T = std::vector<double>(4, 0);
+    E = std::vector<double>(4, 0);
+    p = std::vector<double>(4, 0);
+    polarScatteringAngles = std::vector<double>(4, 0);
+    
     ReadConfiguration();
     PulseLimitsInit();
     ADCInit();
@@ -585,6 +601,147 @@ void ReadCalibrationParameters(std::string CalibFile)
     printf("Finished Calibration Parameters\n");
 }
 
+/*-------------------------------------------------*/
+void ReadThetaSCATMappingPars_cache(std::string thetaSCATMappingPars_cacheFile)
+{
+    //----------------------------------------------------
+    std::ifstream InputFile;
+    InputFile.open(thetaSCATMappingPars_cacheFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+        std::string LineBuffer;
+        
+        InputFile >> LineBuffer;
+        
+        while(LineBuffer.compare(0,3,"eof") != 0)
+        {
+            std::vector<std::vector<double>> thetaSCATMappingPars_cache_perRunRange;
+            std::vector<int> runRange;
+            
+            //------------------------
+            //      Run range
+            int minRunRange, maxRunRange;
+            
+            minRunRange = atoi(LineBuffer.c_str());
+            InputFile >> LineBuffer;
+            maxRunRange = atoi(LineBuffer.c_str());
+            
+            int runNumbers = minRunRange;
+            if(minRunRange<=maxRunRange)
+            {
+                while(runNumbers<=maxRunRange)
+                {
+                    //----------------------------------------------------------------------------------------------------
+                    //  Deleting any previously defined corrections for each run
+                    //  This ensures that a run cannot erronouesly undergo two different sets of corrections
+                    //  The last TLC correction for a run, given in the assocaited TLCParameters_cacheFile, is correction used.
+                    for(auto i = thetaSCATMappingPars_RunRanges_cache.begin(); i != thetaSCATMappingPars_RunRanges_cache.end(); ++i)
+                    {
+                        int it_i = std::distance(thetaSCATMappingPars_RunRanges_cache.begin(), i);
+                        
+                        for(auto j = (*i).begin(); j != (*i).end(); ++j)
+                        {
+                            int it_j = std::distance((*i).begin(), j);
+                            
+                            if((*j)==runNumbers)
+                            {
+                                thetaSCATMappingPars_RunRanges_cache[it_i].erase(thetaSCATMappingPars_RunRanges_cache[it_i].begin() + it_j);
+                            }
+                        }
+                        
+                    }
+                    
+                    runRange.push_back(runNumbers);
+                    runNumbers++;
+                }
+            }
+            else
+            {
+                printf("ERROR in thetaSCATMappingPars_cache: invalid run range\n");
+            }
+            
+            
+            //----------------------------
+            //      Offset parameters
+            int nOffsetPars;
+            std::vector<double> offsetPars;
+
+            InputFile >> LineBuffer;
+            nOffsetPars = atoi(LineBuffer.c_str());
+            
+            for(int i=0; i<nOffsetPars; i++)
+            {
+                InputFile >> LineBuffer;
+                offsetPars.push_back(atof(LineBuffer.c_str()));
+            }
+            
+            thetaSCATMappingPars_cache_perRunRange.push_back(offsetPars);
+
+            //----------------------------
+            //      Gain parameters
+            int nGainPars;
+            std::vector<double> gainPars;
+
+            InputFile >> LineBuffer;
+            nGainPars = atoi(LineBuffer.c_str());
+            
+            for(int i=0; i<nGainPars; i++)
+            {
+                InputFile >> LineBuffer;
+                gainPars.push_back(atof(LineBuffer.c_str()));
+            }
+            
+            thetaSCATMappingPars_cache_perRunRange.push_back(gainPars);
+            
+            //------------------------------------------------------------
+            
+            thetaSCATMappingPars_RunRanges_cache.push_back(runRange);
+            thetaSCATMappingPars_cache.push_back(thetaSCATMappingPars_cache_perRunRange);
+            
+            InputFile >> LineBuffer;
+        }
+    }
+    
+    InputFile.close();
+    
+    std::cout << std::endl;
+    
+    //----------------------------------------------------
+    
+    printf("Finished reading ThetaSCAT Mapping Parameters\n");
+}
+
+/*-------------------------------------------------*/
+void ReadY1Offsets(std::string Y1offsetsFile)
+{
+    std::ifstream InputFile;
+    
+    InputFile.open(Y1offsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+        int runNr = 0;
+        double offset = 0;
+        std::string LineBuffer;
+        
+        InputFile >> LineBuffer;
+
+        while(LineBuffer.compare(0,3,"eof") != 0)
+        {
+            runNr = atoi(LineBuffer.c_str());
+            InputFile >> LineBuffer;
+
+            offset = atof(LineBuffer.c_str());
+            Y1offsets.push_back(std::make_tuple(runNr, offset));
+            InputFile >> LineBuffer;
+        }
+    }
+    
+    InputFile.close();
+    
+    printf("Finished reading Y1 offsets\n");
+}
 
 /*-------------------------------------------------*/
 void ReadX1Mapping(std::string X1mappingFile)
@@ -596,9 +753,30 @@ void ReadX1Mapping(std::string X1mappingFile)
     if(InputFile.is_open())
     {
         int runNr = 0;
-        double offset = 0;
         std::string LineBuffer;
         
+        InputFile >> LineBuffer;
+        while(LineBuffer.compare(0,3,"eof") != 0)
+        {
+            runNr = atoi(LineBuffer.c_str());
+            
+            InputFile >> LineBuffer;
+            int nOrderMapping = atoi(LineBuffer.c_str());
+            
+            std::vector<double> X1MappingParameters_perRun;
+
+            for(int i=0; i<nOrderMapping; i++)
+            {
+                InputFile >> LineBuffer;
+                X1MappingParameters_perRun.push_back(atof(LineBuffer.c_str()));
+            }
+            
+            X1MappingParameters_cache.push_back(std::make_tuple(runNr,X1MappingParameters_perRun));
+            
+            InputFile >> LineBuffer;
+        }
+        
+        /*
         InputFile >> LineBuffer;
         if(LineBuffer.compare(0,3,"eof") != 0)
         {
@@ -617,10 +795,12 @@ void ReadX1Mapping(std::string X1mappingFile)
         }
         
         X1MappingParameters_cache.push_back(std::make_tuple(runNr,X1MappingParameters_perRun));
+        */
+        
     }
 
     InputFile.close();
-    printf("Finished reading X1Mappings\n");
+    printf("Finished reading X1 Mapping Parameters\n");
 }
 
 /*-------------------------------------------------*/
@@ -788,7 +968,7 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
     
     //----------------------------------------------------
 
-    printf("Finished reading TLCParameters_cache\n");
+    printf("Finished reading TLC Parameters\n");
 }
 
 
@@ -1101,7 +1281,6 @@ void ReadConfiguration()
     bool ThSCATXLoffCorrectionParametersRead = false;
     bool TOFXCorrectionParametersRead = false;
     
-    bool XRigidityParametersRead = false;
     bool Y1CorrectionParametersRead = false;
     bool GateauRead = false;
     bool ThFPSCATOffsetParametersRead = false;
@@ -1122,7 +1301,7 @@ void ReadConfiguration()
             std::string LineBuffer;
             
             
-            if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
+            if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
             {
                 input >> LineBuffer;
                 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -1313,11 +1492,25 @@ void ReadConfiguration()
                     ReadCalibrationParameters(LineBuffer);
                 }
                 //===============================================================================================
-                else if(LineBuffer.compare(0,13,"XMappingsFile") == 0)
+                else if(LineBuffer.compare(0,30,"ThetaSCATMappingParametersFile") == 0)
                 {
                     input >> LineBuffer;
-                    printf("Using X1Mappings file: %s\n",LineBuffer.c_str());
+                    printf("Using thetaSCAT to thetaFP Mappings file: %s\n",LineBuffer.c_str());
+                    ReadThetaSCATMappingPars_cache(LineBuffer);
+                }
+                //===============================================================================================
+                else if(LineBuffer.compare(0,23,"X1MappingParametersFile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Using X1 mapping parameters file: %s\n",LineBuffer.c_str());
                     ReadX1Mapping(LineBuffer);
+                }
+                //===============================================================================================
+                else if(LineBuffer.compare(0,13,"Y1OffsetsFile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Using Y1 offsets file: %s\n",LineBuffer.c_str());
+                    ReadY1Offsets(LineBuffer);
                 }
                 //===============================================================================================
                 else if(LineBuffer.compare(0,17,"TLCParametersFile") == 0)
@@ -1408,14 +1601,6 @@ void ReadConfiguration()
                     TOFXCorrectionParametersRead = true;
                 }
                 
-                else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
-                {
-                    input >> LineBuffer;
-                    if(LineBuffer.compare(0,4,"true") == 0)TestInelastic = true;
-                    else if(LineBuffer.compare(0,5,"false") == 0)TestInelastic = false;
-                    else TestInelastic = true;
-                    if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
-                }
                 else if(LineBuffer.compare(0,19,"ThFPSCATOffsetTerms") == 0)
                 {
                     input >> LineBuffer;
@@ -1447,50 +1632,39 @@ void ReadConfiguration()
                     printf("VDCSeparationDistanceX: %f \n",atof(LineBuffer.c_str()));
                     x_x1x2 = atof(LineBuffer.c_str());
                 }
-                else if(LineBuffer.compare(0,5,"mass1") == 0)
+                else if(LineBuffer.compare(0,14,"ReactionMasses") == 0)
                 {
-                    input >> LineBuffer;
-                    printf("mass1: %f MeV/c**2\n",atof(LineBuffer.c_str()));
-                    masses[0] = atof(LineBuffer.c_str());//Be careful... the index number is different to the particle number...
-                }
-                else if(LineBuffer.compare(0,5,"mass2") == 0)
-                {
-                    input >> LineBuffer;
-                    printf("mass2: %f MeV/c**2\n",atof(LineBuffer.c_str()));
-                    masses[1] = atof(LineBuffer.c_str());
-                }
-                else if(LineBuffer.compare(0,5,"mass3") == 0)
-                {
-                    input >> LineBuffer;
-                    printf("mass3: %f MeV/c**2\n",atof(LineBuffer.c_str()));
-                    masses[2] = atof(LineBuffer.c_str());
-                }
-                else if(LineBuffer.compare(0,5,"mass4") == 0)
-                {
-                    input >> LineBuffer;
-                    printf("mass4: %f MeV/c**2\n",atof(LineBuffer.c_str()));
-                    masses[3] = atof(LineBuffer.c_str());
+                    for(int i=0; i<4; i++)
+                    {
+                        input >> LineBuffer;
+                        m[i] = atof(LineBuffer.c_str());
+                        std::cout << "m[i]: " << m[i] << std::endl;
+                    }
                 }
                 else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
                 {
                     input >> LineBuffer;
                     printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
-                    T1 = atof(LineBuffer.c_str());
+                    T[0] = atof(LineBuffer.c_str());
                 }
-                else if(LineBuffer.compare(0,15,"ScatteringAngle") == 0)
+                else if(LineBuffer.compare(0,28,"PolarScatteringAngleEjectile") == 0)
                 {
                     input >> LineBuffer;
-                    printf("Scattering Angle: %f degrees\n",atof(LineBuffer.c_str()));
-                    theta3 = atof(LineBuffer.c_str());
+                    printf("Polar Scattering Angle of ejectile: %f degrees\n",atof(LineBuffer.c_str()));
+                    polarScatteringAngles[2] = atof(LineBuffer.c_str());
                 }
-                else if(LineBuffer.compare(0,19,"RigidityCalibration") == 0)
+                else if(LineBuffer.compare(0,19,"MomentumCalibration") == 0)
                 {
+                    momentumCalibrationRead = true;
                     input >> LineBuffer;
-                    printf("Using %d parameters for the correction X position -> Rigidity calibration\n",atoi(LineBuffer.c_str()));
-                    NXRigidityPars = atoi(LineBuffer.c_str());
-                    XRigidityPars = new double[NXRigidityPars];
-                    for(int c=0;c<NXRigidityPars;c++)XRigidityPars[c] = 0;
-                    XRigidityParametersRead = true;
+                    printf("Using %d parameters for Momentum Calibration (with respect to X1posC)\n", atoi(LineBuffer.c_str()));
+                    
+                    int nMomentumCalPars = atoi(LineBuffer.c_str());
+                    for(int i=0; i<nMomentumCalPars; i++)
+                    {
+                        input >> LineBuffer;
+                        momentumCalPars.push_back(atof(LineBuffer.c_str()));
+                    }
                 }
                 else if(LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
                 {
@@ -1668,25 +1842,6 @@ void ReadConfiguration()
                     printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
                     valpar = atof(LineBuffer.c_str());
                     ThFPSCATSlope[npar] = valpar;
-                }
-            }
-            
-            
-            if(XRigidityParametersRead)
-            {
-                int npar = -1;
-                double valpar = 0;
-                input >> LineBuffer;
-                if(LineBuffer.compare(0,22,"EndRigidityCalibration") == 0 && XRigidityParametersRead)XRigidityParametersRead = false;
-                else
-                {
-                    printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
-                    npar = atoi(LineBuffer.c_str());
-                    input >> LineBuffer;
-                    printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
-                    valpar = atof(LineBuffer.c_str());//Line is actually pointless... I should tidy this up
-                    XRigidityPars[npar] = atof(LineBuffer.c_str());
-                    //printf("Check XRigidityPars[%d]: %e\n",npar,XRigidityPars[npar]);
                 }
             }
             
