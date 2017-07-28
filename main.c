@@ -29,6 +29,8 @@
 #include "analyzer.h"
 
 /* root includes */
+#include <TROOT.h>
+#include <TSystem.h>
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TTree.h>
@@ -59,8 +61,8 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 //#define _RAWDATA
-//#define _SILICONDATA
-//#define _MMM
+#define _SILICONDATA
+#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -499,6 +501,18 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
 //================================================================================================
 INT main_init(void)
 {
+    //  To pass the -std=c++11 compilation flag to ACLiC for the compilation of shared libraries
+    TString o;
+    // customize MakeSharedLib
+    o = TString(gSystem->GetMakeSharedLib());
+    o = o.ReplaceAll(" -c ", " -std=c++11 -c ");
+    gSystem->SetMakeSharedLib(o.Data());
+    // customize MakeExe
+    o = TString(gSystem->GetMakeExe());
+    o = o.ReplaceAll(" -c ", " -std=c++11 -c ");
+    gSystem->SetMakeExe(o.Data());
+
+    
     char name[256];
     char title[256];
     
@@ -861,7 +875,6 @@ INT main_init(void)
     
 #ifdef _SILICONDATA
     //printf("L2108\n");
-    gROOT->ProcessLine(".L Parameters.c+");
     gROOT->ProcessLine("#include \"SiliconData.h\"");
     gROOT->ProcessLine(".L SiliconData.c+");
     t1->Branch("SiliconInfo","SiliconData",&si);
@@ -875,7 +888,6 @@ INT main_init(void)
     
 #ifdef _GAMMADATA
     //printf("L2108\n");
-    gROOT->ProcessLine(".L Parameters.c+");
     gROOT->ProcessLine("#include \"GammaData.h\"");
     gROOT->ProcessLine(".L GammaData.c+");
     t1->Branch("GammaInfo","GammaData",&gammy);
@@ -883,13 +895,11 @@ INT main_init(void)
 #endif
     
     // #ifdef _CLOVERDATA
-    //   gROOT->ProcessLine(".L Parameters.c+");
     //   gROOT->ProcessLine(".L CloverData.c+");
     //   t1->Branch("CloverInfo","CloverData",&clov);
     // #endif
     
 #ifdef _RAWDATA
-    gROOT->ProcessLine(".L Parameters.c+");
     gROOT->ProcessLine(".L RawData.c+");
     t1->Branch("RawInfo","RawData",&raw);
 #endif
