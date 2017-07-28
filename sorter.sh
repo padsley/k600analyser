@@ -6,13 +6,10 @@
 for COUNT in {1029,1035}
 
 do
-
 #====================================================
 #       Directories for the data and sorted data
-dataDirectory="/media/psf/EPHEMERAL/PR226/data"
+dataDirectory="/media/psf/DATA/PR226/data"
 sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_12C/sorted"
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR240/sortedTest"
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR240/sortedNoPIDoffsets"
 
   echo $COUNT
   if [ $COUNT -lt 10 ]
