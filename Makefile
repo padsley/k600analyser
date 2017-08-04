@@ -40,6 +40,7 @@ endif
 # ROOT flags and libs
 #
 ifdef ROOTSYS
+    ROOTSYS = /opt64/root/root_v5.34.05
 ROOTCFLAGS := $(shell  $(ROOTSYS)/bin/root-config --cflags)
 ROOTCFLAGS += -DHAVE_ROOT -DUSE_ROOT
 ROOTLIBS   := $(shell  $(ROOTSYS)/bin/root-config --libs) -Wl,-rpath,$(ROOTSYS)/lib
