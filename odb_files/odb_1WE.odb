@@ -205,7 +205,7 @@ Alarm class = STRING : [32]
 First failed = DWORD : 1262694156
 
 [/Logger]
-Data dir = STRING : [256] /home/neveling/K600/PR262-Felix-pp/ANALYSIS/k600analyser
+Data dir = STRING : [256] /data/64Zn_pp/
 Message file = STRING : [256] midas.log
 Write data = BOOL : y
 Auto restart = BOOL : n

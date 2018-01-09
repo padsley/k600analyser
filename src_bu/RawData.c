@@ -1,7 +1,4 @@
 #include "RawData.h"
-#include <vector>
-#include <cmath>
-
 
 extern int ADCsize;
 extern int TDCsize;
@@ -9,8 +6,6 @@ extern int QDCsize;
 
 extern double *ADCOffsets;
 extern double *ADCGains;
-
-extern double **ADCCalibrationParameters;
 
 RawData::RawData()
 {
@@ -73,9 +68,7 @@ RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC
   {
     raw->SetADCValue(i,ADC_import[i]);
     raw->SetADCChannel(i,ADCchan_import[i]);
-//     raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i])
-    double value = CalculateADCCalibratedValue(i,ADC_import[i]);
-    raw->SetADCCalibratedValue(i,value);
+    raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
   }
   //for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
   
@@ -86,34 +79,5 @@ RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC
   }
   
   for(int i=0;i<QDCsize;i++)raw->SetQDCValue(i,QDC_import[i]);
-  
-  
   return raw;
 }
-
-double CalculateADCCalibratedValue(int channel, float value)
-{
-  double result = 0;
-//    printf("channel: %d\n",channel);
-  int npars = ADCCalibrationParameters[channel][0];
-  
-//   printf("npars: %d\n",npars);
-  
-  for(int i=1;i<npars+1;i++)
-  {
-    result += ADCCalibrationParameters[channel][i] * pow(value,(double)i-1.);
-  }
-  return result;
-}
-
-//   int npars = ADCCalibrationParameters.at(Channel).at(0);
-//   
-//   double result = 0;
-//   
-//   for(int i=1;i<npars+1;i++)
-//   {
-//     result += ADCCalibrationParameters.at(Channel).at(i) * pow(RandyADCValue,(double)i-1.);
-//   }
-// 
-//   return result;
-// }

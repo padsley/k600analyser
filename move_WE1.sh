@@ -11,6 +11,9 @@ echo "save current obd file and load accurate odb file  odb_files/odb_1WE.odb"
 rm config.cfg
 ln -s config_files/config_1WE.cfg config.cfg
 
+#place links to calblelengthfile
+rm CableLength.dat
+ln -s CableLength/CableLength_1WE.dat CableLength.dat
 
 #place links for lut
 rm lut-x1.dat

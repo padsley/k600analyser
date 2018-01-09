@@ -12,7 +12,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <TRandom3.h>
-#include <vector>
 
 extern int ADCModules;
 extern int ADCsize;
@@ -24,11 +23,9 @@ extern int **CloverTDCChannelLimits;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
-extern double **ADCCalibrationParameters;
-
 TRandom3 *randy = new TRandom3(0);
 
-int CountGammaHits[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
 
 //GammaData *CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy)
@@ -40,119 +37,46 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
   //Calculate the theta and phi for the valid events
   multiTDC *mTDC = new multiTDC;
   mTDC->multiTDCSort(ntdc, TDC_channel_import, TDC_value_import);	
-//printf("mTDC->GetSize(): %d\n",mTDC->GetSize());
 
-
-  double *EnergyAddback = new double[NumberOfClover]; // Energy of the Addback
-  int *EventAddback = new int[NumberOfClover]; // Event number in gammy in which the maximum energy deposition took place (per clover)
-  //int *SegmentAddback = new int[NumberOfClover]; // Segment with maximum Energy deposit in the Clover (considered the first segment hit)
-  double *MaxEnerAddback = new double[NumberOfClover]; // Maximum energy deposit in a segment for each clover
-  int   *NSegmentsAddback = new int[NumberOfClover]; // Number of crystals contributing to the addback.
-
-  for (int i=0; i<NumberOfClover;i++) 
-  {
-         EnergyAddback[i] = 0.;
-         EventAddback[i] = -1;
-       //  SegmentAddback[i] = -1;
-         MaxEnerAddback[i] = 0.;
-         NSegmentsAddback[i] = 0;
-  }
-  
   for(int k=0;k<mTDC->GetSize();k++)//Loop over all of the TDC values - there should only be a small number of these relative to the ADC values
-   {CountGammaHits[0]++;
+   {
     if(CloverTDCTest(mTDC->GetChannel(k)))
-      {CountGammaHits[1]++;
+      {
 	int DetNum = CloverTDCIdentifyDetector(mTDC->GetChannel(k));
  // printf("+++++++++++++++++++DetNum %d\n",DetNum);
   int Segm = CloverTDCIdentifySegment(mTDC->GetChannel(k));
  // printf("-------------Segm %d\n",Segm);
 	 if(DetNum>0)
-		{	//printf("Test1\n");
-		CountGammaHits[2]++;
+		{	
 		  for(int i=CloverADCChannelLimits[DetNum-1][0];i<=CloverADCChannelLimits[DetNum-1][1];i++)
-		      {//printf("Test2\n");
-		      CountGammaHits[3]++;
+		      {
 			if(CloverADCTDCChannelCheck(i,mTDC->GetChannel(k)))
-			{//printf("Test3\n");
-			CountGammaHits[4]++;
+			{
   			 // printf("line 55");
-			  //printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(k));
-
+			  //printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(n));
 	  			double GammaEnergy = CloverEnergyCalc(i,ADC_import[i]);
 	  			if(GammaEnergy>0.1)
 	  			{
-	  			//printf("Test4\n");
-	  			CountGammaHits[5]++;
 	    			gammy->SetEnergy(GammaEnergy);
 	    			gammy->SetTime(mTDC->GetValue(k));
 				gammy->SetDetectorType("Clover");
 
 				gammy->SetDetectorLabel(DetNum);
-				
-				EnergyAddback[DetNum-1] += GammaEnergy;
-				NSegmentsAddback[DetNum-1]++;
-				if (GammaEnergy > MaxEnerAddback[DetNum-1])
-				{
-				  EventAddback[DetNum-1] = gammy->SizeOfEvent()-1;
-				  MaxEnerAddback[DetNum-1] = GammaEnergy;
-			//	  printf("In. Size %d, Det %d, EvtAddBack%d,\n", gammy->SizeOfEvent(), DetNum, EventAddback[DetNum-1]);
-				}
-				
-				
-				
 				gammy->SetDetectorSegm(Segm);
 				gammy->SetGammaRawADC(ADC_import[i]);
 				gammy->SetGammaADCChannel(i);
 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
-				
-				/*
-				printf("GetSize: %d;\n",gammy->SizeOfEvent());
-				printf("EventN: %d; \n",EventAddback[DetNum-1]);
-				printf("GammaEnergy: %f, gammyEnergy: %f \n",GammaEnergy,gammy->GetEnergy(EventAddback[DetNum-1]));
-				printf("GammaEnergy: %f, gammyEnergy: %f \n",GammaEnergy,gammy->GetEnergy(gammy->SizeOfEvent()));
-				printf("Segm: %d, gammySegm: %d \n", Segm, gammy->GetDetectorSegm(EventAddback[DetNum-1]));
-				*/
 	  			} 
 			 }
       		       }
     		}
 	}
     }
-  
 
-   
-  for(int i=0;i<NumberOfClover;i++)
-  {
-    if(EventAddback[i] > -1)
-        {
-  	gammy->SetEnergy(EnergyAddback[i]);
-  	gammy->SetDetectorType("Addback");
-  	gammy->SetDetectorLabel(i+1);
-  	// printf("gammy DetNum: %d, index DetNum: %d;\n",gammy->GetDetectorLabel(EventAddback[i]),i+1);
-  	gammy->SetDetectorSegm(gammy->GetDetectorSegm(EventAddback[i]));
-  	
-	gammy->SetGammaRawADC(gammy->GetGammaRawADC(EventAddback[i]));
-	gammy->SetGammaADCChannel(gammy->GetGammaADCChannel(EventAddback[i]));
-	gammy->SetGammaTDCChannel(gammy->GetGammaTDCChannel(EventAddback[i]));
-	//gammy->SetGammaTDCMultiplicity(gammy->GetGammaTDCMultiplicity(EventAddback[i]));
-	gammy->SetGammaTDCMultiplicity(NSegmentsAddback[i]);
-
-    }
-  }
-  
-	//for(int i=0;i<6;i++)printf("CountGammaHits[%d]: %d\n",i,CountGammaHits[i]);
   gammy->SetHits(gammy->SizeOfEvent());
   mTDC->ClearEvent();
   delete mTDC;
-  
-  delete EnergyAddback;
-  delete MaxEnerAddback;
-  //delete SegmentAddback;
-  delete EventAddback;
-  delete NSegmentsAddback;
-  
-  
   //return gammy;
 
 }
@@ -214,23 +138,17 @@ double CloverEnergyCalc(int Channel, double ADCValue)
 		  
       double randNum = randy->Rndm();
 
-  double RandyADCValue = ADCValue+randNum;
-
-  int npars = ADCCalibrationParameters[Channel][0];
-
-  double result = 0;
-
-  for(int i=1;i<npars+1;i++)
-  {
-    result += ADCCalibrationParameters[Channel][i] * pow(RandyADCValue,(double)i-1.);
-  }
-
+ // printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
+ // printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
+// double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
+// double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum-0.5);
+   double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum);
+// printf("ADCValue: %f \n  rand(): %f \n  result: %f\n", ADCValue, randNum,result);  
   return result;
 }
 
 bool CloverTDCTest(int TDCChannel) // to check if the TDCChannel is the one associated with the Clovers
 {
-//printf("TDCChannel: %d\n",TDCChannel);
   bool result = false;
   for(int i=0;i<NumberOfClover;i++)
     {
@@ -241,8 +159,7 @@ bool CloverTDCTest(int TDCChannel) // to check if the TDCChannel is the one asso
       if(CloverTDCChannelLimits[i][0]==-1)result = true;
       if(CloverTDCChannelLimits[i][1]==-1)result = true;
     }
- 	//if(result)printf("True\n");
- //	else printf("False\n");
+ 
   return result;
 }
 

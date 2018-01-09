@@ -1036,9 +1036,7 @@ void fixDoubleHit(Double_t dd[],Int_t wire[], Int_t badwire, Int_t *_wire_num, I
 
 //------------------------------------------------------------------------------
 void fixZ(Double_t dd[],Int_t wire[], Int_t *_flag1, Int_t *_wire_num, Int_t *_wireID_min, Int_t *_wireID_last){
-
-//	std::cout<<"FIXZ" <<std::endl;
-	// USED IN RAYTRACE
+// USED IN RAYTRACE
 // Assume instead of a V we have something approaching a Z
 // The leg of the Z on the opposite side of the distance min should be cut off
 //
@@ -1118,10 +1116,7 @@ void fixZ(Double_t dd[],Int_t wire[], Int_t *_flag1, Int_t *_wire_num, Int_t *_w
 
 //------------------------------------------------------------------------------
 void fixW(Double_t dd[],Int_t wire[], Int_t *_flag1, Int_t *_wire_num, Int_t *_wireID_min, Int_t *_wireID_last){
-
-	//std::cout << "FIXW" << std::endl;
-	
-	// USED IN RAYTRACE
+// USED IN RAYTRACE
 // Assume instead of a V we have something approaching a W
 // One leg of the W should be cut off.
 // Note we are here only concerned with a simple geometry
@@ -1345,6 +1340,8 @@ void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireI
 
 //--------------------------------------------------------------------------------------
 void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_chisq,Int_t wire_num,Double_t res[],Int_t *_flag, Int_t chamber, Double_t wused[] , Double_t dused[], Int_t *_wire_used, Int_t *_badwirecount, Int_t *_multmin, Int_t *_chisqminimization){
+   
+  // std::cout<< "We do raytracing!" << std::endl;
 
    Int_t i;
    Double_t x_tttv, sum_0=0.0, sum_x=0.0, sum_z=0.0, sum_xz=0.0, sum_x2=0.0;
@@ -1424,19 +1421,17 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
      }
      if (doublemin==1){
 	//printf("\n Established group is a Z event \n");  printevent2(wire_num, wire,dd);
-       fixZ(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);
+        fixZ(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);
         multiplemin=4;  
         //printf("================After Z Fix attempt===\n"); printevent2(wire_num, wire,dd);
      }
      if (doublemin>1){
 	//printf("\n Established group is a W event \n"); printevent2(wire_num, wire,dd);
-       fixW(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
+        fixW(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
         multiplemin=5;
         //printf("================After W Fix attempt===\n");printevent2(wire_num, wire,dd);
      }
    }
-
- //  std::cout << "RAYTRACE" << std::endl;
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 5: 2nd round, ID and fix Z and W events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    for(i=1;i<(wire_num-1);i++){
@@ -1460,7 +1455,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
      }
      if (doublemin>1){
 	//printf("\n Established group is a W event \n"); printevent2(wire_num, wire,dd);
-       fixW(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
+        fixW(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
         //printf("================After W Fix attempt===\n");printevent2(wire_num, wire,dd);
      }
    }
@@ -1595,23 +1590,31 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
-//lineshape correction
+//lineshape correction when you have a well defined thetaSCAT
 {
-   //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-  //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-  //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
-
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
+
   extern int NXThetaXCorr;
   extern double *XThetaXCorr;
+
   extern int NXThetaXLoffCorr;
   extern double *XThetaXLoffCorr;
   extern double X_LSOffset;
+
   extern int NXY1Corr;
   extern double *XY1Corr;
   
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+  //printf("X to start with: %f\n",X);
+
+  //printf("X to start with: %f\n",X);
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+ 
   //printf("XLineshapeOffset = %f\n",X_LSOffset);
   //printf("X to start with: %f\n",X);
 
@@ -1645,8 +1648,47 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
+
   *Xcorr = result;
 }
+
+
+//--------------------------------------------------------------------------------------
+void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
+//lineshape correction when using only 1 detector
+{
+
+  double result = 0;
+
+  extern int NXY1Corr;
+  extern double *XY1Corr;
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+ 
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+
+  //At this point, result is X1posC after the ThSCAT correction
+  for(int i=0;i<NXY1Corr;i++){
+      if(i==0)result = X;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+  }
+  //printf("Xcorr from YCorr: %f\n",result);
+  //printf("------------------------------------------\n");
+
+  for(int i=0;i<NXTOFCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i);
+  }
+  //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
+
+  *Xcorr = result;
+}
+
+
+
+
 
 //--------------------------------------------------------------------------------------
 double CalcQBrho(double Xcorr)
@@ -1675,7 +1717,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
 
   double rig = CalcQBrho(Xcorr);
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
@@ -1687,7 +1729,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1729,17 +1771,19 @@ double CalcEx(double Xcorr)
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
+  double Q = masses[0] + masses[1] - masses[2] -masses[3];
+
   if(theta3 == 0)
     {
       theta4 = 0;
       
       p4 = p1 - p3;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   else
     {
@@ -1748,7 +1792,7 @@ double CalcEx(double Xcorr)
       p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
       T4 = CalcTfromP(p4,masses[3]);
       //std::cout << "T4: " << T4 << std::endl;
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   //std::cout << "exE: " << exE << std::endl;
   if(exE<0)exE=0;
