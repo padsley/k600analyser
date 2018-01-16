@@ -83,6 +83,14 @@ double *ThFPSCATOffset;  //pointer array to store the terms from above
 int NThFPSCATSlope;    //Number of terms to convert thetaFP to thetaSCAT
 double *ThFPSCATSlope; //pointer array to store the terms from above
 
+//H. Fujita style parameters added by F. Diel
+int NThetaXCorr_FD;  //Number of terms
+double *ThetaXCorr_i1_FD; // position dependent parameters
+double *ThetaXCorr_i2_FD; // position dependent parameters
+double *ThetaXCorr_par_FD; // position dependent parameters
+
+
+
 int NXRigidityPars;
 double *XRigidityPars;
 
@@ -931,6 +939,7 @@ void ReadConfiguration()
   bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
 
+  bool LineshapeCorrectionParametersRead = false; 
   bool ThSCATXCorrectionParametersRead = false; 
   bool ThSCATXLoffCorrectionParametersRead = false;
   bool TOFXCorrectionParametersRead = false;
@@ -956,7 +965,7 @@ void ReadConfiguration()
 	  std::string LineBuffer;
 
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead&& !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !LineshapeCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -1205,6 +1214,23 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  printf("Using Ex correction file: %s\n",LineBuffer.c_str());
 		  ReadExCorrectionTerms(LineBuffer);
+		  
+		  //added by F. Diel
+		} else if(LineBuffer.compare(0,24,"LineshapeCorrectionTerms") == 0){
+		  input >> LineBuffer;
+		  printf("Using %d terms for the lineshape correction\n",atoi(LineBuffer.c_str()));
+		  NThetaXCorr_FD = atoi(LineBuffer.c_str());
+		  ThetaXCorr_i1_FD = new double[NThetaXCorr_FD];
+		  ThetaXCorr_i2_FD = new double[NThetaXCorr_FD];
+		  ThetaXCorr_par_FD = new double[NThetaXCorr_FD];
+		  
+		  for(int c=0;c<NThetaXCorr_FD;c++){
+			  
+			  ThetaXCorr_i1_FD[c] = 0;
+			  ThetaXCorr_i2_FD[c] = 0;
+			  ThetaXCorr_par_FD[c] = 0;
+		  }
+		  LineshapeCorrectionParametersRead = true;
 		}
 	      else if(LineBuffer.compare(0,21,"ThSCATCorrectionTerms") == 0)
 		{
@@ -1362,13 +1388,51 @@ void ReadConfiguration()
 		  printf("%s\n",LineBuffer.c_str());
 		}
 	    }
+	    
+	  if(LineshapeCorrectionParametersRead){
+		  int npar = -1;
+		  int nparX = -1;
+		  int nparTh = -1;
+		  double valpar = 0;
+		  
+		  
+	  
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,27,"EndLineshapeCorrectionTerms") == 0 && LineshapeCorrectionParametersRead){
+			   LineshapeCorrectionParametersRead = false;
+		  } else {
+			//printf("|%d %s|\n",NThetaXCorr_FD,LineBuffer.c_str());
+			
+			printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+			npar = atoi(LineBuffer.c_str());
+						
+			input >> LineBuffer;
+			printf("%d\t",atoi(LineBuffer.c_str()));
+			nparX = atoi(LineBuffer.c_str());
+			
+			input >> LineBuffer;
+			printf("%d\t",atoi(LineBuffer.c_str()));
+			nparTh = atoi(LineBuffer.c_str());
+			
+			input >> LineBuffer;
+			printf("%e\n",atof(LineBuffer.c_str()));
+			valpar = atof(LineBuffer.c_str());
+
+		    ThetaXCorr_i1_FD[npar] = nparX;
+		    ThetaXCorr_i2_FD[npar] = nparTh;
+			ThetaXCorr_par_FD[npar] = valpar;
+			
+	     }
+	  }
       
 	  if(ThSCATCorrectionParametersRead)
 	    {
 	      int npar = -1;
 	      double valpar = 0;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead) ThSCATCorrectionParametersRead = false;
+	      if(LineBuffer.compare(0,24,"EndThSCATCorrectionTerms") == 0 && ThSCATCorrectionParametersRead) {
+			  ThSCATCorrectionParametersRead = false;
+			  }
 	      else
 		{
 		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
@@ -1385,9 +1449,11 @@ void ReadConfiguration()
 	      int npar = -1;
 	      double valpar = 0;
 	      input >> LineBuffer;
-	      if(LineBuffer.compare(0,25,"EndThSCATXCorrectionTerms") == 0 && ThSCATXCorrectionParametersRead) ThSCATXCorrectionParametersRead = false;
-	      else
-		{
+	      
+	      if(LineBuffer.compare(0,25,"EndThSCATXCorrectionTerms") == 0 && ThSCATXCorrectionParametersRead) {
+			   ThSCATXCorrectionParametersRead = false;
+	      } else {
+		  
 		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
 		  npar = atoi(LineBuffer.c_str());
 		  input >> LineBuffer;

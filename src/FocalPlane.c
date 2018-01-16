@@ -1640,6 +1640,20 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   }
   //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
 
+
+  extern int NThetaXCorr_FD;
+  
+  extern double *ThetaXCorr_i1_FD;
+  extern double *ThetaXCorr_i2_FD;
+  extern double *ThetaXCorr_par_FD;
+  
+
+  // H. Fujita style of correction added by F. Diel
+  for (int i = 0; i < NThetaXCorr_FD; ++i){
+	result += ThetaXCorr_par_FD[i] * pow(X, ThetaXCorr_i1_FD[i]) * pow(ThetaSCAT, ThetaXCorr_i2_FD[i]);   
+  }
+
+
   //At this point, result is X1posC after the ThSCAT correction
   for(int i=0;i<NXY1Corr;i++){
       if(i==0)result = result;
