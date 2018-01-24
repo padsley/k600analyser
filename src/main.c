@@ -141,6 +141,7 @@ Double_t t_pad1=0,t_pad2=0, t_pad1raw=0; //padoffsets correction
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
+Int_t	 t_tofC; // added by F.D. for tof correction
 Int_t    t_k600;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
@@ -682,6 +683,7 @@ INT main_init(void)
   t1->Branch("CII",&t_CII,"t_CII/I");
 
   t1->Branch("tof",&t_tof,"t_tof/I");
+  t1->Branch("tofC",&t_tofC,"t_tofC/I"); // added by F.D.
   t1->Branch("toftdc1",&t_toftdc1,"t_toftdc1/I");
   t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/I");
   t1->Branch("toftdc3",&t_toftdc3,"t_toftdc3/I");
@@ -995,6 +997,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t ref_time, offset_time;
    Int_t reftimes[10]; 
    Int_t tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
+   Int_t tofC = 0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
@@ -1794,6 +1797,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
+   CalcCorrTOF(X1pos+x1offset, thetaSCAT, tof, &tofC);
+   t_tofC = tofC;
+   
 
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);

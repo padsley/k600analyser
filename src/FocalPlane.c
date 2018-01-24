@@ -1700,6 +1700,25 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
   *Xcorr = result;
 }
 
+void CalcCorrTOF(Double_t X, Double_t thetaSCAT, Double_t TOF, Int_t *TOFcorr){
+	//Added by F.D.
+	//correction to make real data horizontal in tof vs Xpos histogram
+	
+	double result = TOF;
+
+	extern int NTOFCorr_FD;
+	extern double *TOFCorr_i1_FD;
+	extern double *TOFCorr_i2_FD;
+	extern double *TOFCorr_par_FD;
+	
+	for (int i = 0; i < NTOFCorr_FD; ++i){
+		result += TOFCorr_par_FD[i] * pow(X, TOFCorr_i1_FD[i]) * pow(thetaSCAT, TOFCorr_i2_FD[i]);   
+	}
+	*TOFcorr = result;
+	
+	
+}
+
 
 
 
