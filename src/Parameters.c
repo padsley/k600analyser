@@ -107,11 +107,11 @@ double *X1Offsets;
 
 int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
-int *TOFOffsets;
+double *TOFOffsets;
 
 int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
-int *PadOffsets;
+double *PadOffsets;
 
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
@@ -1188,7 +1188,7 @@ void ReadConfiguration()
 		  NrOfRunsForTOFOffsets = atoi(LineBuffer.c_str());
                   if(NrOfRunsForTOFOffsets<1) NrOfRunsForTOFOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
                   RunNrForTOFOffsets = new int[NrOfRunsForTOFOffsets];
-                  TOFOffsets = new int[NrOfRunsForTOFOffsets];
+                  TOFOffsets = new double[NrOfRunsForTOFOffsets];
 	        }
 	      else if(LineBuffer.compare(0,14,"TOFOffsetsFile") == 0)
 		{
@@ -1203,7 +1203,7 @@ void ReadConfiguration()
 		  NrOfRunsForPadOffsets = atoi(LineBuffer.c_str());
                   if(NrOfRunsForPadOffsets<1) NrOfRunsForPadOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
                   RunNrForPadOffsets = new int[NrOfRunsForPadOffsets];
-                  PadOffsets = new int[NrOfRunsForPadOffsets];
+                  PadOffsets = new double[NrOfRunsForPadOffsets];
 	        }
 	      else if(LineBuffer.compare(0,14,"PadOffsetsFile") == 0)
 		{

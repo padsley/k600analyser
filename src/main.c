@@ -140,8 +140,8 @@ VDC U2;
 Double_t t_pad1=0,t_pad2=0, t_pad1raw=0; //padoffsets correction        
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
-Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
-Int_t	 t_tofC; // added by F.D. for tof correction
+Double_t t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
+Double_t t_tofC; // added by F.D. for tof correction
 Int_t    t_k600;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
@@ -251,7 +251,7 @@ Double_t X2wirefit[10], X2distfit[10];
 Double_t U2wirefit[10], U2distfit[10];  
 
 Double_t x1offset=0.0;
-Int_t TOFoffset=0;
+Double_t TOFoffset=0;
 Double_t Padoffset=0;
 
 
@@ -589,9 +589,9 @@ INT main_init(void)
   
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
    hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 10000, 896, 0, 896);
    hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1500, 0, 10000, 1000, 0, 1000);
 
    hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
    hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -682,15 +682,15 @@ INT main_init(void)
   t1->Branch("CIU",&t_CIU,"t_CIU/I");
   t1->Branch("CII",&t_CII,"t_CII/I");
 
-  t1->Branch("tof",&t_tof,"t_tof/I");
-  t1->Branch("tofC",&t_tofC,"t_tofC/I"); // added by F.D.
-  t1->Branch("toftdc1",&t_toftdc1,"t_toftdc1/I");
-  t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/I");
-  t1->Branch("toftdc3",&t_toftdc3,"t_toftdc3/I");
-  t1->Branch("toftdc4",&t_toftdc4,"t_toftdc4/I");
-  t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/I");
-  t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/I");
-  t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/I");
+  t1->Branch("tof",&t_tof,"t_tof/D");
+  t1->Branch("tofC",&t_tofC,"t_tofC/D"); // added by F.D.
+  t1->Branch("toftdc1",&t_toftdc1,"t_toftdc1/D");
+  t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/D");
+  t1->Branch("toftdc3",&t_toftdc3,"t_toftdc3/D");
+  t1->Branch("toftdc4",&t_toftdc4,"t_toftdc4/D");
+  t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/D");
+  t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/D");
+  t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/D");
 
   t1->Branch("k600",&t_k600,"t_k600/I");
 
@@ -947,34 +947,43 @@ INT main_bor(INT run_number)
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
    extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
-   extern int *TOFOffsets;	        // from Parameters.c 
+   extern double *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
-   extern int *PadOffsets;	        // from Parameters.c 
+   extern double *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
-       if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
+       if( RunNrForX1Offsets[i] == RunNumber){
+		   x1offset=X1Offsets[i];  
+			std::cout << "Found X1 offset: ";
+	}
    }
-   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
-
+   std::cout << "run " << RunNumber << ": x1 offset= " << x1offset << std::endl ;
+   
+  
 
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
-       if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
+       if( RunNrForTOFOffsets[i] == RunNumber) {
+	       TOFoffset=TOFOffsets[i];
+       	
+	       std::cout << "Found Tof offset: ";
+       } // as defined in Parameter.c 
    }
-   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
-
+     std::cout << "run " << RunNumber << ": tof offset= " << TOFoffset << std::endl ;
+  
    Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForPadOffsets;i++){
-       if( RunNrForPadOffsets[i] == RunNumber) {Padoffset=PadOffsets[i]; // as defined in Parameter.c 
-	      // std::cout << "TETSTETSTETST: " << Padoffset << std::endl;	
-       }
-  
+       	//std::cout << i << " " << RunNrForPadOffsets[i] << " " << RunNumber << std::endl;
+	   if( RunNrForPadOffsets[i] == RunNumber) {Padoffset=PadOffsets[i]; // as defined in Parameter.c 
+	      //std::cout << "TETSTETSTETST: " << Padoffset << std::endl;	
+       std::cout << "Found Tof offset: ";
+       } // as defined in Parameter.c 
    }
-   printf("run %d: Paddle offset= %f \n",RunNumber,Padoffset);
+     std::cout << "run " << RunNumber << ": pad1 offset= " << Padoffset << std::endl;
 
    return SUCCESS;
 }
