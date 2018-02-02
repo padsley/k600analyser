@@ -1700,7 +1700,7 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
   *Xcorr = result;
 }
 
-void CalcCorrTOF(Double_t X, Double_t thetaSCAT, Double_t TOF, Int_t *TOFcorr){
+void CalcCorrTOF(Double_t X, Double_t thetaSCAT, Double_t TOF, Double_t *TOFcorr){
 	//Added by F.D.
 	//correction to make real data horizontal in tof vs Xpos histogram
 	
