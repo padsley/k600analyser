@@ -522,14 +522,37 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
 	  } 
       }
       else if(preampcount<22){ // wireplane U1  =================================================
-	  basecount=300;
-	  preampbase=13;
-	  channelstart=basecount+(preampcount-preampbase)*16;
-	  for(int i=channelstart;i<channelstart+16;i++){
-	    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
-	    chan2wire[tdcchan]=i;
-	    //printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
-	  }
+	  	basecount=300;
+	  	preampbase=13;
+	  	channelstart=basecount+(preampcount-preampbase)*16;
+	  	for(int i=channelstart;i<channelstart+16;i++){
+	    	tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	    	chan2wire[tdcchan]=i;
+	    	//printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
+	  	}
+	  
+	  	//	PR240
+	  	//	A modification to the wire-to-channel mapping
+	  	//	This is because preamp4 was not properly plugged in, 
+	  	//	This resulted in a dangling channel that did not receive information from it's intended wire
+	    chan2wire[304]=349;
+	    chan2wire[305]=350;
+	    chan2wire[306]=351;
+	    chan2wire[307]=352;
+	    chan2wire[308]=353;
+	    chan2wire[309]=354;
+	    chan2wire[310]=355;
+	    chan2wire[311]=356;
+	    chan2wire[312]=357;
+	    chan2wire[313]=358;
+	    chan2wire[314]=359;
+	    chan2wire[315]=360;
+	    chan2wire[316]=361;
+	    chan2wire[317]=362;
+	    chan2wire[318]=363;
+	    chan2wire[319]=348;
+
+	  
       }
       else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
 	  basecount=508;
@@ -1584,12 +1607,105 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    }
 }
 
+//--------------------------------------------------------------------------------------
+double X1Mapping(Double_t X)
+{
+    extern std::vector<double> X1MappingParameters;
+ 
+    double mappedPosition = 0.0;
+
+    if((int) X1MappingParameters.size()==1)
+    {
+        mappedPosition = X + X1MappingParameters[0];
+    }
+    else
+    {
+        for(int i=0; i<(int) X1MappingParameters.size(); i++)
+        {
+            mappedPosition += X1MappingParameters[i]*pow(X, i);
+        }
+    }
+    
+    return mappedPosition;
+}
+
+//--------------------------------------------------------------------------------------
+void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
+{
+    extern std::vector<int> TLCCorrectionTypes;
+    extern std::vector<std::vector<std::vector<double>>> TLCParameters;
+ 
+    double correctedPosition = 0.0;
+
+    for(int i=0; i<(int) TLCParameters.size(); i++)
+    {
+        double previousCorrectedPosition;
+        std::vector<double> correctionPars_PolCoefficients;
+        
+        if(i==0)
+        {
+            previousCorrectedPosition = X;
+        }
+        else
+        {
+            previousCorrectedPosition = correctedPosition;
+        }
+        
+        //--------------------------------------------------------------------
+        for(int j=0; j<(int) TLCParameters[i].size(); j++)
+        {
+            double correctionPar_PolCoefficient = 0.0;
+            
+            //--------------------------------------------------------------------
+            for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
+            {
+                if(TLCCorrectionTypes[i]==0)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(ThetaSCAT, k);
+                }
+                
+                if(TLCCorrectionTypes[i]==1)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(Y, k);
+                }
+                
+            }
+            
+            correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
+        }
+        
+        correctedPosition = 0.0;
+        
+        for(int j=0; j<(int) correctionPars_PolCoefficients.size(); j++)
+        {
+            if((int) correctionPars_PolCoefficients.size()==1)
+            {
+                correctedPosition = previousCorrectedPosition + correctionPars_PolCoefficients[j];
+            }
+            else
+            {
+                correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+            }
+        }
+    }
+    
+    if(TLCParameters.empty())
+    {
+        correctedPosition = X;
+    }
+    
+    *Xcorr = correctedPosition;
+}
 
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 //lineshape correction when you have a well defined thetaSCAT
 {
+   //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
+  //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
+  //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
+
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
@@ -1715,7 +1831,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
 
   double rig = CalcQBrho(Xcorr);
 
-  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
+  double p = rig * TMath::C()/1e6;
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
@@ -1727,7 +1843,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
+  double p = rig * TMath::C()/1e6;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1747,56 +1863,45 @@ double CalcExDirect(double Xcorr)
 }
 
 //--------------------------------------------------------------------------------------
-double CalcEx(double Xcorr)
-{
-  double exE = 0;
-  extern double T1;
-  double  T2 = 0, T3 = 0, T4 = 0;//Energies in MeV
+double CalcEx(double *m, double *T, double *E, double *p, double Xpos, double theta, std::vector<double> momentumCalPars) {
+    
+    double Ex = 0.0;
+    
+    ////    Constants
+    double c2 = 931.494;     // MeV/u, c^2
+    double c4 = c2*c2;  // (MeV/u)^2, c^4
 
-  double p1, p2, p3, p4; //Momenta for each particle
-
-  extern double *masses;//This is a pointer array containing the information on the particle masses involved in the reaction
-
-  extern double theta3;
-  double theta4 = 0;
-
-  extern bool TestInelastic;
-  if(TestInelastic)
+    ////    Q-value calculation
+    double Q = (m[2] + m[3])*c2 - (m[0] + m[1])*c2; // MeV
+    
+    ////    Conversion of ejectile scattering angle from degrees to radians
+    double theta_lab = theta*0.017453292; // radians
+    
+    ////    Initial Total Energy Calculation
+    E[0] = T[0] + (m[0]*c2);
+    E[1] = T[1] + (m[1]*c2);
+    
+    ////    Initial Momentum Calculation
+    p[0] = sqrt((E[0]*E[0]) - (m[0]*m[0]*c4))*(1.0/pow(c2, 0.5));
+    p[1] = sqrt((E[1]*E[1]) - (m[1]*m[1]*c4))*(1.0/pow(c2, 0.5));
+    
+    p[2] = 0.0;
+    for(int i=0; i<(int) momentumCalPars.size(); i++)
     {
-      masses[2] = masses[0];
-      masses[3] = masses[1];
+        p[2] += momentumCalPars[i]*(1.0/pow(c2, 0.5))*pow(Xpos, i);
     }
-
-  p1 = sqrt(T1 * (T1 + 2*masses[0]));
-  p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
-  //std::cout << "p3: " << p3 << std::endl;
-  T3 = CalcTfromXcorr(Xcorr,masses[2]);
-  //std::cout << "T3: " << T3 << std::endl;
-  double Q = masses[0] + masses[1] - masses[2] -masses[3];
-
-  if(theta3 == 0)
-    {
-      theta4 = 0;
-      
-      p4 = p1 - p3;
-      T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-      exE = T1 - T3 - T4 + Q;
-    }
-  else
-    {
-      theta4 = 180./TMath::Pi()*atan(sin(theta3*TMath::Pi()/180.)/(p1/p3 - cos(theta3*TMath::Pi()/180.)));
-      //std::cout << "theta4: " << theta4 << std::endl;
-      p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
-      T4 = CalcTfromP(p4,masses[3]);
-      //std::cout << "T4: " << T4 << std::endl;
-      exE = T1 - T3 - T4 + Q;
-    }
-  //std::cout << "exE: " << exE << std::endl;
-  if(exE<0)exE=0;
-  if(Xcorr>800)exE=0;
-  return exE;
+    E[2] = sqrt(p[2]*p[2]*c2 + (m[2]*m[2]*c4));
+    T[2] = E[2] - m[2]*c2;
+    
+    p[3] = sqrt((p[0]*p[0]) + (p[2]*p[2]) - 2*p[0]*p[2]*cos(theta_lab));
+    E[3] = sqrt(p[3]*p[3]*c2 + (m[3]*m[3]*c4));
+    T[3] = E[3] - m[3]*c2;
+    
+    Ex = E[0] + E[1] + Q - E[2] - E[3];
+    
+    return Ex;
 }
+
 
 //--------------------------------------------------------------------------------------
 double CorrectEx(double mEx)
@@ -1857,42 +1962,73 @@ double CalcYFP(double x, double u, double thFP)
 //--------------------------------------------------------------------------------------
 double CalcThetaScat(double X1, double ThFP)
 {
+    
+    /*
+     extern int NThFPtoThSCAT;
+     extern double *ThFPtoThSCAT;
+     
+     double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1)
+     + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
+     return result;
+     */
+    
+    /*
+    double result = 0;
+    extern int NThFPSCATOffset;
+    extern double *ThFPSCATOffset;
+    extern int NThFPSCATSlope;
+    extern double *ThFPSCATSlope;
+    
+    //printf("anglefp = %f\n",ThFP);
+    
+    for(int i=0;i<NThFPSCATOffset;i++)
+    {
+        if(i==0) result = 0;
+        if(i>0)  result += ThFPSCATOffset[i] * pow(X1,i-1);
+        //printf("NTHFPSCATOffset  %i  and parameter %f  and result %f at X1= %f \n",i, ThFPSCATOffset[i],result,X1);
+    }
+    
+    for(int i=0;i<NThFPSCATSlope;i++)
+    {
+        if(i==0) result = result;
+        if(i>0)  result += ThFP * ThFPSCATSlope[i] * pow(X1,i-1);
+        //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, ThFPSCATSlope[i],result,X1);
+    }
+    
+    //printf("\n\n");
+    return result;
+    */
+    
 
-/*  
-  extern int NThFPtoThSCAT;
-  extern double *ThFPtoThSCAT;
+    double thetaSCATResult = 0.0;
+    extern std::vector<std::vector<double>> thetaSCATMappingPars;
 
-  double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1) 
-		      + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
-  return result;
-*/
-
-  double result = 0;
-  extern int NThFPSCATOffset;
-  extern double *ThFPSCATOffset;
-  extern int NThFPSCATSlope;
-  extern double *ThFPSCATSlope;
-
-  //printf("anglefp = %f\n",ThFP);  
-
-  for(int i=0;i<NThFPSCATOffset;i++)
-  {
-    if(i==0) result = 0;
-    if(i>0)  result += ThFPSCATOffset[i] * pow(X1,i-1); 
-    //printf("NTHFPSCATOffset  %i  and parameter %f  and result %f at X1= %f \n",i, ThFPSCATOffset[i],result,X1);
-  }
-
-  for(int i=0;i<NThFPSCATSlope;i++)
-  {
-    if(i==0) result = result;
-    if(i>0)  result += ThFP * ThFPSCATSlope[i] * pow(X1,i-1);
-    //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, ThFPSCATSlope[i],result,X1);
-  }
-
-  //printf("\n\n");
-  return result;
-
-
+    std::vector<double> polCoefficients;
+    
+    for(int i=0; i<(int) thetaSCATMappingPars.size(); i++)
+    {
+        double polCoefficient = 0.0;
+     
+        for(int j=0; j<(int) thetaSCATMappingPars[i].size(); j++)
+        {
+            polCoefficient += thetaSCATMappingPars[i][j]*pow(X1, j);
+        }
+        
+        polCoefficients.push_back(polCoefficient);
+    }
+    
+    if(thetaSCATMappingPars.size()>=2)
+    {
+        thetaSCATResult = polCoefficients[1]*(ThFP+polCoefficients[0]);
+    }
+    else
+    {
+        thetaSCATResult = 0.0;
+    }
+    
+    //double thetaSCATResult = 1.0;
+    
+    return thetaSCATResult;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1907,6 +2043,7 @@ double CalcPhiScat(double X1, double ThFP, double Y1)
 //--------------------------------------------------------------------------------------
 double CalcTheta(double X1, double ThFP, double Y1)
 {
+    /*
   extern double theta3;//K600 scattering angle
 
   double ThetaSCAT = CalcThetaScat(X1,ThFP);
@@ -1916,6 +2053,7 @@ double CalcTheta(double X1, double ThFP, double Y1)
   double result = -1;
 
   result = sqrt(pow(ThetaSCAT + theta3,2.) + pow(PhiSCAT,2.));
+    */
 }
 
 //--------------------------------------------------------------------------------------

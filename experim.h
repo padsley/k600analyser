@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Fri Mar 10 13:33:40 2017
+  Created on:   Tue Apr 11 13:55:54 2017
 
 \********************************************************************/
 
@@ -56,19 +56,19 @@ typedef struct {
 
 #define MAIN_PARAM_STR(_name) char *_name[] = {\
 "[.]",\
-"x1_driftt_low = INT : 3100",\
+"x1_driftt_low = INT : 2500",\
 "x1_driftt_hi = INT : 5100",\
-"x2_driftt_low = INT : 3100",\
-"u1_driftt_low = INT : 3100",\
-"u2_driftt_low = INT : 3100",\
+"x2_driftt_low = INT : 2500",\
+"u1_driftt_low = INT : 2500",\
+"u2_driftt_low = INT : 2500",\
 "x2_driftt_hi = INT : 5100",\
 "u2_driftt_hi = INT : 5100",\
 "u1_driftt_hi = INT : 5100",\
-"lowtof = INT : 123",\
-"hitof = INT : 7000",\
-"lowpad1 = INT : 123",\
+"lowtof = INT : 0",\
+"hitof = INT : 5000",\
+"lowpad1 = INT : 0",\
 "lowpad2 = INT : 0",\
-"hipad1 = INT : 4096",\
+"hipad1 = INT : 4095",\
 "hipad2 = INT : 4096",\
 "",\
 NULL }
@@ -108,8 +108,8 @@ typedef struct {
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
-"lut_x1_offset = INT : 0",\
-"lut_u1_offset = INT : 0",\
+"lut_x1_offset = INT : 15",\
+"lut_u1_offset = INT : 20",\
 "lut_x2_offset = INT : 0",\
 "lut_u2_offset = INT : 0",\
 "x1_1st_wire_chan = INT : 0",\
@@ -222,7 +222,7 @@ NULL }
 typedef struct {
   WORD      event_id;
   INT       type;
-  char      format[8];
+  char      format[80];
   WORD      trigger_mask;
   char      buffer[32];
   INT       source;
@@ -242,8 +242,8 @@ typedef struct {
 #define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
 "Event ID = WORD : 3",\
-"Type = INT : 16",\
-"Format = STRING : [8] MIDAS",\
+"Type = INT : 33",\
+"Format = STRING : [80] ",\
 "Trigger mask = WORD : 0",\
 "Buffer = STRING : [32] K600SYSTEMS",\
 "Source = INT : 0",\
