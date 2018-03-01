@@ -1517,3 +1517,41 @@ Mon Oct 31 06:06:16 2016 [Analyzer,INFO] Program Analyzer on host arthur started
 Mon Oct 31 06:06:17 2016 [Analyzer,INFO] Set run number 2463 in ODB
 Mon Oct 31 06:11:07 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
 11:07:16.314 2017/04/18 [ODBEdit,INFO] Program ODBEdit on host localhost started
+16:09:32.726 2017/07/27 [Analyzer,INFO] Program Analyzer on host localhost started
+16:09:32.730 2017/07/27 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+16:09:32.731 2017/07/27 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+16:09:32.731 2017/07/27 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+16:09:49.703 2017/07/27 [ODBEdit,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 14702 does not exists
+16:09:49.705 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+16:09:49.705 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+16:09:49.706 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Experiment/Run Parameters"
+16:09:49.707 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+16:09:49.708 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+16:09:49.709 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+16:09:49.710 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+16:09:49.711 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+16:09:49.712 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+16:09:49.715 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+16:09:49.716 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+16:09:49.717 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+16:09:49.718 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+16:09:49.719 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+16:09:49.720 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+16:09:49.721 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+16:09:49.721 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+16:09:49.723 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+16:09:49.725 2017/07/27 [ODBEdit,INFO] Corrected 9 ODB entries
+16:09:49.726 2017/07/27 [ODBEdit,INFO] Deleted entry '/System/Clients/14702' for client 'Analyzer' because it is not connected to ODB
+16:09:49.727 2017/07/27 [ODBEdit,INFO] Program ODBEdit on host localhost started
+16:09:49.728 2017/07/27 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 14702 does not exist
+16:09:59.659 2017/07/27 [ODBEdit,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'ODBEdit', index 0 because process pid 14760 does not exists
+16:09:59.661 2017/07/27 [ODBEdit,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+16:09:59.661 2017/07/27 [ODBEdit,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+16:09:59.662 2017/07/27 [ODBEdit,INFO] Corrected 1 ODB entries
+16:09:59.664 2017/07/27 [ODBEdit,INFO] Deleted entry '/System/Clients/14760' for client 'ODBEdit' because it is not connected to ODB
+16:09:59.665 2017/07/27 [ODBEdit,INFO] Program ODBEdit on host localhost started
+16:09:59.666 2017/07/27 [ODBEdit,INFO] Client 'ODBEdit' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 14760 does not exist
+16:10:17.053 2017/07/27 [ODBEdit,INFO] Program ODBEdit on host localhost stopped
+16:11:01.660 2017/07/27 [ODBEdit,INFO] Program ODBEdit on host localhost started
+16:11:04.636 2017/07/27 [ODBEdit,INFO] Program ODBEdit on host localhost stopped
+16:12:01.594 2017/07/27 [ODBEdit,INFO] Program ODBEdit on host localhost started

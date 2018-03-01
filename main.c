@@ -58,7 +58,7 @@
 //#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
-//#define _FULLANALYSIS
+#define _FULLANALYSIS
 //#define _MISALIGNTIME
 //#define _RAWDATA
 #define _SILICONDATA
@@ -1177,6 +1177,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     float pad1raw=0; //padoffsets correction
     float PsideTDC[80];
     
+    extern int RunNumber;
     extern float pad1,pad2;                            // defined, declared and used in qdc.c
     extern float pad1hip,pad1lowp,pad2hip,pad2lowp;    // defined, declared and used in qdc.c
     extern int qdcevtcount;   			      // defined, declared and used in qdc.c
@@ -1346,6 +1347,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
     //TDC_value_export = new float[ntdc];
     
+    bool printed = false;
+    static int initialCounter = 0;
+    
     for(int i = 0; i < ntdc; i++) {
         if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
             tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
@@ -1514,11 +1518,36 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1wire[X1hits]=wire;
 #endif
             X1hits++;
+            
             if((offset_time >= gates.x1_driftt_low) && (offset_time <= gates.x1_driftt_hi)){          //drifttime gate
                 t_X1effdt=1;
                 X1.wire[X1hits_dt]=wire;
                 X1.time[X1hits_dt]=offset_time;
                 X1hits_dt++;
+                
+                if(!printed)
+                {
+                    printed = true;
+                    std::cout << "X1hits_dt: " << X1hits_dt << std::endl;
+                    initialCounter++;
+                }
+                
+                /*
+                static int test = 0;
+                std::cout << "test: " << test << std::endl << std::endl;
+                std::cout << "gates.x1_driftt_low: " << gates.x1_driftt_low << std::endl;
+                std::cout << "gates.x1_driftt_hi: " << gates.x1_driftt_hi << std::endl;
+                std::cout << "offset_time: " << offset_time << std::endl << std::endl;
+                test++;
+                */
+            }
+            else
+            {
+                /*
+                std::cout << "gates.x1_driftt_low: " << gates.x1_driftt_low << std::endl;
+                std::cout << "gates.x1_driftt_hi: " << gates.x1_driftt_hi << std::endl;
+                std::cout << "offset_time: " << offset_time << std::endl << std::endl;
+                */
             }
         }
         else if ((channelnew >= globals.u1_1st_wire_chan) && (channelnew < globals.u1_last_wire_chan)) {    //only for U1 wireplane
@@ -1543,10 +1572,23 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                 U1hits_dt++;
             }
         }
-        else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=604) ) {   //only for X2 wireplane
+        //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && !(RunNumber>50 && RunNumber<200 && (channelnew==(573+1) || channelnew==(570+1))) ) {   //only for X2 wireplane
+        //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+        else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && !(RunNumber>=200 && RunNumber<400 && (channelnew==(629) || channelnew==(633) || channelnew==(635))) && !(RunNumber>=400 && RunNumber<600 && (channelnew==(667)))) {   //only for X2 wireplane
             //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
             // chan 482 looks suspicious in white tune run 23088
             //if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
+            
+            if(RunNumber>50 && RunNumber<200 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653)))
+            {  //PR195_2017 WE1 and WE2; X1 channels 570 and 573 are bad, so ignore them in analysis
+              addwiregap=1;
+              //printf("addwiregap %i \n",addwiregap);
+            }
+            else if(RunNumber>=400 && RunNumber<500 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653) || channelnew==(668) || channelnew==(691)))
+            {
+                addwiregap=1;
+            }
+            
             t_X2effall=1;
 #ifdef _FULLANALYSIS
             if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
@@ -1590,6 +1632,23 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             }
         }
     } // end of loop over all the TDC words=======================================================================================
+    
+    
+    //------------------------------------------------
+    
+    static int counter_outside = 0;
+    
+    if(X1hits_dt==0)
+    {
+        static int counter_inside = 0;
+        std::cout << "initialCounter: " << initialCounter << std::endl;
+        std::cout << "counter_inside: " << counter_inside << std::endl;
+        std::cout << "counter_outside: " << counter_outside << std::endl << std::endl;
+        std::cout << "X1hits_dt: " << X1hits_dt << std::endl << std::endl;
+        counter_inside++;
+    }
+    
+    counter_outside++;
     
     
     //--------------------------------------------------------------------------------------------------------
@@ -1680,10 +1739,38 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
         U2.dist[i]=lutu2[drifttime]*DRIFTLENGTH;
         hU2_DriftLength->Fill(U2.dist[i]);
     }
+
+    
+    /*
+    static int counter_outside = 0;
+    
+    if(!(X1hits_dt>=globals.min_x_wires))
+    {
+        static int counter_inside = 0;
+        
+        std::cout << "counter_inside: " << counter_inside << std::endl;
+        std::cout << "TESTING UNDER" << std::endl;
+        std::cout << "globals.min_x_wires: " << globals.min_x_wires << std::endl;
+        std::cout << "X1hits_dt: " << X1hits_dt << std::endl << std::endl;
+        
+        counter_inside++;
+    }
+    else if(!(X1hits_dt<globals.max_x_wires+1))
+    {
+        std::cout << "TESTING OVER" << std::endl;
+    }
+    
+    std::cout << "counter_outside: " << counter_outside << std::endl;
+    counter_outside++;
+    */
+    
     
     //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
     //Gates on number of wires, number of missing wires etc
     if(X1hits_dt>=globals.min_x_wires  &&  X1hits_dt<globals.max_x_wires+1){
+        
+        //std::cout << "TESTING 1" << std::endl;
+
         if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hX1_EffID->Fill(ev_wiresperevent);
         if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
             hEventID->Fill(ev_id_X1_wires);  // events in X1 that pass through wire requirement gates
@@ -1701,6 +1788,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             // Remember: X1hits_dt goes into raytrace as a fixed nr. But after raytrace this does not
             // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
             
+            //std::cout << "TESTING 2" << std::endl;
+
             t_X1pos=X1pos;         //for current clumsy implementation of TTree. for good events: must plot with X1flag=0!!!!!!!!
             
             t_X1posO=X1pos + x1offset; // Sign convention changed from "-" to "+" to be more generalised.

@@ -2004,19 +2004,26 @@ double CalcThetaScat(double X1, double ThFP)
 
     std::vector<double> polCoefficients;
     
-    for(int i=0; i<(int) thetaSCATMappingPars.size(); i++)
+    if(!thetaSCATMappingPars.empty())
     {
-        double polCoefficient = 0.0;
-     
-        for(int j=0; j<(int) thetaSCATMappingPars[i].size(); j++)
+        for(int i=0; i<(int) thetaSCATMappingPars.size(); i++)
         {
-            polCoefficient += thetaSCATMappingPars[i][j]*pow(X1, j);
+            double polCoefficient = 0.0;
+            
+            for(int j=0; j<(int) thetaSCATMappingPars[i].size(); j++)
+            {
+                polCoefficient += thetaSCATMappingPars[i][j]*pow(X1, j);
+            }
+            
+            polCoefficients.push_back(polCoefficient);
         }
         
-        polCoefficients.push_back(polCoefficient);
+        thetaSCATResult = polCoefficients[1]*(ThFP+polCoefficients[0]);
     }
-    
-    thetaSCATResult = polCoefficients[1]*(ThFP+polCoefficients[0]);
+    else
+    {
+        thetaSCATResult = ThFP;
+    }
     
     return thetaSCATResult;
 }
