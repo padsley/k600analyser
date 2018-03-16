@@ -161,7 +161,7 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
-Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
+Double_t t_X1posC=-100.0, t_X1posL=-100.0, t_X1posCTOF=-100;
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -434,7 +434,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posO=-100.;
-   t_X1posC=-100., t_X1posCTOF=-100.;
+   t_X1posC=-100., t_X1posL=-100., t_X1posCTOF=-100.;
 
    t_Ex=-1.;
    t_ExC = -1.;
@@ -828,6 +828,7 @@ INT main_init(void)
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+  t1->Branch("X1posL",&t_X1posL,"t_X1posL/D");
 
   t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
 
@@ -1803,9 +1804,14 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
-   t_X1posC=Xcorr;
+   //Added by FD to calculate lineshape correction without the application of position offsets
+   
+   CalcCorrX(X1pos, Y1, thetaSCAT, &Xcorr);
+   t_X1posL = Xcorr;
 
+   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   t_X1posC = Xcorr;
+   
    CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
