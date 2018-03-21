@@ -1,23 +1,52 @@
-[/System/Clients/11410]
+[/Experiment/Security]
+Enable non-localhost RPC = BOOL : n
+
+[/Experiment/Security/RPC ports]
+Analyzer = DWORD : 0
+ODBEdit = DWORD : 0
+
+[/Experiment/Security/RPC hosts]
+Allowed hosts = STRING[10] :
+[256] localhost
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+
+[/Experiment/Security]
+Disable RPC hosts check = BOOL : n
+
+[/Experiment]
+Name = STRING : [32] Default
+MAX_EVENT_SIZE = DWORD : 4194304
+
+[/Experiment/Run Parameters]
+Comment = STRING : [80] Analysis
+
+[/Experiment/Buffer sizes]
+SYSMSG = DWORD : 100000
+SYSTEM = DWORD : 4194304
+k600SYSTEMSCALER = DWORD : 8388608
+SYSTEMSCALER = DWORD : 8388608
+
+[/Experiment/Lock when running]
+Run parameter = LINK : [27] /Experiment/Run parameters
+Write Data? = LINK : [19] /Logger/Write Data
+
+[/System/Clients/5253]
 Name = STRING : [32] ODBEdit
-Host = STRING : [256] nevelinglap
+Host = STRING : [256] localhost
 Hardware type = INT : 44
-Server Port = INT : 46514
+Server Port = INT : 42774
 
 [/System]
 Client Notify = INT : 0
 Prompt = STRING : [256] [%h:%e:%s]%p>
-
-[/Programs/ODBEdit]
-Required = BOOL : n
-Watchdog timeout = INT : 10000
-Check interval = DWORD : 180000
-Start command = STRING : [256] 
-Auto start = BOOL : n
-Auto stop = BOOL : n
-Auto restart = BOOL : n
-Alarm class = STRING : [32] 
-First failed = DWORD : 1281101553
 
 [/Programs/Analyzer]
 Required = BOOL : n
@@ -29,6 +58,17 @@ Auto stop = BOOL : n
 Auto restart = BOOL : n
 Alarm class = STRING : [32] 
 First failed = DWORD : 0
+
+[/Programs/ODBEdit]
+Required = BOOL : n
+Watchdog timeout = INT : 10000
+Check interval = DWORD : 180000
+Start command = STRING : [256] 
+Auto start = BOOL : n
+Auto stop = BOOL : n
+Auto restart = BOOL : n
+Alarm class = STRING : [32] 
+First failed = DWORD : 1281101553
 
 [/Programs/mhttpd]
 Required = BOOL : y
@@ -155,57 +195,8 @@ Auto restart = BOOL : n
 Alarm class = STRING : [32] 
 First failed = DWORD : 1262694156
 
-[/Experiment]
-Name = STRING : [32] Default
-
-[/Experiment/Buffer sizes]
-SYSMSG = DWORD : 100000
-SYSTEM = DWORD : 4194304
-k600SYSTEMSCALER = DWORD : 8388608
-SYSTEMSCALER = DWORD : 8388608
-
-[/Experiment/Run Parameters]
-Comment = STRING : [80] Analysis
-
-[/Experiment/Lock when running]
-Run parameter = LINK : [27] /Experiment/Run parameters
-Write Data? = LINK : [19] /Logger/Write Data
-
-[/Experiment]
-MAX_EVENT_SIZE = DWORD : 4194304
-
-[/Experiment/Security]
-Enable non-localhost RPC = BOOL : n
-
-[/Experiment/Security/RPC ports]
-ODBEdit = DWORD : 0
-ODBEdit1 = DWORD : 0
-Analyzer = DWORD : 0
-Analyzer1 = DWORD : 0
-Analyzer2 = DWORD : 0
-Analyzer3 = DWORD : 0
-Analyzer4 = DWORD : 0
-Analyzer5 = DWORD : 0
-Analyzer6 = DWORD : 0
-
-[/Experiment/Security/RPC hosts]
-Allowed hosts = STRING[10] :
-[256] localhost
-[256] 
-[256] 
-[256] 
-[256] 
-[256] 
-[256] 
-[256] 
-[256] 
-[256] 
-
-[/Experiment/Security]
-Disable RPC hosts check = BOOL : n
-
 [/Logger]
-Data dir = STRING : [256] /home/neveling/K600/PR259-Daniel/ANALYSIS/k600analyser
+Data dir = STRING : [256] /home/lindsay/Software/k600analyser
 Message file = STRING : [256] midas.log
 Write data = BOOL : y
 Auto restart = BOOL : n
@@ -259,89 +250,13 @@ Number of events = LINK : [42] /Equipment/Trigger/Statistics/Events sent
 [/Runinfo]
 State = INT : 1
 Online Mode = INT : 0
-Run number = INT : 10060
+Run number = INT : 1087
 Transition in progress = INT : 0
-Start abort = INT : 0
 Requested transition = INT : 0
 Start time = STRING : [32] Thu Oct 16 14:26:35 2008
 Start time binary = DWORD : 1224159995
 Stop time = STRING : [32] Thu Oct 16 14:26:44 2008
 Stop time binary = DWORD : 1224160004
-
-[/Alarms]
-Alarm system active = BOOL : y
-
-[/Alarms/Alarms/Demo ODB]
-Active = BOOL : n
-Triggered = INT : 0
-Type = INT : 3
-Check interval = INT : 60
-Checked last = DWORD : 0
-Time triggered first = STRING : [32] 
-Time triggered last = STRING : [32] 
-Condition = STRING : [256] /Runinfo/Run number > 100
-Alarm Class = STRING : [32] Alarm
-Alarm Message = STRING : [80] Run number became too large
-
-[/Alarms/Alarms/Demo periodic]
-Active = BOOL : n
-Triggered = INT : 0
-Type = INT : 4
-Check interval = INT : 28800
-Checked last = DWORD : 1176474143
-Time triggered first = STRING : [32] 
-Time triggered last = STRING : [32] 
-Condition = STRING : [256] 
-Alarm Class = STRING : [32] Warning
-Alarm Message = STRING : [80] Please do your shift checks
-
-[/Alarms/Alarms/EventRate]
-Active = BOOL : y
-Triggered = INT : 12
-Type = INT : 3
-Check interval = INT : 5
-Checked last = DWORD : 1418898692
-Time triggered first = STRING : [32] Tue Jan  5 14:22:36 2010
-Time triggered last = STRING : [32] Thu Dec 18 12:31:32 2014
-Condition = STRING : [256] /Equipment/WireChamber/Statistics/Events per sec. <  120
-Alarm Class = STRING : [32] Alarm
-Alarm Message = STRING : [80] Event Rate has dropped too low
-
-[/Alarms/Alarms/Speaker]
-Active = BOOL : y
-Triggered = INT : 0
-Type = INT : 2
-Check interval = INT : 60
-Checked last = DWORD : 0
-Time triggered first = STRING : [32] 
-Time triggered last = STRING : [32] 
-Condition = STRING : [256] on
-Alarm Class = STRING : [32] Alarm
-Alarm Message = STRING : [80] Program Speaker is not running
-
-[/Alarms/Classes/Alarm]
-Write system message = BOOL : y
-Write Elog message = BOOL : n
-System message interval = INT : 60
-System message last = DWORD : 1418898692
-Execute command = STRING : [256] 
-Execute interval = INT : 0
-Execute last = DWORD : 0
-Stop run = BOOL : n
-Display BGColor = STRING : [32] red
-Display FGColor = STRING : [32] black
-
-[/Alarms/Classes/Warning]
-Write system message = BOOL : y
-Write Elog message = BOOL : n
-System message interval = INT : 60
-System message last = DWORD : 0
-Execute command = STRING : [256] 
-Execute interval = INT : 0
-Execute last = DWORD : 0
-Stop run = BOOL : n
-Display BGColor = STRING : [32] red
-Display FGColor = STRING : [32] black
 
 [/Equipment/Trigger/Variables]
 ADC0 = DWORD : 0
@@ -362,47 +277,35 @@ Format = STRING : [80] MIDAS
 Events sent = DOUBLE : 2.420921664622108e-322
 
 [/Equipment/Scaler/Variables]
-SCLR = DWORD[40] :
-[0] 98
-[1] 5
-[2] 431
+SCLR = DWORD[28] :
+[0] 1014
+[1] 0
+[2] 234
 [3] 10
 [4] 0
 [5] 0
 [6] 0
 [7] 0
-[8] 11754
-[9] 11651
-[10] 20341
-[11] 13363
-[12] 12704
-[13] 0
-[14] 0
+[8] 2056
+[9] 0
+[10] 60
+[11] 538
+[12] 14
+[13] 28
+[14] 4
 [15] 0
 [16] 0
 [17] 0
 [18] 0
 [19] 0
-[20] 0
+[20] 1000
 [21] 0
-[22] 0
-[23] 0
+[22] 233
+[23] 10
 [24] 0
 [25] 0
 [26] 0
 [27] 0
-[28] 0
-[29] 0
-[30] 0
-[31] 0
-[32] 99
-[33] 5
-[34] 431
-[35] 10
-[36] 0
-[37] 0
-[38] 0
-[39] 0
 ACUM = DOUBLE[8] :
 [0] 3.684021826651333e+59
 [1] 1.518302331373232e-152
@@ -412,7 +315,7 @@ ACUM = DOUBLE[8] :
 [5] 6.870537424903344e+228
 [6] 4.261628283550968e+270
 [7] 9.314404660101941e+199
-SCLD = DWORD[500] :
+SCLD = DWORD[200] :
 [0] 0
 [1] 0
 [2] 0
@@ -420,17 +323,17 @@ SCLD = DWORD[500] :
 [4] 0
 [5] 0
 [6] 0
-[7] 754
-[8] 647
-[9] 554
-[10] 471
-[11] 377
-[12] 401
-[13] 536
-[14] 280
+[7] 8296
+[8] 5268
+[9] 4475
+[10] 5205
+[11] 3521
+[12] 5053
+[13] 4065
+[14] 20123
 [15] 0
 [16] 0
-[17] 3095
+[17] 0
 [18] 0
 [19] 0
 [20] 0
@@ -483,52 +386,52 @@ SCLD = DWORD[500] :
 [67] 0
 [68] 0
 [69] 0
-[70] 3096
-[71] 3096
-[72] 3099
-[73] 3099
-[74] 3099
+[70] 0
+[71] 0
+[72] 0
+[73] 0
+[74] 0
 [75] 0
 [76] 0
 [77] 0
 [78] 0
 [79] 0
-[80] 7
-[81] 7
-[82] 5
-[83] 5
-[84] 4
-[85] 4
-[86] 5
-[87] 3
+[80] 13
+[81] 8
+[82] 7
+[83] 8
+[84] 5
+[85] 8
+[86] 6
+[87] 0
 [88] 0
 [89] 0
 [90] 34
-[91] 34
-[92] 34
-[93] 34
-[94] 34
-[95] 34
+[91] 0
+[92] 0
+[93] 0
+[94] 0
+[95] 0
 [96] 0
 [97] 0
-[98] 0
+[98] 926
 [99] 0
-[100] 104
-[101] 104
-[102] 0
-[103] 117
-[104] 118
-[105] 118
-[106] 121
-[107] 122
-[108] 124
-[109] 128
-[110] 127
+[100] 0
+[101] 926
+[102] 1
+[103] 2153
+[104] 2175
+[105] 2247
+[106] 2275
+[107] 2334
+[108] 2359
+[109] 2408
+[110] 872
 [111] 0
 [112] 0
 [113] 0
 [114] 0
-[115] 99
+[115] 0
 [116] 0
 [117] 0
 [118] 0
@@ -538,9 +441,9 @@ SCLD = DWORD[500] :
 [122] 0
 [123] 0
 [124] 0
-[125] 27
-[126] 31
-[127] 44
+[125] 40
+[126] 40
+[127] 51
 [128] 0
 [129] 0
 [130] 0
@@ -553,8 +456,8 @@ SCLD = DWORD[500] :
 [137] 0
 [138] 0
 [139] 0
-[140] 95
-[141] 760
+[140] 340
+[141] 2380
 [142] 0
 [143] 0
 [144] 0
@@ -603,316 +506,16 @@ SCLD = DWORD[500] :
 [187] 0
 [188] 0
 [189] 0
-[190] 13584120
-[191] 3704760
-[192] 3757
-[193] 3757
-[194] 986
+[190] 6636
+[191] 2844
+[192] 3540
+[193] 3540
+[194] 0
 [195] 0
 [196] 0
 [197] 0
 [198] 0
 [199] 0
-[200] 0
-[201] 0
-[202] 0
-[203] 0
-[204] 0
-[205] 0
-[206] 0
-[207] 0
-[208] 0
-[209] 0
-[210] 0
-[211] 0
-[212] 0
-[213] 0
-[214] 0
-[215] 0
-[216] 0
-[217] 0
-[218] 0
-[219] 0
-[220] 0
-[221] 0
-[222] 0
-[223] 0
-[224] 0
-[225] 0
-[226] 0
-[227] 0
-[228] 0
-[229] 0
-[230] 0
-[231] 0
-[232] 0
-[233] 0
-[234] 0
-[235] 0
-[236] 0
-[237] 0
-[238] 0
-[239] 0
-[240] 0
-[241] 0
-[242] 0
-[243] 0
-[244] 0
-[245] 0
-[246] 0
-[247] 0
-[248] 0
-[249] 0
-[250] 0
-[251] 0
-[252] 0
-[253] 0
-[254] 0
-[255] 0
-[256] 0
-[257] 0
-[258] 0
-[259] 0
-[260] 0
-[261] 0
-[262] 0
-[263] 0
-[264] 0
-[265] 0
-[266] 0
-[267] 0
-[268] 0
-[269] 0
-[270] 0
-[271] 0
-[272] 0
-[273] 0
-[274] 0
-[275] 0
-[276] 0
-[277] 0
-[278] 0
-[279] 0
-[280] 0
-[281] 0
-[282] 0
-[283] 0
-[284] 0
-[285] 0
-[286] 0
-[287] 0
-[288] 0
-[289] 0
-[290] 0
-[291] 0
-[292] 0
-[293] 0
-[294] 0
-[295] 0
-[296] 0
-[297] 0
-[298] 0
-[299] 0
-[300] 0
-[301] 0
-[302] 0
-[303] 0
-[304] 0
-[305] 0
-[306] 0
-[307] 0
-[308] 0
-[309] 0
-[310] 0
-[311] 0
-[312] 0
-[313] 0
-[314] 0
-[315] 0
-[316] 0
-[317] 0
-[318] 0
-[319] 0
-[320] 0
-[321] 0
-[322] 0
-[323] 0
-[324] 0
-[325] 0
-[326] 0
-[327] 0
-[328] 0
-[329] 0
-[330] 0
-[331] 0
-[332] 0
-[333] 0
-[334] 0
-[335] 0
-[336] 0
-[337] 0
-[338] 0
-[339] 0
-[340] 0
-[341] 0
-[342] 0
-[343] 0
-[344] 0
-[345] 0
-[346] 0
-[347] 0
-[348] 0
-[349] 0
-[350] 0
-[351] 0
-[352] 0
-[353] 0
-[354] 0
-[355] 0
-[356] 0
-[357] 0
-[358] 0
-[359] 0
-[360] 0
-[361] 0
-[362] 0
-[363] 0
-[364] 0
-[365] 0
-[366] 0
-[367] 0
-[368] 0
-[369] 0
-[370] 0
-[371] 0
-[372] 0
-[373] 0
-[374] 0
-[375] 0
-[376] 0
-[377] 0
-[378] 0
-[379] 0
-[380] 0
-[381] 0
-[382] 0
-[383] 0
-[384] 0
-[385] 0
-[386] 0
-[387] 0
-[388] 0
-[389] 0
-[390] 0
-[391] 0
-[392] 0
-[393] 0
-[394] 0
-[395] 0
-[396] 0
-[397] 0
-[398] 0
-[399] 0
-[400] 0
-[401] 0
-[402] 0
-[403] 0
-[404] 0
-[405] 393179
-[406] 393179
-[407] 0
-[408] 0
-[409] 0
-[410] 0
-[411] 0
-[412] 0
-[413] 0
-[414] 0
-[415] 0
-[416] 0
-[417] 0
-[418] 0
-[419] 0
-[420] 0
-[421] 0
-[422] 0
-[423] 0
-[424] 0
-[425] 0
-[426] 0
-[427] 0
-[428] 0
-[429] 0
-[430] 0
-[431] 520
-[432] 104
-[433] 0
-[434] 0
-[435] 0
-[436] 0
-[437] 0
-[438] 0
-[439] 0
-[440] 0
-[441] 0
-[442] 0
-[443] 0
-[444] 0
-[445] 0
-[446] 0
-[447] 0
-[448] 0
-[449] 0
-[450] 0
-[451] 0
-[452] 0
-[453] 0
-[454] 0
-[455] 0
-[456] 0
-[457] 0
-[458] 0
-[459] 0
-[460] 0
-[461] 0
-[462] 0
-[463] 0
-[464] 0
-[465] 0
-[466] 0
-[467] 0
-[468] 0
-[469] 0
-[470] 0
-[471] 0
-[472] 0
-[473] 0
-[474] 0
-[475] 0
-[476] 0
-[477] 0
-[478] 0
-[479] 0
-[480] 0
-[481] 0
-[482] 0
-[483] 0
-[484] 0
-[485] 0
-[486] 0
-[487] 0
-[488] 0
-[489] 0
-[490] 0
-[491] 0
-[492] 0
-[493] 0
-[494] 0
-[495] 0
-[496] 0
-[497] 0
-[498] 0
-[499] 0
 
 [/Equipment/Scaler/Common]
 Event ID = WORD : 2
@@ -946,6 +549,15 @@ Names = STRING[8] :
 [32] scaler6
 [32] scaler7
 [32] scaler8
+
+[/Equipment/Beamline/Variables]
+MSRD = FLOAT : 0
+DMND = FLOAT : 0
+
+[/Equipment/Beamline/Common]
+Event ID = WORD : 2
+Type = INT : 33
+Format = STRING : [80] 
 
 [/Equipment/WireChamber/Settings/V1190A_0]
 BaseAddress = DWORD : 0
@@ -2848,160 +2460,160 @@ ADC0 = DWORD[175] :
 [0] 4244635648
 [1] 4194312192
 [2] 4160765954
-[3] 4161814644
-[4] 4160831603
-[5] 4161880141
-[6] 4160897092
-[7] 4161945693
-[8] 4160962637
-[9] 4162011216
-[10] 4161028210
-[11] 4162076758
-[12] 4161093675
-[13] 4162142291
-[14] 4161159277
+[3] 4161814659
+[4] 4160831625
+[5] 4161880139
+[6] 4160897090
+[7] 4161945697
+[8] 4160962646
+[9] 4162011232
+[10] 4161028221
+[11] 4162076766
+[12] 4161093678
+[13] 4162142290
+[14] 4161159296
 [15] 4162207745
-[16] 4161224806
+[16] 4161224832
 [17] 4162273365
 [18] 4161290343
-[19] 4162338929
-[20] 4161355874
-[21] 4162404472
-[22] 4161421390
-[23] 4162470010
-[24] 4161486922
-[25] 4162535510
-[26] 4161552475
-[27] 4162601076
-[28] 4161618007
-[29] 4162666609
-[30] 4161683556
-[31] 4162732129
-[32] 4161749116
-[33] 4162797682
-[34] 4228251456
+[19] 4162338948
+[20] 4161355885
+[21] 4162404486
+[22] 4161421409
+[23] 4162470003
+[24] 4161486930
+[25] 4162535509
+[26] 4161552492
+[27] 4162601071
+[28] 4161618030
+[29] 4162666612
+[30] 4161683563
+[31] 4162732128
+[32] 4161749142
+[33] 4162797679
+[34] 4227914299
 [35] 4244635649
 [36] 4194312192
-[37] 4160766064
-[38] 4161814653
-[39] 4160831616
-[40] 4161880174
-[41] 4160897133
-[42] 4161945736
-[43] 4160962675
+[37] 4160766062
+[38] 4161814657
+[39] 4160831618
+[40] 4161880173
+[41] 4160897131
+[42] 4161945739
+[43] 4160962673
 [44] 4162011244
-[45] 4161028197
-[46] 4162076798
-[47] 4161093740
-[48] 4162142305
-[49] 4161159301
-[50] 4162207876
-[51] 4161224808
-[52] 4162273392
-[53] 4161290376
+[45] 4161028200
+[46] 4162076793
+[47] 4161093759
+[48] 4162142316
+[49] 4161159307
+[50] 4162207887
+[51] 4161224820
+[52] 4162273394
+[53] 4161290390
 [54] 4162338964
-[55] 4161356273
-[56] 4162404491
-[57] 4161421451
-[58] 4162470037
-[59] 4161486982
-[60] 4162535571
-[61] 4161552516
-[62] 4162601095
-[63] 4161618013
-[64] 4162666625
-[65] 4161683603
-[66] 4162732161
-[67] 4161749109
-[68] 4162797694
-[69] 4228251456
+[55] 4161355914
+[56] 4162404495
+[57] 4161421456
+[58] 4162470062
+[59] 4161486988
+[60] 4162535565
+[61] 4161552535
+[62] 4162601097
+[63] 4161618022
+[64] 4162666631
+[65] 4161683615
+[66] 4162732162
+[67] 4161749126
+[68] 4162797688
+[69] 4227914299
 [70] 4244635650
 [71] 4194312192
-[72] 4160766035
-[73] 4161814671
-[74] 4160831575
-[75] 4161880189
+[72] 4160766041
+[73] 4161814656
+[74] 4160831576
+[75] 4161880195
 [76] 4160897121
-[77] 4161945718
-[78] 4160962640
-[79] 4162011259
-[80] 4161028228
-[81] 4162076787
-[82] 4161093742
-[83] 4162142324
-[84] 4161159265
-[85] 4162207899
-[86] 4161224802
-[87] 4162273405
-[88] 4161290376
-[89] 4162338948
-[90] 4161355874
-[91] 4162404462
-[92] 4161421420
+[77] 4161945722
+[78] 4160962641
+[79] 4162011274
+[80] 4161028229
+[81] 4162076812
+[82] 4161093793
+[83] 4162142323
+[84] 4161159279
+[85] 4162207885
+[86] 4161224807
+[87] 4162273403
+[88] 4161290386
+[89] 4162338952
+[90] 4161355881
+[91] 4162404456
+[92] 4161421439
 [93] 4162470016
-[94] 4161486968
-[95] 4162535546
-[96] 4161552509
+[94] 4161486984
+[95] 4162535550
+[96] 4161552545
 [97] 4162601069
-[98] 4161618011
-[99] 4162666604
+[98] 4161618032
+[99] 4162666608
 [100] 4161683586
-[101] 4162732152
-[102] 4161749091
-[103] 4162797679
-[104] 4228251456
+[101] 4162732149
+[102] 4161749101
+[103] 4162797682
+[104] 4227914299
 [105] 4244635651
 [106] 4194312192
-[107] 4160766062
-[108] 4161814695
-[109] 4160831615
-[110] 4161880229
-[111] 4160897140
-[112] 4161945741
-[113] 4160962699
-[114] 4162011282
-[115] 4161028214
-[116] 4162076847
-[117] 4161093749
-[118] 4162142361
-[119] 4161159302
-[120] 4162207894
-[121] 4161224843
-[122] 4162273453
-[123] 4161290383
-[124] 4162338958
-[125] 4161355904
-[126] 4162404497
-[127] 4161421455
-[128] 4162470046
-[129] 4161486968
-[130] 4162535571
-[131] 4161552543
-[132] 4162601184
-[133] 4161618050
-[134] 4162666645
-[135] 4161683610
+[107] 4160766067
+[108] 4161814747
+[109] 4160831612
+[110] 4161880213
+[111] 4160897143
+[112] 4161945729
+[113] 4160962704
+[114] 4162011285
+[115] 4161028219
+[116] 4162076841
+[117] 4161093748
+[118] 4162142346
+[119] 4161159295
+[120] 4162207921
+[121] 4161224853
+[122] 4162273440
+[123] 4161290379
+[124] 4162338957
+[125] 4161355902
+[126] 4162404493
+[127] 4161421447
+[128] 4162470047
+[129] 4161486971
+[130] 4162535569
+[131] 4161552546
+[132] 4162601183
+[133] 4161618041
+[134] 4162666643
+[135] 4161683600
 [136] 4162732174
-[137] 4161749098
-[138] 4162797727
-[139] 4228251456
+[137] 4161749107
+[138] 4162797725
+[139] 4227914299
 [140] 4244635652
 [141] 4194312192
 [142] 4160766071
 [143] 4161814684
-[144] 4160831604
+[144] 4160831605
 [145] 4161880200
 [146] 4160897149
 [147] 4161945738
-[148] 4160962690
-[149] 4162011269
+[148] 4160962691
+[149] 4162011270
 [150] 4161028217
 [151] 4162076799
 [152] 4161093741
 [153] 4162142364
 [154] 4161159272
 [155] 4162207899
-[156] 4161224827
+[156] 4161224828
 [157] 4162273408
 [158] 4161290361
 [159] 4162338940
@@ -3009,7 +2621,7 @@ ADC0 = DWORD[175] :
 [161] 4162404477
 [162] 4161421429
 [163] 4162470053
-[164] 4161486970
+[164] 4161486971
 [165] 4162535563
 [166] 4161552510
 [167] 4162601091
@@ -3019,583 +2631,189 @@ ADC0 = DWORD[175] :
 [171] 4162732167
 [172] 4161749122
 [173] 4162797726
-[174] 4228251456
-TDC0 = DWORD[53] :
+[174] 4227914299
+TDC0 = DWORD[66] :
 [0] 4160749568
-[1] 1086318623
-[2] 934468
-[3] 5124863
-[4] 413313
-[5] 5649170
-[6] 2147483871
-[7] 4160749569
-[8] 1086318623
-[9] 860439
-[10] 338710
-[11] 45944773
-[12] 46469065
-[13] 45421048
-[14] 46993983
-[15] 44897336
-[16] 47518834
-[17] 2147483999
-[18] 4160749570
-[19] 1086318623
-[20] 1001025
-[21] 479870
-[22] 2147483807
-[23] 4160749571
-[24] 1086318623
-[25] 736648
-[26] 14887776
-[27] 215491
-[28] 15412528
-[29] 14364166
-[30] 13840565
-[31] 15937583
-[32] 2147483967
-[33] 4160749572
-[34] 1086318623
-[35] 911927
-[36] 390769
-[37] 2147483807
-[38] 4160749573
-[39] 1086318623
-[40] 879416
-[41] 358256
-[42] 2147483807
-[43] 4160749574
-[44] 1086318623
-[45] 711417
-[46] 5954297
-[47] 190258
-[48] 2147483839
-[49] 4160749575
-[50] 1086318623
-[51] 337988
-[52] 2147483775
+[1] 1175142591
+[2] 804927
+[3] 5521480
+[4] 9190997
+[5] 285661
+[6] 6570048
+[7] 9715109
+[8] 4997285
+[9] 8667243
+[10] 6045892
+[11] 10239843
+[12] 10764666
+[13] 11289410
+[14] 24920745
+[15] 23874204
+[16] 2147484191
+[17] 4160749569
+[18] 1175142591
+[19] 743303
+[20] 223466
+[21] 66276740
+[22] 65752767
+[23] 66801603
+[24] 65229127
+[25] 64182255
+[26] 2147483967
+[27] 4160749570
+[28] 1175142591
+[29] 1024081
+[30] 8887009
+[31] 504814
+[32] 2147483839
+[33] 4160749571
+[34] 1175142591
+[35] 877368
+[36] 358098
+[37] 23419222
+[38] 23943456
+[39] 24468247
+[40] 22371710
+[41] 2147483935
+[42] 4160749572
+[43] 1175142591
+[44] 913271
+[45] 394001
+[46] 2147483807
+[47] 4160749573
+[48] 1175142591
+[49] 753174
+[50] 11236255
+[51] 233904
+[52] 10712163
+[53] 11761161
+[54] 10188618
+[55] 12286172
+[56] 9664997
+[57] 11240028
+[58] 2147484031
+[59] 4160749574
+[60] 1175142591
+[61] 741135
+[62] 7556880
+[63] 221865
+[64] 8086183
+[65] 2147483871
 QDC0 = DWORD[34] :
 [0] 4194312192
-[1] 4160768373
-[2] 4161814651
-[3] 4160833150
-[4] 4161880192
-[5] 4160897082
-[6] 4161945703
-[7] 4160962613
-[8] 4162011255
-[9] 4161028154
-[10] 4162076820
-[11] 4161093671
-[12] 4162142325
-[13] 4161159219
-[14] 4162207883
-[15] 4161224739
-[16] 4162273426
-[17] 4161290299
-[18] 4162338924
-[19] 4161355833
-[20] 4162404469
-[21] 4161421360
-[22] 4162470036
-[23] 4161486913
-[24] 4162535547
-[25] 4161552452
-[26] 4162601060
-[27] 4161617974
-[28] 4162666611
+[1] 4160767169
+[2] 4161814653
+[3] 4160833316
+[4] 4161880193
+[5] 4160897875
+[6] 4161945704
+[7] 4160964737
+[8] 4162011257
+[9] 4161028156
+[10] 4162076821
+[11] 4161093674
+[12] 4162142327
+[13] 4161159220
+[14] 4162207881
+[15] 4161224740
+[16] 4162273425
+[17] 4161290301
+[18] 4162338923
+[19] 4161355835
+[20] 4162404470
+[21] 4161421362
+[22] 4162470037
+[23] 4161486915
+[24] 4162535543
+[25] 4161552455
+[26] 4162601062
+[27] 4161617976
+[28] 4162666612
 [29] 4161683506
-[30] 4162732125
+[30] 4162732120
 [31] 4161749056
-[32] 4162797723
-[33] 4228251456
+[32] 4162797721
+[33] 4231027205
 
 [/Equipment/WireChamber/Statistics]
 Events sent = DOUBLE : 0
 Events per sec. = DOUBLE : 0
 kBytes per sec. = DOUBLE : 0
 
-[/Equipment/Beamline/Variables]
-MSRD = FLOAT : 0
-DMND = FLOAT : 0
-Demand = FLOAT[55] :
-[0] 29
-[1] 64
-[2] 21.704
-[3] 10.25
-[4] 23.25
-[5] 9.55
-[6] 20.65
-[7] 25.4
-[8] 22.75
-[9] 0
-[10] 0
-[11] 0
-[12] 0
-[13] 0
-[14] 0
-[15] 0
-[16] 0
-[17] 0
-[18] 0
-[19] 0
-[20] 0
-[21] 0
-[22] 0
-[23] 0
-[24] 0
-[25] 0
-[26] 0
-[27] 0
-[28] 0
-[29] 0
-[30] 0
-[31] 0
-[32] 0
-[33] 0
-[34] 0
-[35] 0
-[36] 65
-[37] 0
-[38] 65
-[39] 0
-[40] 65
-[41] 0
-[42] 65
-[43] 0
-[44] 45
-[45] 0
-[46] 45
-[47] 0
-[48] 45.1
-[49] 0
-[50] 33.1
-[51] -0.2
-[52] 15.5
-[53] 3.8
-[54] 12.5
-Measured = FLOAT[55] :
-[0] 28.8777
-[1] 63.93683
-[2] 0.109865
-[3] 0.05493248
-[4] 0.1800565
-[5] 0
-[6] 0.1480125
-[7] 0.1495384
-[8] 0.09308004
-[9] 0.007629511
-[10] 0.01068132
-[11] 0.03814755
-[12] 0.1174945
-[13] 0.01983673
-[14] 0.3616388
-[15] 0.233463
-[16] 0.06103609
-[17] 0.3479057
-[18] 0.003051804
-[19] 0.3616388
-[20] 0.07476921
-[21] 0.1464866
-[22] 0.4028382
-[23] 0.2273594
-[24] -0.2838178
-[25] 0.2853437
-[26] 0.3326467
-[27] -0.1327535
-[28] 0.02594034
-[29] 0.06599527
-[30] 0.06103609
-[31] 0.1879912
-[32] 0.08545052
-[33] 0.2819867
-[34] 0.02288853
-[35] 0.009756098
-[36] 64.87805
-[37] -0.07804878
-[38] 64.89756
-[39] 0.04878049
-[40] 65.07317
-[41] -0.03902439
-[42] 64.89756
-[43] -0.06829268
-[44] 44.50732
-[45] -0.03902439
-[46] 44.83902
-[47] 0
-[48] 45.11219
-[49] 0.009756098
-[50] 33.11219
-[51] -0.1951219
-[52] 15.53171
-[53] 3.77561
-[54] 12.42927
+[/Alarms]
+Alarm system active = BOOL : y
 
-[/Equipment/Beamline/Common]
-Format = STRING : [8] MIDAS
-Event ID = WORD : 3
-Type = INT : 16
-Trigger mask = WORD : 0
-Buffer = STRING : [32] K600SYSTEMS
-Source = INT : 0
-Enabled = BOOL : y
-Read on = INT : 121
-Period = INT : 60000
-Event limit = DOUBLE : 0
-Num subevents = DWORD : 0
-Log history = INT : 1
-Frontend host = STRING : [32] xiafe.tlabs.ac.za
-Frontend name = STRING : [32] feEpics
-Frontend file name = STRING : [256] frontend.c
-Status = STRING : [256] Ok
-Status color = STRING : [32] #00FF00
+[/Alarms/Alarms/Demo ODB]
+Active = BOOL : n
+Triggered = INT : 0
+Type = INT : 3
+Check interval = INT : 60
+Checked last = DWORD : 0
+Time triggered first = STRING : [32] 
+Time triggered last = STRING : [32] 
+Condition = STRING : [256] /Runinfo/Run number > 100
+Alarm Class = STRING : [32] Alarm
+Alarm Message = STRING : [80] Run number became too large
 
-[/Equipment/Beamline/Statistics]
-Events sent = DOUBLE : 36
-Events per sec. = DOUBLE : 0
-kBytes per sec. = DOUBLE : 0
+[/Alarms/Alarms/Demo periodic]
+Active = BOOL : n
+Triggered = INT : 0
+Type = INT : 4
+Check interval = INT : 28800
+Checked last = DWORD : 1176474143
+Time triggered first = STRING : [32] 
+Time triggered last = STRING : [32] 
+Condition = STRING : [256] 
+Alarm Class = STRING : [32] Warning
+Alarm Message = STRING : [80] Please do your shift checks
 
-[/Equipment/Beamline/Settings/Devices/Beamline]
-EPICS Gateway = STRING : [256] epicssvr.tlabs.ac.za
-Gateway port = INT : 5064
-Demand = STRING[55] :
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :refvalue
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-[32] :put-P
-[32] :put-G
-Measured = STRING[55] :
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :actvalue
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-[32] :get-P
-[32] :get-G
-Device type = INT[55] :
-[0] 1
-[1] 1
-[2] 1
-[3] 1
-[4] 1
-[5] 1
-[6] 1
-[7] 1
-[8] 1
-[9] 1
-[10] 1
-[11] 1
-[12] 1
-[13] 1
-[14] 1
-[15] 1
-[16] 1
-[17] 1
-[18] 1
-[19] 1
-[20] 1
-[21] 1
-[22] 1
-[23] 1
-[24] 1
-[25] 1
-[26] 1
-[27] 1
-[28] 1
-[29] 1
-[30] 1
-[31] 1
-[32] 1
-[33] 1
-[34] 1
-[35] 1
-[36] 1
-[37] 1
-[38] 1
-[39] 1
-[40] 1
-[41] 1
-[42] 1
-[43] 1
-[44] 1
-[45] 1
-[46] 1
-[47] 1
-[48] 1
-[49] 1
-[50] 1
-[51] 1
-[52] 1
-[53] 1
-[54] 1
-Channel_name = STRING[55] :
-[32] vartable:quad01pi
-[32] vartable:quad02pi
-[32] vartable:quad03pi
-[32] vartable:quad04pi
-[32] vartable:quad05pi
-[32] vartable:quad06pi
-[32] vartable:quad07pi
-[32] vartable:quad08pi
-[32] vartable:quad09pi
-[32] vartable:quad10pi
-[32] vartable:quad11pi
-[32] vartable:quad12pi
-[32] vartable:quad13pi
-[32] vartable:quad14pi
-[32] vartable:quad15pi
-[32] vartable:quad16pi
-[32] vartable:quad17pi
-[32] vartable:quad18pi
-[32] vartable:quad19pi
-[32] vartable:quad20pi
-[32] vartable:quad21pi
-[32] vartable:bmag01pi
-[32] vartable:bmag03pi
-[32] vartable:quad01si
-[32] vartable:quad02si
-[32] vartable:quad03si
-[32] vartable:quad04si
-[32] vartable:quad05si
-[32] vartable:quad06si
-[32] vartable:quad01sp
-[32] vartable:bmag01sp
-[32] vartable:trim01sp
-[32] vartable:bmag02sp
-[32] vartable:trim02sp
-[32] vartable:hex01spi
-[32] slx09x
-[32] slx09x
-[32] sly09x
-[32] sly09x
-[32] slx12x
-[32] slx12x
-[32] sly12x
-[32] sly12x
-[32] slx01p
-[32] slx01p
-[32] slx02p
-[32] slx02p
-[32] sly18j
-[32] sly18j
-[32] slx18j
-[32] slx18j
-[32] slx02s
-[32] slx02s
-[32] sly02s
-[32] sly02s
+[/Alarms/Alarms/EventRate]
+Active = BOOL : y
+Triggered = INT : 12
+Type = INT : 3
+Check interval = INT : 5
+Checked last = DWORD : 1418898692
+Time triggered first = STRING : [32] Tue Jan  5 14:22:36 2010
+Time triggered last = STRING : [32] Thu Dec 18 12:31:32 2014
+Condition = STRING : [256] /Equipment/WireChamber/Statistics/Events per sec. <  120
+Alarm Class = STRING : [32] Alarm
+Alarm Message = STRING : [80] Event Rate has dropped too low
 
-[/Equipment/Beamline/Settings]
-Update Threshold Measured = FLOAT[55] :
-[0] 1
-[1] 0.01
-[2] 0.01
-[3] 0.01
-[4] 0.01
-[5] 0.01
-[6] 0.01
-[7] 0.01
-[8] 0.01
-[9] 0.01
-[10] 0.01
-[11] 0.01
-[12] 0.01
-[13] 0.01
-[14] 0.01
-[15] 0.01
-[16] 0.01
-[17] 0.01
-[18] 0.01
-[19] 0.01
-[20] 0.01
-[21] 0.01
-[22] 0.01
-[23] 0.01
-[24] 0.01
-[25] 0.01
-[26] 0.01
-[27] 0.01
-[28] 0.01
-[29] 0.01
-[30] 0.01
-[31] 0.01
-[32] 0.01
-[33] 0.01
-[34] 0.01
-[35] 0.01
-[36] 0.01
-[37] 0.01
-[38] 0.01
-[39] 0.01
-[40] 0.01
-[41] 0.01
-[42] 0.01
-[43] 0.01
-[44] 0.01
-[45] 0.01
-[46] 0.01
-[47] 0.01
-[48] 0.01
-[49] 0.01
-[50] 0.01
-[51] 0.01
-[52] 0.01
-[53] 0.01
-[54] 0.01
-Names = STRING[55] :
-[32] Quad 1,P-Line
-[32] Quad 2,P-Line
-[32] Quad 3,P-Line
-[32] Quad 4,P-Line
-[32] Quad 5,P-Line
-[32] Quad 6,P-Line
-[32] Quad 7,P-Line
-[32] Quad 8,P-Line
-[32] Quad 9,P-Line
-[32] Quad 10,P-Line
-[32] Quad 11,P-Line
-[32] Quad 12,P-Line
-[32] Quad 13,P-Line
-[32] Quad 14,P-Line
-[32] Quad 15,P-Line
-[32] Quad 16,P-Line
-[32] Quad 17,P-Line
-[32] Quad 18,P-Line
-[32] Quad 19,P-Line
-[32] Quad 20,P-Line
-[32] Quad 21,P-Line
-[32] Bend Mag 1P
-[32] Bend Mag 3P
-[32] Quad 1,S-Line
-[32] Quad 2,S-Line
-[32] Quad 3,S-Line
-[32] Quad 4,S-Line
-[32] Quad 5,S-Line
-[32] Quad 6,S-Line
-[32] Quad 1,SP-Line
-[32] Bend Mag 1,SP
-[32] Trim Coil H,SP
-[32] Bend Mag 2,SP
-[32] Trim Coil K,SP
-[32] Hexapole 1,SP
-[32] Slit 9x Horz Pos
-[32] Slit 9x Horz Size
-[32] Slit 9x Vert Pos
-[32] Slit 9x Vert Size
-[32] Slit 12x Horz Pos
-[32] Slit 12x Horz Size
-[32] Slit 12x Vert Pos
-[32] Slit 12x Vert Size
-[32] Slit 1P Horz Pos
-[32] Slit 1P Horz Size
-[32] Slit 2P Horz Pos
-[32] Slit 2P Horz Size
-[32] Slit 18J Y Pos
-[32] Slit 18J Y Size
-[32] Slit 18J X Pos
-[32] Slit 18J Y Size
-[32] Slit 2S  X Pos
-[32] Slit 2S  X Size
-[32] Slit 2S  Y Pos
-[32] Slit 2S  Y Size
+[/Alarms/Alarms/Speaker]
+Active = BOOL : y
+Triggered = INT : 0
+Type = INT : 2
+Check interval = INT : 60
+Checked last = DWORD : 0
+Time triggered first = STRING : [32] 
+Time triggered last = STRING : [32] 
+Condition = STRING : [256] on
+Alarm Class = STRING : [32] Alarm
+Alarm Message = STRING : [80] Program Speaker is not running
+
+[/Alarms/Classes/Alarm]
+Write system message = BOOL : y
+Write Elog message = BOOL : n
+System message interval = INT : 60
+System message last = DWORD : 1418898692
+Execute command = STRING : [256] 
+Execute interval = INT : 0
+Execute last = DWORD : 0
+Stop run = BOOL : n
+Display BGColor = STRING : [32] red
+Display FGColor = STRING : [32] black
+
+[/Alarms/Classes/Warning]
+Write system message = BOOL : y
+Write Elog message = BOOL : n
+System message interval = INT : 60
+System message last = DWORD : 0
+Execute command = STRING : [256] 
+Execute interval = INT : 0
+Execute last = DWORD : 0
+Stop run = BOOL : n
+Display BGColor = STRING : [32] red
+Display FGColor = STRING : [32] black
 
 [/History/Display/Default/WireChamber rate]
 Time Scale = STRING : [32] 1h
@@ -3767,12 +2985,12 @@ u2_driftt_low = INT : 6100
 x2_driftt_hi = INT : 8050
 u2_driftt_hi = INT : 8050
 u1_driftt_hi = INT : 8050
-lowtof = INT : 3000
-hitof = INT : 3300
-lowpad1 = INT : 1400
-lowpad2 = INT : 0
-hipad1 = INT : 2400
-hipad2 = INT : 4096
+lowtof = INT : 4980
+hitof = INT : 5038
+lowpad1 = INT : 402
+lowpad2 = INT : 253
+hipad1 = INT : 912
+hipad2 = INT : 700
 
 [/Analyzer/Output]
 Filename = STRING : [256] 
@@ -3809,11 +3027,11 @@ Sampling type = INT : 2
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] nevelinglap
+Host = STRING : [32] lindsay-laptop
 
 [/Analyzer/Trigger/Statistics]
-Events received = DOUBLE : 0
-Events per sec. = DOUBLE : 0
+Events received = DOUBLE : 3187967
+Events per sec. = DOUBLE : 15000
 Events written = DOUBLE : 0
 
 [/Analyzer/Scaler/Common]
@@ -3823,25 +3041,11 @@ Sampling type = INT : 1
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] nevelinglap
+Host = STRING : [32] lindsay-laptop
 
 [/Analyzer/Scaler/Statistics]
-Events received = DOUBLE : 0
-Events per sec. = DOUBLE : 0
-Events written = DOUBLE : 0
-
-[/Analyzer/Beamline/Common]
-Event ID = INT : 3
-Trigger mask = INT : -1
-Sampling type = INT : 1
-Buffer = STRING : [32] SYSTEM
-Enabled = BOOL : y
-Client name = STRING : [32] Analyzer
-Host = STRING : [32] nevelinglap
-
-[/Analyzer/Beamline/Statistics]
-Events received = DOUBLE : 0
-Events per sec. = DOUBLE : 0
+Events received = DOUBLE : 3563
+Events per sec. = DOUBLE : 500
 Events written = DOUBLE : 0
 
 [/Analyzer/Bank switches]
@@ -3910,4 +3114,18 @@ Active = BOOL : n
 
 [/Analyzer/Tabs/WireHits]
 Active = BOOL : n
+
+[/Analyzer/Beamline/Common]
+Event ID = INT : 3
+Trigger mask = INT : -1
+Sampling type = INT : 1
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] lindsay-laptop
+
+[/Analyzer/Beamline/Statistics]
+Events received = DOUBLE : 0
+Events per sec. = DOUBLE : 0
+Events written = DOUBLE : 0
 

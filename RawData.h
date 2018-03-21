@@ -13,8 +13,8 @@ public :
 private :
   std::vector<int> ADCValues;
   std::vector<int> ADCChannels;
-  std::vector<int> TDCChannels;
-  std::vector<int> TDCValues;
+  //std::vector<int> TDCChannels;
+  //std::vector<int> TDCValues;
   std::vector<double> ADCCalibratedValues;
   std::vector<int> QDCValues;
   
@@ -26,6 +26,9 @@ public :
   void SetTDCValue(int entry, int value)	{TDCValues.at(entry) = value;}
   void SetADCCalibratedValue(int channel, double value) {ADCCalibratedValues.at(channel) = value;}
   void SetQDCValue(int channel, int value)	{QDCValues.at(channel) = value;}
+  
+    std::vector<int> TDCChannels;
+  std::vector<int> TDCValues;
   
   //Getters
   int GetADC(int channel)	{return ADCValues[channel];}
@@ -45,4 +48,5 @@ public :
 };
 
 RawData *RawDataDump(float *ADC_import, int *ADCchan_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, float *QDC_import);
+double CalculateADCCalibratedValue(int, float);
 #endif

@@ -19,7 +19,7 @@ void setupchannel2wireXoldXold(unsigned int chan2wire[]);
 void setupchannel2wireXoldXU(unsigned int chan2wire[]);
 void setupchannel2wireXUXU(unsigned int chan2wire[]) ;
 void setupchannel2wireXUXold(unsigned int chan2wire[]);
-void setupchannel2wire(unsigned int chan2wire[]) ;
+void setupchannel2wireUXUX(unsigned int chan2wire[]) ;
 
 void getRefTimes(int time[], int ntdc, DWORD ptdc[]);
 void sortTDCs(Int_t hits, Int_t wire[], Int_t time[]);
@@ -32,6 +32,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
 
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr);
+void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr);
 double CalcQBrho(double Xcorr);
 double CalcTfromXcorr(double Xcorr, double mass);
 double CalcTfromRigidity(double rig, double mass);
