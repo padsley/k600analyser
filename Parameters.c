@@ -120,7 +120,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-  TDCInit();
+  //TDCInit();
   PrintParameters();
 //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
   printf("\nFinished initialising parameters - to the sorting!\n");
@@ -837,7 +837,7 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
-void TDCInit()
+void TDCOffsetsInit()
 {
   printf("TDCInit\n");
   TDCOffsets = new double[128*TDCModules];
@@ -986,6 +986,7 @@ void ReadConfiguration()
 		  TDCsize = 128*TDCModules;
 		  ChannelCounter = new int[128*TDCModules];
 		  GoodChannelCounter = new int[128*TDCModules];
+		  TDCOffsetsInit();
 		}
 	      else if(LineBuffer.compare(0,14,"MMMADCChannels") == 0)
 		{

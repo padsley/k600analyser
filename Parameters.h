@@ -65,7 +65,7 @@ void ReadCalibrationParameters(std::string CalibFile);
 void ReadX1Offsets(std::string X1offsetsFile);
 void ReadTOFOffsets(std::string TOFoffsetsFile);
 
-void TDCInit();
+void TDCOffsetsInit();
 void TDCOffsetsClear();
 void ReadTDCOffsets(std::string OffsetsFile);
 
