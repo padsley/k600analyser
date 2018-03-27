@@ -1823,7 +1823,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
    //t_Ex = CalcExDirect(Xcorr);
-   t_Ex = CalcEx(Xcorr2);
+   t_Ex = CalcEx(Xcorr);
 
    extern double *masses;
    t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);

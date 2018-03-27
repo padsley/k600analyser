@@ -1736,6 +1736,7 @@ double CalcQBrho(double Xcorr)
   double rig = 0;
   for(int i=0;i<NXRigidityPars;i++)
     {
+	 //std::cout << XRigidityPars[i] << std::endl;
       //printf("XRigidityPars[%d]: %e\n",i,XRigidityPars[i]);
       rig += XRigidityPars[i] * pow(Xcorr,(double)i);
     }
@@ -1754,15 +1755,16 @@ double CalcTfromXcorr(double Xcorr, double mass)
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
+  //std::cout << "T3: " << sqrt(pow(p,2.) + pow(mass,2.)) << " " << mass << std::endl;
   return T;
 }
 
 //--------------------------------------------------------------------------------------
-double CalcTfromRigidity(double rig, double mass)
+double CalcTfromRigidity(double rig, double mass) //never used
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
+  double p = rig; //changed by FD * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
 }
 
@@ -1801,11 +1803,13 @@ double CalcEx(double Xcorr)
       masses[2] = masses[0];
       masses[3] = masses[1];
     }
+    
+    //std::cout << masses[2] << " " << masses[3] <<std::endl;
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
   p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
-  //std::cout << "p3: " << p3 << std::endl;
+  //std::cout << "Xcorr: " << Xcorr << " p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
   //std::cout << "T3: " << T3 << std::endl;
   double Q = masses[0] + masses[1] - masses[2] -masses[3];
@@ -1817,6 +1821,7 @@ double CalcEx(double Xcorr)
       p4 = p1 - p3;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
       exE = T1 - T3 - T4 + Q;
+      //std::cout << T1 << " " << T3 << " " << T4 << " " <<  Q <<  " " << exE << std::endl;
     }
   else
     {
@@ -1832,6 +1837,11 @@ double CalcEx(double Xcorr)
   if(Xcorr>800)exE=0;
   return exE;
 }
+
+/*double CalcExFD(double Xcorr)
+{
+	
+}*/
 
 //--------------------------------------------------------------------------------------
 double CorrectEx(double mEx)
