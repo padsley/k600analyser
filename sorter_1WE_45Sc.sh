@@ -5,11 +5,7 @@ export ROOTSYS=/usr/bin
 export MIDASSYS=\$HOME/packages/midas/
 export MIDASSYS=\$HOME/packages/midas/
 
-
-
-#for COUNT in {1069,1070,1071,1072,1076,1077,1078,1082,1084,1085,1087,1088,1090,1091,1092,1093,1098,1099,1100}
-for COUNT in {210,120,146,27,28,29,32,110,124,127,136,152,160,161,165,171,174,177,182,184,187,194,202,208,213,217,220}
-
+for COUNT in {157,181,189,193,206,219}
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
@@ -33,19 +29,19 @@ do
   echo $FILE
   if [ $COUNT -lt 10 ]
   then
-      FILE2="/home/fdiel/Analysis_local/iThemba/root_26Mg/sorted0000"$COUNT".root"
+      FILE2="/home/fdiel/Analysis_local/iThemba/root_45Sc/sorted0000"$COUNT".root"
   elif [ $COUNT -lt 100 ]
   then
-      FILE2="/home/fdiel/Analysis_local/iThemba/root_26Mg/sorted000"$COUNT".root"
+      FILE2="/home/fdiel/Analysis_local/iThemba/root_45Sc/sorted000"$COUNT".root"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE2="/home/fdiel/Analysis_local/iThemba/root_26Mg/sorted00"$COUNT".root"
+      FILE2="/home/fdiel/Analysis_local/iThemba/root_45Sc/sorted00"$COUNT".root"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE2="/home/fdiel/Analysis_local/iThemba/root_26Mg/sorted0"$COUNT".root"
+      FILE2="/home/fdiel/Analysis_local/iThemba/root_45Sc/sorted0"$COUNT".root"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE2="/home/fdiel/Analysis_local/iThemba/root_26Mg/sorted"$COUNT".root"
+      FILE2="/home/fdiel/Analysis_local/iThemba/root_45Sc/sorted"$COUNT".root"
   else
       echo "This might not work"
   fi

@@ -943,6 +943,7 @@ INT main_bor(INT run_number)
    printf("lut u1 offset: %d \n",globals.lut_u1_offset);
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+   printf("misswires: %d \n",globals.misswires);
 	
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
