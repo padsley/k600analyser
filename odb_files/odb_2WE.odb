@@ -18,3 +18,19 @@ u1_last_wire_chan = INT : 443
 u2_1st_wire_chan = INT : 800
 u2_last_wire_chan = INT : 943
 
+[/Analyzer/Parameters/main]
+x1_driftt_low = INT : 6450
+x1_driftt_hi = INT : 8300
+x2_driftt_low = INT : 6450
+u1_driftt_low = INT : 6450
+u2_driftt_low = INT : 6450
+x2_driftt_hi = INT : 8300
+u2_driftt_hi = INT : 8300
+u1_driftt_hi = INT : 8300
+lowtof = INT : 0
+hitof = INT : 15000
+lowpad1 = INT : 0
+lowpad2 = INT : 0
+hipad1 = INT : 4096
+hipad2 = INT : 4096
+
