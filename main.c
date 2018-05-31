@@ -1329,9 +1329,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=637) ) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=635) ) {   //only for X2 wireplane
       //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
-        if(channelnew>610 && channelnew<622){  
+        if(channelnew==620 || channelnew==649){  
 	  addwiregap=2;
         //  //printf("addwiregap %i \n",addwiregap);
         }
