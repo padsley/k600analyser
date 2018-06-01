@@ -1730,6 +1730,7 @@ double CalcTfromRigidity(double rig, double mass)
 
   double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1737,6 +1738,7 @@ double CalcTfromP(double p, double mass)
 {
   double T = 0;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
