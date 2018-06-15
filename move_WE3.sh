@@ -4,7 +4,7 @@
 #load odb
 #odbedit -l odb_files/odb_1WE.odb
 echo "save current obd file and load accurate odb file  odb_files/odb_3WE.odb"
-
+echo "!!! CAUTION!!! USING X1X2"
 
 
 #place link for configfile

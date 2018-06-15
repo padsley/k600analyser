@@ -6,7 +6,7 @@ export MIDASSYS=\$HOME/packages/midas/
 export MIDASSYS=\$HOME/packages/midas/
 
 
-
+RAW_DATA_DIR="/run/media/fdiel/PIVODRIVE/iThemba/raw_data/"
 #for COUNT in {1069,1070,1071,1072,1076,1077,1078,1082,1084,1085,1087,1088,1090,1091,1092,1093,1098,1099,1100}
 #for COUNT in {2109,2081,2084,2092,2094,2097,2101,2104,2105,2107,2112,2119,2120,2121,2123,2126,2129,2131,2132,2133,2137,2138,2142,2143,2145,2146,2148,2149,2153,2154,2157,2160,2161,2163,2164,2166,2167,2168,2171,2172}
 for COUNT in {2109,2081,2084,2092,2094,2097,2101,2104,2105,2107,2112,2119,2120,2121,2123,2126,2129,2131,2132,2133,2137,2138,2142,2143,2145,2146,2148,2149,2153,2154,2157,2160,2161,2163,2164,2166,2167,2168,2171,2172}
@@ -15,19 +15,19 @@ do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/data/64Zn_pp/run0000"$COUNT".mid.gz"
+      FILE=$RAW_DATA_DIR"run0000"$COUNT".mid.gz"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/data/64Zn_pp/run000"$COUNT".mid.gz"
+        FILE=$RAW_DATA_DIR"run000"$COUNT".mid.gz"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/data/64Zn_pp/run00"$COUNT".mid.gz"
+        FILE=$RAW_DATA_DIR"run00"$COUNT".mid.gz"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/data/64Zn_pp/run0"$COUNT".mid.gz"
+       FILE=$RAW_DATA_DIR"run0"$COUNT".mid.gz"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE="/data/64Zn_pp/run"$COUNT".mid.gz"
+        FILE=$RAW_DATA_DIR"run"$COUNT".mid.gz"
   else
       echo "This might not work"
   fi

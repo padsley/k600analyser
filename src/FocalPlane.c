@@ -1766,6 +1766,7 @@ double CalcTfromRigidity(double rig, double mass) //never used
 
   double p = rig; //changed by FD * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1773,6 +1774,7 @@ double CalcTfromP(double p, double mass)
 {
   double T = 0;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1829,6 +1831,11 @@ double CalcEx(double Xcorr)
       //std::cout << "theta4: " << theta4 << std::endl;
       p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
       T4 = CalcTfromP(p4,masses[3]);
+      //std::cout << "p3: " << p3 << std::endl;
+      //std::cout << "theta3: " << theta3 << std::endl;
+      //std::cout << "theta4: " << theta4 << std::endl;
+      //std::cout << "p4: " << p4 << std::endl;
+      //std::cout << "masses[3]: " << masses[3] << std::endl;
       //std::cout << "T4: " << T4 << std::endl;
       exE = T1 - T3 - T4 + Q;
     }

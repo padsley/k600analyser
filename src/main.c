@@ -982,7 +982,7 @@ INT main_bor(INT run_number)
        	//std::cout << i << " " << RunNrForPadOffsets[i] << " " << RunNumber << std::endl;
 	   if( RunNrForPadOffsets[i] == RunNumber) {Padoffset=PadOffsets[i]; // as defined in Parameter.c 
 	      //std::cout << "TETSTETSTETST: " << Padoffset << std::endl;	
-       std::cout << "Found Tof offset: ";
+       std::cout << "Found pad1 offset: ";
        } // as defined in Parameter.c 
    }
      std::cout << "run " << RunNumber << ": pad1 offset= " << Padoffset << std::endl;
@@ -1783,10 +1783,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   //thetaFP = CalcThetaFP(X1pos,X2pos);
-   //t_thetaFP = thetaFP;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
-   t_thetaFP   = thetaFP;
+   thetaFP = CalcThetaFP(X1pos,X2pos);
+   t_thetaFP = thetaFP;
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
    t_Y1=Y1;
