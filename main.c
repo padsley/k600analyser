@@ -61,8 +61,8 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 //#define _RAWDATA
-#define _SILICONDATA
-#define _MMM
+//#define _SILICONDATA
+//#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -1740,9 +1740,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X1_good);  // good X1 events
                     for(int i = 0; i < X1hits_dt ; i++) {
-                        //if(X1pos>0 && X1pos<249){
-                        hX1_DriftTimeGood->Fill(X1.time[i]);
-                        //}
+                        if(X1pos>250.0 && X1pos<540.0)
+                        {
+                            hX1_DriftTimeGood->Fill(X1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX1_Chisq->Fill(X1chisq);
@@ -1802,7 +1803,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hU1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_U1_good);  // good U1 events
                     for(int i = 0; i < U1hits_dt ; i++) {
-                        hU1_DriftTimeGood->Fill(U1.time[i]);
+                        if(U1pos>200.0 && U1pos<440.0)
+                        {
+                            hU1_DriftTimeGood->Fill(U1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hU1_Chisq->Fill(U1chisq);
@@ -1860,7 +1864,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX2_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X2_good);  // good X2 events
                     for(int i = 0; i < X2hits_dt ; i++) {
-                        hX2_DriftTimeGood->Fill(X2.time[i]);
+                        if(X2pos>200.0 && X2pos<500.0)
+                        {
+                            hX2_DriftTimeGood->Fill(X2.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX2_Chisq->Fill(X2chisq);
@@ -1919,7 +1926,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hU2_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_U2_good);  // good U2 events
                     for(int i = 0; i < U2hits_dt ; i++) {
-                        hU2_DriftTimeGood->Fill(U2.time[i]);
+                        if(U2pos>150.0 && U2pos<400.0)
+                        {
+                            hU2_DriftTimeGood->Fill(U2.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hU2_Chisq->Fill(U2chisq);

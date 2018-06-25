@@ -838,7 +838,7 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
                     //----------------------------------------------------------------------------------------------------
                     //  Deleting any previously defined corrections for each run
                     //  This ensures that a run cannot erronouesly undergo two different sets of corrections
-                    //  The last TLC correction for a run, given in the assocaited TLCParameters_cacheFile, is correction used.
+                    //  The last TLC correction for a run, given in the associated TLCParameters_cacheFile, is the correction used.
                     for(auto i = TLCRunRanges_cache.begin(); i != TLCRunRanges_cache.end(); ++i)
                     {
                         int it_i = std::distance(TLCRunRanges_cache.begin(), i);
