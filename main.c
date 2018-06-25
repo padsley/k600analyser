@@ -503,7 +503,8 @@ INT main_init(void)
     char title[256];
     
     //ParameterInit();     // now called inside init routine of analyzer.c
-    
+
+    /*
     extern bool VDC1_new, VDC2_new;
     extern bool VDC1_new_UX, VDC2_new_UX;
     
@@ -533,6 +534,7 @@ INT main_init(void)
             setupchannel2wireXoldXold(Channel2Wire);
         }
     }
+    */
     
     
 #ifdef _MISALIGNTIME
@@ -540,28 +542,52 @@ INT main_init(void)
     printf("== Misalignment time cutoff (sec): %i ==\n",misaligntime);
 #endif
     
-    read_cable(cableOffset,(char *)"CableLength.dat");
+    //GetODBRunInfo();
+    /*
+    extern int RunNumber;
+    
+    std::cout << "INIT, Run Number: " << RunNumber << std::endl;
+    
+    if(RunNumber>=22077 && RunNumber<=22094)
+    {
+        read_cable(cableOffset,(char *)"CableLength_22077_22094.dat");
+    }
+    else if(RunNumber>=22279 && RunNumber<=22379)
+    {
+        read_cable(cableOffset,(char *)"CableLength_22279_22379.dat");
+    }
+    else if(RunNumber>=23115 && RunNumber<=23293)
+    {
+        read_cable(cableOffset,(char *)"CableLength_23115_23293.dat");
+    }
+    else
+    {
+        read_cable(cableOffset,(char *)"CableLength.dat");
+    }
+    */
     
     open_subfolder((char *)"LUT&Cable");
     hX1_lut = new TH1F("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
     hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
     hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
     hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
-    hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
+    //hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
     hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
     close_subfolder();
     
     for(int j = 0; j < 896; j++) {
         //printf("cable offset %f \n",cableOffset[j]);
         //     for(int k = 0; k < (int(cableOffset[j])+ALL_CABLE_OFFSET); k++) {
+        /*
         for(int k = 0; k < (int(cableOffset[j]+1000)); k++) {
             hCableOff->Fill(j);
         }
+        */
         for(int k = 0; k < 1000; k++) {
             hCableOfftmp->Fill(j);
         }
     }
-    hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
+    //hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
     
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
@@ -906,6 +932,8 @@ INT main_init(void)
 //================================================================================================
 INT main_bor(INT run_number)
 {
+    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+
     //memset(scaler, 0, sizeof(scaler));
     GetODBRunInfo();       // this was put here so that one can get access to run nr info, if you want
     // to set up the analyzer to look at runnr, and then decide which offsets
@@ -917,10 +945,63 @@ INT main_bor(INT run_number)
     //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
     //PrintODBstuff();
     
-    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");
-    read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");
-    read_lut(lutx2,globals.lut_x2_offset,(char *)"lut-x2.dat");
-    read_lut(lutu2,globals.lut_u2_offset,(char *)"lut-u2.dat");
+    //------------------------------------------------
+    //      Setup the Channel 2 Wire Mapping
+    extern bool VDC1_new, VDC2_new;
+    extern bool VDC1_new_UX, VDC2_new_UX;
+    
+    if(RunNumber>22094)
+    {
+        VDC1_new = false;
+        VDC1_new_UX = false;
+        
+        VDC2_new = true;
+        VDC2_new_UX = true;
+    }
+    
+    if(VDC1_new)
+    {
+        if(VDC2_new)
+        {
+            if(VDC1_new_UX && VDC2_new_UX){
+                setupchannel2wireUXUX(Channel2Wire);
+            }
+            else setupchannel2wireXUXU(Channel2Wire);
+        }
+        else
+        {
+            setupchannel2wireXUXold(Channel2Wire);
+            //printf("Probably not implemented");
+        }
+    }
+    else
+    {
+        if(VDC2_new)
+        {
+            setupchannel2wireXoldXU(Channel2Wire);
+        }
+        else
+        {
+            setupchannel2wireXoldXold(Channel2Wire);
+        }
+    }
+
+    //------------------------------------------------
+    //      Read the LUT's
+    if(RunNumber<=22094)
+    {
+        read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1_22077_22094.dat");
+        read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1_22077_22094.dat");
+        read_lut(lutx2,globals.lut_x2_offset,(char *)"lut-x2_22077_22094.dat");
+        read_lut(lutu2,globals.lut_u2_offset,(char *)"lut-u2_22077_22094.dat");
+    }
+    else if(RunNumber>22094)
+    {
+        read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1_22279_23293.dat");
+        read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1_22279_23293.dat");
+        read_lut(lutx2,globals.lut_x2_offset,(char *)"lut-x2_22279_23293.dat");
+        read_lut(lutu2,globals.lut_u2_offset,(char *)"lut-u2_22279_23293.dat");
+    }
     
     for(int j = 0; j < LUT_CHANNELS; j++) {                   // And immediately fill LUT spectra
         for(int k = 0; k < lutx1[j]*1000; k++) {
@@ -942,7 +1023,7 @@ INT main_bor(INT run_number)
     printf("lut x2 offset: %d \n",globals.lut_x2_offset);
     printf("lut u2 offset: %d \n",globals.lut_u2_offset);
     
-    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+    //------------------------------------------------
     extern double *X1Offsets;	        // from Parameters.c
     extern int *RunNrForX1Offsets;       // from Parameters.c
     extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
@@ -954,6 +1035,24 @@ INT main_bor(INT run_number)
     extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
     
+    //----------------------------------------------------------------------------
+    if(RunNumber>=22077 && RunNumber<=22094)
+    {
+        read_cable(cableOffset,(char *)"CableLength_22077_22094.dat");
+    }
+    else if(RunNumber>=22279 && RunNumber<=22379)
+    {
+        read_cable(cableOffset,(char *)"CableLength_22279_22379.dat");
+    }
+    else if(RunNumber>=23115 && RunNumber<=23293)
+    {
+        read_cable(cableOffset,(char *)"CableLength_23115_23293.dat");
+    }
+    else
+    {
+        read_cable(cableOffset,(char *)"CableLength.dat");
+    }
+
     //----------------------------------------------------------------------------
     //      thetaSCAT Mapping Parameters
     //      To map thetaFP to thetaSCAT
@@ -1150,6 +1249,8 @@ INT main_bor(INT run_number)
 //================================================================================================
 INT main_event(EVENT_HEADER * pheader, void *pevent)
 {
+    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
+
     //printf("main.c L949\n");
     DWORD *ptdc;
     Int_t ntdc = 0;
@@ -1335,7 +1436,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event
     //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
     //TDC_value_export = new float[ntdc];
-    
+
     for(int i = 0; i < ntdc; i++) {
         if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
             tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
@@ -1730,9 +1831,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X1_good);  // good X1 events
                     for(int i = 0; i < X1hits_dt ; i++) {
-                        //if(X1pos>0 && X1pos<249){
-                        hX1_DriftTimeGood->Fill(X1.time[i]);
-                        //}
+                        if((RunNumber<=22094 && ((X1pos>250.0 && X1pos<350.0) || (X1pos>550.0 && X1pos<600.0) || (X1pos>700.0 && X1pos<750.0))) || (RunNumber>22094 && X1pos>100.0 && X1pos<350.0))
+                        {
+                            hX1_DriftTimeGood->Fill(X1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX1_Chisq->Fill(X1chisq);
@@ -1792,7 +1894,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hU1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_U1_good);  // good U1 events
                     for(int i = 0; i < U1hits_dt ; i++) {
-                        hU1_DriftTimeGood->Fill(U1.time[i]);
+                        if((RunNumber<=22094 && ((U1pos>70.0 && U1pos<200.0) || (U1pos>460.0 && U1pos<540.0))) || (RunNumber>22094 && ((U1pos>50.0 && U1pos<200.0) || (U1pos>240.0 && U1pos<290.0))))
+                        {
+                            hU1_DriftTimeGood->Fill(U1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hU1_Chisq->Fill(U1chisq);
@@ -1850,7 +1955,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX2_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X2_good);  // good X2 events
                     for(int i = 0; i < X2hits_dt ; i++) {
-                        hX2_DriftTimeGood->Fill(X2.time[i]);
+                        if((RunNumber<=22094 && X2pos>125.0 && X2pos<340.0) || (RunNumber>22094 && X2pos>150.0 && X2pos<380.0))
+                        {
+                            hX2_DriftTimeGood->Fill(X2.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX2_Chisq->Fill(X2chisq);
@@ -1909,7 +2017,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hU2_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_U2_good);  // good U2 events
                     for(int i = 0; i < U2hits_dt ; i++) {
-                        hU2_DriftTimeGood->Fill(U2.time[i]);
+                        if(RunNumber<=22094 && U2pos>50.0 && U2pos<200.00)
+                        {
+                            hU2_DriftTimeGood->Fill(U2.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hU2_Chisq->Fill(U2chisq);
@@ -1934,7 +2045,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     
     extern double Y1offset;
     
-    Y1=CalcYFP(X1pos,U1pos,X1th);
+    //Y1=CalcYFP(X1pos,U1pos,X1th);
+    Y1 = CalcYFPforUX(X1pos,U1pos,X1th);
     t_Y1=Y1+Y1offset;
 #ifdef _FULLANALYSIS
     h_Y1->Fill(Y1);

@@ -10,6 +10,8 @@
 #include <tuple>
 #include <stdio.h>
 
+#include "midas.h"
+
 // Originally declared as constants, sinc I tried to make a distinction
 // between things one can change and things one should not change at all ... RN
 

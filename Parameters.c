@@ -132,6 +132,31 @@ double **ExCorrTerms;
 double ExCorrection = 0.;
 
 
+void GetODBRunInfo_Parameters()
+// Get globals from the ODB; not needed if we use Parameters and Module Declaration path
+{
+    HNDLE hDB, hKey;
+    RUNINFO runinfo2;
+    
+    // open ODB structures
+    cm_get_experiment_database(&hDB, NULL);
+    
+    RUNINFO_STR(runinfo_str);            // RUNINFO_STR in experim.h      rn:  not true !?!?!
+    db_create_record(hDB, 0, (char *)"/Runinfo", strcomb(runinfo_str));
+    db_find_key(hDB, 0, (char *)"/Runinfo", &hKey);
+    if (db_open_record(hDB, hKey, &runinfo2, sizeof(runinfo2), MODE_READ, NULL, NULL) !=
+        DB_SUCCESS) {
+        cm_msg(MERROR, (char *)"analyzer_init",  (char *)"Cannot open \"/Runinfo\" tree in ODB");
+        exit(1);
+    }
+    printf("\n==================================================================== %i  \n\n",runinfo2.run_number);
+    extern int RunNumber;
+    RunNumber = runinfo2.run_number;
+    printf("RunNumber: \t%d\n",RunNumber);
+    //LoadExCorrection(RunNumber);               // not used at present
+    db_close_record(hDB,hKey);
+}
+
 /*-------------------------------------------------*/
 void ParameterInit()
 {
@@ -1292,7 +1317,11 @@ void ReadConfiguration()
     
     std::ifstream input;
     
+    GetODBRunInfo_Parameters();
+    
     input.open("config.cfg");  //This is the line to change in order to change the configuration file
+    
+    std::cout << "CHICKEN PARAMETERS.C, RunNumber: " << RunNumber << std::endl;
     
     if(input.is_open())
     {
