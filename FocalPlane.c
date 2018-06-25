@@ -368,6 +368,113 @@ void setupchannel2wireXoldXU(unsigned int chan2wire[])
 }
 
 /* ---------------------------------------------------------------------------------------*/
+void setupchannel2wireXoldUX(unsigned int chan2wire[])
+// Mapping of wires to channels when using 1 old VDC and 1 new VDC (placed with first wireplane being the X-wires)
+// See camac-vme-cabling.xls
+{
+    printf("setupchannel2wireXoldUX()\n");
+    int input,tdcmodulecounter,preampnum,channelstart,basecount;
+    int preampcount=0;
+    int preampbase=0;
+    int tdcchan;
+    
+    for(input=0;input<896;input++) chan2wire[input]=-1;
+    
+    for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+        for(input=1;input<8;input++){   //input is TDC input, there are 8, 0-7, and input 0 is used for trigger and other things
+            channelstart=0;
+            preampnum=(tdcmodulecounter*7)+input;
+            //printf("tdc %d   input %d   preamp %d  channel %d\n",tdcmodulecounter,input,preampnum,channel);
+            
+            if(preampcount<13) { // wireplane X1  =================================================
+                basecount=8;
+                preampbase=1;
+                channelstart=basecount + (preampcount-preampbase)*16;
+                if(preampcount==0){
+                    chan2wire[24]=0;
+                    chan2wire[25]=1;
+                    chan2wire[26]=2;
+                    chan2wire[27]=3;
+                    chan2wire[28]=4;
+                    chan2wire[29]=5;
+                    chan2wire[30]=6;
+                    chan2wire[31]=7;
+                    for(int i=24;i<32;i++){
+                        tdcchan=i;
+                        //printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
+                        //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
+                    }
+                }
+                else{
+                    for(int i=channelstart;i<channelstart+16;i++){
+                        tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+                        //tdcchan=(tdcmodulecounter*128) +  ((preampcount+1)-7*tdcmodulecounter)*16 +(i-channelstart);
+                        chan2wire[tdcchan]=i;
+                        //printf("channelstart %d;  tdcmodule %d ;  preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, tdcmodulecounter, preampcount, tdcchan, chan2wire[tdcchan]);
+                    }
+                }
+            }
+            else if(preampcount>12 && preampcount <22){ // wireplane U1  =================================================
+                basecount=300;
+                preampbase=13;
+                channelstart=basecount+(preampcount-preampbase)*16;
+                for(int i=channelstart;i<channelstart+16;i++){
+                    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                    chan2wire[tdcchan]=i;
+                    //printf("chan2wire[%d] = %d  \n",tdcchan, chan2wire[tdcchan]);
+                }
+            }
+            else if(preampcount<35){ // wireplane X2  =================================================
+                basecount=500;
+                preampbase=22;
+                channelstart=basecount+(preampcount-preampbase)*16;
+                if(preampcount==22){
+                    chan2wire[416]=510;
+                    chan2wire[417]=511;
+                    chan2wire[418]=512;
+                    chan2wire[419]=513;
+                    chan2wire[420]=514;
+                    chan2wire[421]=515;
+                    for(int i=422;i<431;i++){
+                        chan2wire[i]=0;
+                    }
+                    channelstart=basecount+(preampcount-preampbase)*16;
+                    for(int i=channelstart;i<channelstart+16;i++){
+                        tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                        //printf("tdc %d input %d channel %d wire %d\n",tdcmodulecounter,input,tdcchan,chan2wire[tdcchan]);
+                    }
+                }
+                else {
+                    for(int i=channelstart;i<channelstart+16;i++){
+                        tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                        chan2wire[tdcchan]=i;
+                        //printf("tdc %d input %d channel %d wire %d\n",tdcmodulecounter,input,tdcchan,chan2wire[tdcchan]);
+                    }
+                }	   }
+            else if(preampcount<44){// wireplane U2  =================================================
+                basecount=800;
+                preampbase=35;
+                channelstart=basecount+(preampcount-preampbase)*16;
+                int counter=1;
+                for(int i=channelstart;i<channelstart+16;i++){
+                    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                    chan2wire[tdcchan]=(channelstart+16) - counter;
+                    counter++;
+                }
+            }
+            preampcount++;
+        }
+    }
+    
+    //for(int i=0;i<300;i++){
+    //     printf("--------------------- chan2wire[%d] = %d   \n",i, chan2wire[i]);
+    //}
+    
+    
+    
+}
+
+/* ---------------------------------------------------------------------------------------*/
 void setupchannel2wireXUXU(unsigned int chan2wire[])
 // hack the mapping of wires to channels when new VDC is placed with first wireplane being the X-wires
 // See camac-vme-cabling.xls
