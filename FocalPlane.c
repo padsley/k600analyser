@@ -281,81 +281,72 @@ void setupchannel2wireXoldXU(unsigned int chan2wire[])
 	   preampnum=(tdcmodulecounter*7)+input;
 	   //printf("tdc %d   input %d   preamp %d  channel %d\n",tdcmodulecounter,input,preampnum,channel);
 
-	   if(preampcount<13) { // wireplane X1  =================================================
-	      	basecount=8;
-	        preampbase=1;
-		channelstart=basecount + (preampcount-preampbase)*16;
-		if(preampcount==0){
-		  chan2wire[24]=0;
-		  chan2wire[25]=1;
-		  chan2wire[26]=2;
-		  chan2wire[27]=3;
-		  chan2wire[28]=4;
-		  chan2wire[29]=5;
-		  chan2wire[30]=6;
-		  chan2wire[31]=7;			
-		  for(int i=24;i<32;i++){
-		    tdcchan=i;
-                    //printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
-                    //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
+          if(preampcount<13) { // wireplane X1  =================================================
+              basecount=8;
+              preampbase=1;
+              channelstart=basecount + (preampcount-preampbase)*16;
+              if(preampcount==0){
+                  chan2wire[24]=0;
+                  chan2wire[25]=1;
+                  chan2wire[26]=2;
+                  chan2wire[27]=3;
+                  chan2wire[28]=4;
+                  chan2wire[29]=5;
+                  chan2wire[30]=6;
+                  chan2wire[31]=7;
+                  for(int i=24;i<32;i++){
+                      tdcchan=i;
+                      //printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
+                      //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
                   }
-		}
-		else{
-		  for(int i=channelstart;i<channelstart+16;i++){
-		    tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
-		    //tdcchan=(tdcmodulecounter*128) +  ((preampcount+1)-7*tdcmodulecounter)*16 +(i-channelstart);
-		    chan2wire[tdcchan]=i;
-                    //printf("channelstart %d;  tdcmodule %d ;  preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, tdcmodulecounter, preampcount, tdcchan, chan2wire[tdcchan]);
-		  }
-		}
-	   }
-	   else if(preampcount>12 && preampcount <22){ // wireplane U1  =================================================
-	       	basecount=300;
-	       	preampbase=13;
-		channelstart=basecount+(preampcount-preampbase)*16;
-		for(int i=channelstart;i<channelstart+16;i++){
-		  tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
-		  chan2wire[tdcchan]=i;
-		  //printf("chan2wire[%d] = %d  \n",tdcchan, chan2wire[tdcchan]);
-		}
-	   }
-	   else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
-	       	basecount=500;
-	       	preampbase=22;
-		channelstart=basecount+(preampcount-preampbase)*16;
-
-		if(preampcount==(35-1)){		    
-		  chan2wire[624]=697;
-		  chan2wire[625]=696;
-		  chan2wire[626]=695;
-		  chan2wire[627]=694;
-		  chan2wire[628]=693;
-		  chan2wire[629]=692;
-		  //for(int i=624;i<640;i++){
-		  //    printf("chan2wire %d   tdcchan= %d  \n",chan2wire[i],i);
-		  //}
-		}
-		else {
-		  int counter=1;
-		  for(int i=channelstart;i<channelstart+16;i++){
-		    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
-		    chan2wire[tdcchan]=(channelstart+16) - counter;
-		    counter++;
-  		    //printf("chan2wire[%d] = %d  \n",tdcchan, chan2wire[tdcchan]);
-		  }
-		} 
-	   }
-	   else if(preampcount>34 && preampcount <44){// wireplane U2  =================================================
-	       	basecount=800;
-	       	preampbase=35;
-		channelstart=basecount+(preampcount-preampbase)*16;
-		for(int i=channelstart;i<channelstart+16;i++){
-		  tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
-		  chan2wire[tdcchan]=i;
-		  //printf("chan2wire[%d] = %d  \n",tdcchan, chan2wire[tdcchan]);
-		}
-	   }
-	   preampcount++;	
+              }
+              else{
+                  for(int i=channelstart;i<channelstart+16;i++){
+                      tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+                      chan2wire[tdcchan]=i;
+                      //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+                  }
+              }
+          }
+          else if(preampcount<35){ // wireplane X2  =================================================
+              basecount=500;
+              preampbase=22;
+              channelstart=basecount+(preampcount-preampbase)*16;
+              if(preampcount==22){
+                  chan2wire[416]=510;
+                  chan2wire[417]=511;
+                  chan2wire[418]=512;
+                  chan2wire[419]=513;
+                  chan2wire[420]=514;
+                  chan2wire[421]=515;
+                  for(int i=422;i<431;i++){
+                      chan2wire[i]=0;
+                  }
+                  channelstart=basecount+(preampcount-preampbase)*16;
+                  for(int i=channelstart;i<channelstart+16;i++){
+                      tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                      //printf("tdc %d input %d channel %d wire %d\n",tdcmodulecounter,input,tdcchan,chan2wire[tdcchan]);
+                  }
+              }
+              else {
+                  for(int i=channelstart;i<channelstart+16;i++){
+                      tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                      chan2wire[tdcchan]=i;
+                      //printf("tdc %d input %d channel %d wire %d\n",tdcmodulecounter,input,tdcchan,chan2wire[tdcchan]);
+                  }
+              }	   }
+          else if(preampcount<44){// wireplane U2  =================================================
+              basecount=800;
+              preampbase=35;
+              channelstart=basecount+(preampcount-preampbase)*16;
+              int counter=1;
+              for(int i=channelstart;i<channelstart+16;i++){
+                  tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                  chan2wire[tdcchan]=(channelstart+16) - counter;
+                  counter++;
+              }
+          }
+          preampcount++;	
       }
   }
 
