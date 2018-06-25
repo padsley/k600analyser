@@ -17,6 +17,7 @@ void read_cable(float cable[], char* fileName);
 
 void setupchannel2wireXoldXold(unsigned int chan2wire[]);
 void setupchannel2wireXoldXU(unsigned int chan2wire[]);
+void setupchannel2wireXoldUX(unsigned int chan2wire[]);
 void setupchannel2wireXUXU(unsigned int chan2wire[]) ;
 void setupchannel2wireXUXold(unsigned int chan2wire[]);
 void setupchannel2wireUXUX(unsigned int chan2wire[]) ;

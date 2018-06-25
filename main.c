@@ -978,7 +978,12 @@ INT main_bor(INT run_number)
     {
         if(VDC2_new)
         {
-            setupchannel2wireXoldXU(Channel2Wire);
+            if(VDC2_new && VDC2_new_UX)
+            {
+                //setupchannel2wireXoldUX(Channel2Wire);
+                setupchannel2wireXoldXU(Channel2Wire);
+            }
+            else setupchannel2wireXoldXU(Channel2Wire);
         }
         else
         {
