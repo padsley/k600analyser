@@ -116,6 +116,15 @@ std::vector<double> E;
 std::vector<double> p;
 std::vector<double> polarScatteringAngles;
 
+double tofCal_offset[2];
+double tofCal_gain[2];
+
+double X1thCal_offset[2];
+double X1thCal_gain[2];
+
+double U1thCal_offset[2];
+double U1thCal_gain[2];
+
 double z_x1x2,x_x1x2;
 
 int NrOfRunsForTOFOffsets;
@@ -1619,7 +1628,72 @@ void ReadConfiguration()
                     for(int c=0;c<NThFPSCATSlope;c++) ThFPSCATSlope[c] = 0;
                     ThFPSCATSlopeParametersRead = true;
                 }
-                
+                else if(LineBuffer.compare(0,6,"TOFCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        tofCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "tofCal_offset[i]: " << tofCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        tofCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "tofCal_gain[i]: " << tofCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"X1thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X1thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X1thCal_offset[i]: " << X1thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X1thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X1thCal_gain[i]: " << X1thCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"U1thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U1thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U1thCal_offset[i]: " << U1thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U1thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U1thCal_gain[i]: " << U1thCal_gain[i] << std::endl;
+                    }
+                }
                 else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
                 {
                     input >> LineBuffer;

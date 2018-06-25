@@ -58,11 +58,11 @@
 //#define _JJAUTOTRIM
 //#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
-#define _FULLANALYSIS
+//#define _FULLANALYSIS
 //#define _MISALIGNTIME
 //#define _RAWDATA
-#define _SILICONDATA
-#define _MMM
+//#define _SILICONDATA
+//#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -173,6 +173,10 @@ double t_theta = -90;
 Double_t t_thetaFP=-100;
 Double_t t_thetaFPx=-100;
 Double_t t_phiFP=-100;
+
+double t_tofCal = -100.0;
+double t_X1thCal = -100.0;
+double t_U1thCal = -100.0;
 
 
 // resolution parameters from raytrace subroutine: not all are always needed
@@ -704,7 +708,8 @@ INT main_init(void)
     t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/I");
     t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/I");
     t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/I");
-    
+    t1->Branch("tofCal",&t_tofCal,"t_tofCal/D");
+
     t1->Branch("k600",&t_k600,"t_k600/I");
     
     t1->Branch("pad1",&t_pad1,"t_pad1/D");
@@ -721,6 +726,7 @@ INT main_init(void)
     
     t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
     t1->Branch("X1th",&t_X1th,"t_X1th/D");
+    t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
     t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
     t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
     t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
@@ -751,6 +757,7 @@ INT main_init(void)
     
     t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
     t1->Branch("U1th",&t_U1th,"t_U1th/D");
+    t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
     t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
     t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
     t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
@@ -1492,6 +1499,22 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             hHitPatternPID->Fill(channelnew);
             hChanVsTimeOffsetPID->Fill(offset_time,channel);  // ref and offset corrected times
             hWireVsTimeOffsetPID->Fill(offset_time,channelnew);  // ref and offset corrected times
+            
+            // && (offset_time<6000.0 || offset_time>8500.0)
+            /*
+            if((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && channelnew==(632))
+            {
+                std::cout << "CHICKEN, offset time: " << offset_time << std::endl;
+            }
+            */
+            
+            /*
+            if((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && channelnew==(634))
+            {
+                std::cout << "CHICKEN, offset time: " << offset_time << std::endl;
+            }
+            */
+
         }
         
         //---------  Now create structs X1,U1,X2,U2 --------
@@ -1499,55 +1522,66 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
         // But there are things that goes into the histograms that I want to be for PID gated events only.
         // Hence the lot of PID gate tests.
         
-        if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){
-            //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
-            //  addwiregap=1;
-            //  //printf("addwiregap %i \n",addwiregap);
-            //}
-            //if(channelnew >= globals.x1_1st_wire_chan+35) t_X1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
-            t_X1effall=1;
-#ifdef _FULLANALYSIS
-            if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
-                hX1_DriftTimeRef->Fill(ref_time);
-                hX1_DriftTimeOffset->Fill(offset_time);
-            }
-#endif
-            wire = channelnew-globals.x1_1st_wire_chan +1;
-#ifdef _MOVIE
-            t_X1dt[X1hits]=offset_time;
-            t_X1wire[X1hits]=wire;
-#endif
-            X1hits++;
+        if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  )
+        {
+            bool analyseWire = true;
             
-            if((offset_time >= gates.x1_driftt_low) && (offset_time <= gates.x1_driftt_hi)){          //drifttime gate
-                t_X1effdt=1;
-                X1.wire[X1hits_dt]=wire;
-                X1.time[X1hits_dt]=offset_time;
-                X1hits_dt++;
-                
-                if(!printed)
-                {
-                    printed = true;
-                    std::cout << "X1hits_dt: " << X1hits_dt << std::endl;
-                    initialCounter++;
-                }
-                
-                /*
-                static int test = 0;
-                std::cout << "test: " << test << std::endl << std::endl;
-                std::cout << "gates.x1_driftt_low: " << gates.x1_driftt_low << std::endl;
-                std::cout << "gates.x1_driftt_hi: " << gates.x1_driftt_hi << std::endl;
-                std::cout << "offset_time: " << offset_time << std::endl << std::endl;
-                test++;
-                */
-            }
-            else
+            if(channelnew>=225)
             {
-                /*
-                std::cout << "gates.x1_driftt_low: " << gates.x1_driftt_low << std::endl;
-                std::cout << "gates.x1_driftt_hi: " << gates.x1_driftt_hi << std::endl;
-                std::cout << "offset_time: " << offset_time << std::endl << std::endl;
-                */
+                analyseWire = false;
+            }
+            
+            if(analyseWire)
+            {
+                //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
+                //  addwiregap=1;
+                //  //printf("addwiregap %i \n",addwiregap);
+                //}
+                //if(channelnew >= globals.x1_1st_wire_chan+35) t_X1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
+                t_X1effall=1;
+#ifdef _FULLANALYSIS
+                if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
+                    hX1_DriftTimeRef->Fill(ref_time);
+                    hX1_DriftTimeOffset->Fill(offset_time);
+                }
+#endif
+                wire = channelnew-globals.x1_1st_wire_chan +1;
+#ifdef _MOVIE
+                t_X1dt[X1hits]=offset_time;
+                t_X1wire[X1hits]=wire;
+#endif
+                X1hits++;
+                
+                if((offset_time >= gates.x1_driftt_low) && (offset_time <= gates.x1_driftt_hi)){          //drifttime gate
+                    t_X1effdt=1;
+                    X1.wire[X1hits_dt]=wire;
+                    X1.time[X1hits_dt]=offset_time;
+                    X1hits_dt++;
+                    
+                    if(!printed)
+                    {
+                        printed = true;
+                        //std::cout << "X1hits_dt: " << X1hits_dt << std::endl;
+                        initialCounter++;
+                    }
+                    
+                    /*
+                     static int test = 0;
+                     std::cout << "test: " << test << std::endl << std::endl;
+                     std::cout << "gates.x1_driftt_low: " << gates.x1_driftt_low << std::endl;
+                     std::cout << "gates.x1_driftt_hi: " << gates.x1_driftt_hi << std::endl;
+                     std::cout << "offset_time: " << offset_time << std::endl << std::endl;
+                     test++;
+                     */
+                }
+                else
+                {
+                    /*
+                     std::cout << "gates.x1_driftt_low: " << gates.x1_driftt_low << std::endl;
+                     std::cout << "gates.x1_driftt_hi: " << gates.x1_driftt_hi << std::endl;
+                     std::cout << "offset_time: " << offset_time << std::endl << std::endl;
+                     */
+                }
             }
         }
         else if ((channelnew >= globals.u1_1st_wire_chan) && (channelnew < globals.u1_last_wire_chan)) {    //only for U1 wireplane
@@ -1574,39 +1608,88 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
         }
         //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && !(RunNumber>50 && RunNumber<200 && (channelnew==(573+1) || channelnew==(570+1))) ) {   //only for X2 wireplane
         //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
-        else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && !(RunNumber>=200 && RunNumber<400 && (channelnew==(629) || channelnew==(633) || channelnew==(635))) && !(RunNumber>=400 && RunNumber<600 && (channelnew==(667)))) {   //only for X2 wireplane
+        //------------------
+        //      Latest
+        //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && !(RunNumber>=0 && RunNumber<100 && (channelnew==(634) || channelnew==(632) || channelnew==(629) || channelnew==(628) || channelnew==(624) || channelnew==(570) || channelnew==(568) || (channelnew==(571) && (offset_time<6500.0 || offset_time>6500.0)))) && !(RunNumber>=200 && RunNumber<400 && (channelnew==(629) || channelnew==(633) || channelnew==(635))) && !(RunNumber>=400 && RunNumber<600 && (channelnew==(667)))) {   //only for X2 wireplane
+        else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan))
+        {   //only for X2 wireplane
             //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
             // chan 482 looks suspicious in white tune run 23088
             //if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
             
-            if(RunNumber>50 && RunNumber<200 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653)))
-            {  //PR195_2017 WE1 and WE2; X1 channels 570 and 573 are bad, so ignore them in analysis
-              addwiregap=1;
-              //printf("addwiregap %i \n",addwiregap);
-            }
-            else if(RunNumber>=400 && RunNumber<500 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653) || channelnew==(668) || channelnew==(691)))
+            /*
+            globals.x1_1st_wire_chan: 0
+            globals.x1_last_wire_chan: 200
+            globals.u1_1st_wire_chan: 300
+            globals.u1_last_wire_chan: 443
+            globals.x2_1st_wire_chan: 500
+            globals.x2_last_wire_chan: 700
+            globals.u2_1st_wire_chan: 800
+            globals.u2_last_wire_chan: 943
+            */
+            
+            /*
+            static int test = 0;
+            if(test==0)
             {
-                addwiregap=1;
+                std::cout << "globals.x1_1st_wire_chan: " << globals.x1_1st_wire_chan << std::endl;
+                std::cout << "globals.x1_last_wire_chan: " << globals.x1_last_wire_chan << std::endl;
+                std::cout << "globals.u1_1st_wire_chan: " << globals.u1_1st_wire_chan << std::endl;
+                std::cout << "globals.u1_last_wire_chan: " << globals.u1_last_wire_chan << std::endl;
+                std::cout << "globals.x2_1st_wire_chan: " << globals.x2_1st_wire_chan << std::endl;
+                std::cout << "globals.x2_last_wire_chan: " << globals.x2_last_wire_chan << std::endl;
+                std::cout << "globals.u2_1st_wire_chan: " << globals.u2_1st_wire_chan << std::endl;
+                std::cout << "globals.u2_last_wire_chan: " << globals.u2_last_wire_chan << std::endl;
+            }
+            test++;
+            */
+            
+            bool analyseWire = true;
+            
+            if(channelnew==572 || channelnew==573 || channelnew==574)
+            {
+                analyseWire = false;
             }
             
-            t_X2effall=1;
+            //!(RunNumber>=0 && RunNumber<100 && (channelnew==(634) || channelnew==(632) || channelnew==(629) || channelnew==(628) || channelnew==(624) || channelnew==(570) || channelnew==(568) || (channelnew==(571) && (offset_time<6500.0 || offset_time>6500.0)))) && !(RunNumber>=200 && RunNumber<400 && (channelnew==(629) || channelnew==(633) || channelnew==(635))) && !(RunNumber>=400 && RunNumber<600 && (channelnew==(667)))
+            
+            if(analyseWire)
+            {
+                /*
+                if(RunNumber>50 && RunNumber<200 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653)))
+                {  //PR195_2017 WE1 and WE2; X1 channels 570 and 573 are bad, so ignore them in analysis
+                    addwiregap=1;
+                    //printf("addwiregap %i \n",addwiregap);
+                }
+                else if(RunNumber>=200 && RunNumber<400 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653) || channelnew==(668) || channelnew==(696) || channelnew==(691)))
+                {
+                    addwiregap=1;
+                }
+                else if(RunNumber>=400 && RunNumber<500 && (channelnew==(538) || channelnew==(570) || channelnew==(573) || channelnew==(589) || channelnew==(634) || channelnew==(653) || channelnew==(668) || channelnew==(691)))
+                {
+                    addwiregap=1;
+                }
+                */
+                
+                t_X2effall=1;
 #ifdef _FULLANALYSIS
-            if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
-                hX2_DriftTimeRef->Fill(ref_time);
-                hX2_DriftTimeOffset->Fill(offset_time);
-            }
+                if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
+                    hX2_DriftTimeRef->Fill(ref_time);
+                    hX2_DriftTimeOffset->Fill(offset_time);
+                }
 #endif
-            wire = channelnew-globals.x2_1st_wire_chan +1;
+                wire = channelnew-globals.x2_1st_wire_chan +1;
 #ifdef _MOVIE
-            t_X2dt[X2hits]=offset_time;
-            t_X2wire[X2hits]=wire;
+                t_X2dt[X2hits]=offset_time;
+                t_X2wire[X2hits]=wire;
 #endif
-            X2hits++;
-            if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate
-                t_X2effdt=1;
-                X2.wire[X2hits_dt]=wire;
-                X2.time[X2hits_dt]=offset_time;
-                X2hits_dt++;
+                X2hits++;
+                if((offset_time >= gates.x2_driftt_low) && (offset_time <= gates.x2_driftt_hi)){            //drifttime gate
+                    t_X2effdt=1;
+                    X2.wire[X2hits_dt]=wire;
+                    X2.time[X2hits_dt]=offset_time;
+                    X2hits_dt++;
+                }
             }
         }
         else if ((channelnew >= globals.u2_1st_wire_chan) && (channelnew < globals.u2_last_wire_chan)) {    //only for U2 wireplane
@@ -1635,7 +1718,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     
     
     //------------------------------------------------
-    
+    /*
     static int counter_outside = 0;
     
     if(X1hits_dt==0)
@@ -1649,7 +1732,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     }
     
     counter_outside++;
-    
+    */
     
     //--------------------------------------------------------------------------------------------------------
     // Now fill a few histograms that aids in detector efficiency optimization and event ID
@@ -1770,6 +1853,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     if(X1hits_dt>=globals.min_x_wires  &&  X1hits_dt<globals.max_x_wires+1){
         
         //std::cout << "TESTING 1" << std::endl;
+        addwiregap = 1;
 
         if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hX1_EffID->Fill(ev_wiresperevent);
         if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
@@ -1799,6 +1883,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1chisq=X1chisq;
             t_X1res0=resolution[0];
             t_X1res1=resolution[1];
+            
+            //----------------------------
+            extern double tofCal_offset[2];
+            extern double tofCal_gain[2];
+            
+            t_tofCal = (tofCal_gain[1]*t_X1pos + tofCal_gain[0])*(t_tof + (tofCal_offset[1]*t_X1pos + tofCal_offset[0]));
+            
+            //----------------------------
+            extern double X1thCal_offset[2];
+            extern double X1thCal_gain[2];
+            
+            t_X1thCal = (X1thCal_gain[1]*t_X1pos + X1thCal_gain[0])*(t_X1th + (X1thCal_offset[1]*t_X1pos + X1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X1res2=resolution[2];
             t_X1res3=resolution[3];
@@ -1829,9 +1926,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X1_good);  // good X1 events
                     for(int i = 0; i < X1hits_dt ; i++) {
-                        //if(X1pos>0 && X1pos<249){
-                        hX1_DriftTimeGood->Fill(X1.time[i]);
-                        //}
+                        if((X1pos>220.0 && X1pos<380.0) || (X1pos>420.0 && X1pos<530.0) || (X1pos>570.0 && X1pos<620.0))
+                        {
+                            hX1_DriftTimeGood->Fill(X1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX1_Chisq->Fill(X1chisq);
@@ -1865,6 +1963,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U1chisq=U1chisq;
             t_U1res0=resolution[0];
             t_U1res1=resolution[1];
+            
+            //----------------------------
+            extern double U1thCal_offset[2];
+            extern double U1thCal_gain[2];
+            
+            t_U1thCal = (U1thCal_gain[1]*t_X1pos + U1thCal_gain[0])*(t_U1th + (U1thCal_offset[1]*t_X1pos + U1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U1res2=resolution[2];
             t_U1res3=resolution[3];
@@ -1906,11 +2011,37 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     }
     
     if(X2hits_dt>=globals.min_x_wires  &&  X2hits_dt<globals.max_x_wires){
+        
+        addwiregap = 3;
+        
         if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_EffID->Fill(ev_wiresperevent);
-        if(globals.misswires+1>(wrangeX2-X2hits_dt)){
+        if(globals.misswires+1+addwiregap>(wrangeX2-X2hits_dt)){
             hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates
             t_X2effgroup=1;
             if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
+            
+            /*
+            int firstWireNumber = X2.wire[0];
+            int lastWireNumber = X2.wire[X2hits_dt-1];
+            
+            if(firstWireNumber<=632 && lastWireNumber>=634)
+            {
+                addwiregap = 3;
+            }
+            */
+            
+            /*
+            static int test = 0;
+            
+            if(test==0)
+            {
+                std::cout << "firstWireNumber: " << firstWireNumber << std::endl;
+                std::cout << "lastWireNumber: " << lastWireNumber << std::endl;
+            }
+            
+            test++;
+            */
+            
             
             raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3, X2wirefit, X2distfit,&X2wires_used, &X2doublewires, &X2multiplemin, &X2chisqminimization);
             //       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin);
@@ -1949,7 +2080,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX2_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X2_good);  // good X2 events
                     for(int i = 0; i < X2hits_dt ; i++) {
-                        hX2_DriftTimeGood->Fill(X2.time[i]);
+                        if((X2pos>205.0 && X2pos<320.0) || (X2pos>430.0 && X2pos<490.0))
+                        {
+                            hX2_DriftTimeGood->Fill(X2.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX2_Chisq->Fill(X2chisq);
@@ -2053,6 +2187,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
+    std::vector<double> correctionParamters;
+    correctionParamters.push_back(X1pos);
+    correctionParamters.push_back(Y1);
+    correctionParamters.push_back(t_tofCal);
+    correctionParamters.push_back(t_X1thCal);
+    correctionParamters.push_back(t_U1thCal);
+
     TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
     
     extern bool X1MappingDefined;
