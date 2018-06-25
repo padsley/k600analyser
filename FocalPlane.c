@@ -530,28 +530,29 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
 	    	chan2wire[tdcchan]=i;
 	    	//printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
 	  	}
-	  
-	  	//	PR240
-	  	//	A modification to the wire-to-channel mapping
-	  	//	This is because preamp4 was not properly plugged in, 
-	  	//	This resulted in a dangling channel that did not receive information from it's intended wire
-	    chan2wire[304]=349;
-	    chan2wire[305]=350;
-	    chan2wire[306]=351;
-	    chan2wire[307]=352;
-	    chan2wire[308]=353;
-	    chan2wire[309]=354;
-	    chan2wire[310]=355;
-	    chan2wire[311]=356;
-	    chan2wire[312]=357;
-	    chan2wire[313]=358;
-	    chan2wire[314]=359;
-	    chan2wire[315]=360;
-	    chan2wire[316]=361;
-	    chan2wire[317]=362;
-	    chan2wire[318]=363;
-	    chan2wire[319]=348;
-
+          
+          //	PR240
+          //	A modification to the wire-to-channel mapping
+          //	This is because preamp4 was not properly plugged in,
+          //	This resulted in a dangling channel that did not receive information from it's intended wire
+          /*
+           chan2wire[304]=349;
+           chan2wire[305]=350;
+           chan2wire[306]=351;
+           chan2wire[307]=352;
+           chan2wire[308]=353;
+           chan2wire[309]=354;
+           chan2wire[310]=355;
+           chan2wire[311]=356;
+           chan2wire[312]=357;
+           chan2wire[313]=358;
+           chan2wire[314]=359;
+           chan2wire[315]=360;
+           chan2wire[316]=361;
+           chan2wire[317]=362;
+           chan2wire[318]=363;
+           chan2wire[319]=348;
+           */
 	  
       }
       else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
@@ -1630,7 +1631,7 @@ double X1Mapping(Double_t X)
 }
 
 //--------------------------------------------------------------------------------------
-void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
+void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t *Xcorr)
 {
     extern std::vector<int> TLCCorrectionTypes;
     extern std::vector<std::vector<std::vector<double>>> TLCParameters;
@@ -1644,7 +1645,7 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
         
         if(i==0)
         {
-            previousCorrectedPosition = X;
+            previousCorrectedPosition = correctionParamters[0];
         }
         else
         {
@@ -1661,14 +1662,24 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
             {
                 if(TLCCorrectionTypes[i]==0)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(ThetaSCAT, k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[0], k);
                 }
-                
-                if(TLCCorrectionTypes[i]==1)
+                else if(TLCCorrectionTypes[i]==1)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(Y, k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[1], k);
                 }
-                
+                else if(TLCCorrectionTypes[i]==2)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[2], k);
+                }
+                else if(TLCCorrectionTypes[i]==3)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[3], k);
+                }
+                else if(TLCCorrectionTypes[i]==4)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[4], k);
+                }
             }
             
             correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
@@ -1691,7 +1702,7 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
     
     if(TLCParameters.empty())
     {
-        correctedPosition = X;
+        correctedPosition = correctionParamters[0];
     }
     
     *Xcorr = correctedPosition;

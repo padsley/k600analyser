@@ -5,7 +5,12 @@
 #for COUNT in {2040,2044,2048,2052,2056,2075,2076,2079,2097,2102,2109}
 for COUNT in {2040,2044,2048,2052,2056,2075,2076,2097,2102,2109}
 
+#for COUNT in {2097,2102,2109}
+
+
 #   Removed runs: 2079 (misalignment)
+
+#for COUNT in {2040,2041}
 
 do
 
@@ -13,8 +18,13 @@ do
 #       Directories for the data and sorted data
 #dataDirectory="/media/psf/Home/Desktop/Data/PR251"
 dataDirectory="/media/psf/DATA/PR251/data"
-sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sorted"
+
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sorted"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedTest"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedAutoTrim"
+sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
+
 
   echo $COUNT
   if [ $COUNT -lt 10 ]

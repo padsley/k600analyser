@@ -239,11 +239,11 @@ Stop time = STRING : [32] Thu Oct 16 14:26:44 2008
 Stop time binary = DWORD : 1224160004
 
 [/Analyzer/Parameters/main]
-x1_driftt_low = INT : 3100
+x1_driftt_low = INT : 2900
 x1_driftt_hi = INT : 5100
-x2_driftt_low = INT : 3100
-u1_driftt_low = INT : 3100
-u2_driftt_low = INT : 3100
+x2_driftt_low = INT : 2900
+u1_driftt_low = INT : 2900
+u2_driftt_low = INT : 2900
 x2_driftt_hi = INT : 5100
 u2_driftt_hi = INT : 5100
 u1_driftt_hi = INT : 5100

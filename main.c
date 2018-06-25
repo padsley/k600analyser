@@ -172,6 +172,9 @@ Double_t t_thetaFP=-100;
 Double_t t_thetaFPx=-100;
 Double_t t_phiFP=-100;
 
+double t_tofCal = -100.0;
+double t_X1thCal = -100.0;
+double t_U1thCal = -100.0;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -589,9 +592,9 @@ INT main_init(void)
     
     hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
     hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-    hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
+    hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1600, 2000, 10000, 896, 0, 896);
     hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-    hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+    hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1600, 2000, 10000, 1000, 0, 1000);
     
     hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
     hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -682,6 +685,7 @@ INT main_init(void)
     t1->Branch("CIU",&t_CIU,"t_CIU/I");
     t1->Branch("CII",&t_CII,"t_CII/I");
     
+    
     t1->Branch("tof",&t_tof,"t_tof/I");
     t1->Branch("toftdc1",&t_toftdc1,"t_toftdc1/I");
     t1->Branch("toftdc2",&t_toftdc2,"t_toftdc2/I");
@@ -690,6 +694,7 @@ INT main_init(void)
     t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/I");
     t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/I");
     t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/I");
+    t1->Branch("tofCal",&t_tofCal,"t_tofCal/D");
     
     t1->Branch("k600",&t_k600,"t_k600/I");
     
@@ -707,6 +712,7 @@ INT main_init(void)
     
     t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
     t1->Branch("X1th",&t_X1th,"t_X1th/D");
+    t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
     t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
     t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
     t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
@@ -737,6 +743,7 @@ INT main_init(void)
     
     t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
     t1->Branch("U1th",&t_U1th,"t_U1th/D");
+    t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
     t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
     t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
     t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
@@ -1700,6 +1707,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1chisq=X1chisq;
             t_X1res0=resolution[0];
             t_X1res1=resolution[1];
+            
+            //----------------------------
+            extern double tofCal_offset[2];
+            extern double tofCal_gain[2];
+            
+            t_tofCal = (tofCal_gain[1]*t_X1pos + tofCal_gain[0])*(t_tof + (tofCal_offset[1]*t_X1pos + tofCal_offset[0]));
+
+            //----------------------------
+            extern double X1thCal_offset[2];
+            extern double X1thCal_gain[2];
+            
+            t_X1thCal = (X1thCal_gain[1]*t_X1pos + X1thCal_gain[0])*(t_X1th + (X1thCal_offset[1]*t_X1pos + X1thCal_offset[0]));
+            
 #ifdef _VDCRESCALCS
             t_X1res2=resolution[2];
             t_X1res3=resolution[3];
@@ -1730,9 +1750,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X1_good);  // good X1 events
                     for(int i = 0; i < X1hits_dt ; i++) {
-                        //if(X1pos>0 && X1pos<249){
-                        hX1_DriftTimeGood->Fill(X1.time[i]);
-                        //}
+                        if((X1pos>240.0 && X1pos<440.0) || (X1pos>480.0 && X1pos<550.0) || (X1pos>660.0 && X1pos<720.0))
+                        {
+                            hX1_DriftTimeGood->Fill(X1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX1_Chisq->Fill(X1chisq);
@@ -1766,6 +1787,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U1chisq=U1chisq;
             t_U1res0=resolution[0];
             t_U1res1=resolution[1];
+            
+            //----------------------------
+            extern double U1thCal_offset[2];
+            extern double U1thCal_gain[2];
+            
+            t_U1thCal = (U1thCal_gain[1]*t_X1pos + U1thCal_gain[0])*(t_U1th + (U1thCal_offset[1]*t_X1pos + U1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U1res2=resolution[2];
             t_U1res3=resolution[3];
@@ -1792,7 +1820,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hU1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_U1_good);  // good U1 events
                     for(int i = 0; i < U1hits_dt ; i++) {
-                        hU1_DriftTimeGood->Fill(U1.time[i]);
+                        if((U1pos>200.0 && U1pos<330.0) || (U1pos>375.0 && U1pos<415.0) || (U1pos>460.0 && U1pos<540.0))
+                        {
+                            hU1_DriftTimeGood->Fill(U1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hU1_Chisq->Fill(U1chisq);
@@ -1954,7 +1985,25 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
-    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
+    
+    std::vector<double> correctionParamters;
+    correctionParamters.push_back(X1pos);
+    correctionParamters.push_back(Y1);
+    correctionParamters.push_back(t_tofCal);
+    correctionParamters.push_back(t_X1thCal);
+    correctionParamters.push_back(t_U1thCal);
+
+    
+    /*
+    double correctionParamters[5];
+    correctionParamters[0] = X1pos;
+    correctionParamters[1] = Y1;
+    correctionParamters[2] = t_tofCal;
+    correctionParamters[3] = t_X1thCal;
+    correctionParamters[4] = t_U1thCal;
+    */
+    
+    TotalLineshapeCorrection(correctionParamters, &Xcorr);
     
     extern bool X1MappingDefined;
     
