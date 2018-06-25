@@ -1730,9 +1730,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X1_good);  // good X1 events
                     for(int i = 0; i < X1hits_dt ; i++) {
-                        //if(X1pos>0 && X1pos<249){
-                        hX1_DriftTimeGood->Fill(X1.time[i]);
-                        //}
+                        if((X1pos>92.0 && X1pos<129.0) || (X1pos>203.0 && X1pos<296.0) || (X1pos>315.0 && X1pos<390.0) || (X1pos>410.0 && X1pos<540.0) || (X1pos>575.0 && X1pos<678.0))
+                        {
+                            hX1_DriftTimeGood->Fill(X1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX1_Chisq->Fill(X1chisq);
@@ -1792,7 +1793,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hU1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_U1_good);  // good U1 events
                     for(int i = 0; i < U1hits_dt ; i++) {
-                        hU1_DriftTimeGood->Fill(U1.time[i]);
+                        if((U1pos>75.0 && U1pos<95.0) || (U1pos>165.0 && U1pos<220.0) || (U1pos>250.0 && U1pos<295.0) || (U1pos>319.0 && U1pos<410.0) || (U1pos>445.0 && U1pos<520.0))
+                        {
+                            hU1_DriftTimeGood->Fill(U1.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hU1_Chisq->Fill(U1chisq);
@@ -1850,7 +1854,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX2_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X2_good);  // good X2 events
                     for(int i = 0; i < X2hits_dt ; i++) {
-                        hX2_DriftTimeGood->Fill(X2.time[i]);
+                        if(X2pos>200.0 && X2pos<680.0)
+                        {
+                            hX2_DriftTimeGood->Fill(X2.time[i]);
+                        }
                     }
 #ifdef _FULLANALYSIS
                     hX2_Chisq->Fill(X2chisq);
