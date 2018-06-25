@@ -1,20 +1,41 @@
 #!/bin/bash
 
 #================================
-#	PR251
-#for COUNT in {2040,2044,2048,2052,2056,2075,2076,2079,2097,2102,2109}
-for COUNT in {2040,2044,2048,2052,2056,2075,2076,2097,2102,2109}
+#	PR194
 
-#   Removed runs: 2079 (misalignment)
+#   WE1
+#   12C target, 0.3 mg/cm^2
+#for COUNT in {1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157}
+#   Beam dropped out at approximately run 1171
+
+#   WE2
+#   12C target, 0.3 mg/cm^2
+#for COUNT in {2002,2079}
+
+
+#   TEST
+#for COUNT in {1090,1114}
+
+#   INCLUSIVE
+#for COUNT in {1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157,2002,2079}
+for COUNT in {1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157}
+
+#   TEMP
+#for COUNT in {1090,1114,1115}
 
 do
 
 #====================================================
 #       Directories for the data and sorted data
-#dataDirectory="/media/psf/Home/Desktop/Data/PR251"
-dataDirectory="/media/psf/DATA/PR251/data"
-sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sorted"
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
+dataDirectory="/media/psf/DATA/PR194/data"
+#dataDirectory="/media/psf/Home/Academic/Experiments/PR194/data"
+
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sorted"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNoPIDoffsets"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedAutoTrim"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedTest"
+sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNew"
+
 
   echo $COUNT
   if [ $COUNT -lt 10 ]

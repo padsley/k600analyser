@@ -1517,3 +1517,624 @@ Mon Oct 31 06:06:16 2016 [Analyzer,INFO] Program Analyzer on host arthur started
 Mon Oct 31 06:06:17 2016 [Analyzer,INFO] Set run number 2463 in ODB
 Mon Oct 31 06:11:07 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
 11:07:16.314 2017/04/18 [ODBEdit,INFO] Program ODBEdit on host localhost started
+15:32:44.053 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:49.919 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:49.920 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:49.921 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:50.254 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22430 does not exists
+15:32:50.256 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:50.257 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:50.257 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:50.258 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:50.258 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:50.259 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:50.259 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:50.260 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:50.260 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:50.261 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:50.262 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:50.262 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:50.263 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:50.263 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:50.264 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:50.265 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:50.266 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:50.266 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:50.268 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:50.268 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22430' for client 'Analyzer' because it is not connected to ODB
+15:32:50.269 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:50.269 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22430 does not exist
+15:32:50.279 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:50.280 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:50.281 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:50.605 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22456 does not exists
+15:32:50.608 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:50.609 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:50.609 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:50.610 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:50.610 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:50.611 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:50.614 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:50.614 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:50.615 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:50.615 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:50.616 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:50.617 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:50.617 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:50.618 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:50.618 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:50.619 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:50.619 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:50.620 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:50.621 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:50.621 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22456' for client 'Analyzer' because it is not connected to ODB
+15:32:50.622 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:50.622 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22456 does not exist
+15:32:50.631 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:50.632 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:50.633 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:50.943 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22467 does not exists
+15:32:50.946 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:50.946 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:50.947 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:50.948 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:50.948 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:50.949 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:50.949 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:50.950 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:50.951 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:50.951 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:50.952 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:50.952 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:50.953 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:50.953 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:50.954 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:50.954 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:50.955 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:50.956 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:50.956 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:50.957 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22467' for client 'Analyzer' because it is not connected to ODB
+15:32:50.957 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:50.958 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22467 does not exist
+15:32:50.973 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:50.974 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:50.974 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:51.280 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22475 does not exists
+15:32:51.285 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:51.288 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:51.289 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:51.289 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:51.290 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:51.291 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:51.291 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:51.292 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:51.293 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:51.294 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:51.294 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:51.295 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:51.295 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:51.296 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:51.297 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:51.298 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:51.298 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:51.299 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:51.299 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:51.321 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22475' for client 'Analyzer' because it is not connected to ODB
+15:32:51.322 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:51.323 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22475 does not exist
+15:32:51.335 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:51.335 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:51.336 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:51.649 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22483 does not exists
+15:32:51.651 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:51.652 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:51.653 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:51.654 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:51.654 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:51.655 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:51.656 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:51.656 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:51.657 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:51.657 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:51.658 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:51.658 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:51.659 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:51.659 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:51.660 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:51.661 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:51.662 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:51.662 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:51.663 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:51.664 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22483' for client 'Analyzer' because it is not connected to ODB
+15:32:51.664 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:51.665 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22483 does not exist
+15:32:51.670 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:51.671 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:51.671 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:51.989 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22494 does not exists
+15:32:51.991 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:51.991 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:51.992 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:51.992 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:51.993 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:51.993 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:51.994 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:51.995 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:51.995 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:51.996 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:51.996 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:51.997 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:51.998 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:51.998 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:51.999 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:52.000 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:52.001 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:52.002 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:52.003 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:52.003 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22494' for client 'Analyzer' because it is not connected to ODB
+15:32:52.004 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:52.005 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22494 does not exist
+15:32:52.014 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:52.015 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:52.016 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:52.374 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22502 does not exists
+15:32:52.378 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:52.378 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:52.379 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:52.379 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:52.380 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:52.381 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:52.381 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:52.382 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:52.382 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:52.383 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:52.383 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:52.384 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:52.385 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:52.386 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:52.387 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:52.388 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:52.388 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:52.389 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:52.390 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:52.390 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22502' for client 'Analyzer' because it is not connected to ODB
+15:32:52.391 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:52.391 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22502 does not exist
+15:32:52.402 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:52.403 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:52.404 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:52.757 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22513 does not exists
+15:32:52.761 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:52.761 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:52.762 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:52.762 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:52.763 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:52.764 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:52.764 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:52.765 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:52.765 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:52.766 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:52.766 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:52.767 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:52.767 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:52.768 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:52.769 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:52.770 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:52.770 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:52.771 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:52.772 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:52.772 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22513' for client 'Analyzer' because it is not connected to ODB
+15:32:52.773 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:52.773 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22513 does not exist
+15:32:52.784 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:52.785 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:52.785 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:32:53.098 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22521 does not exists
+15:32:53.100 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:53.101 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:32:53.102 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:32:53.102 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:32:53.103 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:32:53.103 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:32:53.104 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:32:53.105 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:32:53.105 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:32:53.106 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:32:53.107 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:32:53.108 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:32:53.108 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:32:53.109 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:32:53.109 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:32:53.110 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:32:53.111 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:32:53.111 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:32:53.112 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:32:53.112 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22521' for client 'Analyzer' because it is not connected to ODB
+15:32:53.113 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:32:53.113 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22521 does not exist
+15:32:53.123 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:32:53.124 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:32:53.125 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:33:43.779 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22529 does not exists
+15:33:43.784 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:43.785 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:43.786 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:33:43.787 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:33:43.787 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:33:43.788 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:33:43.789 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:33:43.789 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:33:43.791 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:33:43.791 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:33:43.792 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:33:43.793 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:33:43.794 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:33:43.795 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:33:43.796 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:33:43.796 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:33:43.797 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:33:43.798 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:33:43.799 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:33:43.799 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22529' for client 'Analyzer' because it is not connected to ODB
+15:33:43.800 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:33:43.801 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22529 does not exist
+15:33:43.802 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:33:43.803 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:33:43.803 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:33:44.124 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22912 does not exists
+15:33:44.126 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:44.126 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:44.127 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:33:44.128 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:33:44.129 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:33:44.129 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:33:44.130 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:33:44.130 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:33:44.131 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:33:44.132 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:33:44.132 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:33:44.133 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:33:44.133 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:33:44.134 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:33:44.134 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:33:44.135 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:33:44.136 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:33:44.136 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:33:44.137 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:33:44.137 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22912' for client 'Analyzer' because it is not connected to ODB
+15:33:44.138 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:33:44.139 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22912 does not exist
+15:33:44.140 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:33:44.141 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:33:44.142 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:33:44.443 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22920 does not exists
+15:33:44.447 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:44.447 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:44.448 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:33:44.449 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:33:44.449 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:33:44.450 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:33:44.450 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:33:44.451 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:33:44.452 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:33:44.452 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:33:44.453 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:33:44.454 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:33:44.454 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:33:44.455 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:33:44.456 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:33:44.456 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:33:44.457 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:33:44.458 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:33:44.459 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:33:44.459 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22920' for client 'Analyzer' because it is not connected to ODB
+15:33:44.460 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:33:44.460 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22920 does not exist
+15:33:44.462 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:33:44.462 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:33:44.464 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:33:44.768 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22928 does not exists
+15:33:44.770 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:44.770 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:44.771 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:33:44.771 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:33:44.772 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:33:44.773 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:33:44.773 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:33:44.774 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:33:44.774 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:33:44.775 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:33:44.776 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:33:44.776 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:33:44.777 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:33:44.777 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:33:44.778 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:33:44.778 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:33:44.779 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:33:44.780 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:33:44.781 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:33:44.781 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22928' for client 'Analyzer' because it is not connected to ODB
+15:33:44.782 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:33:44.782 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22928 does not exist
+15:33:44.784 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:33:44.784 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:33:44.785 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:33:45.104 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22939 does not exists
+15:33:45.107 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:45.107 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:45.108 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:33:45.108 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:33:45.109 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:33:45.110 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:33:45.110 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:33:45.111 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:33:45.111 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:33:45.112 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:33:45.113 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:33:45.113 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:33:45.114 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:33:45.114 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:33:45.115 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:33:45.116 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:33:45.117 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:33:45.117 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:33:45.118 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:33:45.119 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22939' for client 'Analyzer' because it is not connected to ODB
+15:33:45.119 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:33:45.120 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22939 does not exist
+15:33:45.121 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:33:45.122 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:33:45.122 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:33:45.437 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22947 does not exists
+15:33:45.439 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:45.439 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:33:45.443 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:33:45.443 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:33:45.444 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:33:45.444 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:33:45.445 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:33:45.445 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:33:45.446 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:33:45.447 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:33:45.447 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:33:45.448 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:33:45.449 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:33:45.449 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:33:45.450 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:33:45.451 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:33:45.451 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:33:45.452 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:33:45.452 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:33:45.453 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22947' for client 'Analyzer' because it is not connected to ODB
+15:33:45.453 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:33:45.454 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22947 does not exist
+15:33:45.456 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:33:45.456 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:33:45.457 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:35:14.504 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 22955 does not exists
+15:35:14.507 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:14.508 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:14.508 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:35:14.509 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:35:14.510 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:35:14.510 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:35:14.511 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:35:14.512 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:35:14.512 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:35:14.513 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:35:14.513 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:35:14.514 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:35:14.515 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:35:14.516 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:35:14.516 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:35:14.517 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:35:14.517 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:35:14.518 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:35:14.518 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:35:14.519 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/22955' for client 'Analyzer' because it is not connected to ODB
+15:35:14.520 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:35:14.520 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 22955 does not exist
+15:35:14.521 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:35:14.522 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:35:14.523 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:35:14.830 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 23376 does not exists
+15:35:14.833 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:14.834 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:14.835 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:35:14.835 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:35:14.836 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:35:14.836 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:35:14.837 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:35:14.837 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:35:14.838 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:35:14.838 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:35:14.839 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:35:14.840 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:35:14.840 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:35:14.842 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:35:14.843 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:35:14.843 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:35:14.844 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:35:14.844 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:35:14.845 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:35:14.846 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/23376' for client 'Analyzer' because it is not connected to ODB
+15:35:14.846 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:35:14.847 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 23376 does not exist
+15:35:14.848 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:35:14.849 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:35:14.849 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:35:15.158 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 23384 does not exists
+15:35:15.160 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:15.161 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:15.162 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:35:15.162 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:35:15.163 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:35:15.163 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:35:15.164 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:35:15.164 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:35:15.165 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:35:15.165 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:35:15.166 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:35:15.166 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:35:15.167 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:35:15.168 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:35:15.168 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:35:15.169 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:35:15.170 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:35:15.170 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:35:15.171 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:35:15.171 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/23384' for client 'Analyzer' because it is not connected to ODB
+15:35:15.172 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:35:15.172 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 23384 does not exist
+15:35:15.174 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:35:15.174 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:35:15.175 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:35:15.494 2018/03/01 [Analyzer,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 23392 does not exists
+15:35:15.496 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:15.496 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:15.497 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:35:15.498 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:35:15.498 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:35:15.499 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:35:15.499 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:35:15.500 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:35:15.501 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:35:15.501 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:35:15.502 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:35:15.502 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:35:15.503 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:35:15.503 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:35:15.504 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:35:15.504 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:35:15.505 2018/03/01 [Analyzer,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:35:15.505 2018/03/01 [Analyzer,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:35:15.506 2018/03/01 [Analyzer,INFO] Corrected 9 ODB entries
+15:35:15.507 2018/03/01 [Analyzer,INFO] Deleted entry '/System/Clients/23392' for client 'Analyzer' because it is not connected to ODB
+15:35:15.507 2018/03/01 [Analyzer,INFO] Program Analyzer on host localhost started
+15:35:15.508 2018/03/01 [Analyzer,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 23392 does not exist
+15:35:15.509 2018/03/01 [Analyzer,ERROR] [odb.c:10063:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+15:35:15.510 2018/03/01 [Analyzer,ERROR] [main.c:340:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+15:35:15.510 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:35:45.670 2018/03/01 [ODBEdit,ERROR] [odb.c:1333:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 23403 does not exists
+15:35:45.672 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:45.672 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Experiment/Security/RPC hosts/Allowed hosts"
+15:35:45.673 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Experiment/Run Parameters"
+15:35:45.674 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Experiment/Run Parameters"
+15:35:45.674 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Parameters/main"
+15:35:45.675 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Parameters/main"
+15:35:45.677 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Trigger/Common"
+15:35:45.678 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Common"
+15:35:45.678 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Trigger/Statistics"
+15:35:45.679 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Trigger/Statistics"
+15:35:45.679 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Scaler/Common"
+15:35:45.680 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Common"
+15:35:45.681 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Scaler/Statistics"
+15:35:45.681 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Scaler/Statistics"
+15:35:45.682 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Beamline/Common"
+15:35:45.683 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Common"
+15:35:45.683 2018/03/01 [ODBEdit,INFO] Removed open record flag from "/Analyzer/Beamline/Statistics"
+15:35:45.684 2018/03/01 [ODBEdit,INFO] Removed exclusive access mode from "/Analyzer/Beamline/Statistics"
+15:35:45.684 2018/03/01 [ODBEdit,INFO] Corrected 9 ODB entries
+15:35:45.685 2018/03/01 [ODBEdit,INFO] Deleted entry '/System/Clients/23403' for client 'Analyzer' because it is not connected to ODB
+15:35:45.685 2018/03/01 [ODBEdit,INFO] Program ODBEdit on host localhost started
+15:35:45.686 2018/03/01 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 23403 does not exist
+15:36:32.200 2018/03/01 [Analyzer,ERROR] [midas.c:2008:,ERROR] cm_disconnect_experiment not called at end of program
+15:36:32.202 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.215 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.215 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.216 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.216 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.217 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.218 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.218 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.219 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.220 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.220 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.221 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.221 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.222 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.222 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.223 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.224 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.224 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.225 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.227 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.228 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.228 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.229 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.230 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.230 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.231 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.232 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.232 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.233 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.234 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.234 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.235 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.236 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.237 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.237 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.238 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.238 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.239 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.240 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.240 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.241 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.241 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.242 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.243 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.244 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.244 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.245 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.245 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.246 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.247 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.247 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.248 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.248 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.249 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.249 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.250 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.251 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.251 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.252 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.252 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.253 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.253 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.254 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.254 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.255 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.256 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.256 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.257 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.257 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.258 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.259 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.259 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.260 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.260 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.261 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.261 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.262 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.262 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.263 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.264 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.264 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.265 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.265 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.266 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.266 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.267 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.268 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.268 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.269 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.269 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.270 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.271 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.272 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.272 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.273 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.274 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.274 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
+15:36:32.275 2018/03/01 [Analyzer,ERROR] [odb.c:2458:db_find_key,ERROR] invalid database handle
+15:36:32.275 2018/03/01 [Analyzer,ERROR] [odb.c:3587:db_get_value,ERROR] invalid database handle
