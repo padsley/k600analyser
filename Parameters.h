@@ -37,6 +37,7 @@ const int TDC_CHAN_POLD=5;        // May 2016: this was last used in PR153 Oct 2
 
 //-------------------------------------------------------------------------------------
 void ParameterInit();
+void ReadThetaSCATMappingPars_cache(std::string thetaSCATMappingPars_cacheFile);
 
 void MMMNumberInit();
 void MMMADCChannelsInit(int det, std::string side, int start, int stop);

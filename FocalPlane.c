@@ -399,20 +399,9 @@ void setupchannel2wireXoldUX(unsigned int chan2wire[])
                 else{
                     for(int i=channelstart;i<channelstart+16;i++){
                         tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
-                        //tdcchan=(tdcmodulecounter*128) +  ((preampcount+1)-7*tdcmodulecounter)*16 +(i-channelstart);
                         chan2wire[tdcchan]=i;
-                        //printf("channelstart %d;  tdcmodule %d ;  preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, tdcmodulecounter, preampcount, tdcchan, chan2wire[tdcchan]);
+                        //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
                     }
-                }
-            }
-            else if(preampcount>12 && preampcount <22){ // wireplane U1  =================================================
-                basecount=300;
-                preampbase=13;
-                channelstart=basecount+(preampcount-preampbase)*16;
-                for(int i=channelstart;i<channelstart+16;i++){
-                    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
-                    chan2wire[tdcchan]=i;
-                    //printf("chan2wire[%d] = %d  \n",tdcchan, chan2wire[tdcchan]);
                 }
             }
             else if(preampcount<35){ // wireplane X2  =================================================

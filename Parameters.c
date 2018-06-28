@@ -1525,6 +1525,7 @@ void ReadConfiguration()
                 {
                     input >> LineBuffer;
                     printf("Using thetaSCAT to thetaFP Mappings file: %s\n",LineBuffer.c_str());
+                    
                     ReadThetaSCATMappingPars_cache(LineBuffer);
                 }
                 //===============================================================================================

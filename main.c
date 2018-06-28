@@ -980,8 +980,7 @@ INT main_bor(INT run_number)
         {
             if(VDC2_new && VDC2_new_UX)
             {
-                //setupchannel2wireXoldUX(Channel2Wire);
-                setupchannel2wireXoldXU(Channel2Wire);
+                setupchannel2wireXoldUX(Channel2Wire);
             }
             else setupchannel2wireXoldXU(Channel2Wire);
         }
@@ -1058,6 +1057,20 @@ INT main_bor(INT run_number)
         read_cable(cableOffset,(char *)"CableLength.dat");
     }
 
+    
+    //----------------------------------------------------------------------------
+    //      To hard code run-dependant ThetaFP to ThetaSCAT mapping parameters
+    /*
+    if(RunNumber<=22094)
+    {
+        //ReadThetaSCATMappingPars_cache("PR166_2011_22077_22094_ThetaSCATMappingParameters.dat");
+    }
+    else
+    {
+        ReadThetaSCATMappingPars_cache("PR166_2011_22077_22094_ThetaSCATMappingParameters.dat");
+    }
+    */
+    
     //----------------------------------------------------------------------------
     //      thetaSCAT Mapping Parameters
     //      To map thetaFP to thetaSCAT
@@ -2051,7 +2064,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     extern double Y1offset;
     
     //Y1=CalcYFP(X1pos,U1pos,X1th);
-    Y1 = CalcYFPforUX(X1pos,U1pos,X1th);
+    //Y1 = CalcYFPforUX(X1pos,U1pos,X1th);
+    Y1 = CalcYFPforUX(X1pos,U2pos,X1th);
     t_Y1=Y1+Y1offset;
 #ifdef _FULLANALYSIS
     h_Y1->Fill(Y1);
