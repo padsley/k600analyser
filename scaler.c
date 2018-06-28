@@ -171,6 +171,8 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int j = 0; j <psclr[3]; j++) {
      hClockU->Fill(counter);
    }
+    
+    /*
    for(unsigned int j = 0; j <psclr[8] ; j++) {
      hBLM1->Fill(counter);
    }
@@ -207,12 +209,13 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int j = 0; j <psclr[35] ; j++) {
      hClockI->Fill(counter);
    }
+    */
 
    triggerU = psclr[0];
-   triggerI = psclr[32];
+   triggerI = psclr[16];
    CIU = psclr[2];
-   CII = psclr[34];
-
+   CII = psclr[16];
+    
    //==============================================================================================================
    counter += 1;
    runtime = counter;             // this is a value to be put in the tree structure. Hence I can
