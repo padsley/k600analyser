@@ -91,6 +91,12 @@ double *ThetaXCorr_i1_FD; // position dependent parameters
 double *ThetaXCorr_i2_FD; // position dependent parameters
 double *ThetaXCorr_par_FD; // position dependent parameters
 
+//H. Fujita style Y1 parameters added by F. Diel
+int NYXCorr_FD;  //Number of terms
+double *YXCorr_i1_FD; // position dependent parameters
+double *YXCorr_i2_FD; // position dependent parameters
+double *YXCorr_par_FD; // position dependent parameters
+
 //H. Fujita style TOF correction added by F. Diel
 int NTOFCorr_FD;  //Number of terms
 double *TOFCorr_i1_FD; // position and angle dependent parameters
@@ -947,6 +953,7 @@ void ReadConfiguration()
   bool ThSCATCorrectionParametersRead = false;
 
   bool LineshapeCorrectionParametersRead = false; 
+  bool YLineshapeCorrectionParametersRead = false; 
   bool TOFCorrParametersRead = false; 
   bool ThSCATXCorrectionParametersRead = false; 
   bool ThSCATXLoffCorrectionParametersRead = false;
@@ -973,7 +980,7 @@ void ReadConfiguration()
 	  std::string LineBuffer;
 
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead&& !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !LineshapeCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !TOFCorrParametersRead && !PadOffsetParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead&& !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !LineshapeCorrectionParametersRead && !YLineshapeCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !TOFCorrParametersRead && !PadOffsetParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -1239,6 +1246,22 @@ void ReadConfiguration()
 			  ThetaXCorr_par_FD[c] = 0;
 		  }
 		  LineshapeCorrectionParametersRead = true;
+		} else if(LineBuffer.compare(0,25,"YLineshapeCorrectionTerms") == 0){
+		  input >> LineBuffer;
+		  printf("Using %d terms for the Y1 lineshape correction\n",atoi(LineBuffer.c_str()));
+		  NYXCorr_FD = atoi(LineBuffer.c_str());
+		  YXCorr_i1_FD = new double[NYXCorr_FD];
+		  YXCorr_i2_FD = new double[NYXCorr_FD];
+		  YXCorr_par_FD = new double[NYXCorr_FD];
+		  
+		  for(int c=0;c<NYXCorr_FD;c++){
+			  
+			  YXCorr_i1_FD[c] = 0;
+			  YXCorr_i2_FD[c] = 0;
+			  YXCorr_par_FD[c] = 0;
+		  }
+		  YLineshapeCorrectionParametersRead = true;
+		  
 		} else if(LineBuffer.compare(0,18,"TOFCorrectionTerms") == 0){
 			TOFCorrParametersRead = true;
 			input >> LineBuffer;
@@ -1446,6 +1469,42 @@ void ReadConfiguration()
 		    ThetaXCorr_i1_FD[npar] = nparX;
 		    ThetaXCorr_i2_FD[npar] = nparTh;
 			ThetaXCorr_par_FD[npar] = valpar;
+			
+	     }
+	  }
+	  
+	  if(YLineshapeCorrectionParametersRead){
+		  int npar = -1;
+		  int nparX = -1;
+		  int nparY = -1;
+		  double valpar = 0;
+		  
+		  
+	  
+		  input >> LineBuffer;
+		  if(LineBuffer.compare(0,28,"EndYLineshapeCorrectionTerms") == 0 && YLineshapeCorrectionParametersRead){
+			   YLineshapeCorrectionParametersRead = false;
+		  } else {
+			//printf("|%d %s|\n",NThetaXCorr_FD,LineBuffer.c_str());
+			
+			printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+			npar = atoi(LineBuffer.c_str());
+						
+			input >> LineBuffer;
+			printf("%d\t",atoi(LineBuffer.c_str()));
+			nparX = atoi(LineBuffer.c_str());
+			
+			input >> LineBuffer;
+			printf("%d\t",atoi(LineBuffer.c_str()));
+			nparY = atoi(LineBuffer.c_str());
+			
+			input >> LineBuffer;
+			printf("%e\n",atof(LineBuffer.c_str()));
+			valpar = atof(LineBuffer.c_str());
+
+		    YXCorr_i1_FD[npar] = nparX;
+		    YXCorr_i2_FD[npar] = nparY;
+			YXCorr_par_FD[npar] = valpar;
 			
 	     }
 	  }

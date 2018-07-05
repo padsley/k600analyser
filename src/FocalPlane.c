@@ -1603,8 +1603,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   extern double *XThetaXLoffCorr;
   extern double X_LSOffset;
 
-  extern int NXY1Corr;
-  extern double *XY1Corr;
+  
   
   //printf("XLineshapeOffset = %f\n",X_LSOffset);
   //printf("X to start with: %f\n",X);
@@ -1652,19 +1651,47 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   for (int i = 0; i < NThetaXCorr_FD; ++i){
 	result += ThetaXCorr_par_FD[i] * pow(X, ThetaXCorr_i1_FD[i]) * pow(ThetaSCAT, ThetaXCorr_i2_FD[i]);   
   }
+  
+  *Xcorr = result;
 
 
-  //At this point, result is X1posC after the ThSCAT correction
-  for(int i=0;i<NXY1Corr;i++){
-      if(i==0)result = result;
-      if(i>0)result += XY1Corr[i] * pow(Y,i);
-  }
+ 
+  
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
 
-  *Xcorr = result;
+  
 }
+
+void CalcCorrXY(Double_t X, Double_t Y, Double_t *Xcorr){
+	double result = 0;
+	extern int NXY1Corr;
+	extern double *XY1Corr;
+	
+	
+	//added by FD for sepatate y lineshape corrections
+	 //At this point, result is X1posC after the ThSCAT correction
+	for(int i=0;i<NXY1Corr;i++){
+		if(i==0)result = X;
+		if(i>0)result += XY1Corr[i] * pow(Y,i);
+	}
+	
+	extern int NYXCorr_FD;
+	
+	extern double *YXCorr_i1_FD;
+	extern double *YXCorr_i2_FD;
+	extern double *YXCorr_par_FD;
+	
+	// H. Fujita style of correction added by F. Diel
+	for (int i = 0; i < NYXCorr_FD; ++i){
+		result += YXCorr_par_FD[i] * pow(X, YXCorr_i1_FD[i]) * pow(Y, YXCorr_i2_FD[i]);   
+	}
+	
+	*Xcorr = result;
+		
+}
+
 
 
 //--------------------------------------------------------------------------------------

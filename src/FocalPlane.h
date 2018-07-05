@@ -32,6 +32,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
 
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr);
+void CalcCorrXY(Double_t X, Double_t Y, Double_t *Xcorr);
 void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr);
 void CalcCorrTOF(Double_t X, Double_t thetaSCAT, Double_t TOF, Double_t *TOFcorr);
 double CalcQBrho(double Xcorr);
