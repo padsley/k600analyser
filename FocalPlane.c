@@ -1899,11 +1899,17 @@ double CalcThetaScat(double X1, double ThFP)
 }
 
 //--------------------------------------------------------------------------------------
-double CalcPhiScat(double X1, double ThFP, double Y1)
+double CalcPhiScat(double X1, double ThSCAT, double Y1)
 
 {
   double result = 0;
-  result = Y1 * (0.108+0.00086*ThFP) - (0.6097+3.99e-4*X1);
+  //result = Y1 * (2.876 + 0.01219*X1) + (-6.74308 + 0.00888391*X1);
+  //result = Y1 * (0.1997 - 0.0001713*X1) + (0.338-0.00034*X1) -0.005*ThSCAT*Y1;
+  result = (   (0.240424 + -0.0642343*ThSCAT + 0.00508168*pow(ThSCAT,2) + 0.0386309*pow(ThSCAT,3))  
++ (-0.000226433 + 6.96309e-05 *ThSCAT + -5.50856e-06*pow(ThSCAT,2) + -5.01168e-05*pow(ThSCAT,3))*X1 )*Y1     
++ (1.19239 + -0.103746*ThSCAT + -0.223242*pow(ThSCAT,2) + 0.00814478*pow(ThSCAT,3))  
++ (-0.00168102 + 0.000102937*ThSCAT + 0.000379748*pow(ThSCAT,2) + 3.11802e-06*pow(ThSCAT,3))*X1
+-0.1;
   return result;
 }
 

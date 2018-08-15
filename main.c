@@ -249,6 +249,7 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
+Double_t Yoffset=0.0;
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -928,6 +929,9 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
+   extern double *YOffsets;	        // from Parameters.c 
+   extern int *RunNrForYOffsets;       // from Parameters.c  
+   extern int NrOfRunsForYOffsets;     // nr of runs for which we have Yoffsets read it via Parameters.c
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
@@ -942,6 +946,12 @@ INT main_bor(INT run_number)
    }
    printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
+
+   Yoffset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForYOffsets;i++){
+       if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: Y offset= %f \n",RunNumber,Yoffset);
 
 
    return SUCCESS;
@@ -1750,7 +1760,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaSCAT,Y1+Yoffset);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
    //t_Ex = CalcExDirect(Xcorr);

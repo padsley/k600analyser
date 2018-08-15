@@ -94,6 +94,10 @@ int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
 int *TOFOffsets;
 
+int NrOfRunsForYOffsets;
+int *RunNrForYOffsets;
+double *YOffsets;
+
 int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
 int *PadOffsets;
@@ -123,7 +127,7 @@ void ParameterInit()
   TDCInit();
   PrintParameters();
 //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
-  printf("\nFinished initialising parameters - to the sorting!\n");
+  printf("Finished initialising parameters - to the sorting!\n\n");
 }
 
 /*-------------------------------------------------*/
@@ -396,7 +400,7 @@ void GateauSetChannelLimits(int plane, int sector, int start, int stop)
 }
 void PulseLimitsInit()
 {
-  printf("\nPulseLimitsInit\n");
+  printf("PulseLimitsInit\n");
   
   PulseLimits = new int[2];
   PulseLimits[0] = 4000;
@@ -492,7 +496,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   std::ifstream CalibInput;
   if(CalibFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
+    printf("********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
     for(int i=0;i<32*ADCModules;i++)
     {
       printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
@@ -571,7 +575,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   printf("\n");
   }
   CalibInput.close();
-  printf("Finished Calibration Parameters\n");
+  printf("Finished Calibration Parameters\n\n");
 }
 
 
@@ -586,7 +590,7 @@ void ReadX1Offsets(std::string X1offsetsFile)
   std::ifstream InputFile;
   if(X1offsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
+    printf("********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
     RunNrForX1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfX1Offsets")"
     X1Offsets[0]= 0;
   }
@@ -621,7 +625,7 @@ void ReadX1Offsets(std::string X1offsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d X1offsets\n",counter);
+  printf("Finished reading %d X1offsets\n\n",counter);
 }
 
 
@@ -636,7 +640,7 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   std::ifstream InputFile;
   if(TOFoffsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
+    printf("********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
     RunNrForTOFOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfTOFOffsets")"
     TOFOffsets[0]= 0;
   }
@@ -671,9 +675,59 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TOFoffsets\n",counter);
+  printf("Finished reading %d TOFoffsets\n\n",counter);
 }
 
+
+
+/*-------------------------------------------------*/
+void ReadYOffsets(std::string YoffsetsFile)
+{
+  //printf("Read Y offsets using file %s\n",YoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(YoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: Y offsets for all runs are left at 0 **********\n");
+    RunNrForYOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfYOffsets")"
+    YOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(YoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForYOffsets[counter]=runnr;
+          YOffsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d Yoffsets\n\n",counter);
+}
 
 
 
@@ -725,7 +779,7 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TPadoffsets\n",counter);
+  printf("Finished reading %d TPadoffsets\n\n",counter);
 }
 
 
@@ -1142,7 +1196,7 @@ void ReadConfiguration()
 	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 		{
 		  input >> LineBuffer;
-		  printf("Using calibration file: %s\n",LineBuffer.c_str());
+		  printf("\nUsing calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
 		}
 
@@ -1178,6 +1232,25 @@ void ReadConfiguration()
 		  printf("Using TOFoffsets file: %s\n",LineBuffer.c_str());
 		  ReadTOFOffsets(LineBuffer);
 		}
+
+	      else if(LineBuffer.compare(0,12,"NrOfYOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d Yoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForYOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForYOffsets<1) NrOfRunsForYOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  RunNrForYOffsets = new int[NrOfRunsForYOffsets];
+                  YOffsets = new double[NrOfRunsForYOffsets];
+	        }
+
+	      else if(LineBuffer.compare(0,12,"YOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Yoffsets file: %s\n",LineBuffer.c_str());
+		  ReadYOffsets(LineBuffer);
+		}
+
+
 	      else if(LineBuffer.compare(0,14,"NrOfPadOffsets") == 0)
                 {
 		  input >> LineBuffer;
@@ -1352,7 +1425,7 @@ void ReadConfiguration()
 		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
-		  printf("ConfigEnd\n");
+		  printf("\n\n ConfigEnd\n");
 		  ConfigRead = false;
 		}
 	      else
@@ -1857,7 +1930,7 @@ void ReadConfiguration()
     {
       if(ConfigRead)printf("Configuration file not found - you're going to crash\n");
     }
-  printf("Finished ReadConfiguration\n");
+  printf("Finished ReadConfiguration\n\n");
 }
 
 /*-------------------------------------------------*/
