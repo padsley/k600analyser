@@ -95,7 +95,7 @@ int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
 int *TOFOffsets;
 
-int NrOfRunsForYOffsets;
+int NrOfRunsForYOffsets;  // implemented for PR210 when Y on fp shifted a lot
 int *RunNrForYOffsets;
 double *YOffsets;
 

@@ -249,7 +249,7 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-Double_t Yoffset=0.0;
+Double_t Yoffset=0.0;  // first implemented for PR210 to take diff y offsets in fp into account
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
