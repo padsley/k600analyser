@@ -54,7 +54,7 @@
 // #define _MOVIE
 // #define _JJAUTOTRIM
 // #define _PRINTTOSCREEN
-// #define _VDCRESCALCS
+ #define _VDCRESCALCS
  #define _FULLANALYSIS
 // #define _MISALIGNTIME
 // #define _RAWDATA
@@ -200,6 +200,9 @@ Int_t t_U1wireUsed[MAX_WIRES_PER_EVENT];
 Int_t t_X2wireUsed[MAX_WIRES_PER_EVENT];
 Int_t t_U2wireUsed[MAX_WIRES_PER_EVENT];
 Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
+Double_t t_U1distUsed[MAX_WIRES_PER_EVENT];
+Double_t t_X2distUsed[MAX_WIRES_PER_EVENT];
+Double_t t_U2distUsed[MAX_WIRES_PER_EVENT];
 #endif
 
 
@@ -249,7 +252,6 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-Double_t Yoffset=0.0;
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -459,8 +461,8 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1doublewires=-1;  t_U1doublewires=-1;   t_X2doublewires=-1;  t_U2doublewires=-1;
    t_X1multiplemin=-1;  t_U1multiplemin=-1; t_X2multiplemin=-1;  t_U2multiplemin=-1;
    for(int i =0; i < MAX_WIRES_PER_EVENT; i++) {	   
-	t_X1wireUsed[i]=-1; t_U1wireUsed[i]=-1; t_X2wireUsed[i]=-1;t_U2wireUsed[i]=-1;
-	t_X1distUsed[i]=-1.; 
+	t_X1wireUsed[i]=-1;  t_U1wireUsed[i]=-1;  t_X2wireUsed[i]=-1;  t_U2wireUsed[i]=-1;
+	t_X1distUsed[i]=-10.; t_U1distUsed[i]=-10.; t_X2distUsed[i]=-10.; t_U2distUsed[i]=-10.; 
    }
    #endif
 
@@ -749,6 +751,7 @@ INT main_init(void)
   t1->Branch("U1doublewires",&t_U1doublewires,"t_U1doublewires/I");
   t1->Branch("U1multiplemin",&t_U1multiplemin,"t_U1multiplemin/I");
   t1->Branch("U1wireUsed",t_U1wireUsed,"t_U1wireUsed[t_nU1wiresUsed]/I");
+  t1->Branch("U1distUsed",t_U1distUsed,"t_U1distUsed[t_nU1wiresUsed]/D");
   #endif
 
   t1->Branch("X2pos",&t_X2pos,"t_X2pos/D");
@@ -777,6 +780,7 @@ INT main_init(void)
   t1->Branch("X2doublewires",&t_X2doublewires,"t_X2doublewires/I");
   t1->Branch("X2multiplemin",&t_X2multiplemin,"t_X2multiplemin/I");
   t1->Branch("X2wireUsed",t_X2wireUsed,"t_X2wireUsed[t_nX2wiresUsed]/I");
+  t1->Branch("X2distUsed",t_X2distUsed,"t_X2distUsed[t_nX2wiresUsed]/D");
   #endif
 
   t1->Branch("U2pos",&t_U2pos,"t_U2pos/D");
@@ -805,6 +809,7 @@ INT main_init(void)
   t1->Branch("U2doublewires",&t_U2doublewires,"t_U2doublewires/I");
   t1->Branch("U2multiplemin",&t_U2multiplemin,"t_U2multiplemin/I");
   t1->Branch("U2wireUsed",t_U2wireUsed,"t_U2wireUsed[t_nU2wiresUsed]/I");
+  t1->Branch("U2distUsed",t_U2distUsed,"t_U2distUsed[t_nX1wiresUsed]/D");
   #endif
 
   t1->Branch("thetaFP",&t_thetaFP,"t_thetaFP/D");
@@ -929,9 +934,6 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
-   extern double *YOffsets;	        // from Parameters.c 
-   extern int *RunNrForYOffsets;       // from Parameters.c  
-   extern int NrOfRunsForYOffsets;     // nr of runs for which we have Yoffsets read it via Parameters.c
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
@@ -946,12 +948,6 @@ INT main_bor(INT run_number)
    }
    printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
-
-   Yoffset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-   for (int i = 0; i< NrOfRunsForYOffsets;i++){
-       if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameter.c 
-   }
-   printf("run %d: Y offset= %f \n",RunNumber,Yoffset);
 
 
    return SUCCESS;
@@ -1296,8 +1292,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	//  addwiregap=1;
         //  //printf("addwiregap %i \n",addwiregap);
         //}
-	//if(channelnew >= globals.x1_1st_wire_chan+35) t_X1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
-	t_X1effall=1;         
+	if(channelnew >= globals.x1_1st_wire_chan+35) t_X1effall=1;  // SPECIFIC for HDFP ZERO DEGREE EXPERIMENTS
+	//t_X1effall=1;         
 	#ifdef _FULLANALYSIS
 	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
 	  hX1_DriftTimeRef->Fill(ref_time);	
@@ -1318,8 +1314,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	}
       }
       else if ((channelnew >= globals.u1_1st_wire_chan) && (channelnew < globals.u1_last_wire_chan)) {    //only for U1 wireplane
-	//if (channelnew >= globals.u1_1st_wire_chan+27) t_U1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
-	t_U1effall=1;        
+	if (channelnew >= globals.u1_1st_wire_chan+27) t_U1effall=1; // SPECIFIC for HDFP ZERO DEGREE EXPERIMENT
+	//t_U1effall=1;        
 	#ifdef _FULLANALYSIS
 	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
 	  hU1_DriftTimeRef->Fill(ref_time);	
@@ -1339,16 +1335,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=635) ) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) ){// && (channelnew!=604) ) {   //only for X2 wireplane
       //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
-        if(channelnew==620 || channelnew==649){  
-	  addwiregap=2;
-        //  //printf("addwiregap %i \n",addwiregap);
-        }
-
-
-	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
-	t_X2effall=1; 	
+						// chan 482 looks suspicious in white tune run 23088
+	if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT 
+	//t_X2effall=1; 	
 	#ifdef _FULLANALYSIS
 	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
 	  hX2_DriftTimeRef->Fill(ref_time);	
@@ -1369,8 +1360,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	}
       }    
       else if ((channelnew >= globals.u2_1st_wire_chan) && (channelnew < globals.u2_last_wire_chan)) {    //only for U2 wireplane 
-	//if(channelnew >= globals.u2_1st_wire_chan+15) t_U2effall=1;  // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
-	t_U2effall=1;  
+	if(channelnew >= globals.u2_1st_wire_chan+15) t_U2effall=1;  // SPECIFIC for ZERO DEGREE EXPERIMENT
+	//t_U2effall=1;  
 	#ifdef _FULLANALYSIS
 	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
 	  hU2_DriftTimeRef->Fill(ref_time);	
@@ -1489,7 +1480,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
        hEventID->Fill(ev_id_X1_wires);  // events in X1 that pass through wire requirement gates 
        t_X1effgroup=1; 
-       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX1_EffID->Fill(ev_wiregap);
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){ 
+		hX1_EffID->Fill(ev_wiregap);
+	        for(int i = 0; i < X1hits_dt ; i++) { 
+	     		hX1_DriftTimeGood->Fill(X1.time[i]);	
+                }
+       }
        #ifdef _FULLANALYSIS
        t_X1TimeDiff=(X1.time[0]-X1.time[1])-(X1.time[4]-X1.time[3]); // See Hall A paper manuscript: NIMA 474 (2001) 108 fig13
        #endif
@@ -1523,16 +1519,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_nX1wiresUsed=X1wires_used; 
        t_X1doublewires=X1doublewires; 
        t_X1multiplemin=X1multiplemin; 
-
-       //if(tof>2080 && tof<2180 && pad1>500 && pad1<2500 && X1th< 30  && X1pos>646 && X1pos<666){
-       //printf("\n\nevt nr=%i \n",tdc_counter);
        for(int i = 0; i<X1wires_used; i++){
-           t_X1wireUsed[i]=X1.wire[i];
-           t_X1distUsed[i]=X1.dist[i];
-           //printf("i=%i,  wire(i)=%i : dist(i)=%f : X1wires_used %i \n",i,X1.wire[i],X1.dist[i],X1wires_used);
+         t_X1wireUsed[i]=X1.wire[i];
+         t_X1distUsed[i]=X1.dist[i];
+         //printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
        }
        //printf("\n");
-       //}
        #endif
 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){   //This to allow sensible histos to be filled
@@ -1542,11 +1534,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	 else if(X1flag==0){	  
 	   hX1_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_X1_good);  // good X1 events 
-	   for(int i = 0; i < X1hits_dt ; i++) { 
-		//if(X1pos>0 && X1pos<249){
-	     hX1_DriftTimeGood->Fill(X1.time[i]);	
-                //}
-	   }
 	   #ifdef _FULLANALYSIS
 	   hX1_Chisq->Fill(X1chisq);
 	   hX1_HitsG->Fill(X1hits_dt); 		
@@ -1595,6 +1582,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U1multiplemin=U1multiplemin; 
        for(int i = 0; i<U1wires_used; i++){
          t_U1wireUsed[i]=U1.wire[i];
+         t_U1distUsed[i]=U1.dist[i];
        }
        #endif
 
@@ -1652,6 +1640,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_X2multiplemin=X2multiplemin; 
        for(int i = 0; i<X2wires_used; i++){
          t_X2wireUsed[i]=X2.wire[i];
+         t_X2distUsed[i]=X2.dist[i];
        }
        #endif
 
@@ -1673,7 +1662,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hX2_Res2diTL->Fill(resolution[0],resolution[1]);
 	   #endif
 	 }
-       }  
+       }   
      }
    }
       
@@ -1684,7 +1673,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU2_EffID->Fill(ev_wiregap);
 
-       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4, U2wirefit, U2distfit,&U2wires_used, &U2doublewires, &U2multiplemin, &U2chisqminimization); 
+       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4, U2wirefit, U2distfit, &U2wires_used, &U2doublewires, &U2multiplemin, &U2chisqminimization); 
 //       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4,&U2wires_used, &U2doublewires, &U2multiplemin); 
        if(U2flag==0) t_U2effgood=1;
 
@@ -1712,8 +1701,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U2multiplemin=U2multiplemin; 
        for(int i = 0; i<U2wires_used; i++){
          t_U2wireUsed[i]=U2.wire[i];
+         t_U2distUsed[i]=U2.dist[i];
        }
        #endif
+
 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
 	 if (U2flag!=0){
@@ -1740,32 +1731,33 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   thetaFPx = CalcThetaFP(X1pos,X2pos);
+   //thetaFP = CalcThetaFP(X1pos,X2pos);
+   //t_thetaFP = thetaFP;
    thetaFP  = CalcThetaFP(U1pos,U2pos);
-   t_thetaFP = thetaFP;
+   t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1+Yoffset;
+   t_Y1=Y1;
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1+Yoffset);
+   h_Y1->Fill(Y1);
    #endif
 
-   //Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
-   //t_Y2=Y2;
+   Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
+   t_Y2=Y2;
    #ifdef _FULLANALYSIS
-   //h_Y2->Fill(Y2);
+   h_Y2->Fill(Y2);
    #endif
 
-   //t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
+   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaSCAT,Y1+Yoffset);
-   t_theta = CalcTheta(Xcorr, thetaFP, Y1+Yoffset);
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr);

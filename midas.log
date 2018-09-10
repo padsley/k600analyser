@@ -1516,3 +1516,14 @@ Mon Oct 31 06:06:16 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
 Mon Oct 31 06:06:16 2016 [Analyzer,INFO] Program Analyzer on host arthur started
 Mon Oct 31 06:06:17 2016 [Analyzer,INFO] Set run number 2463 in ODB
 Mon Oct 31 06:11:07 2016 [Analyzer,INFO] Program Analyzer on host arthur stopped
+Wed Aug 22 10:00:47 2018 [Analyzer,INFO] Program Analyzer on host nevelinglap started
+Wed Aug 22 10:00:47 2018 [Analyzer,ERROR] [odb.c:9054:db_open_record,ERROR] struct size mismatch for "/" (expected size: 72, size in ODB: 0)
+Wed Aug 22 10:00:47 2018 [Analyzer,ERROR] [main.c:333:analyzer_init,ERROR] Cannot open "/Analyzer/Parameters/GLOBAL" tree in ODB
+Wed Aug 22 10:00:47 2018 [Analyzer,ERROR] [midas.c:1970:,ERROR] cm_disconnect_experiment not called at end of program
+Wed Aug 22 10:01:04 2018 [ODBEdit,ERROR] [odb.c:5557:db_set_mode,ERROR] invalid database handle
+Wed Aug 22 10:01:04 2018 [ODBEdit,ERROR] [odb.c:5557:db_set_mode,ERROR] invalid database handle
+Wed Aug 22 10:01:04 2018 [ODBEdit,ERROR] [odb.c:5557:db_set_mode,ERROR] invalid database handle
+Wed Aug 22 10:01:04 2018 [ODBEdit,ERROR] [odb.c:1049:db_open_database,ERROR] Removed ODB client 'Analyzer', index 0 because process pid 12303 does not exists
+Wed Aug 22 10:01:04 2018 [ODBEdit,INFO] Deleted entry '/System/Clients/12303' for client 'Analyzer' because it is not connected to ODB
+Wed Aug 22 10:01:04 2018 [ODBEdit,INFO] Program ODBEdit on host nevelinglap started
+Wed Aug 22 10:01:04 2018 [ODBEdit,INFO] Client 'Analyzer' on buffer 'SYSMSG' removed by bm_open_buffer because process pid 12303 does not exist

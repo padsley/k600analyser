@@ -195,16 +195,16 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int j = 0; j <psclr[15] ; j++) {
      hBLM8->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[32] ; j++) {   
+   for(unsigned int j = 0; j <psclr[20] ; j++) {   
      hTriggerI->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[33] ; j++) {   
+   for(unsigned int j = 0; j <psclr[21] ; j++) {   
      hPulserI->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[34] ; j++) {   
+   for(unsigned int j = 0; j <psclr[22] ; j++) {   
      hCII->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[35] ; j++) {
+   for(unsigned int j = 0; j <psclr[23] ; j++) {
      hClockI->Fill(counter);
    }
 
