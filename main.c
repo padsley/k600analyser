@@ -176,7 +176,9 @@ Double_t t_phiFP=-100;
 
 double t_tofCal = -100.0;
 double t_X1thCal = -100.0;
+double t_X2thCal = -100.0;
 double t_U1thCal = -100.0;
+double t_U2thCal = -100.0;
 
 
 // resolution parameters from raytrace subroutine: not all are always needed
@@ -727,6 +729,7 @@ INT main_init(void)
     t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
     t1->Branch("X1th",&t_X1th,"t_X1th/D");
     t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
+    t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
     t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
     t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
     t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
@@ -758,6 +761,7 @@ INT main_init(void)
     t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
     t1->Branch("U1th",&t_U1th,"t_U1th/D");
     t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
+    t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
     t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
     t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
     t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
@@ -786,6 +790,7 @@ INT main_init(void)
     
     t1->Branch("X2pos",&t_X2pos,"t_X2pos/D");
     t1->Branch("X2th",&t_X2th,"t_X2th/D");
+    t1->Branch("X2thCal",&t_X2thCal,"t_X2thCal/D");
     t1->Branch("X2flag",&t_X2flag,"t_X2flag/I");
     t1->Branch("X2chisq",&t_X2chisq,"t_X2chisq/D");
     t1->Branch("X2res0",&t_X2res0,"t_X2res0/D");
@@ -814,6 +819,7 @@ INT main_init(void)
     
     t1->Branch("U2pos",&t_U2pos,"t_U2pos/D");
     t1->Branch("U2th",&t_U2th,"t_U2th/D");
+    t1->Branch("U2thCal",&t_U2thCal,"t_U2thCal/D");
     t1->Branch("U2flag",&t_U2flag,"t_U2flag/I");
     t1->Branch("U2chisq",&t_U2chisq,"t_U2chisq/D");
     t1->Branch("U2res0",&t_U2res0,"t_U2res0/D");
@@ -2053,6 +2059,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X2chisq=X2chisq;
             t_X2res0=resolution[0];
             t_X2res1=resolution[1];
+            
+            //----------------------------
+            extern double X2thCal_offset[2];
+            extern double X2thCal_gain[2];
+            
+            t_X2thCal = (X2thCal_gain[1]*t_X2pos + X2thCal_gain[0])*(t_X2th + (X2thCal_offset[1]*t_X2pos + X2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X2res2=resolution[2];
             t_X2res3=resolution[3];
@@ -2116,6 +2129,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U2chisq=U2chisq;
             t_U2res0=resolution[0];
             t_U2res1=resolution[1];
+            
+            //----------------------------
+            extern double U2thCal_offset[2];
+            extern double U2thCal_gain[2];
+            
+            t_U2thCal = (U2thCal_gain[1]*t_U2pos + U2thCal_gain[0])*(t_U2th + (U2thCal_offset[1]*t_U2pos + U2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U2res2=resolution[2];
             t_U2res3=resolution[3];
@@ -2187,15 +2207,18 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
-    std::vector<double> correctionParamters;
-    correctionParamters.push_back(X1pos);
-    correctionParamters.push_back(Y1);
-    correctionParamters.push_back(t_tofCal);
-    correctionParamters.push_back(t_X1thCal);
-    correctionParamters.push_back(t_U1thCal);
+    std::vector<double> correctionParameters;
+    correctionParameters.push_back(t_thetaSCAT);
+    correctionParameters.push_back(t_Y1);
+    correctionParameters.push_back(t_tofCal);
+    correctionParameters.push_back(t_X1thCal);
+    correctionParameters.push_back(t_U1thCal);
 
-    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
+    //TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &Xcorr);
     
+    Xcorr = X1pos;
+    TotalLineshapeCorrection(correctionParameters, &Xcorr);
+
     extern bool X1MappingDefined;
     
     if(X1MappingDefined)
@@ -2224,6 +2247,36 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     extern std::vector<double> E;
     extern std::vector<double> p;
     extern std::vector<double> polarScatteringAngles;
+
+    //------------------------
+    //      54-190
+    if(RunNumber>=54 && RunNumber<=190)
+    {
+        T[0] = 67.5; // MeV
+        
+        polarScatteringAngles[2] = 0.0; // deg
+        
+        momentumCalibrationRead = true;
+        momentumCalPars.clear();
+        momentumCalPars.push_back(477.33);
+        momentumCalPars.push_back(0.0683247);
+        momentumCalPars.push_back(-6.60436e-06);
+        momentumCalPars.push_back(1.10339e-09);
+    }
+    //------------------------
+    //      456-520
+    if(RunNumber>=456 && RunNumber<=520)
+    {
+        T[0] = 67.5; // MeV
+        
+        polarScatteringAngles[2] = 0.0; // deg
+        
+        momentumCalibrationRead = true;
+        momentumCalPars.clear();
+        momentumCalPars.push_back(487.396);
+        momentumCalPars.push_back(0.0686118);
+        momentumCalPars.push_back(-5.32691e-06);
+    }
 
     if(momentumCalibrationRead)
     {

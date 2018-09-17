@@ -1631,13 +1631,13 @@ double X1Mapping(Double_t X)
 }
 
 //--------------------------------------------------------------------------------------
-void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
+void TotalLineshapeCorrection(std::vector<double> correctionParameters, Double_t *Xcorr)
 {
     extern std::vector<int> TLCCorrectionTypes;
     extern std::vector<std::vector<std::vector<double>>> TLCParameters;
- 
+    
     double correctedPosition = 0.0;
-
+    
     for(int i=0; i<(int) TLCParameters.size(); i++)
     {
         double previousCorrectedPosition;
@@ -1645,7 +1645,7 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
         
         if(i==0)
         {
-            previousCorrectedPosition = X;
+            previousCorrectedPosition = *Xcorr;
         }
         else
         {
@@ -1660,16 +1660,31 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
             //--------------------------------------------------------------------
             for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
             {
+                int correctionType = TLCCorrectionTypes[i];
+                correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[correctionType], k);
+
+                /*
                 if(TLCCorrectionTypes[i]==0)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(ThetaSCAT, k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[0], k);
                 }
-                
-                if(TLCCorrectionTypes[i]==1)
+                else if(TLCCorrectionTypes[i]==1)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(Y, k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[1], k);
                 }
-                
+                else if(TLCCorrectionTypes[i]==2)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[2], k);
+                }
+                else if(TLCCorrectionTypes[i]==3)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[3], k);
+                }
+                else if(TLCCorrectionTypes[i]==4)
+                {
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[4], k);
+                }
+                */
             }
             
             correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
@@ -1692,7 +1707,7 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
     
     if(TLCParameters.empty())
     {
-        correctedPosition = X;
+        correctedPosition = correctionParameters[0];
     }
     
     *Xcorr = correctedPosition;
@@ -1873,7 +1888,7 @@ double CalcEx(double *m, double *T, double *E, double *p, double Xpos, double th
     double c4 = c2*c2;  // (MeV/u)^2, c^4
 
     ////    Q-value calculation
-    double Q = (m[2] + m[3])*c2 - (m[0] + m[1])*c2; // MeV
+    double Q = (m[0] + m[1])*c2 - (m[2] + m[3])*c2; // MeV
     
     ////    Conversion of ejectile scattering angle from degrees to radians
     double theta_lab = theta*0.017453292; // radians

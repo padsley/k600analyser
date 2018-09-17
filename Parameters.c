@@ -125,6 +125,12 @@ double X1thCal_gain[2];
 double U1thCal_offset[2];
 double U1thCal_gain[2];
 
+double X2thCal_offset[2];
+double X2thCal_gain[2];
+
+double U2thCal_offset[2];
+double U2thCal_gain[2];
+
 double z_x1x2,x_x1x2;
 
 int NrOfRunsForTOFOffsets;
@@ -1692,6 +1698,50 @@ void ReadConfiguration()
                         U1thCal_gain[i] = atof(LineBuffer.c_str());
                         
                         std::cout << "U1thCal_gain[i]: " << U1thCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"X2thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X2thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X2thCal_offset[i]: " << X2thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X2thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X2thCal_gain[i]: " << X2thCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"U2thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U2thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U2thCal_offset[i]: " << U2thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U2thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U2thCal_gain[i]: " << U2thCal_gain[i] << std::endl;
                     }
                 }
                 else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
