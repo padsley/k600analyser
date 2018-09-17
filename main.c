@@ -61,8 +61,8 @@
 //#define _FULLANALYSIS
 //#define _MISALIGNTIME
 //#define _RAWDATA
-//#define _SILICONDATA
-//#define _MMM
+#define _SILICONDATA
+#define _MMM
 //#define _W1
 //#define _GAMMADATA
 //#define _HAGAR
@@ -152,6 +152,8 @@ Int_t    t_triggerU=0;
 Int_t    t_CII=0;
 Int_t    t_CIU=0;
 
+Double_t t_pad1Cal= 0.0; // Used for TLC
+Double_t t_pad2Cal= 0.0; // Used for TLC
 
 
 // focal plane variables for TTree
@@ -173,6 +175,12 @@ double t_theta = -90;
 Double_t t_thetaFP=-100;
 Double_t t_thetaFPx=-100;
 Double_t t_phiFP=-100;
+
+double t_tofCal = -100.0;
+double t_X1thCal = -100.0;
+double t_X2thCal = -100.0;
+double t_U1thCal = -100.0;
+double t_U2thCal = -100.0;
 
 
 // resolution parameters from raytrace subroutine: not all are always needed
@@ -704,11 +712,14 @@ INT main_init(void)
     t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/I");
     t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/I");
     t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/I");
-    
+    t1->Branch("tofCal",&t_tofCal,"t_tofCal/D");
+
     t1->Branch("k600",&t_k600,"t_k600/I");
     
     t1->Branch("pad1",&t_pad1,"t_pad1/D");
+    t1->Branch("pad1Cal",&t_pad1Cal,"t_pad1Cal/D");
     t1->Branch("pad2",&t_pad2,"t_pad2/D");
+    t1->Branch("pad2Cal",&t_pad2Cal,"t_pad2Cal/D");
     t1->Branch("pad1raw",&t_pad1raw,"t_pad1raw/D"); //padoffsets correction
     t1->Branch("pad1hiP",&t_pad1hiP,"t_pad1hiP/D");
     t1->Branch("pad1lowP",&t_pad1lowP,"t_pad1lowP/D");
@@ -721,6 +732,7 @@ INT main_init(void)
     
     t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
     t1->Branch("X1th",&t_X1th,"t_X1th/D");
+    t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
     t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
     t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
     t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
@@ -751,6 +763,7 @@ INT main_init(void)
     
     t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
     t1->Branch("U1th",&t_U1th,"t_U1th/D");
+    t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
     t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
     t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
     t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
@@ -779,6 +792,7 @@ INT main_init(void)
     
     t1->Branch("X2pos",&t_X2pos,"t_X2pos/D");
     t1->Branch("X2th",&t_X2th,"t_X2th/D");
+    t1->Branch("X2thCal",&t_X2thCal,"t_X2thCal/D");
     t1->Branch("X2flag",&t_X2flag,"t_X2flag/I");
     t1->Branch("X2chisq",&t_X2chisq,"t_X2chisq/D");
     t1->Branch("X2res0",&t_X2res0,"t_X2res0/D");
@@ -807,6 +821,7 @@ INT main_init(void)
     
     t1->Branch("U2pos",&t_U2pos,"t_U2pos/D");
     t1->Branch("U2th",&t_U2th,"t_U2th/D");
+    t1->Branch("U2thCal",&t_U2thCal,"t_U2thCal/D");
     t1->Branch("U2flag",&t_U2flag,"t_U2flag/I");
     t1->Branch("U2chisq",&t_U2chisq,"t_U2chisq/D");
     t1->Branch("U2res0",&t_U2res0,"t_U2res0/D");
@@ -1057,6 +1072,29 @@ INT main_bor(INT run_number)
     }
     
     //----------------------------------------------------------------------------
+    //      Y2 offset Parameters
+    
+    extern std::vector<std::tuple<int, double>> Y2offsets;
+    extern double Y2offset;
+    
+    Y2offset = 0.0;
+    
+    if((int) Y2offsets.size()>0)
+    {
+        std::cout << "//------------------//" << std::endl;
+        std::cout << "      Y2 offsets" << std::endl;
+    }
+    
+    for(int i=0; i<(int) Y2offsets.size(); i++)
+    {
+        if(std::get<0>(Y2offsets[i])==RunNumber)
+        {
+            Y2offset = std::get<1>(Y2offsets[i]);
+            std::cout << "Run: " << std::get<0>(Y2offsets[i]) << ", Offset: " << std::get<1>(Y2offsets[i]) << std::endl;
+        }
+    }
+    
+    //----------------------------------------------------------------------------
     //      Total Lineshape Correction Parameters
     
     extern std::vector<std::vector<int>> TLCRunRanges_cache;
@@ -1265,6 +1303,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     t_pad1=pad1;
     t_pad1raw=pad1raw;
     
+    t_pad1Cal = t_pad1 - 965.0;
     
     //   t_pad1=pad1;
     t_pad2=pad2;
@@ -1278,6 +1317,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     t_CII=CII;
     t_CIU=CIU;
     
+    //t_pad2Cal = t_pad2 - 965.0;
     
     //----------------------------------------------------------------------
     // look for TDC0 bank
@@ -1710,6 +1750,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1chisq=X1chisq;
             t_X1res0=resolution[0];
             t_X1res1=resolution[1];
+            
+            //----------------------------
+            extern double tofCal_offset[2];
+            extern double tofCal_gain[2];
+            
+            t_tofCal = (tofCal_gain[1]*t_X1pos + tofCal_gain[0])*(t_tof + (tofCal_offset[1]*t_X1pos + tofCal_offset[0]));
+            
+            //----------------------------
+            extern double X1thCal_offset[2];
+            extern double X1thCal_gain[2];
+            
+            t_X1thCal = (X1thCal_gain[1]*t_X1pos + X1thCal_gain[0])*(t_X1th + (X1thCal_offset[1]*t_X1pos + X1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X1res2=resolution[2];
             t_X1res3=resolution[3];
@@ -1777,6 +1830,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U1chisq=U1chisq;
             t_U1res0=resolution[0];
             t_U1res1=resolution[1];
+            
+            //----------------------------
+            extern double U1thCal_offset[2];
+            extern double U1thCal_gain[2];
+            
+            t_U1thCal = (U1thCal_gain[1]*t_X1pos + U1thCal_gain[0])*(t_U1th + (U1thCal_offset[1]*t_X1pos + U1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U1res2=resolution[2];
             t_U1res3=resolution[3];
@@ -1837,6 +1897,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X2chisq=X2chisq;
             t_X2res0=resolution[0];
             t_X2res1=resolution[1];
+            
+            //----------------------------
+            extern double X2thCal_offset[2];
+            extern double X2thCal_gain[2];
+            
+            t_X2thCal = (X2thCal_gain[1]*t_X2pos + X2thCal_gain[0])*(t_X2th + (X2thCal_offset[1]*t_X2pos + X2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X2res2=resolution[2];
             t_X2res3=resolution[3];
@@ -1900,6 +1967,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U2chisq=U2chisq;
             t_U2res0=resolution[0];
             t_U2res1=resolution[1];
+            
+            //----------------------------
+            extern double U2thCal_offset[2];
+            extern double U2thCal_gain[2];
+            
+            t_U2thCal = (U2thCal_gain[1]*t_U2pos + U2thCal_gain[0])*(t_U2th + (U2thCal_offset[1]*t_U2pos + U2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U2res2=resolution[2];
             t_U2res3=resolution[3];
@@ -1960,8 +2034,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     h_Y1->Fill(Y1);
 #endif
     
+    extern double Y2offset;
+
     Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used
-    t_Y2=Y2;
+    t_Y2=Y2+Y2offset;
 #ifdef _FULLANALYSIS
     h_Y2->Fill(Y2);
 #endif
@@ -1974,7 +2050,23 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
-    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
+    std::vector<double> correctionParameters;
+    correctionParameters.push_back(t_thetaSCAT);
+    correctionParameters.push_back(t_Y1);
+    correctionParameters.push_back(t_Y2);
+    correctionParameters.push_back(t_tofCal);
+    correctionParameters.push_back(t_X1thCal);
+    correctionParameters.push_back(t_U1thCal);
+    correctionParameters.push_back(t_X2thCal);
+    correctionParameters.push_back(t_U2thCal);
+    correctionParameters.push_back(t_pad1Cal);
+    correctionParameters.push_back(t_pad2Cal);
+
+
+    //TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &Xcorr);
+    
+    Xcorr = X1pos;
+    TotalLineshapeCorrection(correctionParameters, &Xcorr);
     
     extern bool X1MappingDefined;
     

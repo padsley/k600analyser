@@ -101,6 +101,9 @@ std::vector<double> X1MappingParameters;
 std::vector<std::tuple<int, double>> Y1offsets;
 double Y1offset;
 
+std::vector<std::tuple<int, double>> Y2offsets;
+double Y2offset;
+
 std::vector<std::vector<int>> TLCRunRanges_cache;
 std::vector<std::vector<int>> TLCCorrectionTypes_cache;
 std::vector<std::vector<std::vector<std::vector<double>>>> TLCParameters_cache;
@@ -115,6 +118,21 @@ std::vector<double> T;
 std::vector<double> E;
 std::vector<double> p;
 std::vector<double> polarScatteringAngles;
+
+double tofCal_offset[2];
+double tofCal_gain[2];
+
+double X1thCal_offset[2];
+double X1thCal_gain[2];
+
+double U1thCal_offset[2];
+double U1thCal_gain[2];
+
+double X2thCal_offset[2];
+double X2thCal_gain[2];
+
+double U2thCal_offset[2];
+double U2thCal_gain[2];
 
 double z_x1x2,x_x1x2;
 
@@ -666,7 +684,7 @@ void ReadThetaSCATMappingPars_cache(std::string thetaSCATMappingPars_cacheFile)
             //      Offset parameters
             int nOffsetPars;
             std::vector<double> offsetPars;
-
+            
             InputFile >> LineBuffer;
             nOffsetPars = atoi(LineBuffer.c_str());
             
@@ -677,12 +695,12 @@ void ReadThetaSCATMappingPars_cache(std::string thetaSCATMappingPars_cacheFile)
             }
             
             thetaSCATMappingPars_cache_perRunRange.push_back(offsetPars);
-
+            
             //----------------------------
             //      Gain parameters
             int nGainPars;
             std::vector<double> gainPars;
-
+            
             InputFile >> LineBuffer;
             nGainPars = atoi(LineBuffer.c_str());
             
@@ -726,12 +744,12 @@ void ReadY1Offsets(std::string Y1offsetsFile)
         std::string LineBuffer;
         
         InputFile >> LineBuffer;
-
+        
         while(LineBuffer.compare(0,3,"eof") != 0)
         {
             runNr = atoi(LineBuffer.c_str());
             InputFile >> LineBuffer;
-
+            
             offset = atof(LineBuffer.c_str());
             Y1offsets.push_back(std::make_tuple(runNr, offset));
             InputFile >> LineBuffer;
@@ -741,6 +759,37 @@ void ReadY1Offsets(std::string Y1offsetsFile)
     InputFile.close();
     
     printf("Finished reading Y1 offsets\n");
+}
+
+/*-------------------------------------------------*/
+void ReadY2Offsets(std::string Y2offsetsFile)
+{
+    std::ifstream InputFile;
+    
+    InputFile.open(Y2offsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+        int runNr = 0;
+        double offset = 0;
+        std::string LineBuffer;
+        
+        InputFile >> LineBuffer;
+        
+        while(LineBuffer.compare(0,3,"eof") != 0)
+        {
+            runNr = atoi(LineBuffer.c_str());
+            InputFile >> LineBuffer;
+            
+            offset = atof(LineBuffer.c_str());
+            Y2offsets.push_back(std::make_tuple(runNr, offset));
+            InputFile >> LineBuffer;
+        }
+    }
+    
+    InputFile.close();
+    
+    printf("Finished reading Y2 offsets\n");
 }
 
 /*-------------------------------------------------*/
@@ -764,7 +813,7 @@ void ReadX1Mapping(std::string X1mappingFile)
             int nOrderMapping = atoi(LineBuffer.c_str());
             
             std::vector<double> X1MappingParameters_perRun;
-
+            
             for(int i=0; i<nOrderMapping; i++)
             {
                 InputFile >> LineBuffer;
@@ -777,28 +826,28 @@ void ReadX1Mapping(std::string X1mappingFile)
         }
         
         /*
-        InputFile >> LineBuffer;
-        if(LineBuffer.compare(0,3,"eof") != 0)
-        {
-            runNr = atoi(LineBuffer.c_str());
-        }
-        
-        std::vector<double> X1MappingParameters_perRun;
-        InputFile >> LineBuffer;
-        
-        while(LineBuffer.compare(0,3,"eof") != 0)
-        {
-            double mappingParameter = atof(LineBuffer.c_str());
-            X1MappingParameters_perRun.push_back(mappingParameter);
-            
-            InputFile >> LineBuffer;
-        }
-        
-        X1MappingParameters_cache.push_back(std::make_tuple(runNr,X1MappingParameters_perRun));
-        */
+         InputFile >> LineBuffer;
+         if(LineBuffer.compare(0,3,"eof") != 0)
+         {
+         runNr = atoi(LineBuffer.c_str());
+         }
+         
+         std::vector<double> X1MappingParameters_perRun;
+         InputFile >> LineBuffer;
+         
+         while(LineBuffer.compare(0,3,"eof") != 0)
+         {
+         double mappingParameter = atof(LineBuffer.c_str());
+         X1MappingParameters_perRun.push_back(mappingParameter);
+         
+         InputFile >> LineBuffer;
+         }
+         
+         X1MappingParameters_cache.push_back(std::make_tuple(runNr,X1MappingParameters_perRun));
+         */
         
     }
-
+    
     InputFile.close();
     printf("Finished reading X1 Mapping Parameters\n");
 }
@@ -813,15 +862,15 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
     if(InputFile.is_open())
     {
         std::string LineBuffer;
-
+        
         InputFile >> LineBuffer;
-
+        
         while(LineBuffer.compare(0,3,"eof") != 0)
         {
             std::vector<int> correctionTypes_perRunRange;
             std::vector<std::vector<std::vector<double>>> TLCParameters_cache_perRunRange;
             std::vector<int> runRange;
-
+            
             //------------------------
             //      Run range
             int minRunRange, maxRunRange;
@@ -838,7 +887,7 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
                     //----------------------------------------------------------------------------------------------------
                     //  Deleting any previously defined corrections for each run
                     //  This ensures that a run cannot erronouesly undergo two different sets of corrections
-                    //  The last TLC correction for a run, given in the associated TLCParameters_cacheFile, is the correction used.
+                    //  The last TLC correction for a run, given in the assocaited TLCParameters_cacheFile, is correction used.
                     for(auto i = TLCRunRanges_cache.begin(); i != TLCRunRanges_cache.end(); ++i)
                     {
                         int it_i = std::distance(TLCRunRanges_cache.begin(), i);
@@ -846,7 +895,7 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
                         for(auto j = (*i).begin(); j != (*i).end(); ++j)
                         {
                             int it_j = std::distance((*i).begin(), j);
-
+                            
                             if((*j)==runNumbers)
                             {
                                 TLCRunRanges_cache[it_i].erase(TLCRunRanges_cache[it_i].begin() + it_j);
@@ -908,16 +957,16 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
             }
             
             //----------------------------
-
+            
             TLCCorrectionTypes_cache.push_back(correctionTypes_perRunRange);
             TLCRunRanges_cache.push_back(runRange);
             TLCParameters_cache.push_back(TLCParameters_cache_perRunRange);
             
             InputFile >> LineBuffer;
         }
-      
+        
     }
-
+    
     InputFile.close();
     
     
@@ -925,7 +974,7 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
     for(int h=0; h<(int) TLCParameters_cache.size(); h++)
     {
         std::cout << "//----------------------------------------------------" << std::endl;
-
+        
         std::cout << "TLCCorrectionTypes_cache: ";
         for(int j=0; j<(int) TLCCorrectionTypes_cache[h].size(); j++)
         {
@@ -967,7 +1016,7 @@ void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
     std::cout << std::endl;
     
     //----------------------------------------------------
-
+    
     printf("Finished reading TLC Parameters\n");
 }
 
@@ -1512,6 +1561,12 @@ void ReadConfiguration()
                     printf("Using Y1 offsets file: %s\n",LineBuffer.c_str());
                     ReadY1Offsets(LineBuffer);
                 }
+                else if(LineBuffer.compare(0,13,"Y2OffsetsFile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Using Y2 offsets file: %s\n",LineBuffer.c_str());
+                    ReadY2Offsets(LineBuffer);
+                }
                 //===============================================================================================
                 else if(LineBuffer.compare(0,17,"TLCParametersFile") == 0)
                 {
@@ -1619,7 +1674,116 @@ void ReadConfiguration()
                     for(int c=0;c<NThFPSCATSlope;c++) ThFPSCATSlope[c] = 0;
                     ThFPSCATSlopeParametersRead = true;
                 }
-                
+                else if(LineBuffer.compare(0,6,"TOFCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        tofCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "tofCal_offset[i]: " << tofCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        tofCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "tofCal_gain[i]: " << tofCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"X1thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X1thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X1thCal_offset[i]: " << X1thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X1thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X1thCal_gain[i]: " << X1thCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"U1thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U1thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U1thCal_offset[i]: " << U1thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U1thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U1thCal_gain[i]: " << U1thCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"X2thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X2thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X2thCal_offset[i]: " << X2thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        X2thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "X2thCal_gain[i]: " << X2thCal_gain[i] << std::endl;
+                    }
+                }
+                else if(LineBuffer.compare(0,7,"U2thCal") == 0)
+                {
+                    //--------------------
+                    //      Offset
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U2thCal_offset[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U2thCal_offset[i]: " << U2thCal_offset[i] << std::endl;
+                    }
+                    
+                    //--------------------
+                    //      Gain
+                    for(int i=0; i<2; i++)
+                    {
+                        input >> LineBuffer;
+                        U2thCal_gain[i] = atof(LineBuffer.c_str());
+                        
+                        std::cout << "U2thCal_gain[i]: " << U2thCal_gain[i] << std::endl;
+                    }
+                }
                 else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
                 {
                     input >> LineBuffer;

@@ -33,7 +33,7 @@ for COUNT in {1029,1045,1046,1062,1080,1089,1090,1091,1092,1093,1094,1096,1099,1
 #for COUNT in {1048,1052,1053,1056,1057,1058,1059,1060,1070,1071,1073,1075,1078,1079,1084,1085,1086,1087,1027,1037,1038,1042,1050,1054,1061,1064,1072,1081,1082,1083,1049,1051,1065,1068,1028,1031,1055,1067,1069}
 
 
-#for COUNT in {1029,1045}
+#for COUNT in {1029,10291}
 
 
 do
@@ -42,10 +42,12 @@ do
 #       Directories for the data and sorted data
 dataDirectory="/media/psf/DATA/PR226/data"
 
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sorted"
+sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sorted"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sortedNoPIDoffsets"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sortedTest"
-sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sortedNew"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sortedNew"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sortedNoXMapping"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR226_2017/sortedNoXMapping_OLD"
 
 
   echo $COUNT

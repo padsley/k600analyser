@@ -21,10 +21,10 @@ const int U_WIRES=145;
 const int TDC_MAX_TIME=14999;
 const int TDC_MIN_TIME=0;
 const int TDC_N_BINS=14999;
-const int TOF_TDC_CHAN=1;             // ch1 in 1st TDC; i.e. the 2nd channel     
-const int MAX_WIRES_PER_EVENT = 400;  // If more wires than this fire, the event data was bad  -- RN random choice  -- 
-				      // to be replaced by something else?!?! really only used for array definition
-				      // MUST FIND A BETTER WAY ... THIS VARIABLE NOT GOOD?
+const int TOF_TDC_CHAN=1;             // ch1 in 1st TDC; i.e. the 2nd channel
+const int MAX_WIRES_PER_EVENT = 400;  // If more wires than this fire, the event data was bad  -- RN random choice  --
+// to be replaced by something else?!?! really only used for array definition
+// MUST FIND A BETTER WAY ... THIS VARIABLE NOT GOOD?
 const int LUT_CHANNELS=9000;
 const int TDC_CHAN_PULSER=2;      // A pulser PR, in absence of pattern register unit
 const int TDC_CHAN_POLU=4;        // May 2016: this was last used in PR153 Oct 2010
