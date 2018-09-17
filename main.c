@@ -172,6 +172,11 @@ Double_t t_thetaFP=-100;
 Double_t t_thetaFPx=-100;
 Double_t t_phiFP=-100;
 
+double t_tofCal = -100.0;
+double t_X1thCal = -100.0;
+double t_X2thCal = -100.0;
+double t_U1thCal = -100.0;
+double t_U2thCal = -100.0;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -690,7 +695,8 @@ INT main_init(void)
     t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/I");
     t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/I");
     t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/I");
-    
+    t1->Branch("tofCal",&t_tofCal,"t_tofCal/D");
+
     t1->Branch("k600",&t_k600,"t_k600/I");
     
     t1->Branch("pad1",&t_pad1,"t_pad1/D");
@@ -707,6 +713,7 @@ INT main_init(void)
     
     t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
     t1->Branch("X1th",&t_X1th,"t_X1th/D");
+    t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
     t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
     t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
     t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
@@ -737,6 +744,7 @@ INT main_init(void)
     
     t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
     t1->Branch("U1th",&t_U1th,"t_U1th/D");
+    t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
     t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
     t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
     t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
@@ -765,6 +773,7 @@ INT main_init(void)
     
     t1->Branch("X2pos",&t_X2pos,"t_X2pos/D");
     t1->Branch("X2th",&t_X2th,"t_X2th/D");
+    t1->Branch("X2thCal",&t_X2thCal,"t_X2thCal/D");
     t1->Branch("X2flag",&t_X2flag,"t_X2flag/I");
     t1->Branch("X2chisq",&t_X2chisq,"t_X2chisq/D");
     t1->Branch("X2res0",&t_X2res0,"t_X2res0/D");
@@ -793,6 +802,7 @@ INT main_init(void)
     
     t1->Branch("U2pos",&t_U2pos,"t_U2pos/D");
     t1->Branch("U2th",&t_U2th,"t_U2th/D");
+    t1->Branch("U2thCal",&t_U2thCal,"t_U2thCal/D");
     t1->Branch("U2flag",&t_U2flag,"t_U2flag/I");
     t1->Branch("U2chisq",&t_U2chisq,"t_U2chisq/D");
     t1->Branch("U2res0",&t_U2res0,"t_U2res0/D");
@@ -1700,6 +1710,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1chisq=X1chisq;
             t_X1res0=resolution[0];
             t_X1res1=resolution[1];
+            
+            //----------------------------
+            extern double tofCal_offset[2];
+            extern double tofCal_gain[2];
+            
+            t_tofCal = (tofCal_gain[1]*t_X1pos + tofCal_gain[0])*(t_tof + (tofCal_offset[1]*t_X1pos + tofCal_offset[0]));
+            
+            //----------------------------
+            extern double X1thCal_offset[2];
+            extern double X1thCal_gain[2];
+            
+            t_X1thCal = (X1thCal_gain[1]*t_X1pos + X1thCal_gain[0])*(t_X1th + (X1thCal_offset[1]*t_X1pos + X1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X1res2=resolution[2];
             t_X1res3=resolution[3];
@@ -1767,6 +1790,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U1chisq=U1chisq;
             t_U1res0=resolution[0];
             t_U1res1=resolution[1];
+            
+            //----------------------------
+            extern double U1thCal_offset[2];
+            extern double U1thCal_gain[2];
+            
+            t_U1thCal = (U1thCal_gain[1]*t_X1pos + U1thCal_gain[0])*(t_U1th + (U1thCal_offset[1]*t_X1pos + U1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U1res2=resolution[2];
             t_U1res3=resolution[3];
@@ -1827,6 +1857,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X2chisq=X2chisq;
             t_X2res0=resolution[0];
             t_X2res1=resolution[1];
+            
+            //----------------------------
+            extern double X2thCal_offset[2];
+            extern double X2thCal_gain[2];
+            
+            t_X2thCal = (X2thCal_gain[1]*t_X2pos + X2thCal_gain[0])*(t_X2th + (X2thCal_offset[1]*t_X2pos + X2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X2res2=resolution[2];
             t_X2res3=resolution[3];
@@ -1890,6 +1927,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U2chisq=U2chisq;
             t_U2res0=resolution[0];
             t_U2res1=resolution[1];
+            
+            //----------------------------
+            extern double U2thCal_offset[2];
+            extern double U2thCal_gain[2];
+            
+            t_U2thCal = (U2thCal_gain[1]*t_U2pos + U2thCal_gain[0])*(t_U2th + (U2thCal_offset[1]*t_U2pos + U2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U2res2=resolution[2];
             t_U2res3=resolution[3];
@@ -1964,7 +2008,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
-    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
+    TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &Xcorr);
     
     extern bool X1MappingDefined;
     

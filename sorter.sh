@@ -18,10 +18,13 @@
 
 #   INCLUSIVE
 #for COUNT in {1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157,2002,2079}
-for COUNT in {1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157}
+#   PRUNED
+for COUNT in {1090,1114,1115,1120,1121,1125,1131,1138,1156,1157}
 
 #   TEMP
 #for COUNT in {1090,1114,1115}
+
+#   Removed run 1132 (insufficient data)
 
 do
 
@@ -35,6 +38,7 @@ dataDirectory="/media/psf/DATA/PR194/data"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedAutoTrim"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedTest"
 sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNew"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNoXMapping"
 
 
   echo $COUNT
