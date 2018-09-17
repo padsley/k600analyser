@@ -1872,7 +1872,7 @@ double CalcEx(double *m, double *T, double *E, double *p, double Xpos, double th
     double c4 = c2*c2;  // (MeV/u)^2, c^4
 
     ////    Q-value calculation
-    double Q = (m[2] + m[3])*c2 - (m[0] + m[1])*c2; // MeV
+    double Q = (m[0] + m[1])*c2 - (m[2] + m[3])*c2; // MeV
     
     ////    Conversion of ejectile scattering angle from degrees to radians
     double theta_lab = theta*0.017453292; // radians
