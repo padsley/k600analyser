@@ -1986,24 +1986,24 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
     
-    std::vector<double> correctionParamters;
-    correctionParamters.push_back(X1pos);
-    correctionParamters.push_back(Y1);
-    correctionParamters.push_back(t_tofCal);
-    correctionParamters.push_back(t_X1thCal);
-    correctionParamters.push_back(t_U1thCal);
+    std::vector<double> correctionParameters;
+    correctionParameters.push_back(X1pos);
+    correctionParameters.push_back(t_Y1);
+    correctionParameters.push_back(t_tofCal);
+    correctionParameters.push_back(t_X1thCal);
+    correctionParameters.push_back(t_U1thCal);
 
     
     /*
-    double correctionParamters[5];
-    correctionParamters[0] = X1pos;
-    correctionParamters[1] = Y1;
-    correctionParamters[2] = t_tofCal;
-    correctionParamters[3] = t_X1thCal;
-    correctionParamters[4] = t_U1thCal;
+    double correctionParameters[5];
+    correctionParameters[0] = X1pos;
+    correctionParameters[1] = Y1;
+    correctionParameters[2] = t_tofCal;
+    correctionParameters[3] = t_X1thCal;
+    correctionParameters[4] = t_U1thCal;
     */
     
-    TotalLineshapeCorrection(correctionParamters, &Xcorr);
+    TotalLineshapeCorrection(correctionParameters, &Xcorr);
     
     extern bool X1MappingDefined;
     
