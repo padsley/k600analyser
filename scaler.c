@@ -1,16 +1,12 @@
 /********************************************************************\
-
   Name:         scaler.c
   Created by:   Stefan Ritt
-
   Contents:     Example scaler analyzer module. This module looks
                 for a SCLR banks and accumulates scalers into an
                 ACUM bank.
-
   $Log: scaler.c,v $
   Revision 1.5  2004/01/08 08:40:08  midas
   Implemented standard indentation
-
 \********************************************************************/
 
 
@@ -195,28 +191,24 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int j = 0; j <psclr[15] ; j++) {
      hBLM8->Fill(counter);
    }
-*/
-   //for(unsigned int j = 0; j <psclr[20] ; j++) {   
-   for(unsigned int j = 0; j <psclr[4] ; j++) {   
+*/ 
+   for(unsigned int j = 0; j <psclr[20] ; j++) {   
      hTriggerI->Fill(counter);
-   }
-   //for(unsigned int j = 0; j <psclr[21] ; j++) {   
-   for(unsigned int j = 0; j <psclr[5] ; j++) {   
+   } 
+   for(unsigned int j = 0; j <psclr[21] ; j++) {   
      hPulserI->Fill(counter);
-   }
-   //for(unsigned int j = 0; j <psclr[22] ; j++) {   
-   for(unsigned int j = 0; j <psclr[6] ; j++) {   
+   } 
+   for(unsigned int j = 0; j <psclr[22] ; j++) {   
      hCII->Fill(counter);
    }
-   //for(unsigned int j = 0; j <psclr[23] ; j++) {
-   for(unsigned int j = 0; j <psclr[7] ; j++) {
+   for(unsigned int j = 0; j <psclr[23] ; j++) {
      hClockI->Fill(counter);
    }
 
    triggerU = psclr[0];
-   triggerI = psclr[4]; //20
+   triggerI = psclr[20];
    CIU = psclr[2];
-   CII = psclr[5];//22
+   CII = psclr[22];
 
    //==============================================================================================================
    counter += 1;
