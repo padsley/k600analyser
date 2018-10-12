@@ -249,6 +249,7 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
+Double_t Yoffset=0.0; //implemented first in PR210 and now here in PR236 to take into account different y offsets in the FP.
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -576,10 +577,10 @@ INT main_init(void)
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
-   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 896, 0, 896);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelengths offsets incl)", 1200, 4000, 10000, 896, 0, 896);
+   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelengths offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
 
    hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
    hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -651,7 +652,8 @@ INT main_init(void)
    open_subfolder("Individual TDC chan");
    open_subfolder("X1_Refs");
    for(int i=0;i<TDC_CHANNELS;i++){
-	sprintf(name,"TDCchan_%d",i);
+//	sprintf(name,"TDCchan_%d",i);
+	sprintf(name,"tdcchan_%d",i); // Required for compatibility between JJ_autotrim and the rest of the code
 	sprintf(title,"TDC channel # %d (reftimes incl) ",i);
    	hTDC_REF[i] = new TH1F(name,title,TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    }
@@ -916,10 +918,10 @@ INT main_bor(INT run_number)
      }
    }
  
-   printf("lut x1 offset: %d \n",globals.lut_x1_offset);
-   printf("lut u1 offset: %d \n",globals.lut_u1_offset);
-   printf("lut x2 offset: %d \n",globals.lut_x2_offset);
-   printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+   printf("LUT x1 offset: %d \n",globals.lut_x1_offset);
+   printf("LUT u1 offset: %d \n",globals.lut_u1_offset);
+   printf("LUT x2 offset: %d \n",globals.lut_x2_offset);
+   printf("LUT u2 offset: %d \n",globals.lut_u2_offset);
 	
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
@@ -928,19 +930,31 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
+   extern double *YOffsets;        // defined in Parameters.c
+   extern int *RunNrForYOffsets;	// from Parameters.c   
+   extern int NrOfRunsForYOffsets;	// nr of runs for which we have Yoffsets; read via Parameters.c
+   extern double T1;
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
-   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
+   printf("Run %d: X1 offset= %f \n",RunNumber,x1offset);
 
 
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
        if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
    }
-   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+   printf("Run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+
+   Yoffset =0.0;   // set it to zero so that if nothing happens inside the IF loop, there is a value already assigned to it
+   for (int i = 0; i<NrOfRunsForYOffsets;i++){
+	if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameters.c
+   }
+   printf("Run %d: Y offset= %f \n",RunNumber,Yoffset);
+
+   printf("Beam Energy = %.3f MeV \n",T1);   
 
 
 
@@ -1474,7 +1488,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
        hEventID->Fill(ev_id_X1_wires);  // events in X1 that pass through wire requirement gates 
        t_X1effgroup=1; 
-       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX1_EffID->Fill(ev_wiregap);
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) {
+       	hX1_EffID->Fill(ev_wiregap);
+       	for(int i = 0; i < X1hits_dt ; i++) { 
+	     		hX1_DriftTimeGood->Fill(X1.time[i]);	
+	   		}
+       	}
        #ifdef _FULLANALYSIS
        t_X1TimeDiff=(X1.time[0]-X1.time[1])-(X1.time[4]-X1.time[3]); // See Hall A paper manuscript: NIMA 474 (2001) 108 fig13
        #endif
@@ -1524,8 +1543,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hX1_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_X1_good);  // good X1 events 
 	   for(int i = 0; i < X1hits_dt ; i++) { 
-		//if(X1pos>0 && X1pos<249){
-	     hX1_DriftTimeGood->Fill(X1.time[i]);
+	     //hX1_DriftTimeGood->Fill(X1.time[i]); // Decide to fill before raytrace
 	     hX1_DriftLength->Fill(fabs(X1.dist[i]));	
                 //}
 	   }
@@ -1546,7 +1564,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      if(globals.misswires>(wrangeU1-U1hits_dt)){
        hEventID->Fill(ev_id_U1_wires);  // events in U1 that pass through the wire requirement gates 
        t_U1effgroup=1; 
-       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU1_EffID->Fill(ev_wiregap);
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  {
+       	hU1_EffID->Fill(ev_wiregap);
+       	for(int i = 0; i < U1hits_dt ; i++) { 
+	     		hU1_DriftTimeGood->Fill(U1.time[i]);	
+	   	}
+	   }
 
        raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1chisq, U1hits_dt, resolution, &U1flag,2, U1wirefit, U1distfit,&U1wires_used, &U1doublewires, &U1multiplemin, &U1chisqminimization); 
 //       raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1chisq, U1hits_dt, resolution, &U1flag,2,&U1wires_used, &U1doublewires, &U1multiplemin); 
@@ -1587,7 +1610,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hU1_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_U1_good);  // good U1 events 
 	   for(int i = 0; i < U1hits_dt ; i++) { 
-	     hU1_DriftTimeGood->Fill(U1.time[i]);
+	     //hU1_DriftTimeGood->Fill(U1.time[i]); // Decide to fill before raytrace
 	     hU1_DriftLength->Fill(fabs(U1.dist[i]));	
 	   }
 	   #ifdef _FULLANALYSIS
@@ -1607,7 +1630,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      if(globals.misswires+1>(wrangeX2-X2hits_dt)){
        hEventID->Fill(ev_id_X2_wires);  // events in X2 that pass through wire requirement gates 
        t_X2effgroup=1; 
-       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 {
+       	hX2_EffID->Fill(ev_wiregap);
+       	for(int i = 0; i < X2hits_dt ; i++) { 
+	     		hX2_DriftTimeGood->Fill(X2.time[i]);	
+	  		 }
+	  	}
       
        raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3, X2wirefit, X2distfit,&X2wires_used, &X2doublewires, &X2multiplemin, &X2chisqminimization); 
 //       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
@@ -1646,7 +1674,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hX2_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_X2_good);  // good X2 events 
 	   for(int i = 0; i < X2hits_dt ; i++) { 
-	     hX2_DriftTimeGood->Fill(X2.time[i]);
+	     //hX2_DriftTimeGood->Fill(X2.time[i]); // Decide to fill before raytrace
 	     hX2_DriftLength->Fill(fabs(X2.dist[i]));	
 	   }
 	   #ifdef _FULLANALYSIS
@@ -1666,8 +1694,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      if(globals.misswires>(wrangeU2-U2hits_dt)){
        hEventID->Fill(ev_id_U2_wires);  // events in U1 that pass through the wire requirement gates 
        t_U2effgroup=1; 
-       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU2_EffID->Fill(ev_wiregap);
-
+       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  {
+       	hU2_EffID->Fill(ev_wiregap);
+       	for(int i = 0; i < U2hits_dt ; i++) { 
+	     		hU2_DriftTimeGood->Fill(U2.time[i]);	
+	   	}
+		}
        raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4, U2wirefit, U2distfit,&U2wires_used, &U2doublewires, &U2multiplemin, &U2chisqminimization); 
 //       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4,&U2wires_used, &U2doublewires, &U2multiplemin); 
        if(U2flag==0) t_U2effgood=1;
@@ -1706,7 +1738,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	   hU2_EffID->Fill(ev_good);
 	   hEventID->Fill(ev_id_U2_good);  // good U2 events 	 
 	   for(int i = 0; i < U2hits_dt ; i++) { 
-	     hU2_DriftTimeGood->Fill(U2.time[i]);
+	     //hU2_DriftTimeGood->Fill(U2.time[i]); // Decide to fill before raytrace so that it calculates luts for all times
 	     hU2_DriftLength->Fill(fabs(U2.dist[i]));	
 	   }
 	   #ifdef _FULLANALYSIS
@@ -1731,9 +1763,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+   t_Y1=Y1+Yoffset;
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1);
+   h_Y1->Fill(Y1+Yoffset);
    #endif
 
    Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
@@ -1747,11 +1779,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
-   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1+Yoffset);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1+Yoffset);
 
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr);

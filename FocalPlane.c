@@ -1,4 +1,4 @@
-/********************************************************************\
+/********************************************************************
   Name:         FocalPlane.c
   Created by:   Retief Neveling
   Contents:     Focal-plane detector stuff
@@ -1664,7 +1664,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
 
   double rig = CalcQBrho(Xcorr);
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9;
   //std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
@@ -1676,8 +1676,9 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e6;
+  double p = rig * TMath::C()/1e9;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1685,6 +1686,7 @@ double CalcTfromP(double p, double mass)
 {
   double T = 0;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1715,20 +1717,27 @@ double CalcEx(double Xcorr)
       masses[2] = masses[0];
       masses[3] = masses[1];
     }
-
+  
+  //printf("T1: %f\n",T1); 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
+  //printf("p1: %f\n",p1);
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e6;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
+  //printf("p3: %f\n",p3);
   //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
+  //printf("T3: %f\n",T3); 
   //std::cout << "T3: " << T3 << std::endl;
+
   if(theta3 == 0)
     {
       theta4 = 0;
       
       p4 = p1 - p3;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
+      //printf("T4: %f\n",T4);
       exE = T1 - T3 - T4;
+      //printf("Ex: %f\n",exE);
     }
   else
     {
@@ -1740,6 +1749,8 @@ double CalcEx(double Xcorr)
       exE = T1 - T3 - T4;
     }
   //std::cout << "exE: " << exE << std::endl;
+
+
   if(exE<0)exE=0;
   if(Xcorr>800)exE=0;
   return exE;
