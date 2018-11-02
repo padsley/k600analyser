@@ -252,8 +252,7 @@ Double_t U2wirefit[10], U2distfit[10];
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
 Double_t Padoffset=0;
-
-
+Double_t Yoffset=0.0;
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
 /*-----------------------------------------------------------------------------------*/
@@ -587,10 +586,10 @@ INT main_init(void)
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
-   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 896, 0, 896);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelengths offsets incl)", 1200, 2000, 8000, 896, 0, 896);
+   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelengths offsets incl) PID selected", 1200, 2000, 8000, 1000, 0, 1000);
 
    hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
    hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -662,7 +661,8 @@ INT main_init(void)
    open_subfolder("Individual TDC chan");
    open_subfolder("X1_Refs");
    for(int i=0;i<TDC_CHANNELS;i++){
-	sprintf(name,"TDCchan_%d",i);
+//	sprintf(name,"TDCchan_%d",i);
+	sprintf(name,"tdcchan_%d",i); // Required for compatibility between JJ_autotrim and the rest of the code
 	sprintf(title,"TDC channel # %d (reftimes incl) ",i);
    	hTDC_REF[i] = new TH1F(name,title,TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    }
@@ -936,10 +936,10 @@ INT main_bor(INT run_number)
      }
    }
  
-   printf("lut x1 offset: %d \n",globals.lut_x1_offset);
-   printf("lut u1 offset: %d \n",globals.lut_u1_offset);
-   printf("lut x2 offset: %d \n",globals.lut_x2_offset);
-   printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+   printf("LUT x1 offset: %d \n",globals.lut_x1_offset);
+   printf("LUT u1 offset: %d \n",globals.lut_u1_offset);
+   printf("LUT x2 offset: %d \n",globals.lut_x2_offset);
+   printf("LUT u2 offset: %d \n",globals.lut_u2_offset);
 	
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
@@ -951,25 +951,39 @@ INT main_bor(INT run_number)
    extern int *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
+   extern double *YOffsets;        // defined in Parameters.c
+   extern int *RunNrForYOffsets;	// from Parameters.c   
+   extern int NrOfRunsForYOffsets;	// nr of runs for which we have Yoffsets; read via Parameters.c
+   extern double T1;
+
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
-   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
+   printf("Run %d: X1 offset= %f \n",RunNumber,x1offset);
 
 
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
        if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
    }
-   printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
+   printf("Run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
    Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-   for (int i = 0; i< NrOfRunsForPadOffsets;i++){
+   for (int i = 0; i<NrOfRunsForPadOffsets;i++){
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
    }
-   printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
+   
+   printf("Run %d: Paddle offset= %.1f \n",RunNumber,Padoffset);
+
+   Yoffset =0.0;   // set it to zero so that if nothing happens inside the IF loop, there is a value already assigned to it
+   for (int i = 0; i<NrOfRunsForYOffsets;i++){
+	if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameters.c
+   }
+   printf("Run %d: Y offset= %.1f \n",RunNumber,Yoffset);
+
+   printf("Beam Energy = %.3f MeV \n",T1);   
 
    return SUCCESS;
 }
@@ -1765,9 +1779,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+   t_Y1=Y1+Yoffset;
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1);
+   h_Y1->Fill(Y1+Yoffset);
    #endif
 
    Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
@@ -1781,15 +1795,15 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
+   CalcCorrXTOF(X1pos+x1offset, Y1+Yoffset, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
-   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1+Yoffset);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1+Yoffset);
 
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr2);

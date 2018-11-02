@@ -1729,6 +1729,7 @@ double CalcTfromRigidity(double rig, double mass)
 
   double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1736,6 +1737,7 @@ double CalcTfromP(double p, double mass)
 {
   double T = 0;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1858,14 +1860,14 @@ double CalcYFP(double x, double u, double thFP)
 double CalcThetaScat(double X1, double ThFP)
 {
 
-/*  
-  extern int NThFPtoThSCAT;
-  extern double *ThFPtoThSCAT;
+  
+//  extern int NThFPtoThSCAT;
+//  extern double *ThFPtoThSCAT;
 
-  double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1) 
-		      + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
-  return result;
-*/
+//  double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1) 
+//		      + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
+//  return result;
+
 
   double result = 0;
   extern int NThFPSCATOffset;
@@ -1919,6 +1921,7 @@ double CalcTheta(double X1, double ThFP, double Y1)
 }
 
 //--------------------------------------------------------------------------------------
+
 double CalcThetaFP(double X1, double X2)
 // Calculate the horizontal component of the particle track throught the focal plane
 {

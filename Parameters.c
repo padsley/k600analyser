@@ -98,6 +98,10 @@ int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
 int *PadOffsets;
 
+int NrOfRunsForYOffsets; // used in main.c
+int *RunNrForYOffsets;   // used in main.c
+double *YOffsets;	 // used in main.c
+
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -675,6 +679,7 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
 }
 
 
+/*-------------------------------------------------*/
 
 
 
@@ -726,6 +731,57 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   InputFile.close();
 
   printf("Finished reading %d TPadoffsets\n",counter);
+}
+
+
+/*-------------------------------------------------*/
+
+void ReadYOffsets(std::string YoffsetsFile)
+{
+  //printf("Read Y offsets using file %s\n",YoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(YoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: Y offsets for all runs are left at 0 **********\n");
+    RunNrForYOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfYOffsets")"
+    YOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(YoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForYOffsets[counter]=runnr;
+          YOffsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d Yoffsets\n",counter);
 }
 
 
@@ -1194,6 +1250,25 @@ void ReadConfiguration()
 		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
 		  ReadPadOffsets(LineBuffer);
 		}
+	      //===============================================================================================
+
+	      else if(LineBuffer.compare(0,12,"NrOfYOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d Yoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForYOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForYOffsets<1) NrOfRunsForYOffsets=1;    //if you put 0 in config, this will create at least 1 entry for safety
+                  RunNrForYOffsets = new int[NrOfRunsForYOffsets];
+                  YOffsets = new double[NrOfRunsForYOffsets];
+	        }
+	      else if(LineBuffer.compare(0,12,"YOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Yoffsets file: %s\n",LineBuffer.c_str());
+		  ReadYOffsets(LineBuffer);
+		}
+//===============================================================================================
+
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
