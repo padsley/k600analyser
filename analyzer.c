@@ -63,6 +63,7 @@ INT odb_size = DEFAULT_ODB_SIZE;
 // counters used in f-plane to look at bad tdc events: either empty or too large
 int toolarge_tdc_event_counter=0;
 int empty_tdc_counter=0;
+int soft_counter=0;
 int qdc_counter1=0, qdc_counter2=0;
 int adc_counter1=0, adc_counter2=0;
 int tdc_counter=0;
@@ -79,12 +80,12 @@ extern ANA_MODULE scaler_accum_module;
 extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
 extern ANA_MODULE adc_module;                    
-extern ANA_MODULE beamline_module;                    
+//extern ANA_MODULE beamline_module;                    
 
-ANA_MODULE *beam_module[] = {
-   &beamline_module,
-   NULL
-};
+//ANA_MODULE *beam_module[] = {
+//   &beamline_module,
+//   NULL
+//};
 
 ANA_MODULE *scaler_module[] = {
    &scaler_accum_module,
@@ -125,6 +126,7 @@ BANK_LIST ana_scaler_bank_list[] = {
    {""},
 };
 
+/*
 BANK_LIST ana_beam_bank_list[] = {
    // online banks 
    {"MSRD", TID_FLOAT, N_MSRD, NULL},
@@ -132,7 +134,7 @@ BANK_LIST ana_beam_bank_list[] = {
 
    {""},
 };
-
+*/
 
 
 /*-- Event request list --------------------------------------------*/
@@ -169,20 +171,20 @@ ANALYZE_REQUEST analyze_request[] = {
    ,
 
 
-   {"Beamline",                     /* equipment name */
-    {3,                         /* event ID */
-     TRIGGER_ALL,               /* trigger mask */
-     GET_ALL,                   /* get all events */
-     "SYSTEM",                  /* event buffer */
-     TRUE,                      /* enabled */
-     "", "",}
-    ,
-    NULL,                       /* analyzer routine */
-    beam_module,                /* module list */
-    ana_beam_bank_list,         /* bank list */
-    100,                        /* RWNT buffer size */
-    }
-   ,
+//   {"Beamline",                     /* equipment name */
+//    {3,                         /* event ID */
+//     TRIGGER_ALL,               /* trigger mask */
+//     GET_ALL,                   /* get all events */
+//     "SYSTEM",                  /* event buffer */
+//     TRUE,                      /* enabled */
+//     "", "",}
+//    ,
+//    NULL,                       /* analyzer routine */
+//    beam_module,                /* module list */
+//    ana_beam_bank_list,         /* bank list */
+//    100,                        /* RWNT buffer size */
+//    }
+//   ,
 
 
    {""}
@@ -305,8 +307,8 @@ INT ana_end_of_run(INT run_number, char *error)
   printf("\n|  QDC Events: %i ",qdc_counter1);
   printf("\n|  ADC Events: %i ",adc_counter1);
   printf("\n|  Scaler Events %i ",scaler_counter);
- // printf("\n| ");
- // printf("\n|  Events with skips %i ",skipcounter);
+  printf("\n| ");
+  //printf("\n|  Events with skips %i ",skipcounter);
   printf("\n| ");
   printf("\n|  Events with no TDC datawords :       %i   ",empty_tdc_counter);
   printf("\n|  Events with too many TDC datawords : %i ",toolarge_tdc_event_counter);
