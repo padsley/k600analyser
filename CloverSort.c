@@ -124,7 +124,7 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 
 				 //printf("Time in gammy: %d \t Time in ADC: %d \n",gammy->GetTime(k),mTDC->GetValue(k)-GammaTimeCloveroffset); 
 				//printf("Time in ADC: %f \n",mTDC->GetValue(k)-GammaTimeCloveroffset); 
-				 if((mTDC->GetValue(k)-GammaTimeCloveroffset)>=4300 && (mTDC->GetValue(k)-GammaTimeCloveroffset)<=4900)
+				 if((mTDC->GetValue(k)-GammaTimeCloveroffset)>=-3000 && (mTDC->GetValue(k)-GammaTimeCloveroffset)<=-1200)
 				  {
 				    EnergyAddback[DetNum-1] += GammaEnergy;
 				    NSegmentsAddback[DetNum-1]++;

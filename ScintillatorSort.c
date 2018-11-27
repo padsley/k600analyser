@@ -52,7 +52,7 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
       
           if(DetNum>0)
           	{
-		  for(int i=DetNum-2;i<NumberOfScintillator+1;i=i+2)
+		  for(int i=DetNum-5;i<NumberOfScintillator+1;i=i+5)
 		      {
 		    //  printf("DetNum: %d; \i: %d\n",DetNum,i);
                        int j = ScintillatorADCChannels[i-1];
@@ -124,7 +124,7 @@ int ScintillatorTDCIdentifyDetector(int TDCChannel)
 	  		 testresult = i+1;
 				}
 			if(testresult>0) result=testresult;
-//			printf("CloverTDCChannelLimits: %d  CloverTDCChannelLimits: %d \n TDC Channel: %d\n Clovernumber: %d\n ",CloverTDCChannelLimits[i][0], CloverTDCChannelLimits[i][1], TDCChannel,i);  
+		//	printf("TDC Channel: %d\n Scintillatornumber: %d\n ", TDCChannel,i);  
 // 			printf("testresult = %d\n",testresult);
    }
 //  printf("result = %d\n",result);

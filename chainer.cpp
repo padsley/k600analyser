@@ -1,15 +1,15 @@
 {
-  bool Li2CO3 = true;
-  bool Carbon = false;
+  bool Nd142 = true;
+  bool Mg24 = false;
 
   TChain *ch = new TChain("DATA");
 
   vector<int> runlist;
 
-  if(Li2CO3)
+  if(Nd142)
     {
       ifstream input;
-      input.open("Li2CO3_runs.dat");
+      input.open("Nd142_runs.dat");
 
       while(!input.eof())
 	{
@@ -18,10 +18,10 @@
 	  runlist.push_back(dummy);
 	}
     }
-  else if(Carbon)
+  else if(Mg24)
     {
       ifstream input;
-      input.open("C12_runs.dat");
+      input.open("Mg24_runs.dat");
       
       while(!input.eof())
 	{
@@ -36,7 +36,7 @@
   for(int i=0;i<(int)runlist.size();i++)
     {
       char buffer[256];
-      sprintf(buffer,"/media/Elements/PR226/sorted0%d.root",runlist[i]);
+      sprintf(buffer,"/vicepda/althome/k600user/PR283/online/sorted00%d.root",runlist[i]);
       cout << buffer << endl;
       TFile *f = TFile::Open(buffer);
 

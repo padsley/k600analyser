@@ -54,7 +54,7 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-#define _PRINTTOSCREEN
+//#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
@@ -387,6 +387,8 @@ void PrintODBstuff()
   printf("globals.u1_1st_wire_chan: %d  \n",globals.u1_1st_wire_chan);  
   printf("globals.u2_1st_wire_chan: %d  \n",globals.u2_1st_wire_chan);
 
+  printf("gates.lowtof: %d  \n",gates.lowtof);
+  printf("gates.hitof: %d  \n",gates.hitof);
   printf("gates.lowpad1: %d  \n",gates.lowpad1);
   printf("gates.hipad1: %d  \n",gates.hipad1);
   printf("gates.lowpad2: %d  \n",gates.lowpad2);
@@ -914,7 +916,7 @@ INT main_bor(INT run_number)
    
    GetODBGlobals();                // get globals that can be set in the ODB
    //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
-   //PrintODBstuff();
+   PrintODBstuff();
 
    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
    read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");         
@@ -935,11 +937,11 @@ INT main_bor(INT run_number)
         hU2_lut->Fill(j);
      }
    }
- 
-   printf("lut x1 offset: %d \n",globals.lut_x1_offset);
-   printf("lut u1 offset: %d \n",globals.lut_u1_offset);
-   printf("lut x2 offset: %d \n",globals.lut_x2_offset);
-   printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+
+   //printf("lut x1 offset: %d \n",globals.lut_x1_offset);
+   //printf("lut u1 offset: %d \n",globals.lut_u1_offset);
+   //printf("lut x2 offset: %d \n",globals.lut_x2_offset);
+   //printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 	
 /*   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
