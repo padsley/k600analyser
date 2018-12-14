@@ -77,6 +77,9 @@ double *XY1Corr;
 int NXTOFCorr; //Number of terms to correct X1pos (with offset) with TOF-TOF_LSOffset
 double *XTOFCorr; //pointer array to store the terms from above
 double TOF_LSOffset; //Offset for TOF to place it around 0
+double X1_LSOffset; //Offset for TOF to place it around 0
+double X1_refnocorr; //X1 reference peak where the correction is not needed
+
 
 int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
 double *ThFPSCATOffset;  //pointer array to store the terms from above
@@ -94,13 +97,13 @@ int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
 int *TOFOffsets;
 
-int NrOfRunsForYOffsets;
-int *RunNrForYOffsets;
-double *YOffsets;
-
 int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
-int *PadOffsets;
+double *PadOffsets;
+
+int NrOfDetForGammaTimeOffsets;
+int *DetNrForGammaTimeOffsets;
+double *GammaTimeOffsets;
 
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
@@ -127,7 +130,7 @@ void ParameterInit()
   TDCInit();
   PrintParameters();
 //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
-  printf("Finished initialising parameters - to the sorting!\n\n");
+  printf("\nFinished initialising parameters - to the sorting!\n");
 }
 
 /*-------------------------------------------------*/
@@ -400,7 +403,7 @@ void GateauSetChannelLimits(int plane, int sector, int start, int stop)
 }
 void PulseLimitsInit()
 {
-  printf("PulseLimitsInit\n");
+  printf("\nPulseLimitsInit\n");
   
   PulseLimits = new int[2];
   PulseLimits[0] = 4000;
@@ -496,7 +499,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   std::ifstream CalibInput;
   if(CalibFile.compare(0,6,"ignore") == 0)
   {
-    printf("********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
+    printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
     for(int i=0;i<32*ADCModules;i++)
     {
       printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
@@ -516,7 +519,7 @@ void ReadCalibrationParameters(std::string CalibFile)
       {
 	std::string LineBuffer;
 	int channel = -1;
-	double offset = 0, gain = 1;
+	double offset = 0, gain = 1, gain2 = 0;
 	CalibInput >> LineBuffer;
 // 	std::cout << LineBuffer << std::endl;
 	if(LineBuffer.compare(0,3,"eof") == 0)
@@ -558,6 +561,19 @@ void ReadCalibrationParameters(std::string CalibFile)
 	    
 	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain);
 	  }
+
+	  if(npars==3)
+	  {
+	    printf("Three calibration parameters - save in quadratic gain structure\n");
+	    offset = ADCCalibrationParameters[channel][1];
+	    gain = ADCCalibrationParameters[channel][2];
+	    gain2 = ADCCalibrationParameters[channel][3];
+
+	    
+	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\tSecond Order: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain,gain2);
+	  }
+
+
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
 	  }
 	}
@@ -575,7 +591,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   printf("\n");
   }
   CalibInput.close();
-  printf("Finished Calibration Parameters\n\n");
+  printf("Finished Calibration Parameters\n");
 }
 
 
@@ -590,7 +606,7 @@ void ReadX1Offsets(std::string X1offsetsFile)
   std::ifstream InputFile;
   if(X1offsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
+    printf("\n ********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
     RunNrForX1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfX1Offsets")"
     X1Offsets[0]= 0;
   }
@@ -625,7 +641,7 @@ void ReadX1Offsets(std::string X1offsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d X1offsets\n\n",counter);
+  printf("Finished reading %d X1offsets\n",counter);
 }
 
 
@@ -640,7 +656,7 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   std::ifstream InputFile;
   if(TOFoffsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
+    printf("\n ********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
     RunNrForTOFOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfTOFOffsets")"
     TOFOffsets[0]= 0;
   }
@@ -675,62 +691,109 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TOFoffsets\n\n",counter);
+  printf("Finished reading %d TOFoffsets\n",counter);
 }
 
 
 
 /*-------------------------------------------------*/
-void ReadYOffsets(std::string YoffsetsFile)
-{
-  //printf("Read Y offsets using file %s\n",YoffsetsFile.c_str());
-  
-  bool FileRead = true;
-  int counter=0;  
+// void ReadX1Offsets(std::string X1offsetsFile)
+// {
+//   //printf("Read X1Offsets using file %s\n",X1offsetsFile.c_str());
+//   
+//   bool FileRead = true;
+//   int counter=0;  
+// 
+//   std::ifstream InputFile;
+//   if(X1offsetsFile.compare(0,6,"ignore") == 0)
+//   {
+//     printf("\n ********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
+//     RunNrForX1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfX1Offsets")"
+//     X1Offsets[0]= 0;
+//   }
+//   else
+//   {
+//     InputFile.open(X1offsetsFile.c_str());
+//     
+//     if(InputFile.is_open())
+//     {
+//       while(FileRead)
+//       {
+// 	std::string LineBuffer;
+// 	int runnr = 0;
+// 	double offset = 0;
+// 	InputFile >> LineBuffer;
+// 	if(LineBuffer.compare(0,3,"eof") == 0)
+// 	{
+// 	  FileRead = false;
+// 	}
+// 	else
+// 	{
+// 	  runnr = atoi(LineBuffer.c_str());
+// 	  InputFile >> LineBuffer;
+// 	  offset = atof(LineBuffer.c_str());
+//  	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+//           RunNrForX1Offsets[counter]=runnr;
+//           X1Offsets[counter]= offset;
+//           counter++;
+// 	}
+//       }
+//     }
+//   }
+//   InputFile.close();
+// 
+//   printf("Finished reading %d X1offsets\n",counter);
+// }
 
-  std::ifstream InputFile;
-  if(YoffsetsFile.compare(0,6,"ignore") == 0)
-  {
-    printf("\n ********** Ignoring: Y offsets for all runs are left at 0 **********\n");
-    RunNrForYOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfYOffsets")"
-    YOffsets[0]= 0;
-  }
-  else
-  {
-    InputFile.open(YoffsetsFile.c_str());
-    
-    if(InputFile.is_open())
-    {
-      while(FileRead)
-      {
-	std::string LineBuffer;
-	int runnr = 0;
-	double offset = 0;
-	InputFile >> LineBuffer;
-	if(LineBuffer.compare(0,3,"eof") == 0)
-	{
-	  FileRead = false;
-	}
-	else
-	{
-	  runnr = atoi(LineBuffer.c_str());
-	  InputFile >> LineBuffer;
-	  offset = atof(LineBuffer.c_str());
- 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
-          RunNrForYOffsets[counter]=runnr;
-          YOffsets[counter]= offset;
-          counter++;
-	}
-      }
-    }
-  }
-  InputFile.close();
 
-  printf("Finished reading %d Yoffsets\n\n",counter);
-}
-
-
-
+/*-------------------------------------------------*/
+// void ReadTOFOffsets(std::string TOFoffsetsFile)
+// {
+//   //printf("Read TOFOffsets using file %s\n",TOFoffsetsFile.c_str());
+//   
+//   bool FileRead = true;
+//   int counter=0;  
+// 
+//   std::ifstream InputFile;
+//   if(TOFoffsetsFile.compare(0,6,"ignore") == 0)
+//   {
+//     printf("\n ********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
+//     RunNrForTOFOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfTOFOffsets")"
+//     TOFOffsets[0]= 0;
+//   }
+//   else
+//   {
+//     InputFile.open(TOFoffsetsFile.c_str());
+//     
+//     if(InputFile.is_open())
+//     {
+//       while(FileRead)
+//       {
+// 	std::string LineBuffer;
+// 	int runnr = 0;
+// 	double offset = 0;
+// 	InputFile >> LineBuffer;
+// 	if(LineBuffer.compare(0,3,"eof") == 0)
+// 	{
+// 	  FileRead = false;
+// 	}
+// 	else
+// 	{
+// 	  runnr = atoi(LineBuffer.c_str());
+// 	  InputFile >> LineBuffer;
+// 	  offset = atof(LineBuffer.c_str());
+//  	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+//           RunNrForTOFOffsets[counter]=runnr;
+//           TOFOffsets[counter]= offset;
+//           counter++;
+// 	}
+//       }
+//     }
+//   }
+//   InputFile.close();
+// 
+//   printf("Finished reading %d TOFoffsets\n",counter);
+// }
 
 
 /*-------------------------------------------------*/
@@ -779,9 +842,58 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TPadoffsets\n\n",counter);
+  printf("Finished reading %d TPadoffsets\n",counter);
 }
 
+/*-------------------------------------------------*/
+void ReadGammaTimeOffsets(std::string GammaTimeoffsetsFile)
+{
+  printf("Read GammaTimeOffsets using file %s\n",GammaTimeoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(GammaTimeoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: GammaTime offsets for all runs are left at 0 **********\n");
+    DetNrForGammaTimeOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfGammaTimeOffsets")"
+    GammaTimeOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(GammaTimeoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int detnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  detnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Detnr: %d\tOffset: %f\t \n",detnr,offset);          
+          DetNrForGammaTimeOffsets[counter]=detnr;
+          GammaTimeOffsets[counter]= offset;
+          counter++;
+          
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d GammaTimeoffsets\n",counter);
+}
 
 /*-------------------------------------------------*/
 void ExRunCorrectionsInit(int runs)
@@ -995,8 +1107,9 @@ void ReadConfiguration()
   bool ThFPSCATSlopeParametersRead = false;
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
-
   bool PadOffsetParametersRead = false;
+  bool GammaTimeOffsetParametersRead = false;
+
 
   std::ifstream input;
 
@@ -1196,7 +1309,7 @@ void ReadConfiguration()
 	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 		{
 		  input >> LineBuffer;
-		  printf("\nUsing calibration file: %s\n",LineBuffer.c_str());
+		  printf("Using calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
 		}
 
@@ -1232,25 +1345,6 @@ void ReadConfiguration()
 		  printf("Using TOFoffsets file: %s\n",LineBuffer.c_str());
 		  ReadTOFOffsets(LineBuffer);
 		}
-
-	      else if(LineBuffer.compare(0,12,"NrOfYOffsets") == 0)
-                {
-		  input >> LineBuffer;
-		  printf("Reading %d Yoffsets\n",atoi(LineBuffer.c_str()));
-		  NrOfRunsForYOffsets = atoi(LineBuffer.c_str());
-                  if(NrOfRunsForYOffsets<1) NrOfRunsForYOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
-                  RunNrForYOffsets = new int[NrOfRunsForYOffsets];
-                  YOffsets = new double[NrOfRunsForYOffsets];
-	        }
-
-	      else if(LineBuffer.compare(0,12,"YOffsetsFile") == 0)
-		{
-		  input >> LineBuffer;
-		  printf("Using Yoffsets file: %s\n",LineBuffer.c_str());
-		  ReadYOffsets(LineBuffer);
-		}
-
-
 	      else if(LineBuffer.compare(0,14,"NrOfPadOffsets") == 0)
                 {
 		  input >> LineBuffer;
@@ -1258,13 +1352,28 @@ void ReadConfiguration()
 		  NrOfRunsForPadOffsets = atoi(LineBuffer.c_str());
                   if(NrOfRunsForPadOffsets<1) NrOfRunsForPadOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
                   RunNrForPadOffsets = new int[NrOfRunsForPadOffsets];
-                  PadOffsets = new int[NrOfRunsForPadOffsets];
+                  PadOffsets = new double[NrOfRunsForPadOffsets];
 	        }
 	      else if(LineBuffer.compare(0,14,"PadOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
 		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
 		  ReadPadOffsets(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,20,"NrOfGammaTimeOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d GammaTimeoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfDetForGammaTimeOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfDetForGammaTimeOffsets<1) NrOfDetForGammaTimeOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  DetNrForGammaTimeOffsets = new int[NrOfDetForGammaTimeOffsets];
+                  GammaTimeOffsets = new double[NrOfDetForGammaTimeOffsets];
+	        }
+	      else if(LineBuffer.compare(0,20,"GammaTimeOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using GammaTimeoffsets file: %s\n",LineBuffer.c_str());
+		  ReadGammaTimeOffsets(LineBuffer);
 		}
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
@@ -1425,7 +1534,7 @@ void ReadConfiguration()
 		}
 	      else if(LineBuffer.compare(0,9,"ConfigEnd") == 0)
 		{
-		  printf("\n\n ConfigEnd\n");
+		  printf("ConfigEnd\n");
 		  ConfigRead = false;
 		}
 	      else
@@ -1514,6 +1623,20 @@ void ReadConfiguration()
 		 			 printf("TOFLineshapeOffset: %f \n",atof(LineBuffer.c_str()));
 		  			 TOF_LSOffset = atof(LineBuffer.c_str());
 					 //printf("X_LSOffset: %f \n",X_LSOffset);
+			       	}
+			else if(LineBuffer.compare(0,17,"X1LineshapeOffset") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("X1LineshapeOffset: %f \n",atof(LineBuffer.c_str()));
+		  			 X1_LSOffset = atof(LineBuffer.c_str());
+					// printf("X1_LSOffset: %f \n",X1_LSOffset);
+			       	}
+			else if(LineBuffer.compare(0,15,"X1refpeaknocorr") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("X1refpeaknocorr: %f \n",atof(LineBuffer.c_str()));
+		  			 X1_refnocorr = atof(LineBuffer.c_str());
+					// printf("X1_refnocorr: %f \n",X1_refnocorr);
 			       	}
 
 		 else
@@ -1930,7 +2053,7 @@ void ReadConfiguration()
     {
       if(ConfigRead)printf("Configuration file not found - you're going to crash\n");
     }
-  printf("Finished ReadConfiguration\n\n");
+  printf("Finished ReadConfiguration\n");
 }
 
 /*-------------------------------------------------*/

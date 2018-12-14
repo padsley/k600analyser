@@ -2,7 +2,7 @@
 #define PARAMETER_H 1
 
 #include <string>
-#include <iostream>
+#include <iostream>c
 #include <fstream>
 #include <cstdlib>
 #include <limits>
