@@ -41,6 +41,7 @@ double CalcExDirect(double Xcorr);
 double CalcEx(double Xcorr);
 double CorrectEx(double mEx);
 
+double CalcYFPforUX(double x, double u, double thFP);
 double CalcYFP(double x, double u, double thFP);
 double CalcThetaScat(double X1, double ThFP);
 double CalcPhiScat(double X1, double ThFP, double Y1);

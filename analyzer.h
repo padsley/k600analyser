@@ -21,6 +21,7 @@
 /*--number of channels  --------------------------------------------*/
 #define N_ADC               64
 #define N_QDC               16
+#define N_PAT               16
 #define N_TDC               896
 #define N_SCLR              16    //Note; this number corresponds to 2x enabled channels/scaler
 #define N_PAT               16

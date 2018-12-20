@@ -64,10 +64,10 @@ INT odb_size = DEFAULT_ODB_SIZE;
 int toolarge_tdc_event_counter=0;
 int empty_tdc_counter=0;
 int qdc_counter1=0, qdc_counter2=0;
-int adc_counter1=0, adc_counter2=0;
+//int adc_counter1=0, adc_counter2=0;
 int tdc_counter=0;
 int scaler_counter=0;
-int beamline_counter=0;
+//int beamline_counter=0;
 int trailer_TDCERR_counter=0;
 int trailer_triglost_counter=0;
 int trailer_bufoverflow_counter=0;
@@ -78,13 +78,15 @@ int trailer_bufoverflow_counter=0;
 extern ANA_MODULE scaler_accum_module;
 extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
-extern ANA_MODULE adc_module;                    
-extern ANA_MODULE beamline_module;                    
+//extern ANA_MODULE adc_module;                    
+//extern ANA_MODULE beamline_module;                    
 
+/*
 ANA_MODULE *beam_module[] = {
    &beamline_module,
    NULL
 };
+*/
 
 ANA_MODULE *scaler_module[] = {
    &scaler_accum_module,
@@ -92,7 +94,7 @@ ANA_MODULE *scaler_module[] = {
 };
 
 ANA_MODULE *trigger_module[] = {
-   &adc_module,					
+//   &adc_module,					
    &qdc_module,
    &main_module,
    NULL
@@ -104,9 +106,10 @@ ANA_MODULE *trigger_module[] = {
 
 BANK_LIST ana_trigger_bank_list[] = {
     // online banks 
-    {"ADC0", TID_DWORD, N_ADC, NULL},         
-    {"QDC0", TID_DWORD, N_QDC, NULL},
+    {"ADC0", TID_DWORD, N_QDC, NULL},         
+    //{"QDC0", TID_DWORD, N_QDC, NULL},
     {"TDC0", TID_DWORD, N_TDC, NULL},
+    {"PAT0", TID_DWORD, N_PAT, NULL},
 
     // calculated banks 
     //{"CADC", TID_FLOAT, N_ADC, NULL},
@@ -125,6 +128,7 @@ BANK_LIST ana_scaler_bank_list[] = {
    {""},
 };
 
+/*
 BANK_LIST ana_beam_bank_list[] = {
    // online banks 
    {"MSRD", TID_FLOAT, N_MSRD, NULL},
@@ -132,7 +136,7 @@ BANK_LIST ana_beam_bank_list[] = {
 
    {""},
 };
-
+*/
 
 
 /*-- Event request list --------------------------------------------*/
@@ -169,20 +173,20 @@ ANALYZE_REQUEST analyze_request[] = {
    ,
 
 
-   {"Beamline",                     /* equipment name */
-    {3,                         /* event ID */
-     TRIGGER_ALL,               /* trigger mask */
-     GET_ALL,                   /* get all events */
-     "SYSTEM",                  /* event buffer */
-     TRUE,                      /* enabled */
-     "", "",}
-    ,
-    NULL,                       /* analyzer routine */
-    beam_module,                /* module list */
-    ana_beam_bank_list,         /* bank list */
-    100,                        /* RWNT buffer size */
-    }
-   ,
+//   {"Beamline",                     /* equipment name */
+//    {3,                         /* event ID */
+//     TRIGGER_ALL,               /* trigger mask */
+//     GET_ALL,                   /* get all events */
+//     "SYSTEM",                  /* event buffer */
+//     TRUE,                      /* enabled */
+//     "", "",}
+//    ,
+//    NULL,                       /* analyzer routine */
+//    beam_module,                /* module list */
+//    ana_beam_bank_list,         /* bank list */
+//    100,                        /* RWNT buffer size */
+//    }
+//   ,
 
 
    {""}
@@ -303,7 +307,7 @@ INT ana_end_of_run(INT run_number, char *error)
   printf("\n|                                                    |");      
   printf("\n|  TDC Events: %i ",tdc_counter);
   printf("\n|  QDC Events: %i ",qdc_counter1);
-  printf("\n|  ADC Events: %i ",adc_counter1);
+  //printf("\n|  ADC Events: %i ",adc_counter1);
   printf("\n|  Scaler Events %i ",scaler_counter);
  // printf("\n| ");
  // printf("\n|  Events with skips %i ",skipcounter);
@@ -311,7 +315,7 @@ INT ana_end_of_run(INT run_number, char *error)
   printf("\n|  Events with no TDC datawords :       %i   ",empty_tdc_counter);
   printf("\n|  Events with too many TDC datawords : %i ",toolarge_tdc_event_counter);
   printf("\n|  Events with no QDC datawords:        %i ",qdc_counter2);
-  printf("\n|  Events with no ADC datawords:        %i ",adc_counter2);
+  //printf("\n|  Events with no ADC datawords:        %i ",adc_counter2);
   printf("\n| ");
   printf("\n|  TDC chip ERRORS:     %i ",trailer_TDCERR_counter);	// counter in TDC trailer
   printf("\n|  TDC triggers lost:   %i ",trailer_triglost_counter);   	// counter in TDC trailer
@@ -349,6 +353,7 @@ INT ana_resume_run(INT run_number, char *error)
 /*-- Analyzer Loop -------------------------------------------------*/
 INT analyzer_loop()
 {   
+   //printf("analyzer.c  inside analyzer loop\n");
    return CM_SUCCESS;
 }
 

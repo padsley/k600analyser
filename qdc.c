@@ -84,6 +84,7 @@ INT qdc_init(void)
 {
 
    hQDC2D   = H2_BOOK("hQDC2D","QDC chan vs value", 4096, 0, 4096, 32,0 , 32);
+   printf("qdc.c L87, inside qdc_init\n");
 
    return SUCCESS;
 }
@@ -167,16 +168,19 @@ switch (v->data.type) {
 /*-- event routine -------------------------------------------------*/
 INT qdc_event(EVENT_HEADER * pheader, void *pevent)
 {
+   //printf("qdc.c L170\n");
+
    INT i, nwords;
    DWORD *pqdc;
    extern float *QDC;      // size has to be 32 if you use the 32chan QDC and all channel are in banks
    int qdcchan;
    extern int qdc_counter1, qdc_counter2;		      // defined; declared in analyzer.c
 	
-	for(int p=0;p<32;p++)QDC[p] = 0;
+   for(int p=0;p<16;p++) QDC[p] = 0;
 	
    /* look for QDC0 bank, return if not present */
-   nwords=bk_locate(pevent, "QDC0", &pqdc);
+   nwords=bk_locate(pevent, "ADC0", &pqdc);
+   //printf("qdc.c L182:  nr of words = %d\n",nwords);
    qdc_counter1++;
    if (nwords==0){
       qdc_counter2++;
@@ -184,8 +188,8 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    }
    for (i = 0; i < nwords; i++){
 	if(((pqdc[i]>>24)&0x7) ==0){// continue; // not data but header words.
- 	  //qdcchan=((pqdc[i])>>17)&0x1f;  // for 16 chan NIM QDC
-  	  qdcchan=((pqdc[i])>>16)&0x1f;  // for 32 chan ECL QDC
+ 	  qdcchan=((pqdc[i])>>17)&0x1f;  // for 16 chan NIM QDC
+  	  //qdcchan=((pqdc[i])>>16)&0x1f;  // for 32 chan ECL QDC
           //printf("qdc data %d %d from 0x%08x number of words is : %d\n",qdcchan,(pqdc[i]&0x0fff),pqdc[i],nwords); 
       	  QDC[qdcchan] =(float)(pqdc[i]&0x0fff);
 

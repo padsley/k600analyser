@@ -171,47 +171,38 @@ INT scaler_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int j = 0; j <psclr[3]; j++) {
      hClockU->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[8] ; j++) {
+   for(unsigned int j = 0; j <psclr[4] ; j++) {
      hBLM1->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[9] ; j++) {
+   for(unsigned int j = 0; j <psclr[5] ; j++) {
      hBLM2->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[10] ; j++) {
+   for(unsigned int j = 0; j <psclr[6] ; j++) {
      hBLM3->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[11] ; j++) {
+   for(unsigned int j = 0; j <psclr[7] ; j++) {
      hBLM4->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[12] ; j++) {
+   for(unsigned int j = 0; j <psclr[8] ; j++) {
      hBLM5->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[13] ; j++) {
-     hBLM6->Fill(counter);
-   }
-   for(unsigned int j = 0; j <psclr[14] ; j++) {
-     hBLM7->Fill(counter);
-   }
-   for(unsigned int j = 0; j <psclr[15] ; j++) {
-     hBLM8->Fill(counter);
-   }
-   for(unsigned int j = 0; j <psclr[32] ; j++) {   
+   for(unsigned int j = 0; j <psclr[9] ; j++) {
      hTriggerI->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[33] ; j++) {   
+   for(unsigned int j = 0; j <psclr[10] ; j++) {
      hPulserI->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[34] ; j++) {   
+   for(unsigned int j = 0; j <psclr[11] ; j++) {
      hCII->Fill(counter);
    }
-   for(unsigned int j = 0; j <psclr[35] ; j++) {
+   for(unsigned int j = 0; j <psclr[12] ; j++) {   
      hClockI->Fill(counter);
    }
 
    triggerU = psclr[0];
-   triggerI = psclr[32];
+   triggerI = psclr[9];
    CIU = psclr[2];
-   CII = psclr[34];
+   CII = psclr[11];
 
    //==============================================================================================================
    counter += 1;

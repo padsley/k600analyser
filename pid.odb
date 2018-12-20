@@ -1,8 +1,8 @@
-[/System/Clients/7555]
+[/System/Clients/766]
 Name = STRING : [32] ODBEdit
 Host = STRING : [256] nevelinglap
 Hardware type = INT : 44
-Server Port = INT : 37802
+Server Port = INT : 42522
 
 [/System]
 Client Notify = INT : 0
@@ -252,7 +252,7 @@ Number of events = LINK : [42] /Equipment/Trigger/Statistics/Events sent
 [/Runinfo]
 State = INT : 1
 Online Mode = INT : 0
-Run number = INT : 7109
+Run number = INT : 7105
 Transition in progress = INT : 0
 Start abort = INT : 0
 Requested transition = INT : 0
@@ -345,12 +345,12 @@ u2_driftt_low = INT : 6100
 x2_driftt_hi = INT : 8050
 u2_driftt_hi = INT : 8050
 u1_driftt_hi = INT : 8050
-lowtof = INT : 1000
-hitof = INT : 10000
-lowpad1 = INT : 0
-lowpad2 = INT : 0
-hipad1 = INT : 4100
-hipad2 = INT : 4100
+lowtof = INT : 6100
+hitof = INT : 6160
+lowpad1 = INT : 300
+lowpad2 = INT : 250
+hipad1 = INT : 650
+hipad2 = INT : 500
 
 [/Analyzer/Parameters/GLOBAL]
 misswires = INT : 2
@@ -407,7 +407,7 @@ Sampling type = INT : 2
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] nevelinglap
+Host = STRING : [32] localhost.localdomain
 
 [/Analyzer/Trigger/Statistics]
 Events received = DOUBLE : 0
@@ -421,7 +421,7 @@ Sampling type = INT : 1
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] nevelinglap
+Host = STRING : [32] localhost.localdomain
 
 [/Analyzer/Scaler/Statistics]
 Events received = DOUBLE : 0
@@ -529,18 +529,18 @@ Events sent = DOUBLE : 2.420921664622108e-322
 
 [/Equipment/Scaler/Variables]
 SCLR = DWORD[18] :
-[0] 120
+[0] 173
 [1] 0
-[2] 153
+[2] 177
 [3] 10
-[4] 17
+[4] 11
 [5] 0
-[6] 2
+[6] 3
 [7] 0
 [8] 0
-[9] 116
+[9] 162
 [10] 0
-[11] 148
+[11] 165
 [12] 0
 [13] 0
 [14] 0
@@ -3678,60 +3678,52 @@ SCLR = DWORD : 0
 PAT0 = WORD[4] :
 [0] 65535
 [1] 0
-[2] 50041
+[2] 50084
 [3] 3
 ADC0 = DWORD[7] :
-[0] 4160766585
-[1] 4160897458
-[2] 4161028483
-[3] 4161159417
-[4] 4161290310
+[0] 4160766379
+[1] 4160897566
+[2] 4161028363
+[3] 4161159655
+[4] 4161290309
 [5] 4161421385
-[6] 4161552502
-TDC0 = DWORD[43] :
+[6] 4161552503
+TDC0 = DWORD[35] :
 [0] 4160749568
-[1] 764845
-[2] 246734
-[3] 4160749569
-[4] 246712
-[5] 33268974
-[6] 32745069
-[7] 32221359
-[8] 33793301
-[9] 34317946
-[10] 34842854
-[11] 35367670
-[12] 4160749570
-[13] 246723
-[14] 51618876
-[15] 51095111
-[16] 52143613
-[17] 50571402
-[18] 52668439
-[19] 4160749571
-[20] 245830
-[21] 4160749572
-[22] 246717
-[23] 40084506
-[24] 42182729
-[25] 39560669
-[26] 40609210
-[27] 39036722
-[28] 41133997
-[29] 38513022
-[30] 41658890
-[31] 41135847
-[32] 4160749573
-[33] 246770
-[34] 61056212
-[35] 60532138
-[36] 61580961
-[37] 58960114
-[38] 59484613
-[39] 60008420
-[40] 62105830
-[41] 4160749574
-[42] 246630
+[1] 764948
+[2] 246844
+[3] 47949354
+[4] 47425147
+[5] 46901458
+[6] 49523079
+[7] 46377648
+[8] 4160749569
+[9] 246743
+[10] 4160749570
+[11] 246734
+[12] 20685978
+[13] 21210487
+[14] 20162334
+[15] 21735073
+[16] 19638652
+[17] 4160749571
+[18] 245919
+[19] 49521829
+[20] 48997924
+[21] 50046533
+[22] 50571427
+[23] 4160749572
+[24] 246649
+[25] 4160749573
+[26] 246849
+[27] 17540422
+[28] 33270409
+[29] 18064751
+[30] 17016765
+[31] 18589650
+[32] 19114502
+[33] 4160749574
+[34] 246829
 QDC0 = DWORD[34] :
 [0] 4194312192
 [1] 4160765992
