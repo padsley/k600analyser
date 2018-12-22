@@ -1748,7 +1748,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP = thetaFP;
 
-   Y1=CalcYFPforUX(X1pos,U1pos,X1th);  
+   //Y1=CalcYFPforUX(X1pos,U1pos,X1th);  
+   Y1=CalcYFPforUX(X1pos,U1pos,thetaFP);  
    t_Y1=Y1+Yoffset;
    #ifdef _FULLANALYSIS
    h_Y1->Fill(Y1+Yoffset);
