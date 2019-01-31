@@ -30,6 +30,9 @@ extern double *GammaTimeOffsets;	        // from Parameters.c
 extern int *DetNrForGammaTimeOffsets;       // from Parameters.c  
 extern int NrOfDetForGammaTimeOffsets;     // nr of Det for which we have GammaTimeoffsets read it via Parameters.c
 
+extern int GamTimeMin; 	// GammaTime window for addback...
+extern int GamTimeMax; 	// ...from Parameters.c (HJ)
+
 
 TRandom3 *randy = new TRandom3(0);
 
@@ -117,14 +120,11 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 
 
 //Addback********************************************************************************************************** 				
-				//*****************************Harshna
-
-// At this point, should put criteria that if time-> (mTDC->GetValue(k)-GammaTimeCloveroffset) 
-// between prompt peak range, then add to energy Addback?
+				//*****************************HJ
 
 				 //printf("Time in gammy: %d \t Time in ADC: %d \n",gammy->GetTime(k),mTDC->GetValue(k)-GammaTimeCloveroffset); 
 				//printf("Time in ADC: %f \n",mTDC->GetValue(k)-GammaTimeCloveroffset); 
-				 if((mTDC->GetValue(k)-GammaTimeCloveroffset)>=4300 && (mTDC->GetValue(k)-GammaTimeCloveroffset)<=4900)
+				 if((mTDC->GetValue(k)-GammaTimeCloveroffset)>=GamTimeMin && (mTDC->GetValue(k)-GammaTimeCloveroffset)<=GamTimeMax)
 				  {
 				    EnergyAddback[DetNum-1] += GammaEnergy;
 				    NSegmentsAddback[DetNum-1]++;
@@ -141,7 +141,7 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
   				  }
 
 
-				//*****************************Harshna
+				//*****************************HJ
 
 
 
@@ -177,14 +177,9 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
   for(int i=0;i<NumberOfClover;i++)
   {
 
-    //if (EnergyAddback[i]>0) printf("##3  Clover No: %d \t Addback Energy: %f \t Max Energy: %f \t No. of segments fired: %d \n ",i+1, EnergyAddback[i], MaxEnerAddback[i], NSegmentsAddback[i]);
-
-
     if(EnergyAddback[i] > 0)
         {
 //printf("##2  Clover No: %d \t Addback Energy: %f \t Max Energy: %f \t No. of segments fired: %d \n ",i+1, EnergyAddback[i], MaxEnerAddback[i], NSegmentsAddback[i]);
-
-  //  if (EnergyAddback[i]>0) printf("##3  Clover No: %d \t Addback Energy: %f \t Max Energy: %f \t No. of segments fired: %d \n ",i+1, EnergyAddback[i], MaxEnerAddback[i], NSegmentsAddback[i]);
 
   	gammy->SetEnergy(EnergyAddback[i]);
   	gammy->SetDetectorType("Addback");
@@ -269,6 +264,8 @@ int CloverTDCIdentifySegment(int TDCChannel)
  // printf("+++++++++++++result = %d\n",result);
   return result;
 }
+
+
 
 double CloverEnergyCalc(int Channel, double ADCValue)
 {

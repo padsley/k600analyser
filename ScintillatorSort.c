@@ -52,7 +52,9 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
       
           if(DetNum>0)
           	{
-		  for(int i=DetNum-2;i<NumberOfScintillator+1;i=i+2)
+		  //for(int i=DetNum-2;i<NumberOfScintillator+1;i=i+2)   //2 LaBr detectors used, NumberOfScintillator=4
+		  for(int i=DetNum-(NumberOfScintillator/2);i<NumberOfScintillator+1;i=i+(NumberOfScintillator/2))  //HJ
+
 		      {
 		    //  printf("DetNum: %d; \i: %d\n",DetNum,i);
                        int j = ScintillatorADCChannels[i-1];
