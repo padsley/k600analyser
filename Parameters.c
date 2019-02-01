@@ -105,6 +105,8 @@ int NrOfDetForGammaTimeOffsets;
 int *DetNrForGammaTimeOffsets;
 double *GammaTimeOffsets;
 
+int GamTimeMin;
+int GamTimeMax;
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -1362,6 +1364,23 @@ void ReadConfiguration()
 		  printf("Using GammaTimeoffsets file: %s\n",LineBuffer.c_str());
 		  ReadGammaTimeOffsets(LineBuffer);
 		}
+//*******************************************************************************************HJ
+
+	      else if(LineBuffer.compare(0,22,"GammaTimePromptPeakMin") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Setting Addback GammaTime Window min to: %d. \n",atoi(LineBuffer.c_str()));
+		  GamTimeMin = atoi(LineBuffer.c_str());
+	        }
+
+	      else if(LineBuffer.compare(0,22,"GammaTimePromptPeakMax") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Setting Addback GammaTime Window max to: %d. \n",atoi(LineBuffer.c_str()));
+		  GamTimeMax = atoi(LineBuffer.c_str());
+	        }
+
+//********************************************************************************************HJ
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
