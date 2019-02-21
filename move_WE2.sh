@@ -3,9 +3,10 @@
 
 #load odb
 #odbedit -l odb_files/odb_1WE.odb
+
 echo "save current obd file and load accurate odb file  odb_files/odb_2WE.odb"
 echo "!!! CAUTION!!! USING U1U2"
-
+echo "main.C line 1788!!"
 
 #place link for configfile
 rm config.cfg

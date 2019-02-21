@@ -5,24 +5,26 @@ export ROOTSYS=/usr/bin
 export MIDASSYS=\$HOME/packages/midas/
 export MIDASSYS=\$HOME/packages/midas/
 
+
+RAW_DATA_DIR="/run/media/fdiel/PIVODRIVE/iThemba/raw_data/"
 for COUNT in {157,181,189,193,206,219}
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/data/64Zn_pp/run0000"$COUNT".mid.gz"
+      FILE=$RAW_DATA_DIR"run0000"$COUNT".mid.gz"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/data/64Zn_pp/run000"$COUNT".mid.gz"
+        FILE=$RAW_DATA_DIR"run000"$COUNT".mid.gz"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/data/64Zn_pp/run00"$COUNT".mid.gz"
+        FILE=$RAW_DATA_DIR"run00"$COUNT".mid.gz"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/data/64Zn_pp/run0"$COUNT".mid.gz"
+       FILE=$RAW_DATA_DIR"run0"$COUNT".mid.gz"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE="/data/64Zn_pp/run"$COUNT".mid.gz"
+        FILE=$RAW_DATA_DIR"run"$COUNT".mid.gz"
   else
       echo "This might not work"
   fi
