@@ -54,18 +54,18 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-#define _PRINTTOSCREEN
+//#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _RAWDATA
-#define _SILICONDATA 
-#define _MMM
+//#define _RAWDATA
+//#define _SILICONDATA 
+//#define _MMM
 //#define _W1
-#define _GAMMADATA
+//#define _GAMMADATA
 // #define _HAGAR
-#define _SCINTILLATOR
-#define _CLOVER
+//#define _SCINTILLATOR
+//#define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -1319,6 +1319,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       // But there are things that goes into the histograms that I want to be for PID gated events only.
       // Hence the lot of PID gate tests.
 // 	printf("channelnew: %d \t globals.x2_1st_wire_chan: %d \t globals.x2_last_wire_chan: %d\n",channelnew,globals.x2_1st_wire_chan,globals.x2_last_wire_chan);
+
+//      if((channelnew >= 100) && (channelnew < globals.x1_last_wire_chan)  ){         
       if((channelnew >= globals.x1_1st_wire_chan) && (channelnew < globals.x1_last_wire_chan)  ){         
         //if(channelnew==111 || channelnew==113){  //PR167 WE3; X1 ch 113 is bad, so ignore it in analysis
 	//  addwiregap=1;
@@ -1345,6 +1347,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
           X1hits_dt++;
 	}
       }
+//      else if ((channelnew >= 380) && (channelnew < globals.u1_last_wire_chan)) {    //only for U1 wireplane
       else if ((channelnew >= globals.u1_1st_wire_chan) && (channelnew < globals.u1_last_wire_chan)) {    //only for U1 wireplane
 	//if (channelnew >= globals.u1_1st_wire_chan+27) t_U1effall=1;         // SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_U1effall=1;        
@@ -1367,8 +1370,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
       else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+//      else if ((channelnew >= 640) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
+
+      //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=482) ) {   //only for X2 wireplane
 						// chan 482 looks suspicious in white tune run 23088
 	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
 	t_X2effall=1; 	
