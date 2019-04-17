@@ -55,7 +55,7 @@
 // #define _JJAUTOTRIM
 // #define _PRINTTOSCREEN
 // #define _VDCRESCALCS
-// #define _FULLANALYSIS
+ #define _FULLANALYSIS
 // #define _MISALIGNTIME
 // #define _RAWDATA
 // #define _SILICONDATA 
@@ -155,7 +155,7 @@ Int_t    t_CIU=0;
 Int_t    t_X1hits = 0,  t_X2hits = 0,   t_U1hits = 0,   t_U2hits = 0;
 Double_t t_X1pos=-100.0,t_X2pos=-100.0, t_U1pos=-100.0, t_U2pos=-100.0;
 Double_t t_X1th=-100.0, t_X2th=-100.0,  t_U1th=-100.0,  t_U2th=-100.0;
-Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
+Double_t t_X1Rsq=15.0,t_X2Rsq=15.0, t_U1Rsq=15.0, t_U2Rsq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
@@ -429,7 +429,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1posC=-100.;
    t_Ex=-1.;
    t_ExC = -1.;
-   t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
+   t_X1Rsq=-100.; t_X2Rsq=-100.; t_U1Rsq=-100.; t_U2Rsq=-100.;
    t_X1flag=-100;   t_X2flag=-100;   t_U1flag=-100;   t_U2flag=-100;
    t_X1effID=-100.; t_X2effID=-100.; t_U1effID=-100.; t_U2effID=-100.;   
    t_X1res0=-100.0; t_X2res0=-100.0; t_U1res0=-100.0; t_U2res0=-100.0;
@@ -696,7 +696,7 @@ INT main_init(void)
   t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
   t1->Branch("X1th",&t_X1th,"t_X1th/D");
   t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
-  t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
+  t1->Branch("X1Rsq",&t_X1Rsq,"t_X1Rsq/D");
   t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
   t1->Branch("X1res1",&t_X1res1,"t_X1res1/D");
   t1->Branch("X1hits",&t_X1hits,"t_X1hits/I");
@@ -726,7 +726,7 @@ INT main_init(void)
   t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
   t1->Branch("U1th",&t_U1th,"t_U1th/D");
   t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
-  t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
+  t1->Branch("U1Rsq",&t_U1Rsq,"t_U1Rsq/D");
   t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
   t1->Branch("U1res1",&t_U1res1,"t_U1res1/D");
   t1->Branch("U1effID",&t_U1effID,"t_U1effID/D");
@@ -754,7 +754,7 @@ INT main_init(void)
   t1->Branch("X2pos",&t_X2pos,"t_X2pos/D");
   t1->Branch("X2th",&t_X2th,"t_X2th/D");
   t1->Branch("X2flag",&t_X2flag,"t_X2flag/I");
-  t1->Branch("X2chisq",&t_X2chisq,"t_X2chisq/D");
+  t1->Branch("X2Rsq",&t_X2Rsq,"t_X2Rsq/D");
   t1->Branch("X2res0",&t_X2res0,"t_X2res0/D");
   t1->Branch("X2res1",&t_X2res1,"t_X2res1/D");
   t1->Branch("X2effID",&t_X2effID,"t_X2effID/D");
@@ -782,7 +782,7 @@ INT main_init(void)
   t1->Branch("U2pos",&t_U2pos,"t_U2pos/D");
   t1->Branch("U2th",&t_U2th,"t_U2th/D");
   t1->Branch("U2flag",&t_U2flag,"t_U2flag/I");
-  t1->Branch("U2chisq",&t_U2chisq,"t_U2chisq/D");
+  t1->Branch("U2Rsq",&t_U2Rsq,"t_U2Rsq/D");
   t1->Branch("U2res0",&t_U2res0,"t_U2res0/D");
   t1->Branch("U2res1",&t_U2res1,"t_U2res1/D");
   t1->Branch("U2effID",&t_U2effID,"t_U2effID/D");
@@ -1027,7 +1027,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t    X1hits_dt=0,  X2hits_dt=0,  U1hits_dt=0,  U2hits_dt=0;
    Double_t X1pos=-100.0, X2pos=-100.0, U1pos=-100.0, U2pos=-100.0;
    Double_t X1th=-100.0,  X2th=-100.0,  U1th=-100.0,  U2th=-100.0;
-   Double_t X1chisq=15.0, X2chisq=15.0, U1chisq=15.0, U2chisq=15.0;
+   Double_t X1Rsq=15.0, X2Rsq=15.0, U1Rsq=15.0, U2Rsq=15.0;
    Int_t    X1flag=-100,  X2flag=-100,  U1flag=-100,  U2flag=-100;
    Double_t X1eff=0,      X2eff=0,      U1eff=0,      U2eff=0;
    Double_t thetaFP=-100;   
@@ -1038,7 +1038,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
    Int_t X1doublewires=0,X2doublewires=0,U1doublewires=0,U2doublewires=0;
    Int_t X1multiplemin=0,X2multiplemin=0,U1multiplemin=0,U2multiplemin=0;
-   Int_t X1chisqminimization=0,U1chisqminimization=0,X2chisqminimization=0,U2chisqminimization=0;
+   Int_t X1Rsqminimization=0,U1Rsqminimization=0,X2Rsqminimization=0,U2Rsqminimization=0;
 
    //---------------------------------------------------------------------
    // Start analysis
@@ -1493,8 +1493,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        #ifdef _FULLANALYSIS
        t_X1TimeDiff=(X1.time[0]-X1.time[1])-(X1.time[4]-X1.time[3]); // See Hall A paper manuscript: NIMA 474 (2001) 108 fig13
        #endif
-       //raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, &X1wires_used, &X1doublewires, &X1multiplemin); 
-       raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, X1wirefit, X1distfit, &X1wires_used, &X1doublewires, &X1multiplemin, &X1chisqminimization); 
+       //raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1Rsq, X1hits_dt, resolution, &X1flag,1, &X1wires_used, &X1doublewires, &X1multiplemin); 
+       raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1Rsq, X1hits_dt, resolution, &X1flag,1, X1wirefit, X1distfit, &X1wires_used, &X1doublewires, &X1multiplemin, &X1Rsqminimization); 
        //for(int i = 0; i<X1wires_used; i++){
        //  printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
        //}
@@ -1506,7 +1506,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_X1posO=X1pos + x1offset;         
        t_X1th=X1th;           //global scope.
        t_X1flag=X1flag;
-       t_X1chisq=X1chisq;
+       t_X1Rsq=X1Rsq;
        t_X1res0=resolution[0];
        t_X1res1=resolution[1];
        #ifdef _VDCRESCALCS
@@ -1523,12 +1523,16 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_nX1wiresUsed=X1wires_used; 
        t_X1doublewires=X1doublewires; 
        t_X1multiplemin=X1multiplemin; 
+
+       //if(tof>2080 && tof<2180 && pad1>500 && pad1<2500 && X1th< 30  && X1pos>646 && X1pos<666){
+       //printf("\n\nevt nr=%i \n",tdc_counter);
        for(int i = 0; i<X1wires_used; i++){
-         t_X1wireUsed[i]=X1.wire[i];
-         t_X1distUsed[i]=X1.dist[i];
-         //printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
+           t_X1wireUsed[i]=X1wirefit[i];
+           t_X1distUsed[i]=X1distfit[i];
+           //printf("i=%i,  wire(i)=%i : dist(i)=%f : X1wires_used %i \n",i,X1.wire[i],X1.dist[i],X1wires_used);
        }
        //printf("\n");
+       //}
        #endif
 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){   //This to allow sensible histos to be filled
@@ -1544,7 +1548,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                 //}
 	   }
 	   #ifdef _FULLANALYSIS
-	   hX1_Chisq->Fill(X1chisq);
+	   hX1_Chisq->Fill(X1Rsq);
 	   hX1_HitsG->Fill(X1hits_dt); 		
 	   hX1_Res->Fill(resolution[6]); 
 	   hX1_Res2dRCNP->   Fill(resolution[5],resolution[8]);
@@ -1562,8 +1566,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U1effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU1_EffID->Fill(ev_wiregap);
 
-       raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1chisq, U1hits_dt, resolution, &U1flag,2, U1wirefit, U1distfit,&U1wires_used, &U1doublewires, &U1multiplemin, &U1chisqminimization); 
-//       raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1chisq, U1hits_dt, resolution, &U1flag,2,&U1wires_used, &U1doublewires, &U1multiplemin); 
+       raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1Rsq, U1hits_dt, resolution, &U1flag,2, U1wirefit, U1distfit,&U1wires_used, &U1doublewires, &U1multiplemin, &U1Rsqminimization); 
+//       raytrace(U1.dist, U1.wire, &U1pos, &U1th, &U1Rsq, U1hits_dt, resolution, &U1flag,2,&U1wires_used, &U1doublewires, &U1multiplemin); 
        if(U1flag==0) t_U1effgood=1;
 
        //U1pos=U1pos/sin(U_WIRE_ANGLE/57.2957);  // since wires at 50degr to horizontal, they are 1/sin(50degr) further 
@@ -1572,7 +1576,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U1pos=U1pos;         //for current clumsy implementation of TTree. I get problems if I move U1pos etc to
        t_U1th=U1th;           //global scope.
        t_U1flag=U1flag;
-       t_U1chisq=U1chisq;
+       t_U1Rsq=U1Rsq;
        t_U1res0=resolution[0];	  
        t_U1res1=resolution[1];
        #ifdef _VDCRESCALCS
@@ -1604,7 +1608,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	     hU1_DriftTimeGood->Fill(U1.time[i]);	
 	   }
 	   #ifdef _FULLANALYSIS
-	   hU1_Chisq->Fill(U1chisq);
+	   hU1_Chisq->Fill(U1Rsq);
 	   hU1_HitsG->Fill(U1hits_dt); 
 	   hU1_Res->Fill(resolution[6]);
 	   hU1_Res2dRCNP->Fill(resolution[5],resolution[8]);
@@ -1622,14 +1626,14 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_X2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)	 hX2_EffID->Fill(ev_wiregap);
       
-       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3, X2wirefit, X2distfit,&X2wires_used, &X2doublewires, &X2multiplemin, &X2chisqminimization); 
-//       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2chisq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
+       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2Rsq, X2hits_dt, resolution, &X2flag,3, X2wirefit, X2distfit,&X2wires_used, &X2doublewires, &X2multiplemin, &X2Rsqminimization); 
+//       raytrace(X2.dist, X2.wire, &X2pos, &X2th, &X2Rsq, X2hits_dt, resolution, &X2flag,3,&X2wires_used, &X2doublewires, &X2multiplemin); 
        if(X2flag==0) t_X2effgood=1;
 
        t_X2pos=X2pos;         //for current clumsy implementation of TTree. I get problems if I move X2pos etc to
        t_X2th=X2th;           //global scope.
        t_X2flag=X2flag;
-       t_X2chisq=X2chisq;
+       t_X2Rsq=X2Rsq;
        t_X2res0=resolution[0];	    
        t_X2res1=resolution[1];
        #ifdef _VDCRESCALCS
@@ -1662,7 +1666,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	     hX2_DriftTimeGood->Fill(X2.time[i]);	
 	   }
 	   #ifdef _FULLANALYSIS
-	   hX2_Chisq->Fill(X2chisq);
+	   hX2_Chisq->Fill(X2Rsq);
 	   hX2_HitsG->Fill(X2hits_dt);
 	   hX2_Res->Fill(resolution[6]); 
 	   hX2_Res2dRCNP->Fill(resolution[5],resolution[8]);
@@ -1680,8 +1684,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U2effgroup=1; 
        if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hU2_EffID->Fill(ev_wiregap);
 
-       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4, U2wirefit, U2distfit,&U2wires_used, &U2doublewires, &U2multiplemin, &U2chisqminimization); 
-//       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4,&U2wires_used, &U2doublewires, &U2multiplemin); 
+       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2Rsq, U2hits_dt, resolution, &U2flag,4, U2wirefit, U2distfit,&U2wires_used, &U2doublewires, &U2multiplemin, &U2Rsqminimization); 
+//       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2Rsq, U2hits_dt, resolution, &U2flag,4,&U2wires_used, &U2doublewires, &U2multiplemin); 
        if(U2flag==0) t_U2effgood=1;
 
        //U2pos=U2pos/sin(U_WIRE_ANGLE/57.2957);  //since wires at 50deg to horiz,they are 1/sin(50degr) further apart in x
@@ -1689,7 +1693,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
        t_U2pos=U2pos;         //for current clumsy implementation of TTree. I get problems if I move U2pos etc to
        t_U2th=U2th;           //global scope.
        t_U2flag=U2flag;
-       t_U2chisq=U2chisq;
+       t_U2Rsq=U2Rsq;
        t_U2res0=resolution[0];	    
        t_U2res1=resolution[1];
        #ifdef _VDCRESCALCS
@@ -1721,7 +1725,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	     hU2_DriftTimeGood->Fill(U2.time[i]);	
 	   }
 	   #ifdef _FULLANALYSIS
-	   hU2_Chisq->Fill(U2chisq);
+	   hU2_Chisq->Fill(U2Rsq);
 	   hU2_HitsG->Fill(U2hits_dt);
 	   hU2_Res->Fill(resolution[6]);
 	   hU2_Res2dRCNP->Fill(resolution[5],resolution[8]);
@@ -1741,9 +1745,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_thetaFP = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+   t_Y1=Y1+Yoffset;
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1);
+   h_Y1->Fill(Y1+Yoffset);
    #endif
 
    //Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
@@ -1757,11 +1761,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
    t_phiSCAT = CalcPhiScat(Xcorr,thetaSCAT,Y1+Yoffset);
-   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1+Yoffset);
 
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr);

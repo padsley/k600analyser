@@ -49,6 +49,8 @@
 #include "Parameters.h"
 
 
+#define _VDCRESCALCS
+
 //------------------------------------------------------------------------------
 void printevent(Int_t hits, Int_t wire[], Int_t time[])
 {
@@ -1230,32 +1232,32 @@ void fixW(Double_t dd[],Int_t wire[], Int_t *_flag1, Int_t *_wire_num, Int_t *_w
 
 
 //------------------------------------------------------------------------------
-void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireID_min, Int_t *_wireID_first, Int_t *_wireID_last, Double_t *_Xttif, Double_t *_Thttif, Double_t *_chisqttif, Double_t *_attif, Double_t *_bttif){
+void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireID_min, Int_t *_wireID_first, Int_t *_wireID_last, Double_t *_Xttif, Double_t *_Thttif, Double_t *_Rsqttif, Double_t *_attif, Double_t *_bttif){
 
    Int_t i;
    Double_t x_tttv, sum_0=0.0, sum_x=0.0, sum_z=0.0, sum_xz=0.0, sum_x2=0.0;
-   Double_t wirechisq=0;
+   Double_t wireRsq=0;
    Double_t x_first, x_last, a_pre, b_pre, X_pre, Th_pre, drift_min_esti;
-   Double_t X_v1=1.0, Th_v1=1.0,chisq_v1=0.0;
+   Double_t X_v1=1.0, Th_v1=1.0,Rsq_v1=0.0;
    Int_t wireIDmin;
    Double_t tmpdd[20];
    Int_t tmpwire[20];
-   Double_t pos[20],ang[20],chisq[20],a[20],b[20];
-   Double_t pos1,ang1,chisq1,a1,b1;   
+   Double_t pos[20],ang[20],Rsq[20],a[20],b[20];
+   Double_t pos1,ang1,Rsq1,a1,b1;   
    Int_t nrwirescut=3;
    Int_t goodindex=0;
 
    for(i=1;i<20;i++){
 	tmpdd[i]=0.0;
 	tmpwire[i]=0;
-	chisq[i]=1000;
+	Rsq[i]=1000;
 	pos[i]=0;
 	ang[i]=0;
 	a[i]=0;
 	b[i]=0;
    }
 
-   for(int sw=1;sw<nrwirescut+1;sw++){     	//sw = start-wire    Here we simply take starting wires away and see how chisq improves or not
+   for(int sw=1;sw<nrwirescut+1;sw++){     	//sw = start-wire    Here we simply take starting wires away and see how Rsq improves or not
       for(i=sw;i<*_wire_num;i++){                         
          tmpdd[i-sw]=dd[i];
          tmpwire[i-sw]=wire[i];
@@ -1309,14 +1311,14 @@ void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireI
  
       for(i=0;i<*_wire_num;++i){
         if(dd[i]!=dd[*_wireID_min]){
-        chisq_v1 += pow(dd[i]-(a1*X_WIRESPACE*(wire[i])+b1),2); 
-        ++wirechisq;
+        Rsq_v1 += pow(dd[i]-(a1*X_WIRESPACE*(wire[i])+b1),2); 
+        ++wireRsq;
         }
       }
-      chisq1 /= wirechisq;
-      //printf("chisq minimization = %f   step %i\n",chisq_v1,sw);	
+      Rsq1 /= wireRsq;
+      //printf("Rsq minimization = %f   step %i\n",Rsq_v1,sw);	
 
-      chisq[sw-1]=chisq1;
+      Rsq[sw-1]=Rsq1;
       pos[sw-1]=pos1;
       ang[sw-1]=ang1;
       a[sw-1]=a1;
@@ -1324,31 +1326,31 @@ void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireI
       
    }
 
-   for(int i=1;i<nrwirescut;i++){            // decide which is the lowest chisq
-     if( chisq[goodindex] > chisq[i] ) goodindex = i;    
+   for(int i=1;i<nrwirescut;i++){            // decide which is the lowest Rsq
+     if( Rsq[goodindex] > Rsq[i] ) goodindex = i;    
    }
 
    *_Xttif=pos[goodindex];
    *_Thttif=ang[goodindex];
    *_attif=a[goodindex];
    *_bttif=b[goodindex];
-   *_chisqttif=chisq[goodindex];
+   *_Rsqttif=Rsq[goodindex];
    
 }
 
 
 
 //--------------------------------------------------------------------------------------
-void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_chisq,Int_t wire_num,Double_t res[],Int_t *_flag, Int_t chamber, Double_t wused[] , Double_t dused[], Int_t *_wire_used, Int_t *_badwirecount, Int_t *_multmin, Int_t *_chisqminimization){
+void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_Rsq,Int_t wire_num,Double_t res[],Int_t *_flag, Int_t chamber, Double_t wused[] , Double_t dused[], Int_t *_wire_used, Int_t *_badwirecount, Int_t *_multmin, Int_t *_Rsqminimization){
 
    Int_t i;
    Double_t x_tttv, sum_0=0.0, sum_x=0.0, sum_z=0.0, sum_xz=0.0, sum_x2=0.0;
    Int_t    wireID_first=0, wireID_last=0, wireID_min=0;
-   Double_t wirechisq=0;
+   Double_t wireRsq=0;
    Double_t averagedd=0;
    Double_t sstot=0,ssres=0;
    Double_t x_first, x_last, a1, b1, a, b, a_pre, b_pre, X_pre, Th_pre, drift_min_esti;
-   Double_t X_v1=1.0, Th_v1=1.0,chisq_v1=0.0;
+   Double_t X_v1=1.0, Th_v1=1.0,Rsq_v1=0.0;
    Int_t badwire=1000;
    Int_t badwirecntA=0;   // nr to send back: nr of initial events that had double hits in them (i.e. 2 time per tdc chan)
    Int_t badwirecntB=0;   // after 1st cycle of correction: nr of initial events that had another double hit in them.
@@ -1365,7 +1367,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    =5	events with more than 1 drift distance local minimum; a W
    */
 
-   //printevent2(wire_num, wire,dd);
+   //if(chamber==1) {printf("\n");  printevent2(wire_num, wire,dd);}
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 1: ID first, last and min dist wires ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    wireID_first = 0;                // wireID_first is an array index nr, NOT a real wire number
@@ -1374,6 +1376,8 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
      if(dd[wireID_min] > dd[i]) wireID_min = i;    // Note: wireID_min an array index nr, NOT a real wire number
    }
 
+
+
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 2: ID double hits per wire and fix them ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    for(i=0;i<(wire_num-1);i++){
       if( wire[i]==wire[i+1] ) {
@@ -1381,11 +1385,13 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 	 badwirecntA+=1;              // i.e. with no multiple hits, this is 0. For double hits, it is 1. For 3 hits, this is 2.
       }				      // OR if we have 2 sets of double hits, we also have a value of 2 for badwirecntA
    }
+
+
    if(badwirecntA!=0){
-      //printf("Double events per wire: badwire=%i : dd(i+1)=%f : wire_num=%i \n",badwire,dd[badwire+1],wire_num);
+      //if(chamber==1) printf("Double events per wire: badwire=%i : dd(i+1)=%f : wire_num=%i \n",badwire,dd[badwire+1],wire_num);
       //printevent2(wire_num, wire,dd);
       fixDoubleHit(dd,wire,badwire,&wire_num,&wireID_min,&wireID_last);
-      //printf("Correction after SECOND PASS: double events per wire===========\n"); printevent2(wire_num, wire,dd);  printf("\n");
+      //if(chamber==1) printf("Correction after SECOND PASS: double events per wire===========\n"); printevent2(wire_num, wire,dd);  //printf("\n");
    }
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 3: ID any remaining double hits per wire and fix them ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1396,40 +1402,45 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
      }				      // OR if we have 2 sets of double hits, we also have a value of 2 for badwirecntB
    }
    if(badwirecntB!=0){
-      //printf("SECOND PASS: Double events per wire: badwire=%i : dd(i+1)=%f : wire_num=%i \n",badwire,dd[badwire+1],wire_num);
+      //if(chamber==1) printf("SECOND PASS: Double events per wire: badwire=%i : dd(i+1)=%f : wire_num=%i \n",badwire,dd[badwire+1],wire_num);
       //printevent2(wire_num, wire,dd);
       fixDoubleHit(dd,wire,badwire,&wire_num,&wireID_min,&wireID_last); 
-      //printf("Correction after SECOND PASS: double events per wire===========\n"); printevent2(wire_num, wire,dd);  printf("\n");
+      //if(chamber==1) printf("Correction after SECOND PASS: double events per wire==========="); printevent2(wire_num, wire,dd);  //printf("\n");
    }
-   
+  
+ 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 4: ID and fix Z and W events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    for(i=1;i<(wire_num-1);i++){
-     if( (dd[i]>dd[i-1]) && (dd[i]>dd[i+1]) ) {     
+     if( (dd[i]>dd[i-1]) && (dd[i]>dd[i+1]) ) {    // looking for a local maximum 
        if(dd[i-1]==dd[wireID_first]) flag1=2;        // one of the minima at start of wiregroup, a simple Z
        else if(dd[i+1]==dd[wireID_last])  flag1=3;   // one of the minima at the end of the wiregroup, a simple Z
        else flag1=1;				     // a Z with 2 or more wires, or a W
      }
    }
+
    if(flag1>0 && flag1<4){
-     //printf("\n Established group is a Z or W event \n");
+     //if(chamber==1) printf(" Established group is a Z or W event \n");
      for(i=1;i<(wire_num-1);i++){
        if( (dd[i]<dd[i-1]) && (dd[i]<dd[i+1]) ) {     
          doublemin++;
        }
      }
      if (doublemin==1){
-	//printf("\n Established group is a Z event \n");  printevent2(wire_num, wire,dd);
+	//if(chamber==1) printf(" Established group is a Z event \n");  
+        //printevent2(wire_num, wire,dd);
         fixZ(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);
         multiplemin=4;  
-        //printf("================After Z Fix attempt===\n"); printevent2(wire_num, wire,dd);
+        //if(chamber==1) { printf("================After Z Fix attempt===\n"); printevent2(wire_num, wire,dd);}
      }
      if (doublemin>1){
-	//printf("\n Established group is a W event \n"); printevent2(wire_num, wire,dd);
+	//printf(" Established group is a W event \n"); 
+        //printevent2(wire_num, wire,dd);
         fixW(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
         multiplemin=5;
-        //printf("================After W Fix attempt===\n");printevent2(wire_num, wire,dd);
+        //if(chamber==1) { printf("================After W Fix attempt===\n");printevent2(wire_num, wire,dd);}
      }
    }
+
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 5: 2nd round, ID and fix Z and W events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    for(i=1;i<(wire_num-1);i++){
@@ -1439,24 +1450,61 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
        else flag1=1;				     // a Z with 2 or more wires, or a W
      }
    }
+
+/*
    if(flag1>0 && flag1<4){
-     //printf("\n Established group is a Z or W event \n");
+     //if(chamber==1) printf(" end round, Established group is a Z or W event \n");
      for(i=1;i<(wire_num-1);i++){
        if( (dd[i]<dd[i-1]) && (dd[i]<dd[i+1]) ) {     
          doublemin++;
        }
      }
      if (doublemin==1){
-	//printf("\n Established group is a Z event \n");  printevent2(wire_num, wire,dd);
+	//if(chamber==1) printf("\n Established group is a Z event \n");  
+        //printevent2(wire_num, wire,dd);
         fixZ(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
-        //printf("================After Z Fix attempt===\n"); printevent2(wire_num, wire,dd);
+        //if(chamber==1) { printf("================After Z Fix attempt===\n"); printevent2(wire_num, wire,dd);}
      }
      if (doublemin>1){
-	//printf("\n Established group is a W event \n"); printevent2(wire_num, wire,dd);
+	//if(chamber==1) printf("\n Established group is a W event \n"); 
+        //printevent2(wire_num, wire,dd);
         fixW(dd,wire,&flag1, &wire_num, &wireID_min,&wireID_last);		
-        //printf("================After W Fix attempt===\n");printevent2(wire_num, wire,dd);
+        //if(chamber==1 ){ printf("================After W Fix attempt===\n");printevent2(wire_num, wire,dd);}
      }
    }
+*/
+
+//-----------------------------------------------------------------------------------------------
+
+/*
+   Double_t ddtmp[wire_num];
+   Int_t    wiretmp[wire_num];
+   for(i=0;i<wire_num;i++){	                  
+     ddtmp[i] = dd[i];  
+     wiretmp[i] = wire[i];  
+   }
+   //printf("print copy of dd and wire \n"); printevent2(wire_num, wiretmp,ddtmp); printf("\n");
+
+ 
+   for(i=wireID_min;i<wire_num-1;i++){	                   
+     dd[i] = ddtmp[i+1];
+     wire[i] = wiretmp[i+1];
+   }
+   wire_num = wire_num-1;
+   wireID_last  = wire_num-1; 
+
+   //printf("now print it print copy of dd and wire \n");
+   //printevent2(wire_num, wire,dd);
+
+
+   wireID_last  = wire_num-1;       // wireID_last  is an array index nr, NOT a real wire number
+   for(i=1;i<wire_num;i++){	                   // Label wire associated with minimum drift distance
+     if(dd[wireID_min] > dd[i]) wireID_min = i;    // Note: wireID_min an array index nr, NOT a real wire number
+   }
+*/
+
+
+
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 6: do raytracing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    // Determine tentative ray: straigh line through first and last wires
@@ -1475,12 +1523,12 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
         dd[i] *= -1.;
      }
    }
-
+ 
    // Now do the least square fit 
    sum_0=0; sum_x=0; sum_z=0; sum_xz=0; sum_x2=0; 
 
    for(i=0;i<wire_num;++i){
-     if(dd[i]!=dd[wireID_min]){                 // Ignore the wire with smallest drifttime. It causes bad pos calculations
+     if(i!=wireID_min){                 // Ignore the wire with smallest drifttime. It causes bad pos calculationsi
        x_tttv = X_WIRESPACE*(float(wire[i]));   // left -> high Ex  
        sum_0  += 1.0;
        sum_x  += x_tttv;
@@ -1498,28 +1546,32 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
    // from this loop we obtain really sum of squares of residuals and total sum of squares
    for(i=0;i<wire_num;++i){
-     if(dd[i]!=dd[wireID_min]){
+     if( (dd[i]>0.7   && dd[i]<7.95)  ||  (dd[i]<-0.7   && dd[i]>-7.95)  ){
+     //if(i!=wireID_min){
        ssres += pow(dd[i]-(a1*X_WIRESPACE*(wire[i])+b1),2); 
-       ++wirechisq;
+       ++wireRsq;
        sstot += pow(dd[i]-averagedd,2);
      }
    }
 
-   //chisq_v1 /= wirechisq;
-   chisq_v1 = 1- ssres/sstot;
+   //Rsq_v1 /= wireRsq;
+   Rsq_v1 = 1- ssres/sstot;
+   //if(chamber==1) { printf("=====BEING USED IN THE RAYTRACE\n");printevent2(wire_num, wire,dd); }
+   //if(chamber==1) { printf("--- sum of squares (must be 1) = %f \n",Rsq_v1); }
 
-   //if (chisq_v1>1. && wire_num>6){
-        //printevent2(wire_num, wire,dd); printf(" chisq  before = %f \n",chisq_v1); 
-//	TryToImproveFit(dd,wire,&wire_num,&wireID_min,&wireID_first,&wireID_last,&X_v1,&Th_v1,&chisq_v1,&a1,&b1);		
+
+   //if (Rsq_v1>1. && wire_num>6){
+        //printevent2(wire_num, wire,dd); printf(" Rsq  before = %f \n",Rsq_v1); 
+//	TryToImproveFit(dd,wire,&wire_num,&wireID_min,&wireID_first,&wireID_last,&X_v1,&Th_v1,&Rsq_v1,&a1,&b1);		
         //printevent2(wire_num, wire,dd);
-//	*_chisqminimization=1;
+//	*_Rsqminimization=1;
   // }
 
 
    //----- these values are sent back to the main routine---------
    *_X = X_v1; 
    *_Th = Th_v1;             
-   *_chisq = chisq_v1;
+   *_Rsq = Rsq_v1;
    a=a1;
    b=b1;
    *_flag=flag1;
@@ -1527,18 +1579,19 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    *_badwirecount=badwirecntB;
    *_multmin=multiplemin;
 
-   for(i=0;i<wire_num;++i){    //sending back info on which wires and dd was used for fit
-	//if(dd[i]!=dd[wireID_min]){ 	
-		wused[i]=wire[i];
-		dused[i]=dd[i];
-	//}
-   }
-
+ 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 7: calculate resolution variables ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
    for(i=0;i<10;i++){
      res[i]=-100.;     // initial value of res array 
    }
+
+/*
+   printevent2(wire_num, wire,dd);
+   printf(" wireID_min = %i, wire[wireID_min] =%i, dd[wireID_min] =%f  \n",wireID_min,wire[wireID_min],dd[wireID_min]); 
+   printf("---------------------- \n");
+*/
+
 
    if(wireID_first!=wireID_min && wireID_last!=wireID_min && wire_num>3){  
    // min drift distance may not be on edge of wire group, and only look at events >3 wires
@@ -1582,6 +1635,33 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
      #endif
 
    }
+
+/*
+   // this used to be before the section where the res[] values are calculated. 
+   // But that screws up the res calculations, so I moved it to the end, RN Jan 2018
+   for(i=0;i<wire_num;++i){    //sending back info on which wires and dd was used for fit
+	if(i !=wireID_min ) wused[i]=wire[i];
+	else wused[i]=-10;
+	if(i !=wireID_min ) dused[i]=dd[i];
+	else dd[i]=-10;
+    }
+*/
+
+   // This used to be before the section where the res[] values are calculated. 
+   // But that screws up the res calculations, so I moved it to the end, RN Jan 2018
+   for(i=0;i<wire_num;++i){    //sending back info on which wires and dd was used for fit
+	//if(i !=wireID_min ) wused[i]=wire[i];
+	//if( (dd[i]>1.0   && dd[i]<7.8)  ||  (dd[i]<-1.0   && dd[i]>-7.8)  ) {
+        if((dd[i]>0.7   && dd[i]<7.95)  ||  (dd[i]<-0.7   && dd[i]>-7.95)  ){     
+		wused[i]=wire[i];
+		dused[i]=dd[i];
+	}
+	else {
+		wused[i]=-10;
+		dused[i]=-11;	
+	}
+    }
+
 }
 
 
@@ -1647,6 +1727,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
+  //printf("Xcorr: %f\n",result);
 
   *Xcorr = result;
 }
@@ -1717,7 +1798,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
   double rig = CalcQBrho(Xcorr);
 
   double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
-  //std::cout << "p3: " << p3 << std::endl;
+  //std::cout << "p3: " << p << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
   return T;
