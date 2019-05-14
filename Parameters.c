@@ -527,7 +527,7 @@ void ReadCalibrationParameters(std::string CalibFile)
       {
 	std::string LineBuffer;
 	int channel = -1;
-	double offset = 0, gain = 1;
+	double offset = 0, gain = 1, gain2 = 0;
 	CalibInput >> LineBuffer;
 // 	std::cout << LineBuffer << std::endl;
 	if(LineBuffer.compare(0,3,"eof") == 0)
@@ -569,6 +569,17 @@ void ReadCalibrationParameters(std::string CalibFile)
 	    
 	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain);
 	  }
+	  if(npars==3)
+	  {
+	    printf("Three calibration parameters - save in quadratic gain structure\n");
+	    offset = ADCCalibrationParameters[channel][1];
+	    gain = ADCCalibrationParameters[channel][2];
+	    gain2 = ADCCalibrationParameters[channel][3];
+	    
+	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\tSecond Order: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain,gain2);
+	  }
+
+
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
 	  }
 	}
