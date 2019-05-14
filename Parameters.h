@@ -2,7 +2,7 @@
 #define PARAMETER_H 1
 
 #include <string>
-#include <iostream>c
+#include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <limits>
@@ -64,6 +64,8 @@ void ADCClear();
 void ReadCalibrationParameters(std::string CalibFile);
 void ReadX1Offsets(std::string X1offsetsFile);
 void ReadTOFOffsets(std::string TOFoffsetsFile);
+void ReadPadOffsets(std::string PadoffsetsFile);//hj
+void ReadY1Offsets(std::string Y1offsetsFile); //hj
 
 void TDCInit();
 void TDCOffsetsClear();

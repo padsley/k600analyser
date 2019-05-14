@@ -54,7 +54,7 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-//#define _PRINTTOSCREEN
+#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
@@ -184,7 +184,7 @@ Double_t t_X1res6,      t_X2res6,       t_U1res6,       t_U2res6;
 Double_t t_X1res7,      t_X2res7,       t_U1res7,       t_U2res7;
 Double_t t_X1res8,      t_X2res8,       t_U1res8,       t_U2res8;
 #endif
-Double_t t_Y1=-100.0,t_Y2=-100.0;
+Double_t t_Y1=-100.0,t_Y1raw=-100.0,t_Y2=-100.0; //HJ-added t_Y1raw for Y1 offset correction
 
 Double_t t_X1effall, t_X1effdt, t_X1effgroup, t_X1effgood;
 Double_t t_U1effall, t_U1effdt, t_U1effgroup, t_U1effgood;
@@ -252,6 +252,7 @@ Double_t U2wirefit[10], U2distfit[10];
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
 Double_t Padoffset=0;
+Double_t Y1offset=0;
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -387,8 +388,6 @@ void PrintODBstuff()
   printf("globals.u1_1st_wire_chan: %d  \n",globals.u1_1st_wire_chan);  
   printf("globals.u2_1st_wire_chan: %d  \n",globals.u2_1st_wire_chan);
 
-  printf("gates.lowtof: %d  \n",gates.lowtof);
-  printf("gates.hitof: %d  \n",gates.hitof);
   printf("gates.lowpad1: %d  \n",gates.lowpad1);
   printf("gates.hipad1: %d  \n",gates.hipad1);
   printf("gates.lowpad2: %d  \n",gates.lowpad2);
@@ -456,7 +455,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_thetaFP=-100; t_thetaFPx=-100; t_phiFP=-100;
    t_thetaSCAT=-100; t_phiSCAT=-100; 
    t_theta=-100;
-   t_Y1=-100.0; t_Y2=-100.0;
+   t_Y1=-100.0; t_Y1raw=-100.0; t_Y2=-100.0; //HJ
 
    t_X1effall=-1; t_X1effdt=-1; t_X1effgroup=-1; t_X1effgood=-1;
    t_U1effall=-1; t_U1effdt=-1; t_U1effgroup=-1; t_U1effgood=-1;
@@ -824,6 +823,7 @@ INT main_init(void)
   t1->Branch("thetaFPx",&t_thetaFPx,"t_thetaFPx/D");
   t1->Branch("phiFP",&t_phiFP,"t_phiFP/D");
   t1->Branch("Y1",&t_Y1,"t_Y1/D");
+  t1->Branch("Y1raw",&t_Y1raw,"t_Y1raw/D"); //HJ-Y1offsets correction
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
   t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
@@ -916,7 +916,7 @@ INT main_bor(INT run_number)
    
    GetODBGlobals();                // get globals that can be set in the ODB
    //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
-   PrintODBstuff();
+   //PrintODBstuff();
 
    read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");              
    read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");         
@@ -937,11 +937,11 @@ INT main_bor(INT run_number)
         hU2_lut->Fill(j);
      }
    }
-
-   //printf("lut x1 offset: %d \n",globals.lut_x1_offset);
-   //printf("lut u1 offset: %d \n",globals.lut_u1_offset);
-   //printf("lut x2 offset: %d \n",globals.lut_x2_offset);
-   //printf("lut u2 offset: %d \n",globals.lut_u2_offset);
+ 
+   printf("lut x1 offset: %d \n",globals.lut_x1_offset);
+   printf("lut u1 offset: %d \n",globals.lut_u1_offset);
+   printf("lut x2 offset: %d \n",globals.lut_x2_offset);
+   printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 	
 /*   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
@@ -967,6 +967,11 @@ INT main_bor(INT run_number)
    extern double *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
+   //HJ
+   extern double *Y1Offsets;	        // from Parameters.c 
+   extern int *RunNrForY1Offsets;       // from Parameters.c  
+   extern int NrOfRunsForY1Offsets;     // nr of runs for which we have Y1offsets read it via Parameters.c
+   //HJ
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
@@ -987,6 +992,15 @@ INT main_bor(INT run_number)
      //  printf("------------------PAD offset= %f \n",PadOffsets[i]); // as defined in Parameter.c 
    }
    printf("run %d: PAD offset= %f \n",RunNumber,Padoffset);
+
+//HJ
+   Y1offset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForY1Offsets;i++){
+       if( RunNrForY1Offsets[i] == RunNumber) Y1offset=Y1Offsets[i];
+       //printf("------------------Y1 offset= %f \n",Y1Offsets[i]); // as defined in Parameter.c 
+   }
+   printf("run %d: Y1 offset= %f \n",RunNumber,Y1offset);
+//HJ
 
    return SUCCESS;
 }
@@ -1068,7 +1082,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Double_t thetaFP=-100;   
    Double_t thetaFPx=-100;
    Double_t thetaSCAT=-100, phiSCAT=-100;
-   Double_t Y1=-100.0,Y2=-100.0;
+   Double_t Y1=-100.0,Y1raw=-100.0,Y2=-100.0;
    Double_t Xcorr=-100, Xcorr2=-100;
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
    Int_t X1doublewires=0,X2doublewires=0,U1doublewires=0,U2doublewires=0;
@@ -1781,11 +1795,16 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
-   Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+
+/////////hjhjhjhjhjhj///////////////////to edit
+   Y1raw=CalcYFP(X1pos,U1pos,X1th);
+   Y1=Y1raw+Y1offset;  
+   t_Y1raw=Y1raw;
+   t_Y1=Y1; //HJ- with offset
    #ifdef _FULLANALYSIS
    h_Y1->Fill(Y1);
    #endif
+/////////////hjhjhjhjhjhjhj///////////////
 
    Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
    t_Y2=Y2;

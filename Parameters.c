@@ -101,10 +101,18 @@ int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
 double *PadOffsets;
 
+//HJ
+int NrOfRunsForY1Offsets;
+int *RunNrForY1Offsets;
+double *Y1Offsets;
+//HJ
+
 int NrOfDetForGammaTimeOffsets;
 int *DetNrForGammaTimeOffsets;
 double *GammaTimeOffsets;
 
+int GamTimeMin;
+int GamTimeMax;
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -519,7 +527,7 @@ void ReadCalibrationParameters(std::string CalibFile)
       {
 	std::string LineBuffer;
 	int channel = -1;
-	double offset = 0, gain = 1, gain2 = 0;
+	double offset = 0, gain = 1;
 	CalibInput >> LineBuffer;
 // 	std::cout << LineBuffer << std::endl;
 	if(LineBuffer.compare(0,3,"eof") == 0)
@@ -561,19 +569,6 @@ void ReadCalibrationParameters(std::string CalibFile)
 	    
 	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain);
 	  }
-
-	  if(npars==3)
-	  {
-	    printf("Three calibration parameters - save in quadratic gain structure\n");
-	    offset = ADCCalibrationParameters[channel][1];
-	    gain = ADCCalibrationParameters[channel][2];
-	    gain2 = ADCCalibrationParameters[channel][3];
-
-	    
-	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\tSecond Order: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain,gain2);
-	  }
-
-
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
 	  }
 	}
@@ -842,10 +837,59 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TPadoffsets\n",counter);
+  printf("Finished reading %d Padoffsets\n",counter);
 }
 
-/*-------------------------------------------------*/
+/*HJ-------------------------------------------------*/
+void ReadY1Offsets(std::string Y1offsetsFile)
+{
+  //printf("Read PadOffsets using file %s\n",PadoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(Y1offsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: Y1 offsets for all runs are left at 0 **********\n");
+    RunNrForY1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfPadOffsets")"
+    Y1Offsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(Y1offsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForY1Offsets[counter]=runnr;
+          Y1Offsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d Y1offsets\n",counter);
+}
+
+/*-------------------------------------------------HJ*/ 
 void ReadGammaTimeOffsets(std::string GammaTimeoffsetsFile)
 {
   printf("Read GammaTimeOffsets using file %s\n",GammaTimeoffsetsFile.c_str());
@@ -1108,6 +1152,7 @@ void ReadConfiguration()
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
   bool PadOffsetParametersRead = false;
+  bool Y1OffsetParametersRead = false;
   bool GammaTimeOffsetParametersRead = false;
 
 
@@ -1122,7 +1167,7 @@ void ReadConfiguration()
 	  std::string LineBuffer;
 
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead && !Y1OffsetParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -1360,6 +1405,23 @@ void ReadConfiguration()
 		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
 		  ReadPadOffsets(LineBuffer);
 		}
+//HJ-----------------------------------------------------------------------------
+	      else if(LineBuffer.compare(0,14,"NrOfY1Offsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d Y1offsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForY1Offsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForY1Offsets<1) NrOfRunsForY1Offsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  RunNrForY1Offsets = new int[NrOfRunsForY1Offsets];
+                  Y1Offsets = new double[NrOfRunsForY1Offsets];
+	        }
+	      else if(LineBuffer.compare(0,14,"Y1OffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Y1offsets file: %s\n",LineBuffer.c_str());
+		  ReadY1Offsets(LineBuffer);
+		}
+//HJ-------------------------------------------------------------------------------
 	      else if(LineBuffer.compare(0,20,"NrOfGammaTimeOffsets") == 0)
                 {
 		  input >> LineBuffer;
@@ -1375,6 +1437,23 @@ void ReadConfiguration()
 		  printf("Using GammaTimeoffsets file: %s\n",LineBuffer.c_str());
 		  ReadGammaTimeOffsets(LineBuffer);
 		}
+//*******************************************************************************************HJ
+
+	      else if(LineBuffer.compare(0,22,"GammaTimePromptPeakMin") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Setting Addback GammaTime Window min to: %d. \n",atoi(LineBuffer.c_str()));
+		  GamTimeMin = atoi(LineBuffer.c_str());
+	        }
+
+	      else if(LineBuffer.compare(0,22,"GammaTimePromptPeakMax") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Setting Addback GammaTime Window max to: %d. \n",atoi(LineBuffer.c_str()));
+		  GamTimeMax = atoi(LineBuffer.c_str());
+	        }
+
+//********************************************************************************************HJ
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;

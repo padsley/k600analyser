@@ -1,5 +1,5 @@
 [/Logger]
-Data dir = STRING : [256] /home/harshna/Programs/Analyser2/k600analyser
+Data dir = STRING : [256] /home/harshna/Programs/PR298_Analyser/k600analyser
 Message file = STRING : [256] midas.log
 Write data = BOOL : y
 Auto restart = BOOL : n
