@@ -680,7 +680,7 @@ INT main_init(void)
    open_subfolder("Individual TDC chan");
    open_subfolder("X1_Refs");
    for(int i=0;i<TDC_CHANNELS;i++){
-	sprintf(name,"TDCchan_%d",i);
+	sprintf(name,"tdcchan_%d",i); //Was TDCchan
 	sprintf(title,"TDC channel # %d (reftimes incl) ",i);
    	hTDC_REF[i] = new TH1F(name,title,TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    }
@@ -1255,6 +1255,17 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
+/*
+      if(channel>=432 && channel<440)
+	{
+	  printf("channel: %d\n",channel);
+	  printf("ref_time: %d\n",ref_time);
+	  printf("int(cableOffset[channel]): %d\n",int(cableOffset[channel]));
+	  printf("offset_time: %d\n",offset_time);
+	}
+*/
+
+
       //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
       //TDC_channel_export[i] = channel;
       //TDC_value_export[i] = offset_time;
@@ -1779,9 +1790,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   //thetaFP = CalcThetaFP(X1pos,X2pos);
+   thetaFP = CalcThetaFP(X1pos,X2pos);
    //t_thetaFP = thetaFP;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
