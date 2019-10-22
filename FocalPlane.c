@@ -586,6 +586,127 @@ void setupchannel2wireXUXU(unsigned int chan2wire[])
 }
 
 /* ---------------------------------------------------------------------------------------*/
+void setupchannel2wireXUXoldPR236b(unsigned int chan2wire[])
+// hack the mapping of wires to channels with XU and then old X chamber
+//
+{
+  printf("setupchannel2wireXUXoldPR236b()\n");
+  int input,tdcmodulecounter,preampnum,channelstart,basecount;
+  int preampcount=0;
+  int preampbase=0;
+  //int channel=0;
+  int tdcchan;
+  
+  for(input=0;input<896;input++) chan2wire[input]=-1;
+  
+  for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+    for(input=1;input<8;input++){
+      channelstart=0;
+      preampnum=(tdcmodulecounter*7)+input;
+      //printf("tdc %d input %d preamp %d \n",tdcmodulecounter,input,preampnum);
+      
+      if(preampcount<13) { // wireplane X1  =================================================
+	  basecount=0;
+	  preampbase=0;
+	  channelstart=basecount+(preampcount-preampbase)*16;
+	  
+	  if(preampcount==(13-1)){            
+	    chan2wire[224]=197;
+	    chan2wire[225]=196;
+	    chan2wire[226]=195;
+	    chan2wire[227]=194;
+	    chan2wire[228]=193;
+	    chan2wire[229]=192;
+	    for(int i=230;i<240;i++){
+	      chan2wire[i]=0;
+	    }
+	    //for(int i=224;i<240;i++){
+	      //    printf("chan2wire %d   tdcchan= %d  \n",chan2wire[i],i);
+	      //}
+	  }
+	  else {
+	    int counter=1;
+	    for(int i=channelstart;i<channelstart+16;i++){
+	      tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	      chan2wire[tdcchan]=(channelstart+16) - counter;
+	      counter++;
+	      //printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
+	    }
+	  } 
+      }
+      else if(preampcount<22){ // wireplane U1  =================================================
+	  basecount=300;
+	  preampbase=13;
+	  channelstart=basecount+(preampcount-preampbase)*16;
+	  for(int i=channelstart;i<channelstart+16;i++){
+	    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+	    chan2wire[tdcchan]=i;
+	    //printf("chan2wire %d   tdcchan= %d  \n",chan2wire[tdcchan],tdcchan);
+	  }
+      }
+      else if(preampcount>21 && preampcount <35){ // wireplane X2  =================================================
+	  basecount=508;
+	  preampbase=23;
+	  channelstart=basecount + (preampcount-preampbase)*16;
+
+	  //if(preampcount==22){
+
+//-----   this was put in for PR236b for few runs where TDC B connector was swapped between TDC 4 and 5
+
+	  if(preampcount==29){
+	    chan2wire[552]=500;
+	    chan2wire[553]=501;
+	    chan2wire[554]=502;
+	    chan2wire[555]=503;
+	    chan2wire[556]=504;
+	    chan2wire[557]=505;
+	    chan2wire[558]=506;
+	    chan2wire[559]=507;            
+	    //for(int i=424;i<432;i++){
+	      //tdcchan=i;
+	      //printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
+	      //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
+	    //}
+	  }
+
+//-----   this was put in for PR236b for few runs where TDC B connector was swapped between TDC 4 and 5
+	  else if(preampcount==30){
+	    for(int i=0;i<16;i++){
+	      tdcchan=560 + i;
+	      chan2wire[tdcchan]=508+i;
+	      //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+	    }
+	  }
+	  else if(preampcount==22){
+	    for(int i=0;i<16;i++){
+	      tdcchan=416 + i;
+	      chan2wire[tdcchan]=604+i;
+	      //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+	    }
+	  }
+	  else if(preampcount==23){
+	    for(int i=0;i<16;i++){
+	      tdcchan=432 + i;
+	      chan2wire[tdcchan]=620+i;
+	      //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+	    }
+	  }
+//---------------------------------------------------------------------------------------------------------
+
+	  else{
+	    for(int i=channelstart;i<channelstart+16;i++){
+	      tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+	      chan2wire[tdcchan]=i;
+	      //printf("chan2wire[%d] = %d   \n",tdcchan, chan2wire[tdcchan]);
+	    }
+	  }
+    }
+    preampcount++;   
+  }
+}
+}
+
+/* ---------------------------------------------------------------------------------------*/
 void setupchannel2wireXUXold(unsigned int chan2wire[])
 // hack the mapping of wires to channels with XU and then old X chamber
 //
@@ -675,7 +796,6 @@ void setupchannel2wireXUXold(unsigned int chan2wire[])
   }
 }
 }
-
 
 /* ---------------------------------------------------------------------------------------*/
 void setupchannel2wireUXUX(unsigned int chan2wire[])
