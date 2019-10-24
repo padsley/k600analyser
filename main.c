@@ -1818,8 +1818,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_Ex = CalcEx(Xcorr);
 
    extern double *masses;
-   t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
-   t_rigidity3 = CalcQBrho(Xcorr2);
+   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
+   t_rigidity3 = CalcQBrho(Xcorr);
    #endif
 
 
