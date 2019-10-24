@@ -529,7 +529,8 @@ INT main_init(void)
 	 }
        else
 	 {
- 	   setupchannel2wireXUXold(Channel2Wire);
+ 	   //setupchannel2wireXUXold(Channel2Wire);
+ 	   setupchannel2wireXUXoldPR236b(Channel2Wire);
 	   //printf("Probably not implemented");
 	 }
      }
@@ -1779,10 +1780,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   //thetaFP = CalcThetaFP(X1pos,X2pos);
-   //t_thetaFP = thetaFP;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
-   t_thetaFP   = thetaFP;
+   thetaFP = CalcThetaFP(X1pos,X2pos);
+   t_thetaFP = thetaFP;
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
    t_Y1=Y1;
