@@ -1631,6 +1631,28 @@ double X1Mapping(Double_t X)
 }
 
 //--------------------------------------------------------------------------------------
+double X1Mapping_SBR(Double_t X)
+{
+    extern std::vector<double> X1MappingParameters;
+    
+    double mappedPosition = 0.0;
+    
+    if((int) X1MappingParameters.size()==1)
+    {
+        mappedPosition = X + X1MappingParameters[0];
+    }
+    else
+    {
+        for(int i=0; i<(int) X1MappingParameters.size(); i++)
+        {
+            mappedPosition += X1MappingParameters[i]*pow(X, i);
+        }
+    }
+    
+    return mappedPosition;
+}
+
+//--------------------------------------------------------------------------------------
 void TotalLineshapeCorrection(std::vector<double> correctionParameters, Double_t *Xcorr)
 {
     extern std::vector<int> TLCCorrectionTypes;

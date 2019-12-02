@@ -34,6 +34,7 @@ void TotalLineshapeCorrection(std::vector<double> correctionParameters, Double_t
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr);
 void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr);
 double X1Mapping(Double_t X);
+double X1Mapping_SBR(Double_t X);
 double CalcQBrho(double Xcorr);
 double CalcTfromXcorr(double Xcorr, double mass);
 double CalcTfromRigidity(double rig, double mass);

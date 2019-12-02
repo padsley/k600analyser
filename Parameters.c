@@ -98,6 +98,10 @@ bool X1MappingDefined;
 std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_cache;
 std::vector<double> X1MappingParameters;
 
+bool X1MappingDefined_SBR;
+std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_SBR_cache;
+std::vector<double> X1MappingParameters_SBR;
+
 std::vector<std::tuple<int, double>> Y1offsets;
 double Y1offset;
 
@@ -115,6 +119,14 @@ std::vector<double> T;
 std::vector<double> E;
 std::vector<double> p;
 std::vector<double> polarScatteringAngles;
+
+bool momentumCalibrationRead_SBR;
+std::vector<double> momentumCalPars_SBR;
+std::vector<double> m_SBR;
+std::vector<double> T_SBR;
+std::vector<double> E_SBR;
+std::vector<double> p_SBR;
+std::vector<double> polarScatteringAngles_SBR;
 
 double tofCal_offset[2];
 double tofCal_gain[2];
@@ -157,6 +169,12 @@ void ParameterInit()
     E = std::vector<double>(4, 0);
     p = std::vector<double>(4, 0);
     polarScatteringAngles = std::vector<double>(4, 0);
+    
+    m_SBR = std::vector<double>(4, 0);
+    T_SBR = std::vector<double>(4, 0);
+    E_SBR = std::vector<double>(4, 0);
+    p_SBR = std::vector<double>(4, 0);
+    polarScatteringAngles_SBR = std::vector<double>(4, 0);
     
     ReadConfiguration();
     PulseLimitsInit();
@@ -816,6 +834,44 @@ void ReadX1Mapping(std::string X1mappingFile)
 
     InputFile.close();
     printf("Finished reading X1 Mapping Parameters\n");
+}
+
+/*-------------------------------------------------*/
+void ReadX1Mapping_SBR(std::string X1mappingFile)
+{
+    std::ifstream InputFile;
+    
+    InputFile.open(X1mappingFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+        int runNr = 0;
+        std::string LineBuffer;
+        
+        InputFile >> LineBuffer;
+        while(LineBuffer.compare(0,3,"eof") != 0)
+        {
+            runNr = atoi(LineBuffer.c_str());
+            
+            InputFile >> LineBuffer;
+            int nOrderMapping = atoi(LineBuffer.c_str());
+            
+            std::vector<double> X1MappingParameters_SBR_perRun;
+            
+            for(int i=0; i<nOrderMapping; i++)
+            {
+                InputFile >> LineBuffer;
+                X1MappingParameters_SBR_perRun.push_back(atof(LineBuffer.c_str()));
+            }
+            
+            X1MappingParameters_SBR_cache.push_back(std::make_tuple(runNr,X1MappingParameters_SBR_perRun));
+            
+            InputFile >> LineBuffer;
+        }
+    }
+    
+    InputFile.close();
+    printf("Finished reading X1 (SBR) Mapping Parameters\n");
 }
 
 /*-------------------------------------------------*/
@@ -1521,6 +1577,13 @@ void ReadConfiguration()
                     ReadX1Mapping(LineBuffer);
                 }
                 //===============================================================================================
+                else if(LineBuffer.compare(0,16,"X1MappingSBRFile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Using X1 CHICKEN (SBR) mapping parameters file: %s\n",LineBuffer.c_str());
+                    ReadX1Mapping_SBR(LineBuffer);
+                }
+                //===============================================================================================
                 else if(LineBuffer.compare(0,13,"Y1OffsetsFile") == 0)
                 {
                     input >> LineBuffer;
@@ -1765,17 +1828,34 @@ void ReadConfiguration()
                         std::cout << "m[i]: " << m[i] << std::endl;
                     }
                 }
+                else if(LineBuffer.compare(0,18,"SBR_ReactionMasses") == 0)
+                {
+                    std::cout << "ReactionMassesSBR CHICKEN" << std::endl;
+                    for(int i=0; i<4; i++)
+                    {
+                        input >> LineBuffer;
+                        m_SBR[i] = atof(LineBuffer.c_str());
+                        std::cout << "m_SBR[i]: " << m_SBR[i] << std::endl;
+                    }
+                }
                 else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
                 {
                     input >> LineBuffer;
                     printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
                     T[0] = atof(LineBuffer.c_str());
+                    T_SBR[0] = atof(LineBuffer.c_str());
                 }
                 else if(LineBuffer.compare(0,28,"PolarScatteringAngleEjectile") == 0)
                 {
                     input >> LineBuffer;
                     printf("Polar Scattering Angle of ejectile: %f degrees\n",atof(LineBuffer.c_str()));
                     polarScatteringAngles[2] = atof(LineBuffer.c_str());
+                }
+                else if(LineBuffer.compare(0,32,"SBR_PolarScatteringAngleEjectile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Polar Scattering Angle (SBR) of ejectile: %f degrees\n",atof(LineBuffer.c_str()));
+                    polarScatteringAngles_SBR[2] = atof(LineBuffer.c_str());
                 }
                 else if(LineBuffer.compare(0,19,"MomentumCalibration") == 0)
                 {
@@ -1788,6 +1868,20 @@ void ReadConfiguration()
                     {
                         input >> LineBuffer;
                         momentumCalPars.push_back(atof(LineBuffer.c_str()));
+                    }
+                }
+                else if(LineBuffer.compare(0,23,"SBR_MomentumCalibration") == 0)
+                {
+                    std::cout << "TEST MomentumCalibrationSBR" << std::endl;
+                    momentumCalibrationRead_SBR = true;
+                    input >> LineBuffer;
+                    printf("Using %d parameters for Momentum Calibration (with respect to X1posC)\n", atoi(LineBuffer.c_str()));
+                    
+                    int nMomentumCalPars_SBR = atoi(LineBuffer.c_str());
+                    for(int i=0; i<nMomentumCalPars_SBR; i++)
+                    {
+                        input >> LineBuffer;
+                        momentumCalPars_SBR.push_back(atof(LineBuffer.c_str()));
                     }
                 }
                 else if(LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
