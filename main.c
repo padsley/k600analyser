@@ -49,6 +49,7 @@
 
 #include "CloverSort.h"
 #include "ScintillatorSort.h"
+#include "SilverBulletRaytrace.h"
 
 /*------------Preprocessor Directives to change analysis------------*/
 //#define _POLARIZATION
@@ -66,6 +67,7 @@
 //#define _HAGAR
 //#define _SCINTILLATOR
 //#define _CLOVER
+#define _SILVERBULLETRAYTRACE
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -209,6 +211,9 @@ Int_t t_U2wireUsed[MAX_WIRES_PER_EVENT];
 Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
 #endif
 
+#ifdef _SILVERBULLETRAYTRACE
+SilverBulletRaytrace *silverBulletRaytrace_X1 = new SilverBulletRaytrace();
+#endif
 
 #ifdef _SILICONDATA
 SiliconData *si;
@@ -868,7 +873,13 @@ INT main_init(void)
     t1->Branch("X2wire",t_X2wire,"t_X2wire[t_nX2wires]/I");
     t1->Branch("U2wire",t_U2wire,"t_U2wire[t_nU2wires]/I");
 #endif
-    
+
+#ifdef _SILVERBULLETRAYTRACE
+    gROOT->ProcessLine("#include \"SilverBulletRaytrace.h\"");
+    gROOT->ProcessLine(".L SilverBulletRaytrace.c+");
+    t1->Branch("SilverBulletRaytrace_X1","SilverBulletRaytrace", &silverBulletRaytrace_X1);
+#endif
+
 #ifdef _SILICONDATA
     //printf("L2108\n");
     gROOT->ProcessLine(".L Parameters.c+");
@@ -927,6 +938,10 @@ INT main_bor(INT run_number)
     //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
     //PrintODBstuff();
     
+#ifdef _SILVERBULLETRAYTRACE
+    GeneratePermutationLibrary(12);
+#endif
+
     read_lut(lutx1,globals.lut_x1_offset,(char *)"lut-x1.dat");
     read_lut(lutu1,globals.lut_u1_offset,(char *)"lut-u1.dat");
     read_lut(lutx2,globals.lut_x2_offset,(char *)"lut-x2.dat");
@@ -1034,6 +1049,36 @@ INT main_bor(INT run_number)
     }
 
     //----------------------------------------------------------------------------
+    //      X1 Mapping Parameters
+    //      To map X1pos (post TotalLineshapeCorrection)
+    
+    extern bool X1MappingDefined_SBR;
+    extern std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_SBR_cache;
+    extern std::vector<double> X1MappingParameters_SBR;
+    
+    X1MappingDefined_SBR = false;
+    
+    for(auto i = X1MappingParameters_SBR_cache.begin(); i != X1MappingParameters_SBR_cache.end(); ++i)
+    {
+        if(std::get<0>((*i))==RunNumber)
+        {
+            X1MappingDefined_SBR = true;
+            X1MappingParameters_SBR = std::get<1>((*i));
+            
+            std::cout << "//------------------------------//" << std::endl;
+            std::cout << "      X1 Mapping (SBR) Parameters" << std::endl;
+            
+            std::cout << "Run: " << std::get<0>((*i));
+            for(int j=0; j<X1MappingParameters_SBR.size(); j++)
+            {
+                std::cout << ", Par(" << j << "): " << X1MappingParameters_SBR[j];
+            }
+            
+            std::cout << std::endl;
+        }
+    }
+
+    //----------------------------------------------------------------------------
     //      Y1 offset Parameters
     
     extern std::vector<std::tuple<int, double>> Y1offsets;
@@ -1126,6 +1171,12 @@ INT main_bor(INT run_number)
             
             std::cout << std::endl;
         }
+    }
+    
+    //      HARDCODE! Runs<1138 must not undergo the last thetaSCAT correction.
+    if(RunNumber<1138)
+    {
+        TLCParameters.pop_back();
     }
     
     //----------------------------------------------------------------
@@ -1680,7 +1731,16 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
         U2.dist[i]=lutu2[drifttime]*DRIFTLENGTH;
         hU2_DriftLength->Fill(U2.dist[i]);
     }
+
+#ifdef _SILVERBULLETRAYTRACE
     
+    if(X1hits_dt>=3 && X1hits_dt<=12)
+    {
+        silverBulletRaytrace_X1->Raytrace(X1.dist, X1.wire, X1hits_dt);
+    }
+    
+#endif
+
     //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
     //Gates on number of wires, number of missing wires etc
     if(X1hits_dt>=globals.min_x_wires  &&  X1hits_dt<globals.max_x_wires+1){
@@ -2008,8 +2068,29 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
+    std::vector<double> correctionParameters;
+    correctionParameters.push_back(t_thetaSCAT);
+    correctionParameters.push_back(t_Y1);
+    correctionParameters.push_back(t_tofCal);
+    correctionParameters.push_back(t_X1thCal);
+    correctionParameters.push_back(t_U1thCal);
+
     TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &Xcorr);
     
+    //--------------------------------
+#ifdef _SILVERBULLETRAYTRACE
+    for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+    {
+        double xPosition = silverBulletRaytrace_X1->GetXPosition(i);
+        
+        TotalLineshapeCorrection(correctionParameters, &xPosition);
+        //TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &xPosition);
+
+        silverBulletRaytrace_X1->SetXPosition_TLC(i, xPosition);
+    }
+#endif
+    
+    //--------------------------------
     extern bool X1MappingDefined;
     
     if(X1MappingDefined)
@@ -2018,6 +2099,20 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     }
     
     t_X1posC=Xcorr;
+    
+    //--------------------------------
+#ifdef _SILVERBULLETRAYTRACE
+    extern bool X1MappingDefined_SBR;
+    
+    for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+    {
+        if(X1MappingDefined_SBR)
+        {
+            double correctedXPosition = X1Mapping(silverBulletRaytrace_X1->GetXPosition_TLC(i));
+            silverBulletRaytrace_X1->SetXPosition_TLC_mapped(i, correctedXPosition);
+        }
+    }
+#endif
     
     
     //CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2); // Old sign convention
@@ -2039,6 +2134,14 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     extern std::vector<double> p;
     extern std::vector<double> polarScatteringAngles;
 
+    extern bool momentumCalibrationRead_SBR;
+    extern std::vector<double> momentumCalPars_SBR;
+    extern std::vector<double> m_SBR;
+    extern std::vector<double> T_SBR;
+    extern std::vector<double> E_SBR;
+    extern std::vector<double> p_SBR;
+    extern std::vector<double> polarScatteringAngles_SBR;
+
     if(momentumCalibrationRead)
     {
         t_Ex = CalcEx(&m[0], &T[0], &E[0], &p[0], t_X1posC, polarScatteringAngles[2], momentumCalPars);
@@ -2047,7 +2150,24 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     {
         t_Ex = 0.0;
     }
-        
+    
+    //--------------------------------
+#ifdef _SILVERBULLETRAYTRACE
+    for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+    {
+        if(momentumCalibrationRead_SBR)
+        {
+            double excitationEnergy = CalcEx(&m_SBR[0], &T_SBR[0], &E_SBR[0], &p_SBR[0], silverBulletRaytrace_X1->GetXPosition_TLC_mapped(i), polarScatteringAngles_SBR[2], momentumCalPars_SBR);
+            //double excitationEnergy = CalcEx(&m[0], &T[0], &E[0], &p[0], silverBulletRaytrace_X1->GetXPosition_TLC_mapped(i), polarScatteringAngles[2], momentumCalPars);
+            
+            //std::cout << "excitationEnergy (" << i << "): " << excitationEnergy << std::endl;
+            silverBulletRaytrace_X1->SetExcitationEnergy(i, excitationEnergy);
+        }
+    }
+    
+    silverBulletRaytrace_X1->DetermineGoodSbrEvent();
+#endif
+
     //extern double *masses;
     //t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
     
@@ -2208,7 +2328,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
     delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
-    
+
+#ifdef _SILVERBULLETRAYTRACE
+    silverBulletRaytrace_X1->ClearEvent();
+    //delete silverBulletRaytrace_X1;
+#endif
+
 #ifdef _GAMMADATA
     gammy->ClearEvent();//See comment above about GammaData::ClearEvent()
     delete gammy;//See comment above about deleting *gammy
@@ -2246,7 +2371,11 @@ INT main_eor(INT run_number)
      delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
      #endif
      */
-    
+
+#ifdef _SILVERBULLETRAYTRACE
+    delete silverBulletRaytrace_X1;
+#endif
+
     return SUCCESS;
 }
 

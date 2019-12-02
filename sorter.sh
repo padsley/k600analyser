@@ -14,30 +14,39 @@
 
 
 #   TEST
-#for COUNT in {1090,1114}
+#for COUNT in {1090,10901}
 
 #   INCLUSIVE
 #for COUNT in {1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157,2002,2079}
 #   PRUNED
-for COUNT in {1090,1114,1115,1120,1121,1125,1131,1138,1156,1157}
+#for COUNT in {1090,1114,1115,1120,1121,1125,1131,1138,1156,1157}
+
+#for COUNT in {1090,1114}
+#for COUNT in {1090,103}
 
 #   TEMP
 #for COUNT in {1090,1114,1115}
+#for COUNT in {1090,10901}
+#for COUNT in {1090,1114,1115,1120}
+for COUNT in {1090,10901}
 
 #   Removed run 1132 (insufficient data)
+
+#for COUNT in {1090,109}
 
 do
 
 #====================================================
 #       Directories for the data and sorted data
-dataDirectory="/media/psf/DATA/PR194/data"
-#dataDirectory="/media/psf/Home/Academic/Experiments/PR194/data"
+#dataDirectory="/media/psf/DATA/PR194/data"
+dataDirectory="/media/psf/Home/Academic/Experiments/PR194/data"
 
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sorted"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sorte"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNoPIDoffsets"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedAutoTrim"
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedTest"
-sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNew"
+sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedTest"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNew"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNew2"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR194/sortedNoXMapping"
 
 

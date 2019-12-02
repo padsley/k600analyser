@@ -19,7 +19,7 @@ void DriftTimeIntegration()
     std::string directoryPath = "../sortedNew";
     
     //------------------------------------------------------------------------------------------------------------------------
-    std::vector<int> runNumbers{1090,1114,1115,1120,1121,1125,1131,1132,1138,1156,1157};
+    std::vector<int> runNumbers{1090,1114,1115,1120,1121,1125,1131,1138,1156,1157};
 
     //------------------------------------------------
     TFile *outputFile = new TFile("DriftTimeIntegration.root", "RECREATE");
@@ -107,7 +107,7 @@ void DriftTimeIntegration()
     //------------------------------------------------
     for(int i=0; i<hDriftTimes_X1->GetNbinsX(); i++)
     {
-        if(i<6000 || i>8000)
+        if(i<5800 || i>8050)
         {
             hDriftTimes_X1->SetBinContent(i, 0.0);
         }
@@ -115,7 +115,7 @@ void DriftTimeIntegration()
     
     for(int i=0; i<hDriftTimes_U1->GetNbinsX(); i++)
     {
-        if(i<6000 || i>8000)
+        if(i<5800 || i>8050)
         {
             hDriftTimes_U1->SetBinContent(i, 0.0);
         }
@@ -123,7 +123,7 @@ void DriftTimeIntegration()
     
     for(int i=0; i<hDriftTimes_X2->GetNbinsX(); i++)
     {
-        if(i<6000 || i>8000)
+        if(i<5800 || i>8050)
         {
             hDriftTimes_X2->SetBinContent(i, 0.0);
         }
@@ -131,7 +131,7 @@ void DriftTimeIntegration()
     
     for(int i=0; i<hDriftTimes_U2->GetNbinsX(); i++)
     {
-        if(i<6000 || i>8000)
+        if(i<5800 || i>8050)
         {
             hDriftTimes_U2->SetBinContent(i, 0.0);
         }
