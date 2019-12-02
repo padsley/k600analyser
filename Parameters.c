@@ -58,6 +58,8 @@ double **ADCCalibrationParameters;
 
 double *TDCOffsets;
 
+std::vector<std::vector<double>> tdcOffsets_runDependent;
+
 int *ChannelCounter;
 int *GoodChannelCounter;
 
@@ -98,6 +100,10 @@ bool X1MappingDefined;
 std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_cache;
 std::vector<double> X1MappingParameters;
 
+bool X1MappingDefined_SBR;
+std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_SBR_cache;
+std::vector<double> X1MappingParameters_SBR;
+
 std::vector<std::tuple<int, double>> Y1offsets;
 double Y1offset;
 
@@ -115,6 +121,14 @@ std::vector<double> T;
 std::vector<double> E;
 std::vector<double> p;
 std::vector<double> polarScatteringAngles;
+
+bool momentumCalibrationRead_SBR;
+std::vector<double> momentumCalPars_SBR;
+std::vector<double> m_SBR;
+std::vector<double> T_SBR;
+std::vector<double> E_SBR;
+std::vector<double> p_SBR;
+std::vector<double> polarScatteringAngles_SBR;
 
 double tofCal_offset[2];
 double tofCal_gain[2];
@@ -140,6 +154,7 @@ int TotalRunsNumber = 0;
 double **ExCorrTerms;
 double ExCorrection = 0.;
 
+void TDCInit_perRun();
 
 /*-------------------------------------------------*/
 void ParameterInit()
@@ -152,11 +167,17 @@ void ParameterInit()
     p = std::vector<double>(4, 0);
     polarScatteringAngles = std::vector<double>(4, 0);
     
+    m_SBR = std::vector<double>(4, 0);
+    T_SBR = std::vector<double>(4, 0);
+    E_SBR = std::vector<double>(4, 0);
+    p_SBR = std::vector<double>(4, 0);
+    polarScatteringAngles_SBR = std::vector<double>(4, 0);
+    
     ReadConfiguration();
     PulseLimitsInit();
     ADCInit();
     QDCInit();
-    TDCInit();
+    //TDCInit();
     PrintParameters();
     //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
     printf("\nFinished initialising parameters - to the sorting!\n");
@@ -813,6 +834,44 @@ void ReadX1Mapping(std::string X1mappingFile)
 }
 
 /*-------------------------------------------------*/
+void ReadX1Mapping_SBR(std::string X1mappingFile)
+{
+    std::ifstream InputFile;
+    
+    InputFile.open(X1mappingFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+        int runNr = 0;
+        std::string LineBuffer;
+        
+        InputFile >> LineBuffer;
+        while(LineBuffer.compare(0,3,"eof") != 0)
+        {
+            runNr = atoi(LineBuffer.c_str());
+            
+            InputFile >> LineBuffer;
+            int nOrderMapping = atoi(LineBuffer.c_str());
+            
+            std::vector<double> X1MappingParameters_SBR_perRun;
+            
+            for(int i=0; i<nOrderMapping; i++)
+            {
+                InputFile >> LineBuffer;
+                X1MappingParameters_SBR_perRun.push_back(atof(LineBuffer.c_str()));
+            }
+            
+            X1MappingParameters_SBR_cache.push_back(std::make_tuple(runNr,X1MappingParameters_SBR_perRun));
+            
+            InputFile >> LineBuffer;
+        }
+    }
+    
+    InputFile.close();
+    printf("Finished reading X1 (SBR) Mapping Parameters\n");
+}
+
+/*-------------------------------------------------*/
 void ReadTLCParameters_cache(std::string TLCParameters_cacheFile)
 {
     //----------------------------------------------------
@@ -1198,6 +1257,8 @@ void TDCInit()
     printf("TDCInit\n");
     TDCOffsets = new double[128*TDCModules];
     TDCOffsetsClear();
+    
+    tdcOffsets_runDependent = std::vector<std::vector<double>>(2, std::vector<double>(1000, 0.0));
 }
 
 void TDCOffsetsClear()
@@ -1515,6 +1576,13 @@ void ReadConfiguration()
                     ReadX1Mapping(LineBuffer);
                 }
                 //===============================================================================================
+                else if(LineBuffer.compare(0,16,"X1MappingSBRFile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Using X1 CHICKEN (SBR) mapping parameters file: %s\n",LineBuffer.c_str());
+                    ReadX1Mapping_SBR(LineBuffer);
+                }
+                //===============================================================================================
                 else if(LineBuffer.compare(0,13,"Y1OffsetsFile") == 0)
                 {
                     input >> LineBuffer;
@@ -1561,9 +1629,14 @@ void ReadConfiguration()
                 }
                 else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
                 {
+                    TDCInit();
+                    TDCInit_perRun();
+
                     input >> LineBuffer;
                     printf("Using TDC Offsets file: %s\n",LineBuffer.c_str());
                     ReadTDCOffsets(LineBuffer);
+                    
+                    std::cout << "CHECKPOINT" << std::endl;
                 }
                 else if(LineBuffer.compare(0,17,"ExCorrectionTerms") == 0)
                 {
@@ -1715,17 +1788,34 @@ void ReadConfiguration()
                         std::cout << "m[i]: " << m[i] << std::endl;
                     }
                 }
+                else if(LineBuffer.compare(0,18,"SBR_ReactionMasses") == 0)
+                {
+                    std::cout << "ReactionMassesSBR CHICKEN" << std::endl;
+                    for(int i=0; i<4; i++)
+                    {
+                        input >> LineBuffer;
+                        m_SBR[i] = atof(LineBuffer.c_str());
+                        std::cout << "m_SBR[i]: " << m_SBR[i] << std::endl;
+                    }
+                }
                 else if(LineBuffer.compare(0,10,"BeamEnergy") == 0)
                 {
                     input >> LineBuffer;
                     printf("Beam Energy: %f MeV\n",atof(LineBuffer.c_str()));
                     T[0] = atof(LineBuffer.c_str());
+                    T_SBR[0] = atof(LineBuffer.c_str());
                 }
                 else if(LineBuffer.compare(0,28,"PolarScatteringAngleEjectile") == 0)
                 {
                     input >> LineBuffer;
                     printf("Polar Scattering Angle of ejectile: %f degrees\n",atof(LineBuffer.c_str()));
                     polarScatteringAngles[2] = atof(LineBuffer.c_str());
+                }
+                else if(LineBuffer.compare(0,32,"SBR_PolarScatteringAngleEjectile") == 0)
+                {
+                    input >> LineBuffer;
+                    printf("Polar Scattering Angle (SBR) of ejectile: %f degrees\n",atof(LineBuffer.c_str()));
+                    polarScatteringAngles_SBR[2] = atof(LineBuffer.c_str());
                 }
                 else if(LineBuffer.compare(0,19,"MomentumCalibration") == 0)
                 {
@@ -1738,6 +1828,20 @@ void ReadConfiguration()
                     {
                         input >> LineBuffer;
                         momentumCalPars.push_back(atof(LineBuffer.c_str()));
+                    }
+                }
+                else if(LineBuffer.compare(0,23,"SBR_MomentumCalibration") == 0)
+                {
+                    std::cout << "TEST MomentumCalibrationSBR" << std::endl;
+                    momentumCalibrationRead_SBR = true;
+                    input >> LineBuffer;
+                    printf("Using %d parameters for Momentum Calibration (with respect to X1posC)\n", atoi(LineBuffer.c_str()));
+                    
+                    int nMomentumCalPars_SBR = atoi(LineBuffer.c_str());
+                    for(int i=0; i<nMomentumCalPars_SBR; i++)
+                    {
+                        input >> LineBuffer;
+                        momentumCalPars_SBR.push_back(atof(LineBuffer.c_str()));
                     }
                 }
                 else if(LineBuffer.compare(0,17,"Y1CorrectionTerms") == 0)
@@ -2262,3 +2366,234 @@ void PrintParameters()
     printf("TDCsize: %d\n",TDCsize);
 }
 
+void TDCInit_perRun()
+{
+	tdcOffsets_runDependent[0][673] = 1018.923198;
+	tdcOffsets_runDependent[0][674] = 985.478170;
+	tdcOffsets_runDependent[0][675] = 1019.118299;
+	tdcOffsets_runDependent[0][676] = 1012.754857;
+	tdcOffsets_runDependent[0][677] = 1028.329571;
+	tdcOffsets_runDependent[0][678] = 1041.889271;
+	tdcOffsets_runDependent[0][679] = 1054.072476;
+	tdcOffsets_runDependent[0][680] = 1025.511314;
+	tdcOffsets_runDependent[0][681] = 1072.470670;
+	tdcOffsets_runDependent[0][682] = 1070.245999;
+	tdcOffsets_runDependent[0][683] = 1089.792172;
+	tdcOffsets_runDependent[0][684] = 1030.163575;
+	tdcOffsets_runDependent[0][685] = 1043.005063;
+	tdcOffsets_runDependent[0][687] = 1119.291346;
+	tdcOffsets_runDependent[0][688] = 934.801427;
+	tdcOffsets_runDependent[0][689] = 954.746498;
+	tdcOffsets_runDependent[0][690] = 941.516387;
+	tdcOffsets_runDependent[0][691] = 959.728329;
+	tdcOffsets_runDependent[0][692] = 938.317495;
+	tdcOffsets_runDependent[0][693] = 996.894250;
+	tdcOffsets_runDependent[0][695] = 988.598035;
+	tdcOffsets_runDependent[0][696] = 961.142054;
+	tdcOffsets_runDependent[0][697] = 977.103055;
+	tdcOffsets_runDependent[0][698] = 1001.924913;
+	tdcOffsets_runDependent[0][699] = 1046.690369;
+	tdcOffsets_runDependent[0][700] = 980.507121;
+	tdcOffsets_runDependent[0][701] = 1003.530012;
+	tdcOffsets_runDependent[0][702] = 1041.855710;
+	tdcOffsets_runDependent[0][703] = 1078.739531;
+	tdcOffsets_runDependent[0][704] = 881.559701-19.5;
+	tdcOffsets_runDependent[0][706] = 903.629100;
+	tdcOffsets_runDependent[0][707] = 938.874672;
+	tdcOffsets_runDependent[0][708] = 947.911677;
+	tdcOffsets_runDependent[0][709] = 919.166507;
+	tdcOffsets_runDependent[0][710] = 972.389957-16.0;
+	tdcOffsets_runDependent[0][711] = 985.109401;
+	tdcOffsets_runDependent[0][712] = 936.387269;
+	tdcOffsets_runDependent[0][713] = 968.806552;
+	tdcOffsets_runDependent[0][714] = 967.583990;
+	tdcOffsets_runDependent[0][715] = 1022.038176;
+	tdcOffsets_runDependent[0][716] = 929.728995;
+	tdcOffsets_runDependent[0][717] = 967.357031;
+	tdcOffsets_runDependent[0][718] = 1000.816935;
+	tdcOffsets_runDependent[0][719] = 1036.817879;
+	tdcOffsets_runDependent[0][720] = 937.423022;
+	tdcOffsets_runDependent[0][721] = 915.564926;
+	tdcOffsets_runDependent[0][722] = 950.715880;
+	tdcOffsets_runDependent[0][723] = 977.613951;
+	tdcOffsets_runDependent[0][724] = 957.599908;
+	tdcOffsets_runDependent[0][725] = 957.450192;
+	tdcOffsets_runDependent[0][726] = 943.644555;
+	tdcOffsets_runDependent[0][727] = 957.841373;
+	tdcOffsets_runDependent[0][728] = 951.864140;
+	tdcOffsets_runDependent[0][729] = 997.380087;
+	tdcOffsets_runDependent[0][730] = 1003.503756;
+	tdcOffsets_runDependent[0][731] = 1014.246237;
+	tdcOffsets_runDependent[0][732] = 971.467243;
+	tdcOffsets_runDependent[0][733] = 1034.068023;
+	tdcOffsets_runDependent[0][734] = 1041.710084;
+	tdcOffsets_runDependent[0][735] = 1042.525735;
+	tdcOffsets_runDependent[0][736] = 843.752786;
+	tdcOffsets_runDependent[0][737] = 886.816842;
+	tdcOffsets_runDependent[0][738] = 838.351338;
+	tdcOffsets_runDependent[0][739] = 914.483275;
+	tdcOffsets_runDependent[0][740] = 898.789448;
+	tdcOffsets_runDependent[0][741] = 886.178142;
+	tdcOffsets_runDependent[0][742] = 901.797181;
+	tdcOffsets_runDependent[0][743] = 929.774319;
+	tdcOffsets_runDependent[0][744] = 885.158166;
+	tdcOffsets_runDependent[0][745] = 954.031897;
+	tdcOffsets_runDependent[0][746] = 931.002461;
+	tdcOffsets_runDependent[0][747] = 990.420763;
+	tdcOffsets_runDependent[0][748] = 876.870769;
+	tdcOffsets_runDependent[0][749] = 944.835633;
+	tdcOffsets_runDependent[0][750] = 941.723427;
+	tdcOffsets_runDependent[0][751] = 928.229551;
+	tdcOffsets_runDependent[0][752] = 1054.123967;
+	tdcOffsets_runDependent[0][753] = 1109.373267;
+	tdcOffsets_runDependent[0][754] = 1086.873395;
+	tdcOffsets_runDependent[0][755] = 1067.887961;
+	tdcOffsets_runDependent[0][756] = 1073.404626;
+	tdcOffsets_runDependent[0][757] = 1118.722534;
+	tdcOffsets_runDependent[0][758] = 1094.293782;
+	tdcOffsets_runDependent[0][759] = 1104.518938;
+	tdcOffsets_runDependent[0][760] = 1049.732412;
+	tdcOffsets_runDependent[0][763] = 1038.603298;
+	tdcOffsets_runDependent[0][764] = 1011.313230;
+	tdcOffsets_runDependent[0][765] = 1051.935372;
+	tdcOffsets_runDependent[0][766] = 1043.990516;
+	tdcOffsets_runDependent[0][767] = 998.833163;
+	tdcOffsets_runDependent[0][800] = 1079.768229;
+	tdcOffsets_runDependent[0][801] = 1087.767970;
+	tdcOffsets_runDependent[0][802] = 1056.506303;
+	tdcOffsets_runDependent[0][803] = 1100.707520;
+	tdcOffsets_runDependent[0][804] = 1094.880830;
+	tdcOffsets_runDependent[0][805] = 1101.934061;
+	tdcOffsets_runDependent[0][806] = 1108.447678;
+	tdcOffsets_runDependent[0][807] = 1075.771077;
+	tdcOffsets_runDependent[0][808] = 1064.089231;
+	tdcOffsets_runDependent[0][809] = 1043.737619;
+	tdcOffsets_runDependent[0][810] = 1057.534868;
+	tdcOffsets_runDependent[0][811] = 1096.490953;
+	tdcOffsets_runDependent[0][812] = 1045.094645;
+	tdcOffsets_runDependent[0][813] = 1021.320908;
+	tdcOffsets_runDependent[0][814] = 1031.778311;
+	tdcOffsets_runDependent[0][815] = 1083.789429;
+	tdcOffsets_runDependent[0][816] = 1064.562793;
+	tdcOffsets_runDependent[0][817] = 1061.046073;
+	tdcOffsets_runDependent[0][818] = 1093.933346;
+	tdcOffsets_runDependent[0][819] = 1066.460806;
+	tdcOffsets_runDependent[0][820] = 1012.804506;
+	tdcOffsets_runDependent[0][821] = 1053.733772;
+	tdcOffsets_runDependent[0][822] = 1069.753968;
+	tdcOffsets_runDependent[0][823] = 1014.540587;
+	tdcOffsets_runDependent[1][673] = 1053.872489;
+	tdcOffsets_runDependent[1][674] = 1019.084236;
+	tdcOffsets_runDependent[1][675] = 1057.177883;
+	tdcOffsets_runDependent[1][676] = 1048.017307;
+	tdcOffsets_runDependent[1][677] = 1066.770996;
+	tdcOffsets_runDependent[1][678] = 1079.672464;
+	tdcOffsets_runDependent[1][679] = 1090.967239;
+	tdcOffsets_runDependent[1][680] = 1065.097593;
+	tdcOffsets_runDependent[1][681] = 1110.050573;
+	tdcOffsets_runDependent[1][682] = 1108.403663;
+	tdcOffsets_runDependent[1][683] = 1131.260376;
+	tdcOffsets_runDependent[1][684] = 1067.368709;
+	tdcOffsets_runDependent[1][685] = 1083.512474;
+	tdcOffsets_runDependent[1][687] = 1157.858837;
+	tdcOffsets_runDependent[1][688] = 978.510868;
+	tdcOffsets_runDependent[1][689] = 999.744632;
+	tdcOffsets_runDependent[1][690] = 986.956981;
+	tdcOffsets_runDependent[1][691] = 1000.510602;
+	tdcOffsets_runDependent[1][692] = 984.122379;
+	tdcOffsets_runDependent[1][693] = 1046.132407;
+	tdcOffsets_runDependent[1][695] = 1037.346662;
+	tdcOffsets_runDependent[1][696] = 1013.080015;
+	tdcOffsets_runDependent[1][697] = 1029.262513;
+	tdcOffsets_runDependent[1][698] = 1050.607988;
+	tdcOffsets_runDependent[1][699] = 1098.136215;
+	tdcOffsets_runDependent[1][700] = 1030.148911;
+	tdcOffsets_runDependent[1][701] = 1052.093813;
+	tdcOffsets_runDependent[1][702] = 1093.212672;
+	tdcOffsets_runDependent[1][703] = 1130.383490;
+	tdcOffsets_runDependent[1][704] = 919.475540;
+	tdcOffsets_runDependent[1][706] = 942.244500;
+	tdcOffsets_runDependent[1][707] = 972.268258;
+	tdcOffsets_runDependent[1][708] = 990.181040;
+	tdcOffsets_runDependent[1][709] = 966.570545;
+	tdcOffsets_runDependent[1][710] = 1006.300388;
+	tdcOffsets_runDependent[1][711] = 1030.434388;
+	tdcOffsets_runDependent[1][712] = 987.439194;
+	tdcOffsets_runDependent[1][713] = 1017.912125;
+	tdcOffsets_runDependent[1][714] = 1015.549545;
+	tdcOffsets_runDependent[1][715] = 1072.721690;
+	tdcOffsets_runDependent[1][716] = 979.963299;
+	tdcOffsets_runDependent[1][717] = 1017.927836;
+	tdcOffsets_runDependent[1][718] = 1051.551609;
+	tdcOffsets_runDependent[1][719] = 1088.338566;
+	tdcOffsets_runDependent[1][720] = 975.587007;
+	tdcOffsets_runDependent[1][721] = 950.834235;
+	tdcOffsets_runDependent[1][722] = 987.803958;
+	tdcOffsets_runDependent[1][723] = 1011.584118;
+	tdcOffsets_runDependent[1][724] = 993.173522;
+	tdcOffsets_runDependent[1][725] = 993.872878;
+	tdcOffsets_runDependent[1][726] = 981.011194;
+	tdcOffsets_runDependent[1][727] = 994.788283;
+	tdcOffsets_runDependent[1][728] = 990.653248;
+	tdcOffsets_runDependent[1][729] = 1036.670861;
+	tdcOffsets_runDependent[1][730] = 1041.269640;
+	tdcOffsets_runDependent[1][731] = 1053.390862;
+	tdcOffsets_runDependent[1][732] = 1011.575574;
+	tdcOffsets_runDependent[1][733] = 1074.418467;
+	tdcOffsets_runDependent[1][734] = 1081.470930;
+	tdcOffsets_runDependent[1][735] = 1081.730570;
+	tdcOffsets_runDependent[1][736] = 873.695164;
+	tdcOffsets_runDependent[1][737] = 914.857824;
+	tdcOffsets_runDependent[1][738] = 868.998116;
+	tdcOffsets_runDependent[1][739] = 940.604215;
+	tdcOffsets_runDependent[1][740] = 928.298344;
+	tdcOffsets_runDependent[1][741] = 917.585588;
+	tdcOffsets_runDependent[1][742] = 934.131727;
+	tdcOffsets_runDependent[1][743] = 958.814656;
+	tdcOffsets_runDependent[1][744] = 919.164305;
+	tdcOffsets_runDependent[1][745] = 985.601359;
+	tdcOffsets_runDependent[1][746] = 963.127435;
+	tdcOffsets_runDependent[1][747] = 1021.905817;
+	tdcOffsets_runDependent[1][748] = 915.493588;
+	tdcOffsets_runDependent[1][749] = 981.606531;
+	tdcOffsets_runDependent[1][750] = 978.813294;
+	tdcOffsets_runDependent[1][751] = 965.732499;
+	tdcOffsets_runDependent[1][752] = 1092.486815;
+	tdcOffsets_runDependent[1][753] = 1146.972985;
+	tdcOffsets_runDependent[1][754] = 1125.329332;
+	tdcOffsets_runDependent[1][755] = 1106.812776;
+	tdcOffsets_runDependent[1][756] = 1115.581492;
+	tdcOffsets_runDependent[1][757] = 1157.966484;
+	tdcOffsets_runDependent[1][758] = 1133.910634;
+	tdcOffsets_runDependent[1][759] = 1144.105668;
+	tdcOffsets_runDependent[1][760] = 1092.283491;
+	tdcOffsets_runDependent[1][763] = 1084.021852;
+	tdcOffsets_runDependent[1][764] = 1058.151594;
+	tdcOffsets_runDependent[1][765] = 1096.031284;
+	tdcOffsets_runDependent[1][766] = 1091.085462;
+	tdcOffsets_runDependent[1][767] = 1043.810297;
+	tdcOffsets_runDependent[1][800] = 1118.995949;
+	tdcOffsets_runDependent[1][801] = 1129.771644;
+	tdcOffsets_runDependent[1][802] = 1097.765849;
+	tdcOffsets_runDependent[1][803] = 1143.377636;
+	tdcOffsets_runDependent[1][804] = 1139.552087;
+	tdcOffsets_runDependent[1][805] = 1148.766140;
+	tdcOffsets_runDependent[1][806] = 1153.235640;
+	tdcOffsets_runDependent[1][807] = 1118.940270;
+	tdcOffsets_runDependent[1][808] = 1109.789757;
+	tdcOffsets_runDependent[1][809] = 1090.535078;
+	tdcOffsets_runDependent[1][810] = 1104.131725;
+	tdcOffsets_runDependent[1][811] = 1142.770071;
+	tdcOffsets_runDependent[1][812] = 1092.271693;
+	tdcOffsets_runDependent[1][813] = 1067.241807;
+	tdcOffsets_runDependent[1][814] = 1077.639320;
+	tdcOffsets_runDependent[1][815] = 1130.205153;
+	tdcOffsets_runDependent[1][816] = 1112.531082;
+	tdcOffsets_runDependent[1][817] = 1109.596060;
+	tdcOffsets_runDependent[1][818] = 1141.179155;
+	tdcOffsets_runDependent[1][819] = 1113.822503;
+	tdcOffsets_runDependent[1][820] = 1063.024843;
+	tdcOffsets_runDependent[1][821] = 1106.823210;
+	tdcOffsets_runDependent[1][822] = 1119.756332;
+	tdcOffsets_runDependent[1][823] = 1067.509459;
+}
