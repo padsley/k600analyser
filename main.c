@@ -49,6 +49,7 @@
 
 #include "CloverSort.h"
 #include "ScintillatorSort.h"
+#include "SilverBulletRaytrace.h"
 
 /*------------Preprocessor Directives to change analysis------------*/
 //#define _POLARIZATION
@@ -66,6 +67,7 @@
 //#define _HAGAR
 //#define _SCINTILLATOR
 //#define _CLOVER
+#define _SILVERBULLETRAYTRACE
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -172,6 +174,11 @@ Double_t t_thetaFP=-100;
 Double_t t_thetaFPx=-100;
 Double_t t_phiFP=-100;
 
+double t_tofCal = -100.0;
+double t_X1thCal = -100.0;
+double t_X2thCal = -100.0;
+double t_U1thCal = -100.0;
+double t_U2thCal = -100.0;
 
 // resolution parameters from raytrace subroutine: not all are always needed
 Double_t t_X1res0,      t_X2res0,       t_U1res0,       t_U2res0;
@@ -204,6 +211,10 @@ Int_t t_U2wireUsed[MAX_WIRES_PER_EVENT];
 Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
 #endif
 
+
+#ifdef _SILVERBULLETRAYTRACE
+SilverBulletRaytrace *silverBulletRaytrace_X1 = new SilverBulletRaytrace();
+#endif
 
 #ifdef _SILICONDATA
 SiliconData *si;
@@ -716,7 +727,8 @@ INT main_init(void)
     t1->Branch("toftdc5",&t_toftdc5,"t_toftdc5/I");
     t1->Branch("toftdc6",&t_toftdc6,"t_toftdc6/I");
     t1->Branch("toftdc7",&t_toftdc7,"t_toftdc7/I");
-    
+    t1->Branch("tofCal",&t_tofCal,"t_tofCal/D");
+
     t1->Branch("k600",&t_k600,"t_k600/I");
     
     t1->Branch("pad1",&t_pad1,"t_pad1/D");
@@ -733,6 +745,7 @@ INT main_init(void)
     
     t1->Branch("X1pos",&t_X1pos,"t_X1pos/D");
     t1->Branch("X1th",&t_X1th,"t_X1th/D");
+    t1->Branch("X1thCal",&t_X1thCal,"t_X1thCal/D");
     t1->Branch("X1flag",&t_X1flag,"t_X1flag/I");
     t1->Branch("X1chisq",&t_X1chisq,"t_X1chisq/D");
     t1->Branch("X1res0",&t_X1res0,"t_X1res0/D");
@@ -763,6 +776,7 @@ INT main_init(void)
     
     t1->Branch("U1pos",&t_U1pos,"t_U1pos/D");
     t1->Branch("U1th",&t_U1th,"t_U1th/D");
+    t1->Branch("U1thCal",&t_U1thCal,"t_U1thCal/D");
     t1->Branch("U1flag",&t_U1flag,"t_U1flag/I");
     t1->Branch("U1chisq",&t_U1chisq,"t_U1chisq/D");
     t1->Branch("U1res0",&t_U1res0,"t_U1res0/D");
@@ -791,6 +805,7 @@ INT main_init(void)
     
     t1->Branch("X2pos",&t_X2pos,"t_X2pos/D");
     t1->Branch("X2th",&t_X2th,"t_X2th/D");
+    t1->Branch("X2thCal",&t_X2thCal,"t_X2thCal/D");
     t1->Branch("X2flag",&t_X2flag,"t_X2flag/I");
     t1->Branch("X2chisq",&t_X2chisq,"t_X2chisq/D");
     t1->Branch("X2res0",&t_X2res0,"t_X2res0/D");
@@ -819,6 +834,7 @@ INT main_init(void)
     
     t1->Branch("U2pos",&t_U2pos,"t_U2pos/D");
     t1->Branch("U2th",&t_U2th,"t_U2th/D");
+    t1->Branch("U2thCal",&t_U2thCal,"t_U2thCal/D");
     t1->Branch("U2flag",&t_U2flag,"t_U2flag/I");
     t1->Branch("U2chisq",&t_U2chisq,"t_U2chisq/D");
     t1->Branch("U2res0",&t_U2res0,"t_U2res0/D");
@@ -885,6 +901,12 @@ INT main_init(void)
     t1->Branch("U2wire",t_U2wire,"t_U2wire[t_nU2wires]/I");
 #endif
     
+#ifdef _SILVERBULLETRAYTRACE
+    gROOT->ProcessLine("#include \"SilverBulletRaytrace.h\"");
+    gROOT->ProcessLine(".L SilverBulletRaytrace.c+");
+    t1->Branch("SilverBulletRaytrace_X1","SilverBulletRaytrace", &silverBulletRaytrace_X1);
+#endif
+
 #ifdef _SILICONDATA
     //printf("L2108\n");
     gROOT->ProcessLine(".L Parameters.c+");
@@ -945,6 +967,10 @@ INT main_bor(INT run_number)
     //GetODBfocalplaneGates();        // get from ODB parameters in /Analyzer/Parameters/focalplane
     //PrintODBstuff();
     
+#ifdef _SILVERBULLETRAYTRACE
+    GeneratePermutationLibrary(12);
+#endif
+    
     //------------------------------------------------
     //      Setup the Channel 2 Wire Mapping
     extern bool VDC1_new, VDC2_new;
@@ -978,9 +1004,11 @@ INT main_bor(INT run_number)
     {
         if(VDC2_new)
         {
-            if(VDC2_new && VDC2_new_UX)
+            if(VDC2_new_UX)
             {
-                setupchannel2wireXoldUX(Channel2Wire);
+                //setupchannel2wireXoldUX(Channel2Wire);
+                //setupchannel2wireXoldUX_PR166_2011(Channel2Wire);
+                setupchannel2wirePR170(Channel2Wire);
             }
             else setupchannel2wireXoldXU(Channel2Wire);
         }
@@ -1038,7 +1066,6 @@ INT main_bor(INT run_number)
     extern int *RunNrForPadOffsets;       // from Parameters.c
     extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
-    
     //----------------------------------------------------------------------------
     if(RunNumber>=22077 && RunNumber<=22094)
     {
@@ -1057,6 +1084,25 @@ INT main_bor(INT run_number)
         read_cable(cableOffset,(char *)"CableLength.dat");
     }
 
+    //----------------------------------------------------------------------------
+    extern int dataLabel_CombN;
+
+    if(RunNumber>=22364 && RunNumber<=22379)
+    {
+        dataLabel_CombN = 1;
+    }
+    else if(RunNumber>=23115 && RunNumber<=23129)
+    {
+        dataLabel_CombN = 2;
+    }
+    else if(RunNumber>=23153 && RunNumber<=23191)
+    {
+        dataLabel_CombN = 3;
+    }
+    else if(RunNumber>=23265 && RunNumber<=23301)
+    {
+        dataLabel_CombN = 4;
+    }
     
     //----------------------------------------------------------------------------
     //      To hard code run-dependant ThetaFP to ThetaSCAT mapping parameters
@@ -1137,6 +1183,38 @@ INT main_bor(INT run_number)
             {
                 std::cout << ", Par(" << j << "): " << X1MappingParameters[j];
             }
+            
+            std::cout << std::endl;
+        }
+    }
+
+    //----------------------------------------------------------------------------
+    //      X1 Mapping Parameters
+    //      To map X1pos (post TotalLineshapeCorrection)
+    
+    extern bool X1MappingDefined_SBR;
+    extern std::vector<std::tuple<int, std::vector<double>>> X1MappingParameters_SBR_cache;
+    extern std::vector<double> X1MappingParameters_SBR;
+    
+    X1MappingDefined_SBR = false;
+    
+    for(auto i = X1MappingParameters_SBR_cache.begin(); i != X1MappingParameters_SBR_cache.end(); ++i)
+    {
+        if(std::get<0>((*i))==RunNumber)
+        {
+            X1MappingDefined_SBR = true;
+            X1MappingParameters_SBR = std::get<1>((*i));
+            
+            std::cout << "//------------------------------//" << std::endl;
+            std::cout << "      X1 Mapping (SBR) Parameters" << std::endl;
+            
+            std::cout << "Run: " << std::get<0>((*i));
+            for(int j=0; j<X1MappingParameters_SBR.size(); j++)
+            {
+                std::cout << ", Par(" << j << "): " << X1MappingParameters_SBR[j];
+            }
+            
+            std::cout << std::endl;
         }
     }
 
@@ -1623,6 +1701,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1wire[X1hits]=wire;
 #endif
             X1hits++;
+            //      This is a gate to selecting the more "non corner cutting events", i.e. flat parts
+            //if((offset_time >= gates.x1_driftt_low) && (offset_time <= 7700.0)){          //drifttime gate
+            //      This is the original
             if((offset_time >= gates.x1_driftt_low) && (offset_time <= gates.x1_driftt_hi)){          //drifttime gate
                 t_X1effdt=1;
                 X1.wire[X1hits_dt]=wire;
@@ -1792,6 +1873,64 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     
     //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
     //Gates on number of wires, number of missing wires etc
+#ifdef _SILVERBULLETRAYTRACE
+    /*
+    if(X1hits_dt>=3 && X1hits_dt<=12)
+    {
+        bool multiHitTDCEvent = false;
+        
+        for(int i=0; i<X1hits_dt; i++)
+        {
+            for(int j=i+1; j<X1hits_dt; j++)
+            {
+                if(X1.wire[i] == X1.wire[j])
+                {
+                    multiHitTDCEvent = true;
+                    //std::cout << "multiHitPerEvent" << std::endl;
+                }
+            }
+        }
+        
+        if(multiHitTDCEvent)
+        {
+            silverBulletRaytrace_X1->Raytrace(X1.dist, X1.wire, X1hits_dt);
+        }
+    }
+    */
+    
+    if(X1hits_dt>=3 && X1hits_dt<=12)
+    {
+        silverBulletRaytrace_X1->Raytrace(X1.dist, X1.wire, X1hits_dt);
+        
+        //----------------------------
+        extern double X1thCal_offset[2];
+        extern double X1thCal_gain[2];
+
+        double xPosition = silverBulletRaytrace_X1->GetXPosition(0);
+        
+        for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+        {
+            double thetaRaytrace = silverBulletRaytrace_X1->GetThetaRaytrace(i);
+            double thetaRaytraceCal = (X1thCal_gain[1]*xPosition + X1thCal_gain[0])*(thetaRaytrace + (X1thCal_offset[1]*xPosition + X1thCal_offset[0]));
+            
+            silverBulletRaytrace_X1->SetThetaRaytraceCal(i, thetaRaytraceCal);
+
+        }
+    }
+    
+    /*
+    else if(X1hits_dt<3)
+    {
+        std::cout << "CHICKEN, SBR wire limits, <3!" << std::endl;
+    }
+    else if(X1hits_dt>12)
+    {
+        std::cout << "CHICKEN, SBR wire limits, >12!" << std::endl;
+    }
+    */
+#endif
+
+    
     if(X1hits_dt>=globals.min_x_wires  &&  X1hits_dt<globals.max_x_wires+1){
         if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1)  hX1_EffID->Fill(ev_wiresperevent);
         if((globals.misswires+addwiregap)>(wrangeX1-X1hits_dt)){
@@ -1801,11 +1940,43 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 #ifdef _FULLANALYSIS
             t_X1TimeDiff=(X1.time[0]-X1.time[1])-(X1.time[4]-X1.time[3]); // See Hall A paper manuscript: NIMA 474 (2001) 108 fig13
 #endif
+            
+            /*
+#ifdef _SILVERBULLETRAYTRACE
+            silverBulletRaytrace_X1->Raytrace(X1.dist, X1.wire, X1hits_dt);
+#endif
+            */
+            
+            /*
+            static int counter = 0;
+            
+            if(counter==0)
+            {
+                for(int test=0; test<X1hits_dt; test++)
+                {
+                    std::cout << "BEFORE X1.dist[test]: " << X1.dist[test] << std::endl;
+                }
+            }
+            */
+            
             //raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, &X1wires_used, &X1doublewires, &X1multiplemin);
             raytrace(X1.dist, X1.wire, &X1pos, &X1th, &X1chisq, X1hits_dt, resolution, &X1flag,1, X1wirefit, X1distfit, &X1wires_used, &X1doublewires, &X1multiplemin, &X1chisqminimization);
             //for(int i = 0; i<X1wires_used; i++){
             //  printf("evt nr=%i : i=%i,  wire(i)=%i : X1hits_dt=%i : X1wires_used %i \n",tdc_counter,i,X1.wire[i],X1hits_dt,X1wires_used);
             //}
+            
+            /*
+            if(counter==0)
+            {
+                for(int test=0; test<X1hits_dt; test++)
+                {
+                    std::cout << "AFTER X1.dist[test]: " << X1.dist[test] << std::endl;
+                }
+            }
+            
+            counter++;
+            */
+            
             if(X1flag==0) t_X1effgood=1;
             // Remember: X1hits_dt goes into raytrace as a fixed nr. But after raytrace this does not
             // mean that we used these nr of wires for fitting. Choices in raytrace could have used only 2-3wires less.
@@ -1819,6 +1990,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X1chisq=X1chisq;
             t_X1res0=resolution[0];
             t_X1res1=resolution[1];
+            
+            //----------------------------
+            extern double tofCal_offset[2];
+            extern double tofCal_gain[2];
+            
+            t_tofCal = (tofCal_gain[1]*t_X1pos + tofCal_gain[0])*(t_tof + (tofCal_offset[1]*t_X1pos + tofCal_offset[0]));
+            
+            //----------------------------
+            extern double X1thCal_offset[2];
+            extern double X1thCal_gain[2];
+            
+            t_X1thCal = (X1thCal_gain[1]*t_X1pos + X1thCal_gain[0])*(t_X1th + (X1thCal_offset[1]*t_X1pos + X1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X1res2=resolution[2];
             t_X1res3=resolution[3];
@@ -1849,7 +2033,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
                     hX1_EffID->Fill(ev_good);
                     hEventID->Fill(ev_id_X1_good);  // good X1 events
                     for(int i = 0; i < X1hits_dt ; i++) {
-                        if((RunNumber<=22094 && ((X1pos>250.0 && X1pos<350.0) || (X1pos>550.0 && X1pos<600.0) || (X1pos>700.0 && X1pos<750.0))) || (RunNumber>22094 && X1pos>100.0 && X1pos<350.0))
+                        if((RunNumber<=22094 && ((X1pos>250.0 && X1pos<350.0) || (X1pos>550.0 && X1pos<600.0) || (X1pos>700.0 && X1pos<750.0))) || (RunNumber>=22364 && RunNumber<=22379 && ((X1pos>100.0 && X1pos<160.0) || (X1pos>180.0 && X1pos<350.0))) || (RunNumber>=23115 && RunNumber<=23129 && ((X1pos>100.0 && X1pos<200.0) || (X1pos>500.0 && X1pos<570.0))) || (RunNumber>=23153 && RunNumber<=23191 && ((X1pos>110.0 && X1pos<200.0) || (X1pos>320.0 && X1pos<365.0) || (X1pos>500.0 && X1pos<570.0))) || (RunNumber>=23265 && RunNumber<=23301 && ((X1pos>110.0 && X1pos<200.0) || (X1pos>290.0 && X1pos<360.0) || (X1pos>385.0 && X1pos<560.0) || (X1pos>600.0 && X1pos<620.0) || (X1pos>680.0 && X1pos<700.0))))
                         {
                             hX1_DriftTimeGood->Fill(X1.time[i]);
                         }
@@ -1886,6 +2070,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U1chisq=U1chisq;
             t_U1res0=resolution[0];
             t_U1res1=resolution[1];
+            
+            //----------------------------
+            extern double U1thCal_offset[2];
+            extern double U1thCal_gain[2];
+            
+            t_U1thCal = (U1thCal_gain[1]*t_X1pos + U1thCal_gain[0])*(t_U1th + (U1thCal_offset[1]*t_X1pos + U1thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U1res2=resolution[2];
             t_U1res3=resolution[3];
@@ -1946,6 +2137,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_X2chisq=X2chisq;
             t_X2res0=resolution[0];
             t_X2res1=resolution[1];
+            
+            //----------------------------
+            extern double X2thCal_offset[2];
+            extern double X2thCal_gain[2];
+            
+            t_X2thCal = (X2thCal_gain[1]*t_X2pos + X2thCal_gain[0])*(t_X2th + (X2thCal_offset[1]*t_X2pos + X2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_X2res2=resolution[2];
             t_X2res3=resolution[3];
@@ -2001,7 +2199,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             //       raytrace(U2.dist, U2.wire, &U2pos, &U2th, &U2chisq, U2hits_dt, resolution, &U2flag,4,&U2wires_used, &U2doublewires, &U2multiplemin);
             if(U2flag==0) t_U2effgood=1;
             
-            //U2pos=U2pos/sin(U_WIRE_ANGLE/57.2957);  //since wires at 50deg to horiz,they are 1/sin(50degr) further apart in x
+            U2pos=U2pos/sin(U_WIRE_ANGLE/57.2957);  //since wires at 50deg to horiz,they are 1/sin(50degr) further apart in x
             
             t_U2pos=U2pos;         //for current clumsy implementation of TTree. I get problems if I move U2pos etc to
             t_U2th=U2th;           //global scope.
@@ -2009,6 +2207,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
             t_U2chisq=U2chisq;
             t_U2res0=resolution[0];
             t_U2res1=resolution[1];
+            
+            //----------------------------
+            extern double U2thCal_offset[2];
+            extern double U2thCal_gain[2];
+            
+            t_U2thCal = (U2thCal_gain[1]*t_U2pos + U2thCal_gain[0])*(t_U2th + (U2thCal_offset[1]*t_U2pos + U2thCal_offset[0]));
+
 #ifdef _VDCRESCALCS
             t_U2res2=resolution[2];
             t_U2res3=resolution[3];
@@ -2064,8 +2269,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     extern double Y1offset;
     
     //Y1=CalcYFP(X1pos,U1pos,X1th);
-    //Y1 = CalcYFPforUX(X1pos,U1pos,X1th);
-    Y1 = CalcYFPforUX(X1pos,U2pos,X1th);
+    Y1 = CalcYFPforUX(X1pos,U1pos,X1th);
     t_Y1=Y1+Y1offset;
 #ifdef _FULLANALYSIS
     h_Y1->Fill(Y1);
@@ -2073,6 +2277,71 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     
     Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used
     t_Y2=Y2;
+    
+    //------------------------------------------------------------------------
+    //      Mapping Y2 to Y1. Y1 is acting as a calibrated Y2
+    //p0                        =     -106.579   +/-   2.35722
+    //p1                        =     0.369953   +/-   0.00670243
+
+    if(RunNumber>=22094)
+    {
+        std::vector<std::vector<double>> Y2toY1MappingPars;
+        
+        std::vector<double> pars{-104.297, 0.405};
+        Y2toY1MappingPars.push_back(pars);
+        
+        std::vector<double> Y2toY1Coefficients;
+        
+        for(int i=0; i<(int) Y2toY1MappingPars.size(); i++)
+        {
+            double Y2toY1Coefficient = 0.0;
+            
+            for(int j=0; j<(int) Y2toY1MappingPars[i].size(); j++)
+            {
+                Y2toY1Coefficient += Y2toY1MappingPars[i][j]*pow(t_X1pos, j);
+            }
+            
+            Y2toY1Coefficients.push_back(Y2toY1Coefficient);
+        }
+        
+        if(!Y2toY1Coefficients.empty())
+        {
+            t_Y1 = t_Y2 + Y2toY1Coefficients[0];
+        }
+        
+        extern double Y1offset;
+        t_Y1 += Y1offset;
+    }
+    
+    /*
+    double thetaSCATResult = 0.0;
+    extern std::vector<std::vector<double>> thetaSCATMappingPars;
+    
+    std::vector<double> polCoefficients;
+    
+    for(int i=0; i<(int) thetaSCATMappingPars.size(); i++)
+    {
+        double polCoefficient = 0.0;
+        
+        for(int j=0; j<(int) thetaSCATMappingPars[i].size(); j++)
+        {
+            polCoefficient += thetaSCATMappingPars[i][j]*pow(X1, j);
+        }
+        
+        polCoefficients.push_back(polCoefficient);
+    }
+    
+    if(thetaSCATMappingPars.size()>=2)
+    {
+        thetaSCATResult = polCoefficients[1]*(ThFP+polCoefficients[0]);
+    }
+    else
+    {
+        thetaSCATResult = 0.0;
+    }
+    */
+    //------------------------------------------------------------------------
+    
 #ifdef _FULLANALYSIS
     h_Y2->Fill(Y2);
 #endif
@@ -2085,8 +2354,37 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     //  Deprecated lineshape correction. The offset method is also deprecated: it has been generalised (N-order mapping) with X1Mapping()
     //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr); // New sign convention
     
-    TotalLineshapeCorrection(X1pos, Y1, thetaSCAT, &Xcorr);
+    //TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &Xcorr);
     
+    std::vector<double> correctionParameters;
+    correctionParameters.push_back(t_thetaSCAT);
+    correctionParameters.push_back(t_Y1);
+    correctionParameters.push_back(t_tofCal);
+    correctionParameters.push_back(t_X1thCal);
+    correctionParameters.push_back(t_U1thCal);
+    
+#ifdef _SILVERBULLETRAYTRACE
+    correctionParameters.push_back(silverBulletRaytrace_X1->GetThetaRaytraceCal(0));
+#endif
+    
+    //TotalLineshapeCorrection(X1pos, t_Y1, thetaSCAT, &Xcorr);
+    
+    Xcorr = X1pos;
+    TotalLineshapeCorrection(correctionParameters, &Xcorr);
+
+    //--------------------------------
+#ifdef _SILVERBULLETRAYTRACE
+    for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+    {
+        double xPosition = silverBulletRaytrace_X1->GetXPosition(i);
+
+        TotalLineshapeCorrectionMod(correctionParameters, &xPosition);
+        
+        silverBulletRaytrace_X1->SetXPosition_TLC(i, xPosition);
+    }
+#endif
+    
+    //--------------------------------
     extern bool X1MappingDefined;
     
     if(X1MappingDefined)
@@ -2096,7 +2394,21 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     
     t_X1posC=Xcorr;
     
+    //--------------------------------
+#ifdef _SILVERBULLETRAYTRACE
+    extern bool X1MappingDefined_SBR;
+
+    for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+    {
+        if(X1MappingDefined_SBR)
+        {
+            double correctedXPosition = X1Mapping(silverBulletRaytrace_X1->GetXPosition_TLC(i));
+            silverBulletRaytrace_X1->SetXPosition_TLC_mapped(i, correctedXPosition);
+        }
+    }
+#endif
     
+    //--------------------------------
     //CalcCorrXTOF(X1pos-x1offset, Y1, tof, &Xcorr2); // Old sign convention
     CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2); // New sign convention
     t_X1posCTOF=Xcorr2;
@@ -2116,6 +2428,125 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     extern std::vector<double> p;
     extern std::vector<double> polarScatteringAngles;
 
+    extern bool momentumCalibrationRead_SBR;
+    extern std::vector<double> momentumCalPars_SBR;
+    extern std::vector<double> m_SBR;
+    extern std::vector<double> T_SBR;
+    extern std::vector<double> E_SBR;
+    extern std::vector<double> p_SBR;
+    extern std::vector<double> polarScatteringAngles_SBR;
+
+    //------------------------
+    //      COMB1
+    if(RunNumber>=22364 && RunNumber<=22379)
+    {
+        T[0] = 196.97; // MeV
+        
+        polarScatteringAngles[2] = 8.0; // deg
+
+        momentumCalibrationRead = true;
+        momentumCalPars.clear();
+        momentumCalPars.push_back(1140.56);
+        momentumCalPars.push_back(0.112233);
+        momentumCalPars.push_back(0.000175527);
+        momentumCalPars.push_back(-3.78497e-07);
+        momentumCalPars.push_back(2.74198e-10);
+        
+        //----------------
+        T_SBR[0] = 196.97; // MeV
+        
+        polarScatteringAngles_SBR[2] = 8.0; // deg
+        
+        momentumCalibrationRead_SBR = true;
+        momentumCalPars_SBR.clear();
+        momentumCalPars_SBR.push_back(1135.43);
+        momentumCalPars_SBR.push_back(0.165969);
+        momentumCalPars_SBR.push_back(-4.25407e-05);
+        momentumCalPars_SBR.push_back(2.08275e-08);
+    }
+    //------------------------
+    //      COMB2
+    if(RunNumber>=23115 && RunNumber<=23129)
+    {
+        T[0] = 196.14; // MeV
+        
+        polarScatteringAngles[2] = 8.5; // deg
+        
+        momentumCalibrationRead = true;
+        momentumCalPars.clear();
+        momentumCalPars.push_back(1097.63);
+        momentumCalPars.push_back(0.185052);
+        momentumCalPars.push_back(-7.283e-05);
+        momentumCalPars.push_back(3.35189e-08);
+        
+        //----------------
+        T_SBR[0] = 196.14; // MeV
+        
+        polarScatteringAngles_SBR[2] = 8.5; // deg
+        
+        momentumCalibrationRead_SBR = true;
+        momentumCalPars_SBR.clear();
+        momentumCalPars_SBR.push_back(1083.86);
+        momentumCalPars_SBR.push_back(0.253429);
+        momentumCalPars_SBR.push_back(-0.000184413);
+        momentumCalPars_SBR.push_back(9.34076e-08);
+    }
+    //------------------------
+    //      COMB3
+    if(RunNumber>=23153 && RunNumber<=23191)
+    {
+        T[0] = 196.14; // MeV
+        
+        polarScatteringAngles[2] = 10.0; // deg
+        
+        momentumCalibrationRead = true;
+        momentumCalPars.clear();
+        momentumCalPars.push_back(1103.48);
+        momentumCalPars.push_back(0.155902);
+        momentumCalPars.push_back(-3.79895e-05);
+        momentumCalPars.push_back(2.30169e-08);
+        
+        //----------------
+        T_SBR[0] = 196.14; // MeV
+        
+        polarScatteringAngles_SBR[2] = 10.0; // deg
+        
+        momentumCalibrationRead_SBR = true;
+        momentumCalPars_SBR.clear();
+        momentumCalPars_SBR.push_back(1085.48);
+        momentumCalPars_SBR.push_back(0.236889);
+        momentumCalPars_SBR.push_back(-0.000156296);
+        momentumCalPars_SBR.push_back(7.88021e-08);
+    }
+    //------------------------
+    //      COMB4
+    if(RunNumber>=23265 && RunNumber<=23301)
+    {
+        T[0] = 196.14; // MeV
+        
+        polarScatteringAngles[2] = 6.0; // deg
+        
+        momentumCalibrationRead = true;
+        momentumCalPars.clear();
+        momentumCalPars.push_back(1114.81);
+        momentumCalPars.push_back(0.115578);
+        momentumCalPars.push_back(4.6182e-05);
+        momentumCalPars.push_back(-3.36773e-08);
+        
+        //----------------
+        T_SBR[0] = 196.14; // MeV
+        
+        polarScatteringAngles_SBR[2] = 6.0; // deg
+        
+        momentumCalibrationRead_SBR = true;
+        momentumCalPars_SBR.clear();
+        momentumCalPars_SBR.push_back(1092.47);
+        momentumCalPars_SBR.push_back(0.232414);
+        momentumCalPars_SBR.push_back(-0.000154161);
+        momentumCalPars_SBR.push_back(7.92147e-08);
+    }
+
+    
     if(momentumCalibrationRead)
     {
         t_Ex = CalcEx(&m[0], &T[0], &E[0], &p[0], t_X1posC, polarScatteringAngles[2], momentumCalPars);
@@ -2124,7 +2555,24 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     {
         t_Ex = 0.0;
     }
-        
+    
+    //--------------------------------
+#ifdef _SILVERBULLETRAYTRACE
+    for(int i=0; i<silverBulletRaytrace_X1->GetNAlternativeEvents(); i++)
+    {
+        if(momentumCalibrationRead_SBR)
+        {
+            double excitationEnergy = CalcEx(&m_SBR[0], &T_SBR[0], &E_SBR[0], &p_SBR[0], silverBulletRaytrace_X1->GetXPosition_TLC_mapped(i), polarScatteringAngles_SBR[2], momentumCalPars_SBR);
+            //double excitationEnergy = CalcEx(&m[0], &T[0], &E[0], &p[0], silverBulletRaytrace_X1->GetXPosition_TLC_mapped(i), polarScatteringAngles[2], momentumCalPars);
+
+            //std::cout << "excitationEnergy (" << i << "): " << excitationEnergy << std::endl;
+            silverBulletRaytrace_X1->SetExcitationEnergy(i, excitationEnergy);
+        }
+    }
+    
+    silverBulletRaytrace_X1->DetermineGoodSbrEvent();
+#endif
+    
     //extern double *masses;
     //t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
     
@@ -2193,11 +2641,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     gammy = new GammaData();
 #endif
     
-    
 #ifdef _SILICONDATA
     si = new SiliconData();
 #endif
-    
     
     
 #ifdef _RAWDATA
@@ -2285,6 +2731,13 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
     si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
     delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
+
+
+#ifdef _SILVERBULLETRAYTRACE
+    silverBulletRaytrace_X1->ClearEvent();
+    //delete silverBulletRaytrace_X1;
+#endif
+
     
 #ifdef _GAMMADATA
     gammy->ClearEvent();//See comment above about GammaData::ClearEvent()
@@ -2324,6 +2777,10 @@ INT main_eor(INT run_number)
      #endif
      */
     
+#ifdef _SILVERBULLETRAYTRACE
+    delete silverBulletRaytrace_X1;
+#endif
+
     return SUCCESS;
 }
 

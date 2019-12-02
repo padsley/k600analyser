@@ -47,6 +47,7 @@
 
 /* home-made includes */
 #include "Parameters.h"
+#include "FocalPlane.h"
 
 
 //------------------------------------------------------------------------------
@@ -1718,13 +1719,35 @@ double X1Mapping(Double_t X)
 }
 
 //--------------------------------------------------------------------------------------
-void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
+double X1Mapping_SBR(Double_t X)
+{
+    extern std::vector<double> X1MappingParameters;
+    
+    double mappedPosition = 0.0;
+    
+    if((int) X1MappingParameters.size()==1)
+    {
+        mappedPosition = X + X1MappingParameters[0];
+    }
+    else
+    {
+        for(int i=0; i<(int) X1MappingParameters.size(); i++)
+        {
+            mappedPosition += X1MappingParameters[i]*pow(X, i);
+        }
+    }
+    
+    return mappedPosition;
+}
+
+//--------------------------------------------------------------------------------------
+void TotalLineshapeCorrection(std::vector<double> correctionParameters, Double_t *Xcorr)
 {
     extern std::vector<int> TLCCorrectionTypes;
     extern std::vector<std::vector<std::vector<double>>> TLCParameters;
- 
+    
     double correctedPosition = 0.0;
-
+    
     for(int i=0; i<(int) TLCParameters.size(); i++)
     {
         double previousCorrectedPosition;
@@ -1732,7 +1755,7 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
         
         if(i==0)
         {
-            previousCorrectedPosition = X;
+            previousCorrectedPosition = *Xcorr;
         }
         else
         {
@@ -1740,51 +1763,133 @@ void TotalLineshapeCorrection(Double_t X, Double_t Y, Double_t ThetaSCAT, Double
         }
         
         //--------------------------------------------------------------------
-        for(int j=0; j<(int) TLCParameters[i].size(); j++)
+        if(TLCCorrectionTypes[i]!=5) // To avoid using the new SBR raytrace angle for the "old" X1posC correction
         {
-            double correctionPar_PolCoefficient = 0.0;
-            
-            //--------------------------------------------------------------------
-            for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
+            for(int j=0; j<(int) TLCParameters[i].size(); j++)
             {
-                if(TLCCorrectionTypes[i]==0)
+                double correctionPar_PolCoefficient = 0.0;
+                
+                //--------------------------------------------------------------------
+                for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(ThetaSCAT, k);
+                    int correctionType = TLCCorrectionTypes[i];
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[correctionType], k);
+                    
+                    /*
+                     if(TLCCorrectionTypes[i]==0)
+                     {
+                     correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[0], k);
+                     }
+                     else if(TLCCorrectionTypes[i]==1)
+                     {
+                     correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[1], k);
+                     }
+                     else if(TLCCorrectionTypes[i]==2)
+                     {
+                     correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[2], k);
+                     }
+                     else if(TLCCorrectionTypes[i]==3)
+                     {
+                     correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[3], k);
+                     }
+                     else if(TLCCorrectionTypes[i]==4)
+                     {
+                     correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[4], k);
+                     }
+                     */
                 }
                 
-                if(TLCCorrectionTypes[i]==1)
-                {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(Y, k);
-                }
-                
+                correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
             }
             
-            correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
-        }
-        
-        correctedPosition = 0.0;
-        
-        for(int j=0; j<(int) correctionPars_PolCoefficients.size(); j++)
-        {
-            if((int) correctionPars_PolCoefficients.size()==1)
+            correctedPosition = 0.0;
+            
+            for(int j=0; j<(int) correctionPars_PolCoefficients.size(); j++)
             {
-                correctedPosition = previousCorrectedPosition + correctionPars_PolCoefficients[j];
-            }
-            else
-            {
-                correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+                if((int) correctionPars_PolCoefficients.size()==1)
+                {
+                    correctedPosition = previousCorrectedPosition + correctionPars_PolCoefficients[j];
+                }
+                else
+                {
+                    //correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+                    correctedPosition += correctionPars_PolCoefficients[j]*TMath::Power(previousCorrectedPosition, j);
+                }
             }
         }
     }
     
     if(TLCParameters.empty())
     {
-        correctedPosition = X;
+        correctedPosition = correctionParameters[0];
     }
     
     *Xcorr = correctedPosition;
 }
 
+//--------------------------------------------------------------------------------------
+void TotalLineshapeCorrectionMod(std::vector<double> correctionParameters, Double_t *Xcorr)
+{
+    extern std::vector<int> TLCCorrectionTypes;
+    extern std::vector<std::vector<std::vector<double>>> TLCParameters;
+    
+    double correctedPosition = 0.0;
+    
+    for(int i=0; i<(int) TLCParameters.size(); i++)
+    {
+        double previousCorrectedPosition;
+        std::vector<double> correctionPars_PolCoefficients;
+        
+        if(i==0)
+        {
+            previousCorrectedPosition = *Xcorr;
+        }
+        else
+        {
+            previousCorrectedPosition = correctedPosition;
+        }
+        
+        if(TLCCorrectionTypes[i]!=3) // To avoid using the old X1th raytrace angle for the new vector of xPositions_TLC objects.
+        {
+            //--------------------------------------------------------------------
+            for(int j=0; j<(int) TLCParameters[i].size(); j++)
+            {
+                double correctionPar_PolCoefficient = 0.0;
+                
+                //--------------------------------------------------------------------
+                for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
+                {
+                    int correctionType = TLCCorrectionTypes[i];
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[correctionType], k);
+                }
+                
+                correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
+            }
+            
+            correctedPosition = 0.0;
+            
+            for(int j=0; j<(int) correctionPars_PolCoefficients.size(); j++)
+            {
+                if((int) correctionPars_PolCoefficients.size()==1)
+                {
+                    correctedPosition = previousCorrectedPosition + correctionPars_PolCoefficients[j];
+                }
+                else
+                {
+                    //correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+                    correctedPosition += correctionPars_PolCoefficients[j]*TMath::Power(previousCorrectedPosition, j);
+                }
+            }
+        }
+    }
+    
+    if(TLCParameters.empty())
+    {
+        correctedPosition = correctionParameters[0];
+    }
+    
+    *Xcorr = correctedPosition;
+}
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
@@ -1960,7 +2065,7 @@ double CalcEx(double *m, double *T, double *E, double *p, double Xpos, double th
     double c4 = c2*c2;  // (MeV/u)^2, c^4
 
     ////    Q-value calculation
-    double Q = (m[2] + m[3])*c2 - (m[0] + m[1])*c2; // MeV
+    double Q = (m[0] + m[1])*c2 - (m[2] + m[3])*c2; // MeV
     
     ////    Conversion of ejectile scattering angle from degrees to radians
     double theta_lab = theta*0.017453292; // radians
@@ -1978,14 +2083,30 @@ double CalcEx(double *m, double *T, double *E, double *p, double Xpos, double th
     {
         p[2] += momentumCalPars[i]*(1.0/pow(c2, 0.5))*pow(Xpos, i);
     }
-    E[2] = sqrt(p[2]*p[2]*c2 + (m[2]*m[2]*c4));
-    T[2] = E[2] - m[2]*c2;
     
-    p[3] = sqrt((p[0]*p[0]) + (p[2]*p[2]) - 2*p[0]*p[2]*cos(theta_lab));
-    E[3] = sqrt(p[3]*p[3]*c2 + (m[3]*m[3]*c4));
-    T[3] = E[3] - m[3]*c2;
-    
-    Ex = E[0] + E[1] + Q - E[2] - E[3];
+    if(Xpos>=0.0 && Xpos<1000.0 &&
+       (p[2] >= 0.0) && ((p[0]*p[0]) + (p[2]*p[2]) - 2*p[0]*p[2]*cos(theta_lab)) >= 0.0)
+    {
+        E[2] = sqrt(p[2]*p[2]*c2 + (m[2]*m[2]*c4));
+        T[2] = E[2] - m[2]*c2;
+
+        p[3] = sqrt((p[0]*p[0]) + (p[2]*p[2]) - 2*p[0]*p[2]*cos(theta_lab));
+        E[3] = sqrt(p[3]*p[3]*c2 + (m[3]*m[3]*c4));
+        T[3] = E[3] - m[3]*c2;
+        
+        Ex = E[0] + E[1] + Q - E[2] - E[3];
+    }
+    else
+    {
+        E[2] = 0.0;
+        T[2] = 0.0;
+        
+        p[3] = 0.0;
+        E[3] = 0.0;
+        T[3] = 0.0;
+        
+        Ex = 0.0;
+    }
     
     return Ex;
 }

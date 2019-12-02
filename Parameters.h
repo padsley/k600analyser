@@ -68,6 +68,7 @@ void ADCClear();
 
 void ReadCalibrationParameters(std::string CalibFile);
 void ReadX1Mapping(std::string X1mappingFile);
+void ReadX1Mapping_SBR(std::string X1mappingFile);
 void ReadTOFOffsets(std::string TOFoffsetsFile);
 
 void TDCInit();
