@@ -107,7 +107,7 @@ void DriftTimeIntegration()
     //------------------------------------------------
     for(int i=0; i<hDriftTimes_X1->GetNbinsX(); i++)
     {
-        if(i<2900 || i>5000)
+        if(i<2700 || i>5050)
         {
             hDriftTimes_X1->SetBinContent(i, 0.0);
         }
@@ -115,7 +115,7 @@ void DriftTimeIntegration()
     
     for(int i=0; i<hDriftTimes_U1->GetNbinsX(); i++)
     {
-        if(i<2900 || i>5000)
+        if(i<2700 || i>5050)
         {
             hDriftTimes_U1->SetBinContent(i, 0.0);
         }
@@ -123,7 +123,7 @@ void DriftTimeIntegration()
     
     for(int i=0; i<hDriftTimes_X2->GetNbinsX(); i++)
     {
-        if(i<2900 || i>5000)
+        if(i<2700 || i>5050)
         {
             hDriftTimes_X2->SetBinContent(i, 0.0);
         }
@@ -131,7 +131,7 @@ void DriftTimeIntegration()
     
     for(int i=0; i<hDriftTimes_U2->GetNbinsX(); i++)
     {
-        if(i<2900 || i>5000)
+        if(i<2700 || i>5050)
         {
             hDriftTimes_U2->SetBinContent(i, 0.0);
         }

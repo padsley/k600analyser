@@ -3,14 +3,17 @@
 #================================
 #	PR251
 #for COUNT in {2040,2044,2048,2052,2056,2075,2076,2079,2097,2102,2109}
-for COUNT in {2040,2044,2048,2052,2056,2075,2076,2097,2102,2109}
+
+#   INCLUSIVE, PRUNED
+for COUNT in {2040,2044,2048,2052,2056,2075,2076,20977,2102,2109}
 
 #for COUNT in {2097,2102,2109}
 
 
 #   Removed runs: 2079 (misalignment)
 
-#for COUNT in {2040,2041}
+#for COUNT in {2040,20401}
+#for COUNT in {2040,204}
 
 do
 
@@ -20,10 +23,10 @@ do
 dataDirectory="/media/psf/DATA/PR251/data"
 
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sorted"
-#sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
+sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedTest"
 #sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedAutoTrim"
-sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
+#sortedDirectory="/media/psf/Home/Academic/Experiments/PR251/sortedNew"
 
 
   echo $COUNT

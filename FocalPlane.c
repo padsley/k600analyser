@@ -1631,6 +1631,29 @@ double X1Mapping(Double_t X)
 }
 
 //--------------------------------------------------------------------------------------
+double X1Mapping_SBR(Double_t X)
+{
+    extern std::vector<double> X1MappingParameters;
+    
+    double mappedPosition = 0.0;
+    
+    if((int) X1MappingParameters.size()==1)
+    {
+        mappedPosition = X + X1MappingParameters[0];
+    }
+    else
+    {
+        for(int i=0; i<(int) X1MappingParameters.size(); i++)
+        {
+            mappedPosition += X1MappingParameters[i]*pow(X, i);
+        }
+    }
+    
+    return mappedPosition;
+}
+
+//--------------------------------------------------------------------------------------
+
 void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t *Xcorr)
 {
     extern std::vector<int> TLCCorrectionTypes;
@@ -1638,6 +1661,8 @@ void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t 
  
     double correctedPosition = 0.0;
 
+    //std::cout << "TLCParameters.size(): " << TLCParameters.size() << std::endl;
+    
     for(int i=0; i<(int) TLCParameters.size(); i++)
     {
         double previousCorrectedPosition;
@@ -1662,23 +1687,23 @@ void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t 
             {
                 if(TLCCorrectionTypes[i]==0)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[0], k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*TMath::Power(correctionParamters[0], k);
                 }
                 else if(TLCCorrectionTypes[i]==1)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[1], k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*TMath::Power(correctionParamters[1], k);
                 }
                 else if(TLCCorrectionTypes[i]==2)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[2], k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*TMath::Power(correctionParamters[2], k);
                 }
                 else if(TLCCorrectionTypes[i]==3)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[3], k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*TMath::Power(correctionParamters[3], k);
                 }
                 else if(TLCCorrectionTypes[i]==4)
                 {
-                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParamters[4], k);
+                    correctionPar_PolCoefficient += TLCParameters[i][j][k]*TMath::Power(correctionParamters[4], k);
                 }
             }
             
@@ -1695,7 +1720,7 @@ void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t 
             }
             else
             {
-                correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+                correctedPosition += correctionPars_PolCoefficients[j]*TMath::Power(previousCorrectedPosition, j);
             }
         }
     }
@@ -1703,6 +1728,69 @@ void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t 
     if(TLCParameters.empty())
     {
         correctedPosition = correctionParamters[0];
+    }
+    
+    *Xcorr = correctedPosition;
+}
+
+
+//--------------------------------------------------------------------------------------
+
+void TotalLineshapeCorrectionNew(std::vector<double> correctionParameters, Double_t *Xcorr)
+{
+    extern std::vector<int> TLCCorrectionTypes;
+    extern std::vector<std::vector<std::vector<double>>> TLCParameters;
+    
+    double correctedPosition = 0.0;
+    
+    for(int i=0; i<(int) TLCParameters.size(); i++)
+    {
+        double previousCorrectedPosition;
+        std::vector<double> correctionPars_PolCoefficients;
+        
+        if(i==0)
+        {
+            previousCorrectedPosition = *Xcorr;
+        }
+        else
+        {
+            previousCorrectedPosition = correctedPosition;
+        }
+        
+        //--------------------------------------------------------------------
+        for(int j=0; j<(int) TLCParameters[i].size(); j++)
+        {
+            double correctionPar_PolCoefficient = 0.0;
+            
+            //--------------------------------------------------------------------
+            for(int k=0; k<(int) TLCParameters[i][j].size(); k++)
+            {
+                int correctionType = TLCCorrectionTypes[i];
+                correctionPar_PolCoefficient += TLCParameters[i][j][k]*pow(correctionParameters[correctionType], k);
+            }
+            
+            correctionPars_PolCoefficients.push_back(correctionPar_PolCoefficient);
+        }
+        
+        correctedPosition = 0.0;
+        
+        for(int j=0; j<(int) correctionPars_PolCoefficients.size(); j++)
+        {
+            if((int) correctionPars_PolCoefficients.size()==1)
+            {
+                correctedPosition = previousCorrectedPosition + correctionPars_PolCoefficients[j];
+            }
+            else
+            {
+                //correctedPosition += correctionPars_PolCoefficients[j]*pow(previousCorrectedPosition, j);
+                correctedPosition += correctionPars_PolCoefficients[j]*TMath::Power(previousCorrectedPosition, j);
+            }
+        }
+    }
+    
+    if(TLCParameters.empty())
+    {
+        correctedPosition = correctionParameters[0];
     }
     
     *Xcorr = correctedPosition;

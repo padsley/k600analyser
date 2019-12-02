@@ -31,9 +31,11 @@ void TryToImproveFit(Double_t dd[],Int_t wire[], Int_t *_wire_num, Int_t *_wireI
 void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_chisq,Int_t wire_num,Double_t res[],Int_t *_flag, Int_t chamber, Double_t wused[] , Double_t dused[], Int_t *_wire_used, Int_t *_badwirecount, Int_t *_multmin, Int_t *_chisqminimization);
 
 void TotalLineshapeCorrection(std::vector<double> correctionParamters, Double_t *Xcorr);
+void TotalLineshapeCorrectionNew(std::vector<double> correctionParamters, Double_t *Xcorr);
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr);
 void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr);
 double X1Mapping(Double_t X);
+double X1Mapping_SBR(Double_t X);
 double CalcQBrho(double Xcorr);
 double CalcTfromXcorr(double Xcorr, double mass);
 double CalcTfromRigidity(double rig, double mass);
