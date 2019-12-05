@@ -2128,10 +2128,11 @@ double CalcThetaScat(double X1, double ThFP)
 
   //printf("\n\n");
   return result;
+  
 
 
 }
-
+/*
 //--------------------------------------------------------------------------------------
 double CalcPhiScat(double X1, double ThFP, double Y1)
 
@@ -2140,6 +2141,26 @@ double CalcPhiScat(double X1, double ThFP, double Y1)
   result = Y1 * (0.108+0.00086*ThFP) - (0.6097+3.99e-4*X1);
   return result;
 }
+*/
+
+//--------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------
+
+//X1-number to pull locus down and X1+number to pull it up for other runs than pepperpot runs (-0.8 good for targets run and -0.2 for pepperpots)
+
+double CalcPhiScat(double X1, double ThSCAT, double Y1)
+
+{
+  double result = 0;
+
+  result = ((0.223762 + -0.0841361*ThSCAT + 0.0016215*pow(ThSCAT,2) + 0.0492529*pow(ThSCAT,3)) + (-0.00018304 + 0.000106297 *ThSCAT + -1.02828e-05*pow(ThSCAT,2) + -6.73085e-05*pow(ThSCAT,3))*X1 )*Y1   + (1.12783 + 0.120934*ThSCAT + -0.146862*pow(ThSCAT,2) + 0.00623476*pow(ThSCAT,3))+(-0.000391341 + -0.000271356*ThSCAT + 0.000232144*pow(ThSCAT,2) + 1.9364e-06*pow(ThSCAT,3))*X1-1.2;
+
+  return result;
+}
+
 
 //--------------------------------------------------------------------------------------
 double CalcTheta(double X1, double ThFP, double Y1)
@@ -2156,8 +2177,9 @@ double CalcTheta(double X1, double ThFP, double Y1)
 }
 
 //--------------------------------------------------------------------------------------
+
 double CalcThetaFP(double X1, double X2)
-// Calculate the horizontal component of the particle track throught the focal plane
+// Calculate the horizontal component of the particle track through the focal plane
 {
    double x;
    double result =-1;

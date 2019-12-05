@@ -257,6 +257,7 @@ Double_t U2wirefit[10], U2distfit[10];
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
 Double_t Padoffset=0;
+Double_t Yoffset=0.0;
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -529,8 +530,8 @@ INT main_init(void)
 	 }
        else
 	 {
- 	   //setupchannel2wireXUXold(Channel2Wire);
- 	   setupchannel2wireXUXoldPR236b(Channel2Wire);
+ 	   setupchannel2wireXUXold(Channel2Wire);
+ 	   //setupchannel2wireXUXoldPR236b(Channel2Wire);
 	   //printf("Probably not implemented");
 	 }
      }
@@ -973,6 +974,11 @@ INT main_bor(INT run_number)
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
+   extern double *YOffsets;	        // from Parameters.c 
+   extern int *RunNrForYOffsets;       // from Parameters.c  
+   extern int NrOfRunsForYOffsets;     // nr of runs for which we have Yoffsets read it via Parameters.c
+
+
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
@@ -991,6 +997,13 @@ INT main_bor(INT run_number)
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
+
+   Yoffset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForYOffsets;i++){
+       if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: Y offset= %f \n",RunNumber,Yoffset);
+
 
    return SUCCESS;
 }
@@ -1781,44 +1794,41 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
    thetaFP = CalcThetaFP(X1pos,X2pos);
-   t_thetaFP = thetaFP;
    //thetaFP  = CalcThetaFP(U1pos,U2pos);
-   //t_thetaFP   = thetaFP;
+   t_thetaFP = thetaFP;
 
-   Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+   Y1=CalcYFP(X1pos,U1pos,X1th); 
+   t_Y1=Y1+Yoffset; 
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1);
+   h_Y1->Fill(Y1+Yoffset);
    #endif
 
-   Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
-   t_Y2=Y2;
+   //Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
+   //t_Y2=Y2;
    #ifdef _FULLANALYSIS
-   h_Y2->Fill(Y2);
+   //h_Y2->Fill(Y2);
    #endif
 
-   t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
+   //t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
+   CalcCorrXTOF(X1pos+x1offset, Y1+Yoffset, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
-
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
-   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
-
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaSCAT,Y1+Yoffset);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1+Yoffset);
 
    #ifdef _CALCEX
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr);
 
    extern double *masses;
-   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
+   t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
    t_rigidity3 = CalcQBrho(Xcorr);
    #endif
 
