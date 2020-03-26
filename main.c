@@ -1,14 +1,11 @@
 
 /********************************************************************************\
   Name:         main.c
-  Created by:   Retief Neveling
+  Created by:   Retief Neveling & Phil Adsley
   Contents:     The central analysis module. 
 
 		Contains the Initialization routine, the Begin-Of-Run routine, 
 		the Event routine, and the End-of-Run routine
-
-		Currently undergoing some changes to take out VDC 
-		stuff from this and leave this as the main routine
 
 \********************************************************************************/
 
@@ -39,34 +36,40 @@
 
 /* home-made includes */
 #include "Parameters.h"
+#include "RawData.h"
+#include "FocalPlane.h"
 #include "SiliconData.h"
 #include "MMM.h"
 #include "W1.h"
 #include "GammaData.h"
 #include "HagarSort.h"
-#include "RawData.h"
-#include "FocalPlane.h"
-
 #include "CloverSort.h"
 #include "ScintillatorSort.h"
 
-/*------------Preprocessor Directives to change analysis------------*/
-//#define _POLARIZATION
-//#define _MOVIE
-//#define _JJAUTOTRIM
-#define _PRINTTOSCREEN
+/*---------------------Preprocessor directives for K600 focal plane detectors----*/
+//#define _FOCALPLANEDATA 
+//#define _VDC
 //#define _VDCRESCALCS
-#define _FULLANALYSIS
+//#define _JJAUTOTRIM
+//#define _MOVIE
 //#define _MISALIGNTIME
-#define _RAWDATA
+//#define _FULLANALYSIS
+//#define _CALCEX
+//---------------------Preprocessor directives: general-------------*/
+//#define _POLARIZATION
+//#define _PRINTTOSCREEN
+//#define _RAWDATA
+/*---------------------Preprocessor directives for segmented Si coincidence detection-----------*/
 //#define _SILICONDATA 
 //#define _MMM
 //#define _W1
+/*---------------------Preprocessor directives for gamma coincidence detection-----------*/
 //#define _GAMMADATA
-// #define _HAGAR
+//#define _HAGAR
 //#define _SCINTILLATOR
 //#define _CLOVER
-#define _CALCEX
+
+
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -112,7 +115,6 @@ extern int TDCModules;
 
 
 /*-------------------- global variables for main --------------------*/
-
 float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
 float lutu1[LUT_CHANNELS];
