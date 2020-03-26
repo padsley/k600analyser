@@ -117,7 +117,7 @@ void ParameterInit()
   printf("\n ParameterInit\n");
   masses = new double[4];
   ReadConfiguration();
-  PulseLimitsInit();
+  //PulseLimitsInit();
   ADCInit();
   QDCInit();
   //TDCInit();
@@ -394,6 +394,8 @@ void GateauSetChannelLimits(int plane, int sector, int start, int stop)
   GateauTDCChannelLimits[plane][sector][0] = start;
   GateauTDCChannelLimits[plane][sector][1] = stop;
 }
+
+
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
