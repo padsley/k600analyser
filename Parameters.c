@@ -8,8 +8,8 @@ int *ADCchannel;
 
 int TDCModules;
 int TDCsize;
-//float *TDC;
-//int *TDCchannel;
+float *TDC;
+int *TDCchannel;
 
 int QDCsize = 32;
 float *QDC;

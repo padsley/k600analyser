@@ -111,6 +111,8 @@ extern float *ADC;
 extern int *ADCchannel;
 extern int ADCModules;
 extern float *QDC;
+extern float *TDC;
+extern int *TDCchannel;
 extern int TDCModules;
 
 
