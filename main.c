@@ -62,10 +62,11 @@
 //#define _SILICONDATA 
 //#define _MMM
 //#define _W1
-#define _GAMMADATA
+//#define _GAMMADATA
 // #define _HAGAR
-#define _SCINTILLATOR
-#define _CLOVER
+//#define _SCINTILLATOR
+//#define _CLOVER
+#define _CALCEX
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -161,10 +162,14 @@ Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
 Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
+
+#ifdef _CALCEX
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
 double t_rigidity3 = -0.;
+#endif
+
 double t_thetaSCAT = -90.;
 double t_phiSCAT = -180;
 double t_theta = -90;
@@ -436,13 +441,12 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1posO=-100.;
    t_X1posC=-100., t_X1posCTOF=-100.;
 
-   t_Ex=-1.;
-   t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
    t_X1flag=-100;   t_X2flag=-100;   t_U1flag=-100;   t_U2flag=-100;
    t_X1effID=-100.; t_X2effID=-100.; t_U1effID=-100.; t_U2effID=-100.;   
    t_X1res0=-100.0; t_X2res0=-100.0; t_U1res0=-100.0; t_U2res0=-100.0;
    t_X1res1=-100.0; t_X2res1=-100.0; t_U1res1=-100.0; t_U2res1=-100.0;   
+
    #ifdef _VDCRESCALCS
    t_X1res2=-100.0; t_X2res2=-100.0; t_U1res2=-100.0; t_U2res2=-100.0;
    t_X1res3=-100.0; t_X2res3=-100.0; t_U1res3=-100.0; t_U2res3=-100.0;
@@ -452,6 +456,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1res7=-100.0; t_X2res7=-100.0; t_U1res7=-100.0; t_U2res7=-100.0;
    t_X1res8=-100.0; t_X2res8=-100.0; t_U1res8=-100.0; t_U2res8=-100.0;
    #endif
+
    t_thetaFP=-100; t_thetaFPx=-100; t_phiFP=-100;
    t_thetaSCAT=-100; t_phiSCAT=-100; 
    t_theta=-100;
@@ -461,6 +466,13 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_U1effall=-1; t_U1effdt=-1; t_U1effgroup=-1; t_U1effgood=-1;
    t_X2effall=-1; t_X2effdt=-1; t_X2effgroup=-1; t_X2effgood=-1;
    t_U2effall=-1; t_U2effdt=-1; t_U2effgroup=-1; t_U2effgood=-1;
+
+   #ifdef _CALCEX
+   t_Ex=-1.;
+   t_ExC = -1.;
+   t_T3 = -1.;
+   t_rigidity3 = -1.;
+   #endif
 
    #ifdef _FULLANALYSIS
    t_X1TimeDiff=-100;
@@ -525,9 +537,15 @@ INT main_init(void)
    else
      {
        if(VDC2_new)
-	 {
- 	   setupchannel2wireXoldXU(Channel2Wire);
-	 }
+        {
+            if(VDC2_new && VDC2_new_UX)
+            {
+                //setupchannel2wireXoldUX(Channel2Wire);
+                setupchannel2wireXoldXU(Channel2Wire);
+            }
+            else setupchannel2wireXoldXU(Channel2Wire);
+        }
+
        else
 	 {
 	   setupchannel2wireXoldXold(Channel2Wire);
@@ -830,15 +848,17 @@ INT main_init(void)
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
 
   t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
-
   t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
+  t1->Branch("theta",&t_theta,"t_theta/D");
+  t1->Branch("thetaSCAT",&t_thetaSCAT,"t_thetaSCAT/D");
+  t1->Branch("phiSCAT",&t_phiSCAT,"t_phiSCAT/D");
+
+  #ifdef _CALCEX
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
   t1->Branch("T3",&t_T3,"t_T3/D");
   t1->Branch("rigidity3",&t_rigidity3,"t_rigidity3/D");
-  t1->Branch("theta",&t_theta,"t_theta/D");
-  t1->Branch("thetaSCAT",&t_thetaSCAT,"t_thetaSCAT/D");
-  t1->Branch("phiSCAT",&t_phiSCAT,"t_phiSCAT/D");
+  #endif
 
   #ifdef _POLARIZATION
   t1->Branch("polu",&t_polu,"t_polu/I");   //PR153, polarized beam
@@ -943,20 +963,6 @@ INT main_bor(INT run_number)
    printf("lut x2 offset: %d \n",globals.lut_x2_offset);
    printf("lut u2 offset: %d \n",globals.lut_u2_offset);
 	
-/*   extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
-   extern double *X1Offsets;	        // from Parameters.c 
-   extern int *RunNrForX1Offsets;       // from Parameters.c  
-   extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
-   extern int *TOFOffsets;	        // from Parameters.c 
-   extern int *RunNrForTOFOffsets;       // from Parameters.c  
-   extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
-
-   x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-   for (int i = 0; i< NrOfRunsForX1Offsets;i++){
-       if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
-   }
-   printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
-*/
    extern int RunNumber;          // defined in Parameters.c,  the REAL run number you are analyzing
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
@@ -964,6 +970,8 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
+   extern double *PadOffsets;	        // from Parameters.c 
+
    extern double *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
@@ -999,8 +1007,11 @@ INT main_bor(INT run_number)
        if( RunNrForY1Offsets[i] == RunNumber) Y1offset=Y1Offsets[i];
        //printf("------------------Y1 offset= %f \n",Y1Offsets[i]); // as defined in Parameter.c 
    }
+
+   
    printf("run %d: Y1 offset= %f \n",RunNumber,Y1offset);
-//HJ
+   printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
+
 
    return SUCCESS;
 }
@@ -1827,12 +1838,16 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
-   //t_Ex = CalcExDirect(Xcorr);‘TDCValues’
+
+   #ifdef _CALCEX
+   //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr2);
 
    extern double *masses;
    t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
    t_rigidity3 = CalcQBrho(Xcorr2);
+   #endif
+
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
@@ -1901,6 +1916,14 @@ gammy = new GammaData();
 #ifdef _SILICONDATA
 si = new SiliconData();
 #endif
+
+
+#ifdef _SILICONDATA
+si = new SiliconData();
+#endif
+
+
+
    
 
 #ifdef _RAWDATA
@@ -1987,7 +2010,6 @@ si = new SiliconData();
 #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
-
 #endif
    
 #ifdef _GAMMADATA
