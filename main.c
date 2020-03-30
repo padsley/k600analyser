@@ -106,6 +106,7 @@ ANA_MODULE main_module = {
    main_param_str,        /* initial parameters IN ODB????   */
 };
 
+
 /*-------------------- defined somewhere else ----------------------*/
 extern float *ADC;
 extern int *ADCchannel;
@@ -114,7 +115,6 @@ extern float *QDC;
 extern float *TDC;
 extern int *TDCchannel;
 extern int TDCModules;
-
 
 /*-------------------- global variables for main --------------------*/
 float lutx1[LUT_CHANNELS];
@@ -271,22 +271,24 @@ TFile *f1=new TFile("output.root","RECREATE");
 TTree *t1=new TTree("DATA","K600 data");
 
 static TH1F *hX1_lut, *hX2_lut, *hU1_lut, *hU2_lut;
-static TH1F *hCableOff, *hCableOfftmp;
+//rn static TH1F *hCableOff, *hCableOfftmp;
 
 static TH1F *hEventID, *hEventID2;
 
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
-TH2F **hTDC2DModule;
+//TH2F **hTDC2DModule;
 TH2F *hADCChannels_vs_TDCChannels;
 
-static TH1F *hTDCPerEventRaw;
-//static TH1F *hTDCPerEvent;
+//rn static TH1F *hTDCPerEventRaw;
+//rn static TH1F *hTDCPerEvent;
 
-static TH2F *hChanVsTimeRef, *hChanVsTimeOffset, *hChanVsTimeOffsetPID;
+//rn static TH2F *hChanVsTimeRef, *hChanVsTimeOffset, *hChanVsTimeOffsetPID;
+static TH2F *hChanVsTimeOffsetPID;
 static TH2F *hWireVsTimeOffset, *hWireVsTimeOffsetPID;
 
-static TH1F *hHitPatternRawTDC, *hHitPatternAll, *hHitPatternPID;
+//rn static TH1F *hHitPatternRawTDC, *hHitPatternAll, *hHitPatternPID;
+static TH1F  *hHitPatternAll,  *hHitPatternPID;
 
 static TH1F *hX1_EffID, *hU1_EffID, *hX2_EffID, *hU2_EffID;
 static TH1F *hX1_DriftLength, *hX2_DriftLength, *hU1_DriftLength, *hU2_DriftLength;
@@ -568,10 +570,11 @@ INT main_init(void)
      hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
      hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
      hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
-     hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
-     hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
+     //rn hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
+     //rn hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
    close_subfolder(); 
 
+/* rn
    for(int j = 0; j < 896; j++) {
      //printf("cable offset %f \n",cableOffset[j]);
      //     for(int k = 0; k < (int(cableOffset[j])+ALL_CABLE_OFFSET); k++) {  
@@ -583,6 +586,7 @@ INT main_init(void)
      }
    }
    hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
+rn */
 
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -593,23 +597,24 @@ INT main_init(void)
    hPad1VsTofG  = new TH2F("hPad1VsTofG","Paddle 1 ave VS TOF (gated)", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
    hPad1Pad2G  = new TH2F("hPad1Pad2G","Pad1(y-axis) vs Pad2(x-axis) (PID gated)",  1024, 0, 4096, 1024,0 , 4096);
 
-   hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
-   //hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
+   //rn hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
+   //rn hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
 
+/*rn
    hTDC2DModule = new TH2F*[TDCModules];
    for(int counter=0;counter<TDCModules;counter++){
 	  sprintf(name,"hTDC2DModule%d",counter);
 	  sprintf(title,"hTDC2DModule %d ",counter);
           hTDC2DModule[counter]=new TH2F(name,title, 4000, -8000, 14999,128,0,128);
    }
-   
+rn*/ 
     
-   hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
+   //rn hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
-   hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
+   //rn hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
+   //rn hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
    hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
    hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
    hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
@@ -1036,8 +1041,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
  
-   int *TDC_channel_export;
-   float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
+   //rn int *TDC_channel_export;
+   //rn float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
    std::vector<int> TDCChannelExportStore;
    std::vector<float> TDCValueExportStore;
@@ -1130,9 +1135,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    ntdc = bk_locate(pevent, "TDC0", &ptdc);  // TDC bank in analyzer.c defined as TDC0. ntdc is nr of values in the bank
    //printf("nr of TDC datawords:                    %d words\n",ntdc);
-   tdc_counter++;
-   hTDCPerEventRaw->Fill(ntdc);    
+   //rn tdc_counter++;
+   //rn hTDCPerEventRaw->Fill(ntdc);    
    t_tdcsperevent=ntdc;
+
    //if (ntdc == 0){                      // events with no TDC data. Ignore the event
         //hEmptyTDCBankRaw->Fill(2);
    //	#ifdef _PRINTTOSCREEN
@@ -1186,12 +1192,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
  
-   // ===loop through all the TDC datawords================================================================================================
+   //rn hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event    
 
-   //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event    
-   //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
-   //TDC_value_export = new float[ntdc];
-   
+   //old TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
+   //old TDC_value_export = new float[ntdc];
+
+   // ===loop through all the TDC datawords================================================================================================   
    for(int i = 0; i < ntdc; i++) {
       if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
         tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
@@ -1245,23 +1251,23 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       }
   
       if(tdc1190datacode!=0) continue;       //ignore rest of for loop if we only have header/trailer word, BUT for valid measurent word, continue
+
       channel = (0x7F&((ptdc[i])>>19));      // channel is per TDC; i.e. 0-127
       time = 0x7FFFF&(ptdc[i]);
 
- 
       ref_time = reftimes[tdcmodule] - time;     // to get accurate time info that does not suffer from trigger jitter
-      
-      if(tdcmodule<TDCModules){
-	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 		
-      }
+      //printf("--->  main.c  tdcmodule= %i,  channel= %i, time= %i   \n",tdcmodule,channel,ref_time); 
+
+      //rn if(tdcmodule<TDCModules){
+      //rn 	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 		
+      //rn }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
-      
       offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
       //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
-      //TDC_channel_export[i] = channel;
-      //TDC_value_export[i] = offset_time;
+      //old TDC_channel_export[i] = channel;
+      //old TDC_value_export[i] = offset_time;
       TDCChannelExportStore.push_back(channel);
       TDCValueExportStore.push_back(offset_time);
 
@@ -1290,9 +1296,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		#endif
       }
 
-      hHitPatternRawTDC->Fill(channel);            
-      hChanVsTimeRef->Fill(ref_time,channel);        // 2D: chan vs reference times
-      hChanVsTimeOffset->Fill(offset_time,channel);  // 2D: chan vs offset corrected times
+      //rn hHitPatternRawTDC->Fill(channel);            
+      //rn hChanVsTimeRef->Fill(ref_time,channel);        // 2D: chan vs reference times
+      //rn hChanVsTimeOffset->Fill(offset_time,channel);  // 2D: chan vs offset corrected times
 
       #ifdef _JJAUTOTRIM  
       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 && channel<TDC_CHANNELS){		// if you want to use JJ_autotrim.C
@@ -1865,6 +1871,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      hEventID2->Fill(ev_id_X1U1X2);
    }
 
+
+/*rn
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];
    //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
@@ -1877,7 +1885,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
    for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
-
+rn*/
   
    
    //========================================================================================================================
@@ -2000,8 +2008,8 @@ si = new SiliconData();
 //#endif
         
 //#define _ADC
-   delete [] TDC_channel_export;
-   delete [] TDC_value_export;
+   //delete [] TDC_channel_export;
+   //delete [] TDC_value_export;
    TDCChannelExportStore.clear();
    TDCValueExportStore.clear();
 

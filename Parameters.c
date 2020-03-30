@@ -10,6 +10,8 @@ int TDCModules;
 int TDCsize;
 float *TDC;
 int *TDCchannel;
+float *TDC_value_export;
+int *TDC_channel_export;
 
 int QDCsize = 32;
 float *QDC;
@@ -119,7 +121,7 @@ void ParameterInit()
   PulseLimitsInit();
   ADCInit();
   QDCInit();
-  //TDCInit();
+  //TDCOffsetsInit();
   PrintParameters();
 //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
   printf("\nFinished initialising parameters - to the sorting!\n");
@@ -826,6 +828,7 @@ void ADCInit()
   ADCClear();
 }
 
+/*-------------------------------------------------*/
 void ADCClear()
 {
   for(int i=0;i<ADCsize;i++)
@@ -838,11 +841,12 @@ void ADCClear()
 /*-------------------------------------------------*/
 void TDCOffsetsInit()
 {
-  printf("TDCInit\n");
+  printf("TDCOffsetInit\n");
   TDCOffsets = new double[128*TDCModules];
   TDCOffsetsClear();
 }
 
+/*-------------------------------------------------*/
 void TDCOffsetsClear()
 {
   for(int i=0;i<TDCsize;i++)
@@ -851,11 +855,13 @@ void TDCOffsetsClear()
     }
 }
 
+/*-------------------------------------------------*/
 void SetTDCChannelOffset(int channel, double offset)
 {
   TDCOffsets[channel] = offset;
 }
 
+/*-------------------------------------------------*/
 void ReadTDCOffsets(std::string OffsetsFile)
 {
   bool Reading = true;
