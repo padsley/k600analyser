@@ -12,6 +12,7 @@ float *TDC;
 int *TDCchannel;
 float *TDC_value_export;
 int *TDC_channel_export;
+int TDCHits=0;
 
 int QDCsize = 32;
 float *QDC;

@@ -58,7 +58,7 @@
 //---------------------Preprocessor directives: general-------------*/
 //#define _POLARIZATION
 //#define _PRINTTOSCREEN
-//#define _RAWDATA
+#define _RAWDATA
 /*---------------------Preprocessor directives for segmented Si coincidence detection-----------*/
 //#define _SILICONDATA 
 //#define _MMM
@@ -115,6 +115,9 @@ extern float *QDC;
 extern float *TDC;
 extern int *TDCchannel;
 extern int TDCModules;
+extern int *TDC_channel_export;
+extern float *TDC_value_export;	    //Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
+extern int TDCHits;
 
 /*-------------------- global variables for main --------------------*/
 float lutx1[LUT_CHANNELS];
@@ -1041,8 +1044,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
  
-   //rn int *TDC_channel_export;
-   //rn float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
    std::vector<int> TDCChannelExportStore;
    std::vector<float> TDCValueExportStore;

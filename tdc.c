@@ -69,7 +69,7 @@ extern int TDCModules;
 extern int TDCsize;
 extern float *TDC_value_export;
 extern int   *TDC_channel_export;
-
+extern int TDCHits;
 
 // defined in analyzer.c
 extern EXP_PARAM exp_param;
@@ -290,7 +290,7 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
    //printf("TDCChannelExportStore.size(): %d \t TDCValueExportStore.size(): %d\n",TDCChannelExportStore.size(),TDCValueExportStore.size());
 
-   int TDCHits = 0;
+   TDCHits = 0;
    if(TDCChannelExportStore.size()==TDCValueExportStore.size())	 {	
 	TDCHits = TDCValueExportStore.size();
    }
