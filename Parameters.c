@@ -1157,7 +1157,7 @@ void ReadConfiguration()
 	      else if(LineBuffer.compare(0,15,"CalibrationFile") == 0)
 		{
 		  input >> LineBuffer;
-		  printf("Using calibration file: %s\n",LineBuffer.c_str());
+		  printf("\nUsing calibration file: %s\n",LineBuffer.c_str());
 		  ReadCalibrationParameters(LineBuffer);
 		}
 

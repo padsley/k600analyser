@@ -80,6 +80,7 @@ extern ANA_MODULE main_module;
 extern ANA_MODULE qdc_module;
 extern ANA_MODULE adc_module;                    
 extern ANA_MODULE beamline_module;                    
+extern ANA_MODULE tdc_module;                    
 
 ANA_MODULE *beam_module[] = {
    &beamline_module,
@@ -94,6 +95,7 @@ ANA_MODULE *scaler_module[] = {
 ANA_MODULE *trigger_module[] = {
    &adc_module,					
    &qdc_module,
+   &tdc_module,					
    &main_module,
    NULL
 };

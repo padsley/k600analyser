@@ -27,15 +27,11 @@
 #include "Parameters.h"
 #include "FocalPlane.h"
 
-// Preprocessor directives: general =============================
+//---------------------Preprocessor directives: general-------------*/
 //#define _PRINTTOSCREEN
-
-
-//-- variables to be used in main.c as extern variables 
-int tdcevtcount;
-
-// For ODB: from /Analyzer/Parameters/ 
-//ADC_PARAM tdc_param;
+#define _POLARIZATION
+/*---------------------Preprocessor directives for K600 focal plane detectors----*/
+//#define _MOVIE
 
 
 // Module declaration 
@@ -76,14 +72,26 @@ extern double   *TDCOffsets;
 extern EXP_PARAM exp_param;
 extern RUNINFO runinfo;
 
+
+/*-------------------- global variables --------------------*/
+
+//-- variables to be used in main.c as extern variables 
+int tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
+int pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
+int pulser,cloverpulser; 	
+#ifdef _POLARIZATION  
+Int_t polu=0, pold=0;   // a pattern register equivalent, used in main.c
+#endif
+
+
+
 // Histogramming Data Structures 
 TH2F **hTDC2DModule;
 static TH1F *hTDCPerEvent;
 static TH1F *hTDCPerEventRaw;
 static TH1F *hHitPatternRawTDC;
 static TH2F *hChanVsTimeRef, *hChanVsTimeOffset;
-static TH1F *hCableOff, *hCableOfftmp;
-
+static TH1F *hTDCOff, *hTDCOfftmp;
 
 
 /*-- init routine --------------------------------------------------------------*/
@@ -93,16 +101,10 @@ INT tdc_init(void)
    char title[256];
    int i;
 
-   hCableOff = new TH1F("hCableOff","TDC offsets",TDCsize,0,TDCsize);	// visual aid only
-   hCableOfftmp = new TH1F("hCableOfftmp","TDC offset aid: -1000 for all channels)",TDCsize,0,TDCsize);
+  //====== tdc init routine: definition of histograms ================================================
 
-   for(int j = 0; j < TDCsize; j++) {
-     //printf("TDC Offset: %f  ",TDCOffsets[j]);
-     hCableOff->SetBinContent(j,TDCOffsets[j]+1000); 
-     hCableOfftmp->SetBinContent(j,1000); 
-   }
-   hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
-
+   hTDCOff = new TH1F("hTDCOff","TDC offsets",TDCsize,0,TDCsize);	// visual aid only
+   hTDCOfftmp = new TH1F("hTDCOfftmp","TDC offset aid: -1000 for all channels)",TDCsize,0,TDCsize);
 
    hTDC2DModule = new TH2F*[TDCModules];   
    for(int counter=0;counter<TDCModules;counter++){
@@ -117,6 +119,20 @@ INT tdc_init(void)
    hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
    hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
+
+
+  //====== tdc init routine: filling some histograms ================================================
+
+   for(int j = 0; j < TDCsize; j++) {
+     //printf("TDC Offset: %f  ",TDCOffsets[j]);
+     hTDCOff->SetBinContent(j,TDCOffsets[j]+1000); 
+     hTDCOfftmp->SetBinContent(j,1000); 
+   }
+   hTDCOff->Add(hTDCOfftmp,-1);   //because I do not know how to fill a neg histogram
+
+
+  //====== tdc init routine: definition of TTree variables ================================================
+
 
    return SUCCESS;
 }
@@ -147,7 +163,6 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
    Int_t reftimes[10]; 
-   Int_t tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
 
@@ -159,7 +174,12 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    extern int trailer_triglost_counter;               // defined; declared in analyzer.c	
    extern int trailer_bufoverflow_counter;            // defined; declared in analyzer.c	
 
+   extern int qdc_counter1;
 
+   tof=0;toftdc1=0;toftdc2=0;toftdc3=0;toftdc4=0;toftdc5=0;toftdc6=0;toftdc7=0;  //zero at start of each event
+   polu=0;pold=0;
+   pad1hipt=0; pad1lowpt=0; pad2hipt=0; pad2lowpt=0;
+   pulser=0;cloverpulser=0; 	
    // rather define it in Parameters.c
    //int *TDC_channel_export;
    //float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
@@ -172,11 +192,14 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    // look for TDC0 bank 
 
    ntdc = bk_locate(pevent, "TDC0", &ptdc);  // TDC bank in analyzer.c defined as TDC0. ntdc is nr of values in the bank
+
    tdc_counter++;
+   if(qdc_counter1 != tdc_counter) printf("qdc and tdc event counters out of sync: qdccounter=%i     tdccounter=%i\n",qdc_counter1,tdc_counter);
+
    hTDCPerEventRaw->Fill(ntdc);  // a diagnostic: how many TDC channels per event, including zeros and too many
    //t_tdcsperevent=ntdc;
 
-   tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
+   tdcevtcount=(ptdc[1]>>5)&0xfffff;   // bad name: is nr of tdc hits 
 
    if (ntdc>MAX_WIRES_PER_EVENT) {      // if too many tdc words per event, ignore the event
         toolarge_tdc_event_counter++; 
@@ -266,8 +289,7 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
-      //rn offset_time = ref_time - int(cableOffsetNEW[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
-      offset_time = ref_time - int(TDCOffsets[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
+      offset_time = ref_time - int(TDCOffsets[channel]);  // in TDCoffset.dat: line nr = y bin nr in hChanVsOffsetTime
 
       TDCChannelExportStore.push_back(channel);
       TDCValueExportStore.push_back(offset_time);
@@ -277,6 +299,32 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
       hChanVsTimeRef->Fill(ref_time,channel);        // 2D: chan vs reference times
       hChanVsTimeOffset->Fill(offset_time,channel);  // 2D: chan vs offset corrected times
       //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
+
+
+      switch(channel){
+		case (TDC_CHAN_PULSER): pulser=1; break;            // see Parameters.h. The chan = 2
+		case 9:  pad1hipt=ref_time; break;
+		case 10: pad1lowpt=ref_time;break;
+		case 11: pad2hipt=ref_time; break;
+		case 12: pad2lowpt=ref_time; break;
+		case 14: cloverpulser=1;break;
+		case TOF_TDC_CHAN: if(tof==0) {toftdc1=ref_time; 
+						 //rntof=ref_time+TOFoffset; 
+						 tof=ref_time; 
+					      } break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
+		case (TOF_TDC_CHAN+1*128): if(toftdc2==0) toftdc2=ref_time;break;
+		case (TOF_TDC_CHAN+2*128): if(toftdc3==0) toftdc3=ref_time; break;
+		case (TOF_TDC_CHAN+3*128): if(toftdc4==0) toftdc4=ref_time; break;
+		case (TOF_TDC_CHAN+4*128): if(toftdc5==0) toftdc5=ref_time; break;
+		case (TOF_TDC_CHAN+5*128): if(toftdc6==0) toftdc6=ref_time; break;
+		case (TOF_TDC_CHAN+6*128): if(toftdc7==0) toftdc7=ref_time; break;
+		#ifdef _POLARIZATION  		
+		case (TDC_CHAN_POLU): polu=1; break;  // for polarized beam
+		case (TDC_CHAN_POLD): pold=1; break;  // for polarized beam
+		#endif
+      }
+      //continue;  // If you analyze the pulser-only data uncomment this line otherwise you have a segmentation fault
+
    }
 
 
@@ -300,7 +348,6 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    TDCValueExportStore.clear();
 
    //printf("Got to SUCCESS in tdc.c\n");
-   //delete tdc;
    return SUCCESS;
 }
 
