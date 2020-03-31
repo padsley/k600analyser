@@ -8,10 +8,10 @@ int *ADCchannel;
 
 int TDCModules;
 int TDCsize;
-float *TDC;
-int *TDCchannel;
-float *TDC_value_export;
-int *TDC_channel_export;
+float *TDC;		//
+int *TDCchannel;	//
+float *TDC_value_export;	//
+int *TDC_channel_export;	//
 int TDCHits=0;
 
 int QDCsize = 32;
@@ -867,6 +867,8 @@ void ReadTDCOffsets(std::string OffsetsFile)
 {
   bool Reading = true;
 
+  int counter=0;
+
   if(OffsetsFile.compare(0,6,"ignore") == 0)
     {
       printf("Ignore the TDC offsets\n");
@@ -889,11 +891,13 @@ void ReadTDCOffsets(std::string OffsetsFile)
 		}
 	      else
 		{
-		  channel = atoi(LineBuffer.c_str());
-		  input >> LineBuffer;
+		  //channel = atoi(LineBuffer.c_str());
+		  //input >> LineBuffer;
 		  offset = atof(LineBuffer.c_str());
+		  channel = counter;
 		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
 		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
+		  counter++;
 		}
 	    }
 	}
