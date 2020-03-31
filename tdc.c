@@ -70,6 +70,7 @@ extern int TDCsize;
 extern float *TDC_value_export;
 extern int   *TDC_channel_export;
 extern int TDCHits;
+extern double   *TDCOffsets;
 
 // defined in analyzer.c
 extern EXP_PARAM exp_param;
@@ -79,11 +80,10 @@ extern RUNINFO runinfo;
 TH2F **hTDC2DModule;
 static TH1F *hTDCPerEvent;
 static TH1F *hTDCPerEventRaw;
-static TH1F *hHitPatternRawTDC, *hHitPatternAll;
+static TH1F *hHitPatternRawTDC;
 static TH2F *hChanVsTimeRef, *hChanVsTimeOffset;
 static TH1F *hCableOff, *hCableOfftmp;
 
-float cableOffsetNEW[896];
 
 
 /*-- init routine --------------------------------------------------------------*/
@@ -93,18 +93,13 @@ INT tdc_init(void)
    char title[256];
    int i;
 
-   read_cable(cableOffsetNEW,(char *)"CableLength.dat");
-   hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
-   hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
-   for(int j = 0; j < 896; j++) {
-     //printf("cable offset %f \n",cableOffset[j]);
-     //     for(int k = 0; k < (int(cableOffset[j])+ALL_CABLE_OFFSET); k++) {  
-     for(int k = 0; k < (int(cableOffsetNEW[j]+1000)); k++) {  
-       hCableOff->Fill(j);                     
-     }
-     for(int k = 0; k < 1000; k++) {  
-       hCableOfftmp->Fill(j);                     
-     }
+   hCableOff = new TH1F("hCableOff","TDC offsets",TDCsize,0,TDCsize);	// visual aid only
+   hCableOfftmp = new TH1F("hCableOfftmp","TDC offset aid: -1000 for all channels)",TDCsize,0,TDCsize);
+
+   for(int j = 0; j < TDCsize; j++) {
+     //printf("TDC Offset: %f  ",TDCOffsets[j]);
+     hCableOff->SetBinContent(j,TDCOffsets[j]+1000); 
+     hCableOfftmp->SetBinContent(j,1000); 
    }
    hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
 
@@ -120,7 +115,6 @@ INT tdc_init(void)
    hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
    hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
    hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
-   hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
    hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
 
@@ -272,7 +266,8 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
       }
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
-      offset_time = ref_time - int(cableOffsetNEW[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
+      //rn offset_time = ref_time - int(cableOffsetNEW[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
+      offset_time = ref_time - int(TDCOffsets[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
 
       TDCChannelExportStore.push_back(channel);
       TDCValueExportStore.push_back(offset_time);
@@ -301,6 +296,8 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++) TDC_channel_export[p] = TDCChannelExportStore[p];
    for(unsigned int p=0;p<TDCValueExportStore.size();p++) TDC_value_export[p] = TDCValueExportStore[p];
 
+   TDCChannelExportStore.clear();
+   TDCValueExportStore.clear();
 
    //printf("Got to SUCCESS in tdc.c\n");
    //delete tdc;

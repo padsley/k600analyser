@@ -48,7 +48,7 @@
 
 /*---------------------Preprocessor directives for K600 focal plane detectors----*/
 //#define _FOCALPLANEDATA 
-//#define _VDC
+//#define _VDC                              // not used at the moment?
 //#define _VDCRESCALCS
 //#define _JJAUTOTRIM
 //#define _MOVIE
@@ -107,7 +107,7 @@ ANA_MODULE main_module = {
 };
 
 
-/*-------------------- defined somewhere else ----------------------*/
+/*-------------------- defined in Parameters.c ----------------------*/
 extern float *ADC;
 extern int *ADCchannel;
 extern int ADCModules;
@@ -1044,6 +1044,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;
    extern int triggerI, triggerU, CII, CIU;   
  
+   //rn int *TDC_channel_export;
+   //rn float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
    std::vector<int> TDCChannelExportStore;
    std::vector<float> TDCValueExportStore;
@@ -1873,7 +1875,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    }
 
 
-/*rn
+/*rn     // now happening in tdc.c
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];
    //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
@@ -1892,27 +1894,15 @@ rn*/
    //========================================================================================================================
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
    //========================================================================================================================
-
-
-#ifdef _GAMMADATA
-gammy = new GammaData();
-#endif
-
-
-#ifdef _SILICONDATA
-si = new SiliconData();
-#endif
-
-
    
-#ifdef _RAWDATA
-  if(raw)
-  {
-    //printf("made it in main.c to RawDataDump\n");
-    raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+   #ifdef _RAWDATA
+   if(raw)
+   {
+     //printf("made it in main.c to RawDataDump\n");
+     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
     
-    for(int i=0; i<TDCValueExportStore.size(); i++)
-    {
+     for(int i=0; i<TDCValueExportStore.size(); i++)
+     {
         for(int j=0; j<sizeof(ADCchannel); j++)
         {
 			if(ADC[j]>0.0)
@@ -1921,55 +1911,65 @@ si = new SiliconData();
 			}
 				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
         }
-    }
-  }
-  
-#endif
-  
-#ifdef _MMM
-    if(si)
-    {
+     }
+   }
+   #endif
+
+
+   #ifdef _SILICONDATA
+   si = new SiliconData();
+   #endif
+
+   #ifdef _MMM
+   if(si)
+   {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
-    }
-#endif
+   }
+   #endif
 
-#ifdef _W1
-    if(si)
-    {
+   #ifdef _W1
+   if(si)
+   {
       W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
-    }
-#endif
+   }
+   #endif
 
-#ifdef _HAGAR
-    if(gammy)
-    {
-      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
-      HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
-    }
-#endif
+   #ifdef _GATEAU
+   if(fatty)
+   {
+      GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
+   }
+   #endif
 
-#ifdef _CLOVER
-    if(gammy)
-    {
+
+
+   #ifdef _GAMMADATA
+   gammy = new GammaData();
+   #endif
+
+   #ifdef _CLOVER
+   if(gammy)
+   {
       //gammy = CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
       CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
-    }
-#endif
+   }
+   #endif
 
-#ifdef _GATEAU
-  if(fatty)
-  {
-    GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
-  }
-#endif
-
-#ifdef _SCINTILLATOR
-    if(gammy)
-    {
+   #ifdef _SCINTILLATOR
+   if(gammy)
+   {
       //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
       ScintillatorSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
-    }
-#endif
+   }
+   #endif
+
+   #ifdef _HAGAR
+   if(gammy)
+   {
+      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+      HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
+   }
+   #endif
 
    //========================================================================================================================
    // Fill TTrees
@@ -1986,29 +1986,34 @@ si = new SiliconData();
    
    t1->Fill();    // fill the tree t1
 
-#ifdef _SILICONDATA
+
+   //========================================================================================================================
+   //Now do some cleanup
+   //========================================================================================================================
+
+   #ifdef _RAWDATA
+   delete raw;
+   #endif
+
+   #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
-#endif
+   #endif
    
-#ifdef _GAMMADATA
+   #ifdef _GAMMADATA
    gammy->ClearEvent();//See comment above about GammaData::ClearEvent()
    delete gammy;//See comment above about deleting *gammy
-#endif
+   #endif
    
-#ifdef _RAWDATA
-   delete raw;
-#endif
-   
-#ifdef _GATEAU
+   #ifdef _GATEAU
    fatty->ClearEvent();
-#endif
+   #endif
    
-//#ifdef _ADC
+   //#ifdef _ADC
    if(ADCModules>0) ADCClear();
-//#endif
+   //#endif
         
-//#define _ADC
+   //#define _ADC
    //delete [] TDC_channel_export;
    //delete [] TDC_value_export;
    TDCChannelExportStore.clear();

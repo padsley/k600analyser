@@ -125,7 +125,7 @@ void ParameterInit()
   //TDCOffsetsInit();
   PrintParameters();
 //   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
-  printf("\nFinished initialising parameters - to the sorting!\n");
+  printf("\nFinished initialising parameters - to the sorting!\n\n");
 }
 
 /*-------------------------------------------------*/
@@ -494,7 +494,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   std::ifstream CalibInput;
   if(CalibFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
+    printf("********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
     for(int i=0;i<32*ADCModules;i++)
     {
       printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
@@ -573,7 +573,7 @@ void ReadCalibrationParameters(std::string CalibFile)
   printf("\n");
   }
   CalibInput.close();
-  printf("Finished Calibration Parameters\n");
+  printf("Finished Calibration Parameters\n\n");
 }
 
 
@@ -588,7 +588,7 @@ void ReadX1Offsets(std::string X1offsetsFile)
   std::ifstream InputFile;
   if(X1offsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
+    printf("********** Ignoring: X1 offsets for all runs are left at 0 **********\n");
     RunNrForX1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfX1Offsets")"
     X1Offsets[0]= 0;
   }
@@ -623,7 +623,7 @@ void ReadX1Offsets(std::string X1offsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d X1offsets\n",counter);
+  printf("Finished reading %d X1offsets\n\n",counter);
 }
 
 
@@ -638,7 +638,7 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   std::ifstream InputFile;
   if(TOFoffsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
+    printf("********** Ignoring: TOF offsets for all runs are left at 0 **********\n");
     RunNrForTOFOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfTOFOffsets")"
     TOFOffsets[0]= 0;
   }
@@ -673,7 +673,7 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TOFoffsets\n",counter);
+  printf("Finished reading %d TOFoffsets\n\n",counter);
 }
 
 
@@ -692,7 +692,7 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   std::ifstream InputFile;
   if(PadoffsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring: Pad offsets for all runs are left at 0 **********\n");
+    printf("********** Ignoring: Pad offsets for all runs are left at 0 **********\n");
     RunNrForPadOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfPadOffsets")"
     PadOffsets[0]= 0;
   }
@@ -727,7 +727,7 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TPadoffsets\n",counter);
+  printf("Finished reading %d TPadoffsets\n\n",counter);
 }
 
 
@@ -852,7 +852,7 @@ void TDCOffsetsClear()
 {
   for(int i=0;i<TDCsize;i++)
     {
-      TDCOffsets[i] = 0;
+      TDCOffsets[i] = -123;
     }
 }
 
@@ -860,6 +860,8 @@ void TDCOffsetsClear()
 void SetTDCChannelOffset(int channel, double offset)
 {
   TDCOffsets[channel] = offset;
+  printf("TDC Channel: %d\tOffset: %f\t",channel,TDCOffsets[channel]);
+
 }
 
 /*-------------------------------------------------*/
@@ -871,7 +873,7 @@ void ReadTDCOffsets(std::string OffsetsFile)
 
   if(OffsetsFile.compare(0,6,"ignore") == 0)
     {
-      printf("Ignore the TDC offsets\n");
+      printf("********** Ignoring: TDC offsets for all runs are left at 0 **********\n");
     }
   else
     {
@@ -895,13 +897,15 @@ void ReadTDCOffsets(std::string OffsetsFile)
 		  //input >> LineBuffer;
 		  offset = atof(LineBuffer.c_str());
 		  channel = counter;
-		  printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
-		  if(channel!=-1)SetTDCChannelOffset(channel, offset);
+		  //printf("TDC Channel: %d\tOffset: %f\t",channel,offset);
+		  //if(channel!=-1) SetTDCChannelOffset(channel, offset);
+		  SetTDCChannelOffset(channel, offset);
 		  counter++;
 		}
 	    }
 	}
     }
+    printf("\nFinished reading %d TDC offsets\n\n",counter);
 }
 
 /*-------------------------------------------------*/
