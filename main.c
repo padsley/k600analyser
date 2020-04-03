@@ -120,11 +120,6 @@ extern float *TDC_value_export;	    //Defined here. Storage structure for TDC in
 extern int TDCHits;
 extern double   *TDCOffsets;
 
-//extern int t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
-
-//#ifdef _POLARIZATION  
-//extern int t_polu=0, t_pold=0;   // a pattern register equivalent, coming now from tdc.c
-//#endif
 
 
 /*-------------------- global variables for main --------------------*/
@@ -132,7 +127,6 @@ float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
 float lutu1[LUT_CHANNELS];
 float lutu2[LUT_CHANNELS];
-//float cableOffset[896];
 char string_var[200];
 
 #ifdef _MISALIGNTIME
@@ -165,8 +159,6 @@ Int_t    t_triggerI=0;
 Int_t    t_triggerU=0;
 Int_t    t_CII=0;
 Int_t    t_CIU=0;
-
-
 
 // focal plane variables for TTree
 Int_t    t_X1hits = 0,  t_X2hits = 0,   t_U1hits = 0,   t_U2hits = 0;
@@ -250,6 +242,7 @@ Double_t U2wirefit[10], U2distfit[10];
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
 Double_t Padoffset=0;
+Double_t Yoffset=0.0;
 
 #ifdef _RAWDATA
 RawData *raw;
@@ -272,23 +265,15 @@ TFile *f1=new TFile("output.root","RECREATE");
 TTree *t1=new TTree("DATA","K600 data");
 
 static TH1F *hX1_lut, *hX2_lut, *hU1_lut, *hU2_lut;
-//rn static TH1F *hCableOff, *hCableOfftmp;
 
 static TH1F *hEventID, *hEventID2;
 
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
-//TH2F **hTDC2DModule;
 TH2F *hADCChannels_vs_TDCChannels;
 
-//rn static TH1F *hTDCPerEventRaw;
-//rn static TH1F *hTDCPerEvent;
-
-//rn static TH2F *hChanVsTimeRef, *hChanVsTimeOffset, *hChanVsTimeOffsetPID;
 static TH2F *hChanVsTimeOffsetPID;
 static TH2F *hWireVsTimeOffset, *hWireVsTimeOffsetPID;
-
-//rn static TH1F *hHitPatternRawTDC, *hHitPatternAll, *hHitPatternPID;
 static TH1F  *hHitPatternAll,  *hHitPatternPID;
 
 static TH1F *hX1_EffID, *hU1_EffID, *hX2_EffID, *hU2_EffID;
@@ -564,58 +549,24 @@ INT main_init(void)
    printf("== Misalignment time cutoff (sec): %i ==\n",misaligntime);
    #endif
 
-   //read_cable(cableOffset,(char *)"CableLength.dat");
 
-   //open_subfolder((char *)"LUT&Cable");
-     hX1_lut = new TH1F("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
-     hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
-     hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
-     hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
-     //rn hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
-     //rn hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
-   //close_subfolder(); 
+   hX1_lut = new TH1F("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
+   hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
+   hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
+   hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
 
-/* rn
-   for(int j = 0; j < 896; j++) {
-     //printf("cable offset %f \n",cableOffset[j]);
-     //     for(int k = 0; k < (int(cableOffset[j])+ALL_CABLE_OFFSET); k++) {  
-     for(int k = 0; k < (int(cableOffset[j]+1000)); k++) {  
-       hCableOff->Fill(j);                     
-     }
-     for(int k = 0; k < 1000; k++) {  
-       hCableOfftmp->Fill(j);                     
-     }
-   }
-   hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
-rn */
 
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
    hEventID  = new TH1F("hEventID","each bin represents a type of event",30,0,30);
-   //hEventID  = new TH1F("hEventID","each bin represents a type of event",30,0,30);
    hEventID2  = new TH1F("hEventID2","each bin represents a type of event",30,0,30);
 
    hPad1VsTofG  = new TH2F("hPad1VsTofG","Paddle 1 ave VS TOF (gated)", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
    hPad1Pad2G  = new TH2F("hPad1Pad2G","Pad1(y-axis) vs Pad2(x-axis) (PID gated)",  1024, 0, 4096, 1024,0 , 4096);
 
-   //rn hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
-   //rn hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
-
-/*rn
-   hTDC2DModule = new TH2F*[TDCModules];
-   for(int counter=0;counter<TDCModules;counter++){
-	  sprintf(name,"hTDC2DModule%d",counter);
-	  sprintf(title,"hTDC2DModule %d ",counter);
-          hTDC2DModule[counter]=new TH2F(name,title, 4000, -8000, 14999,128,0,128);
-   }
-rn*/ 
-    
-   //rn hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
-   //rn hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   //rn hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
    hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
    hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
    hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
@@ -975,25 +926,38 @@ INT main_bor(INT run_number)
    extern int *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
+   extern double *YOffsets;	        // from Parameters.c 
+   extern int *RunNrForYOffsets;       // from Parameters.c  
+   extern int NrOfRunsForYOffsets;     // nr of runs for which we have Yoffsets read it via Parameters.c
 
+   //============
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
    printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
 
-
+   //============
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
        if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
+   //============
    Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForPadOffsets;i++){
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
+
+   //============
+   Yoffset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForYOffsets;i++){
+       if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: Y offset= %f \n",RunNumber,Yoffset);
+
 
    return SUCCESS;
 }
@@ -1015,11 +979,9 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
    Int_t reftimes[10]; 
-   //rn Int_t tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
-   //rn Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
    float pad1raw=0; //padoffsets correction
    float PsideTDC[80];
 
@@ -1042,9 +1004,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;			      // defined; declared in analyzer.c	
    extern int triggerI, triggerU, CII, CIU;           // defined; declared in scaler.c
  
-   //rn int *TDC_channel_export;
-   //rn float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
-
    std::vector<int> TDCChannelExportStore;
    std::vector<float> TDCValueExportStore;
    
@@ -1174,11 +1133,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
  
-   //rn hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event    
-
-   //old TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
-   //old TDC_value_export = new float[ntdc];
-
    // ===loop through all the TDC datawords================================================================================================   
    for(int i = 0; i < ntdc; i++) {
       if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
@@ -1738,15 +1692,16 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Now calculate and fill spectra for calculated angles using 2 driftchambers, and calculate Ypos
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
-   //thetaFP = CalcThetaFP(X1pos,X2pos);
+   thetaFP = CalcThetaFP(X1pos,X2pos);
    //t_thetaFP = thetaFP;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
+   
+   //rn thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+   t_Y1=Y1+Yoffset; 
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1);
+   h_Y1->Fill(Y1+Yoffset);
    #endif
 
    Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
@@ -1760,16 +1715,15 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
+   CalcCorrXTOF(X1pos+x1offset, Y1+Yoffset, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaSCAT,Y1+Yoffset);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
-
 
    #ifdef _CALCEX
    //t_Ex = CalcExDirect(Xcorr);
