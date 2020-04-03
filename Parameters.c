@@ -80,10 +80,26 @@ int NXTOFCorr; //Number of terms to correct X1pos (with offset) with TOF-TOF_LSO
 double *XTOFCorr; //pointer array to store the terms from above
 double TOF_LSOffset; //Offset for TOF to place it around 0
 
+
 int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
 double *ThFPSCATOffset;  //pointer array to store the terms from above
 int NThFPSCATSlope;    //Number of terms to convert thetaFP to thetaSCAT
 double *ThFPSCATSlope; //pointer array to store the terms from above
+
+
+// Calculating Phi from Y:
+// PhiSCAT = offset + slope*Y
+// where the offset:    offset = a(ThSCAT
+int NYPhiSCATOffset1;     //Number of terms to convert Y to PhiSCAT
+double *YPhiSCATOffset1;  //pointer array to store the terms from above
+int NYPhiSCATOffset2;     //Number of terms to convert Y to PhiSCAT
+double *YPhiSCATOffset2;  //pointer array to store the terms from above
+int NYPhiSCATSlope1;    //Number of terms to convert Y to PhiSCAT
+double *YPhiSCATSlope1; //pointer array to store the terms from above
+int NYPhiSCATSlope2;    //Number of terms to convert Y to PhiSCAT
+double *YPhiSCATSlope2; //pointer array to store the terms from above
+
+
 
 int NXRigidityPars;
 double *XRigidityPars;
@@ -942,8 +958,8 @@ void ReadConfiguration()
   bool ScintillatorUsed = false;
   bool ScintillatorADCChannelRead = false;
   bool ScintillatorTDCChannelRead = false;
-  bool ThSCATCorrectionParametersRead = false;
 
+  bool ThSCATCorrectionParametersRead = false;
   bool ThSCATXCorrectionParametersRead = false; 
   bool ThSCATXLoffCorrectionParametersRead = false;
   bool TOFXCorrectionParametersRead = false;
@@ -951,8 +967,14 @@ void ReadConfiguration()
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
+
   bool ThFPSCATOffsetParametersRead = false;
   bool ThFPSCATSlopeParametersRead = false;
+  bool YPhiSCATOffset1ParametersRead = false;
+  bool YPhiSCATSlope1ParametersRead = false;
+  bool YPhiSCATOffset2ParametersRead = false;
+  bool YPhiSCATSlope2ParametersRead = false;
+
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
 
@@ -969,7 +991,8 @@ void ReadConfiguration()
 	  std::string LineBuffer;
 
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead)
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead
+&& !YPhiSCATOffset1ParametersRead && !YPhiSCATSlope1ParametersRead && !YPhiSCATOffset2ParametersRead && !YPhiSCATSlope2ParametersRead )
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -1267,6 +1290,7 @@ void ReadConfiguration()
 		  else TestInelastic = true;
 		  if(TestInelastic)printf("Going to do excitation energy calculation assuming inelastic scattering\n");
 		}
+
 	      else if(LineBuffer.compare(0,19,"ThFPSCATOffsetTerms") == 0)
 		{
 		  input >> LineBuffer;
@@ -1285,6 +1309,48 @@ void ReadConfiguration()
 		  for(int c=0;c<NThFPSCATSlope;c++) ThFPSCATSlope[c] = 0;
 		  ThFPSCATSlopeParametersRead = true;
 		}
+
+
+	      else if(LineBuffer.compare(0,20,"YPhiSCATOffset1Terms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for Y to phiSCAT conversion: offset 1 \n",atoi(LineBuffer.c_str()));
+		  NYPhiSCATOffset1 = atoi(LineBuffer.c_str());
+		  YPhiSCATOffset1 = new double[NYPhiSCATOffset1];
+		  for(int c=0;c<NYPhiSCATOffset1;c++) YPhiSCATOffset1[c] = 0;
+		  YPhiSCATOffset1ParametersRead = true;
+		}
+	      else if(LineBuffer.compare(0,20,"YPhiSCATOffset2Terms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for Y to phiSCAT conversion: offset 2 \n",atoi(LineBuffer.c_str()));
+		  NYPhiSCATOffset2 = atoi(LineBuffer.c_str());
+		  YPhiSCATOffset2 = new double[NYPhiSCATOffset2];
+		  for(int c=0;c<NYPhiSCATOffset2;c++) YPhiSCATOffset2[c] = 0;
+		  YPhiSCATOffset2ParametersRead = true;
+		}
+              else if(LineBuffer.compare(0,19,"YPhiSCATSlope1Terms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for Y to phiSCAT conversion: slope 1 \n",atoi(LineBuffer.c_str()));
+		  NYPhiSCATSlope1 = atoi(LineBuffer.c_str());
+		  YPhiSCATSlope1 = new double[NYPhiSCATSlope1];
+		  for(int c=0;c<NYPhiSCATSlope1;c++) YPhiSCATSlope1[c] = 0;
+		  YPhiSCATSlope1ParametersRead = true;
+		}
+              else if(LineBuffer.compare(0,19,"YPhiSCATSlope2Terms") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using %d terms for Y to phiSCAT conversion: slope 2 \n",atoi(LineBuffer.c_str()));
+		  NYPhiSCATSlope2 = atoi(LineBuffer.c_str());
+		  YPhiSCATSlope2 = new double[NYPhiSCATSlope2];
+		  for(int c=0;c<NYPhiSCATSlope2;c++) YPhiSCATSlope2[c] = 0;
+		  YPhiSCATSlope2ParametersRead = true;
+		}
+
+
+
+
 
 	      else if(LineBuffer.compare(0,22,"VDCSeparationDistanceZ") == 0)
 		{
@@ -1521,6 +1587,75 @@ void ReadConfiguration()
 		  ThFPSCATSlope[npar] = valpar;
 		}
 	    }
+
+
+	  if(YPhiSCATOffset1ParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,23,"EndYPhiSCATOffset1Terms") == 0 && YPhiSCATOffset1ParametersRead) YPhiSCATOffset1ParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  YPhiSCATOffset1[npar] = valpar;
+		}
+	    }
+	  if(YPhiSCATOffset2ParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,23,"EndYPhiSCATOffset2Terms") == 0 && YPhiSCATOffset2ParametersRead) YPhiSCATOffset2ParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  YPhiSCATOffset2[npar] = valpar;
+		}
+	    }
+
+	  if(YPhiSCATSlope1ParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,22,"EndYPhiSCATSlope1Terms") == 0 && YPhiSCATSlope1ParametersRead) YPhiSCATSlope1ParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  YPhiSCATSlope1[npar] = valpar;
+		}
+	    }
+
+	  if(YPhiSCATSlope2ParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,22,"EndYPhiSCATSlope2Terms") == 0 && YPhiSCATSlope2ParametersRead) YPhiSCATSlope2ParametersRead = false;
+	      else
+		{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  YPhiSCATSlope2[npar] = valpar;
+		}
+	    }
+
 
 	
 	  if(XRigidityParametersRead)
