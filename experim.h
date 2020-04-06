@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Fri Mar 10 13:33:40 2017
+  Created on:   Mon Apr  6 16:17:59 2020
 
 \********************************************************************/
 
@@ -64,12 +64,12 @@ typedef struct {
 "x2_driftt_hi = INT : 5100",\
 "u2_driftt_hi = INT : 5100",\
 "u1_driftt_hi = INT : 5100",\
-"lowtof = INT : 123",\
-"hitof = INT : 7000",\
-"lowpad1 = INT : 123",\
+"lowtof = INT : 2450",\
+"hitof = INT : 2600",\
+"lowpad1 = INT : 500",\
 "lowpad2 = INT : 0",\
-"hipad1 = INT : 4096",\
-"hipad2 = INT : 4096",\
+"hipad1 = INT : 1200",\
+"hipad2 = INT : 2000",\
 "",\
 NULL }
 
@@ -98,6 +98,9 @@ typedef struct {
   INT       u1_last_wire_chan;
   INT       u2_1st_wire_chan;
   INT       u2_last_wire_chan;
+  float     z_x1x2;
+  float     x_x1x2;
+  float     adc_threshold;
 } GLOBAL_PARAM;
 
 #define GLOBAL_PARAM_STR(_name) char *_name[] = {\
@@ -109,8 +112,8 @@ typedef struct {
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
 "lut_x1_offset = INT : 0",\
-"lut_u1_offset = INT : 0",\
-"lut_x2_offset = INT : 0",\
+"lut_u1_offset = INT : 15",\
+"lut_x2_offset = INT : 22",\
 "lut_u2_offset = INT : 0",\
 "x1_1st_wire_chan = INT : 0",\
 "x1_last_wire_chan = INT : 200",\
@@ -120,6 +123,9 @@ typedef struct {
 "u1_last_wire_chan = INT : 443",\
 "u2_1st_wire_chan = INT : 800",\
 "u2_last_wire_chan = INT : 943",\
+"z_x1x2 = FLOAT : 285",\
+"x_x1x2 = FLOAT : 515",\
+"ADC Threshold = FLOAT : 5",\
 "",\
 NULL }
 

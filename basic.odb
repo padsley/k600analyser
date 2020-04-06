@@ -1,8 +1,8 @@
-[/System/Clients/26503]
+[/System/Clients/9923]
 Name = STRING : [32] ODBEdit
-Host = STRING : [256] rnlap.tlabs.ac.za
+Host = STRING : [256] localhost.localdomain
 Hardware type = INT : 44
-Server Port = INT : 48444
+Server Port = INT : 37725
 
 [/System]
 Client Notify = INT : 0
@@ -173,9 +173,35 @@ Write Data? = LINK : [19] /Logger/Write Data
 
 [/Experiment]
 MAX_EVENT_SIZE = DWORD : 4194304
+ODB timeout = INT : 10000
+Protect ODB = BOOL : n
+Enable core dumps = BOOL : n
+
+[/Experiment/Security]
+Enable non-localhost RPC = BOOL : n
+
+[/Experiment/Security/RPC ports]
+ODBEdit = DWORD : 0
+Analyzer = DWORD : 0
+
+[/Experiment/Security/RPC hosts]
+Allowed hosts = STRING[10] :
+[256] localhost
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+[256] 
+
+[/Experiment/Security]
+Disable RPC hosts check = BOOL : n
 
 [/Logger]
-Data dir = STRING : [256] /home/neveling/K600/PR262-Felix-pp/ANALYSIS/k600analyser
+Data dir = STRING : [256] /home/neveling/K600/PR236B_GMR/ANALYSIS/k600analyser
 Message file = STRING : [256] midas.log
 Write data = BOOL : y
 Auto restart = BOOL : n
@@ -229,7 +255,7 @@ Number of events = LINK : [42] /Equipment/Trigger/Statistics/Events sent
 [/Runinfo]
 State = INT : 1
 Online Mode = INT : 0
-Run number = INT : 121
+Run number = INT : 163
 Transition in progress = INT : 0
 Start abort = INT : 0
 Requested transition = INT : 0
@@ -247,12 +273,12 @@ u2_driftt_low = INT : 3100
 x2_driftt_hi = INT : 5100
 u2_driftt_hi = INT : 5100
 u1_driftt_hi = INT : 5100
-lowtof = INT : 123
-hitof = INT : 7000
-lowpad1 = INT : 123
+lowtof = INT : 2450
+hitof = INT : 2600
+lowpad1 = INT : 500
 lowpad2 = INT : 0
-hipad1 = INT : 4096
-hipad2 = INT : 4096
+hipad1 = INT : 1200
+hipad2 = INT : 2000
 
 [/Analyzer/Parameters/GLOBAL]
 misswires = INT : 2
@@ -262,8 +288,8 @@ min_u_wires = INT : 3
 max_x_wires = INT : 9
 max_u_wires = INT : 8
 lut_x1_offset = INT : 0
-lut_u1_offset = INT : 0
-lut_x2_offset = INT : 0
+lut_u1_offset = INT : 15
+lut_x2_offset = INT : 22
 lut_u2_offset = INT : 0
 x1_1st_wire_chan = INT : 0
 x1_last_wire_chan = INT : 200
@@ -309,11 +335,11 @@ Sampling type = INT : 2
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] rnlap.tlabs.ac.za
+Host = STRING : [32] user-HP-ProBook-450-G5
 
 [/Analyzer/Trigger/Statistics]
-Events received = DOUBLE : 0
-Events per sec. = DOUBLE : 0
+Events received = DOUBLE : 1318773
+Events per sec. = DOUBLE : 23000
 Events written = DOUBLE : 0
 
 [/Analyzer/Scaler/Common]
@@ -323,11 +349,11 @@ Sampling type = INT : 1
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] rnlap.tlabs.ac.za
+Host = STRING : [32] user-HP-ProBook-450-G5
 
 [/Analyzer/Scaler/Statistics]
-Events received = DOUBLE : 0
-Events per sec. = DOUBLE : 0
+Events received = DOUBLE : 1953
+Events per sec. = DOUBLE : 250
 Events written = DOUBLE : 0
 
 [/Analyzer/Beamline/Common]
@@ -337,7 +363,7 @@ Sampling type = INT : 1
 Buffer = STRING : [32] SYSTEM
 Enabled = BOOL : y
 Client name = STRING : [32] Analyzer
-Host = STRING : [32] rnlap.tlabs.ac.za
+Host = STRING : [32] user-HP-ProBook-450-G5
 
 [/Analyzer/Beamline/Statistics]
 Events received = DOUBLE : 0
@@ -431,42 +457,42 @@ Events sent = DOUBLE : 2.420921664622108e-322
 
 [/Equipment/Scaler/Variables]
 SCLR = DWORD[64] :
-[0] 32767
-[1] 1091
-[2] 0
-[3] 139
+[0] 758
+[1] 0
+[2] 694
+[3] 10
 [4] 0
 [5] 0
 [6] 0
-[7] 10554
-[8] 20121
-[9] 12066
-[10] 11769
-[11] 12665
-[12] 12129
-[13] 9802
-[14] 12135
-[15] 15079
-[16] 10713
-[17] 3946
-[18] 3670
-[19] 3928
-[20] 3349
-[21] 3349
-[22] 210
+[7] 0
+[8] 0
+[9] 0
+[10] 0
+[11] 0
+[12] 0
+[13] 0
+[14] 0
+[15] 0
+[16] 0
+[17] 0
+[18] 0
+[19] 0
+[20] 0
+[21] 0
+[22] 0
 [23] 0
-[24] 103
-[25] 10
+[24] 0
+[25] 0
 [26] 0
 [27] 0
 [28] 0
 [29] 0
-[30] 617
+[30] 0
 [31] 0
-[32] 0
-[33] 14
-[34] 15
-[35] 4
+[32] 748
+[33] 0
+[34] 691
+[35] 10
 [36] 0
 [37] 0
 [38] 0
@@ -487,14 +513,14 @@ SCLR = DWORD[64] :
 [53] 0
 [54] 0
 [55] 0
-[56] 1072
+[56] 0
 [57] 0
-[58] 138
+[58] 0
 [59] 0
 [60] 0
-[61] 210
+[61] 0
 [62] 0
-[63] 103
+[63] 0
 ACUM = DOUBLE[8] :
 [0] 3.684021826651333e+59
 [1] 1.518302331373232e-152
@@ -3299,109 +3325,78 @@ ADC0 = DWORD[70] :
 [67] 4162732147
 [68] 4161749081
 [69] 4162797672
-TDC0 = DWORD[67] :
+TDC0 = DWORD[52] :
 [0] 4160749568
-[1] 1085616095
-[2] 887302
-[3] 5079492
-[4] 367875
-[5] 5603739
-[6] 6128169
-[7] 6652341
-[8] 53313245
-[9] 54887426
-[10] 52789306
-[11] 53837984
-[12] 51741777
-[13] 52265604
-[14] 54362826
-[15] 2147484159
-[16] 4160749569
-[17] 1085616095
-[18] 1046683
-[19] 2397
-[20] 2147483807
-[21] 4160749570
-[22] 1085616095
-[23] 946512
-[24] 427085
-[25] 32925922
-[26] 36595167
-[27] 36071343
-[28] 37120070
-[29] 35547806
-[30] 37645146
-[31] 2147483999
-[32] 4160749571
-[33] 1085616095
-[34] 623150
-[35] 103721
-[36] 50427740
-[37] 66680938
-[38] 50952242
-[39] 66157634
-[40] 51477008
-[41] 65633732
-[42] 52001957
-[43] 53050447
-[44] 2147484063
-[45] 4160749572
-[46] 1085616095
-[47] 902157
-[48] 382728
-[49] 2147483807
-[50] 4160749573
-[51] 1085616095
-[52] 732361
-[53] 212930
-[54] 39002814
-[55] 39527049
-[56] 40051373
-[57] 38479700
-[58] 40576253
-[59] 2147483967
-[60] 4160749574
-[61] 1085616095
-[62] 794457
-[63] 7610202
-[64] 275026
-[65] 8139346
-[66] 2147483871
-QDC0 = DWORD[34] :
-[0] 4194312192
-[1] 4160767290
-[2] 4161814653
-[3] 4160833506
-[4] 4161880194
-[5] 4160897618
-[6] 4161945704
-[7] 4160963336
-[8] 4162011257
-[9] 4161028157
-[10] 4162076821
-[11] 4161093673
-[12] 4162142327
-[13] 4161159221
-[14] 4162207883
-[15] 4161224741
-[16] 4162273429
-[17] 4161290301
-[18] 4162338925
-[19] 4161355835
-[20] 4162404470
-[21] 4161421362
-[22] 4162470034
-[23] 4161486916
-[24] 4162535544
-[25] 4161552455
-[26] 4162601065
-[27] 4161617977
-[28] 4162666616
-[29] 4161683507
-[30] 4162732117
-[31] 4161749056
-[32] 4162797724
-[33] 4228229502
+[1] 1115227295
+[2] 1029260
+[3] 507499
+[4] 2147483807
+[5] 4160749569
+[6] 1115227295
+[7] 654362
+[8] 132601
+[9] 43120071
+[10] 42596125
+[11] 43644993
+[12] 42072504
+[13] 44169803
+[14] 2147483967
+[15] 4160749570
+[16] 1115227295
+[17] 755497
+[18] 233730
+[19] 2147483807
+[20] 4160749571
+[21] 1115227295
+[22] 969399
+[23] 15647726
+[24] 447635
+[25] 15124073
+[26] 16172653
+[27] 14600761
+[28] 2214592799
+[29] 4160749572
+[30] 1115227295
+[31] 563093
+[32] 41327
+[33] 62427310
+[34] 62951809
+[35] 61903562
+[36] 63476643
+[37] 61379778
+[38] 64001471
+[39] 2214592863
+[40] 4160749573
+[41] 1115227295
+[42] 741559
+[43] 219794
+[44] 2214592671
+[45] 4160749574
+[46] 1115227295
+[47] 917593
+[48] 4588277
+[49] 395832
+[50] 4066575
+[51] 2214592735
+QDC0 = DWORD[18] :
+[0] 4194308096
+[1] 4160767008
+[2] 4161814638
+[3] 4160897678
+[4] 4161945732
+[5] 4161028648
+[6] 4162076782
+[7] 4161159724
+[8] 4162207863
+[9] 4161290340
+[10] 4162338924
+[11] 4161421414
+[12] 4162470025
+[13] 4161552505
+[14] 4162601091
+[15] 4161683566
+[16] 4162732174
+[17] 4229154852
 
 [/Equipment/WireChamber/Statistics]
 Events sent = DOUBLE : 0
