@@ -31,7 +31,7 @@
 extern float *QDC;
 extern int QDCsize;
 
-/*-- variables to be used in f-plane.c as extern variables----------*/
+/*-- variables to be used in main.c as extern variables----------*/
 float pad1=0,pad2=0,pad1hip=0,pad1lowp=0,pad2hip=0,pad2lowp=0;
 int qdcevtcount;
 int qdcevtcount2;

@@ -1734,7 +1734,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   *Xcorr = 0;
   for(int i=0;i<NXThetaCorr;i++){
     if(i==0)result = X;
-    if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i);//Correct the rigidity based on the ThetaSCAT value
+    if(i>0)result += XThetaCorr[i] * pow(ThetaSCAT,i); //Correct the rigidity based on the ThetaSCAT value
   }
   //printf("Xcorr from ThetaCorr: %f\n",result);
 
@@ -1796,8 +1796,6 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
 
   *Xcorr = result;
 }
-
-
 
 
 
@@ -1974,14 +1972,11 @@ double CalcYFP(double x, double u, double thFP)
 //--------------------------------------------------------------------------------------
 double CalcThetaScat(double X1, double ThFP)
 {
+  //printf("anglefp = %f\n",ThFP);  
 
 /*  
-  extern int NThFPtoThSCAT;
-  extern double *ThFPtoThSCAT;
-
   double result =  ThFP*(ThFPtoThSCAT[0] + ThFPtoThSCAT[1]*X1 +  ThFPtoThSCAT[2]*X1*X1) 
 		      + (ThFPtoThSCAT[3] + ThFPtoThSCAT[4]*X1 +  ThFPtoThSCAT[5]*X1*X1);
-  return result;
 */
 
   double result = 0;
@@ -1989,8 +1984,6 @@ double CalcThetaScat(double X1, double ThFP)
   extern double *ThFPSCATOffset;
   extern int NThFPSCATSlope;
   extern double *ThFPSCATSlope;
-
-  //printf("anglefp = %f\n",ThFP);  
 
   for(int i=0;i<NThFPSCATOffset;i++)
   {
@@ -2009,17 +2002,70 @@ double CalcThetaScat(double X1, double ThFP)
   //printf("\n\n");
   return result;
 
-
 }
 
 //--------------------------------------------------------------------------------------
-double CalcPhiScat(double X1, double ThFP, double Y1)
+double CalcPhiScat(double X1, double ThSCAT, double Y1)
 
 {
+//  result = Y1 * (0.108+0.00086*ThFP) - (0.6097+3.99e-4*X1);
+
   double result = 0;
-  result = Y1 * (0.108+0.00086*ThFP) - (0.6097+3.99e-4*X1);
+  //double result1 = 0;
+  //double result2 = 0;
+  //double result3 = 0;
+  //double result4 = 0;
+  extern int NYPhiSCATOffset1;
+  extern double *YPhiSCATOffset1;
+  extern int NYPhiSCATOffset2;
+  extern double *YPhiSCATOffset2;
+  extern int NYPhiSCATSlope1;
+  extern double *YPhiSCATSlope1;
+  extern int NYPhiSCATSlope2;
+  extern double *YPhiSCATSlope2;
+
+  for(int i=0;i<NYPhiSCATOffset1;i++)
+  {
+    if(i==0) result = 0;
+    if(i>0)  result += YPhiSCATOffset1[i] * pow(ThSCAT,i-1); 
+    //printf("NTHFPSCATOffset  %i  and parameter %f  and result %f at X1= %f \n",i, YPhiSCATOffset[i],result,X1);
+  }
+
+  for(int i=0;i<NYPhiSCATOffset2;i++)
+  {
+    if(i==0) result = result;
+    if(i>0)  result += X1*YPhiSCATOffset2[i] * pow(ThSCAT,i-1); 
+    //printf("NTHFPSCATOffset  %i  and parameter %f  and result %f at X1= %f \n",i, YPhiSCATOffset[i],result,X1);
+  }
+
+  for(int i=0;i<NYPhiSCATSlope1;i++)
+  {
+    if(i==0) result = result;
+    if(i>0)  result += Y1*YPhiSCATSlope1[i] * pow(ThSCAT,i-1);
+    //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, YPhiSCATSlope[i],result,X1);
+  }
+
+  for(int i=0;i<NYPhiSCATSlope2;i++)
+  {
+    if(i==0) result = result;
+    if(i>0)  result += X1*Y1*YPhiSCATSlope2[i] * pow(ThSCAT,i-1);
+    //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, YPhiSCATSlope[i],result,X1);
+  }
+
+  //result = result1 + result2*X1 + (result3 + result4*X1)*Y1;
+  //printf("\n\n");
   return result;
+
 }
+
+/*
+ + (1.12783-0.82 +     0.120934*ThSCAT +    -0.146862*pow(ThSCAT,2) +   0.00623476*pow(ThSCAT,3))
+  +(-0.000391341 + -0.000271356*ThSCAT +  0.000232144*pow(ThSCAT,2) +   1.9364e-06*pow(ThSCAT,3))*X1;
+
+  ( (0.223762   + -0.0841361*ThSCAT       + 0.0016215*pow(ThSCAT,2) +    0.0492529*pow(ThSCAT,3)) 
+  + (-0.00018304 + 0.000106297 *ThSCAT + -1.02828e-05*pow(ThSCAT,2) + -6.73085e-05*pow(ThSCAT,3))*X1 )  *Y1   
+*/
+
 
 //--------------------------------------------------------------------------------------
 double CalcTheta(double X1, double ThFP, double Y1)
@@ -2028,7 +2074,7 @@ double CalcTheta(double X1, double ThFP, double Y1)
 
   double ThetaSCAT = CalcThetaScat(X1,ThFP);
 
-  double PhiSCAT = CalcPhiScat(X1, ThFP, Y1);
+  double PhiSCAT = CalcPhiScat(X1, ThetaSCAT, Y1);
   
   double result = -1;
 
