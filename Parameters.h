@@ -67,7 +67,7 @@ void ReadTOFOffsets(std::string TOFoffsetsFile);
 void ReadPadOffsets(std::string PadoffsetsFile);//hj
 void ReadY1Offsets(std::string Y1offsetsFile); //hj
 
-void TDCInit();
+void TDCOffsetsInit();
 void TDCOffsetsClear();
 void ReadTDCOffsets(std::string OffsetsFile);
 
