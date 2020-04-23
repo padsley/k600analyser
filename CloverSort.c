@@ -122,7 +122,7 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 //Addback********************************************************************************************************** 				
 				//*****************************HJ
 
-				 //printf("Time in gammy: %d \t Time in ADC: %d \n",gammy->GetTime(k),mTDC->GetValue(k)-GammaTimeCloveroffset); 
+				//printf("Time in gammy: %d \t Time in ADC: %d \n",gammy->GetTime(k),mTDC->GetValue(k)-GammaTimeCloveroffset); 
 				//printf("Time in ADC: %f \n",mTDC->GetValue(k)-GammaTimeCloveroffset); 
 				 if((mTDC->GetValue(k)-GammaTimeCloveroffset)>=GamTimeMin && (mTDC->GetValue(k)-GammaTimeCloveroffset)<=GamTimeMax)
 				  {
@@ -136,8 +136,13 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 					  MaxEnerAddbackSegm[DetNum-1] = Segm;
 					  AddbackTime[DetNum-1] = (mTDC->GetValue(k)-GammaTimeCloveroffset);
 				        }
-				  //printf("---0 gammy->SizeOfEvent: %d,  K value in loop: %d,\n", gammy->SizeOfEvent(), k);
- 				  //printf("***1  Clover: %d Segm: %d \t Egam: %f \t Eaddback: %f \t  Segms fired: %d \t MaxDepSegm: %d \n ",DetNum, Segm, GammaEnergy, EnergyAddback[DetNum-1], NSegmentsAddback[DetNum-1], MaxEnerAddbackSegm[DetNum-1]);
+/*
+				if ((DetNum=8) && EnergyAddback[DetNum-1]>5000.0 && EnergyAddback[DetNum-1]< 5400.0)
+				{//:)
+				  printf("---0 gammy->SizeOfEvent: %d,  K value in loop: %d, GammaTime: %f \n", gammy->SizeOfEvent(), k,(mTDC->GetValue(k)-GammaTimeCloveroffset));
+ 				  printf("***1  Clover: %d Segm: %d \t Egam: %f \t Eaddback: %f \t  Segms fired: %d \t MaxDepSegm: %d \n ",DetNum, Segm, GammaEnergy, EnergyAddback[DetNum-1], NSegmentsAddback[DetNum-1], MaxEnerAddbackSegm[DetNum-1]);
+				}//:)
+*/
   				  }
 
 
@@ -165,7 +170,7 @@ void CloverSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC
 				printf("GammaEnergy: %f, gammyEnergy: %f \n",GammaEnergy,gammy->GetEnergy(gammy->SizeOfEvent()));
 				printf("Segm: %d, gammySegm: %d \n", Segm, gammy->GetDetectorSegm(EventAddback[DetNum-1]));
 				*/
-	  			} 
+	  			}
 			 }
       		       }
     		}
