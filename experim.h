@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Mon Apr  6 16:17:59 2020
+  Created on:   Mon Apr 20 09:36:46 2020
 
 \********************************************************************/
 
@@ -64,12 +64,12 @@ typedef struct {
 "x2_driftt_hi = INT : 5100",\
 "u2_driftt_hi = INT : 5100",\
 "u1_driftt_hi = INT : 5100",\
-"lowtof = INT : 2450",\
-"hitof = INT : 2600",\
-"lowpad1 = INT : 500",\
+"lowtof = INT : 123",\
+"hitof = INT : 7000",\
+"lowpad1 = INT : 123",\
 "lowpad2 = INT : 0",\
-"hipad1 = INT : 1200",\
-"hipad2 = INT : 2000",\
+"hipad1 = INT : 4096",\
+"hipad2 = INT : 4096",\
 "",\
 NULL }
 
@@ -98,9 +98,6 @@ typedef struct {
   INT       u1_last_wire_chan;
   INT       u2_1st_wire_chan;
   INT       u2_last_wire_chan;
-  float     z_x1x2;
-  float     x_x1x2;
-  float     adc_threshold;
 } GLOBAL_PARAM;
 
 #define GLOBAL_PARAM_STR(_name) char *_name[] = {\
@@ -111,9 +108,9 @@ typedef struct {
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
-"lut_x1_offset = INT : 0",\
-"lut_u1_offset = INT : 15",\
-"lut_x2_offset = INT : 22",\
+"lut_x1_offset = INT : 15",\
+"lut_u1_offset = INT : 35",\
+"lut_x2_offset = INT : 0",\
 "lut_u2_offset = INT : 0",\
 "x1_1st_wire_chan = INT : 0",\
 "x1_last_wire_chan = INT : 200",\
@@ -123,9 +120,6 @@ typedef struct {
 "u1_last_wire_chan = INT : 443",\
 "u2_1st_wire_chan = INT : 800",\
 "u2_last_wire_chan = INT : 943",\
-"z_x1x2 = FLOAT : 285",\
-"x_x1x2 = FLOAT : 515",\
-"ADC Threshold = FLOAT : 5",\
 "",\
 NULL }
 
@@ -136,22 +130,22 @@ NULL }
 #define TRIGGER_COMMON_DEFINED
 
 typedef struct {
+  char      format[80];
   WORD      event_id;
   INT       type;
   INT       log_history;
   char      frontend_name[256];
   WORD      trigger_mask;
-  char      format[80];
 } TRIGGER_COMMON;
 
 #define TRIGGER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [80] MIDAS",\
 "Event ID = WORD : 0",\
 "Type = INT : 2",\
 "Log history = INT : 0",\
 "Frontend name = STRING : [256] K600 frontend",\
 "Trigger mask = WORD : 0",\
-"Format = STRING : [80] MIDAS",\
 "",\
 NULL }
 
@@ -162,12 +156,12 @@ NULL }
 #define SCALER_COMMON_DEFINED
 
 typedef struct {
+  char      format[8];
   WORD      event_id;
   INT       type;
   WORD      trigger_mask;
   char      buffer[32];
   INT       source;
-  char      format[8];
   BOOL      enabled;
   INT       read_on;
   INT       period;
@@ -181,12 +175,12 @@ typedef struct {
 
 #define SCALER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [8] MIDAS",\
 "Event ID = WORD : 2",\
 "Type = INT : 33",\
 "Trigger mask = WORD : 0",\
 "Buffer = STRING : [32] SYSTEM",\
 "Source = INT : 0",\
-"Format = STRING : [8] MIDAS",\
 "Enabled = BOOL : y",\
 "Read on = INT : 377",\
 "Period = INT : 1000",\
@@ -226,9 +220,9 @@ NULL }
 #define BEAMLINE_COMMON_DEFINED
 
 typedef struct {
+  char      format[8];
   WORD      event_id;
   INT       type;
-  char      format[8];
   WORD      trigger_mask;
   char      buffer[32];
   INT       source;
@@ -247,9 +241,9 @@ typedef struct {
 
 #define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [8] MIDAS",\
 "Event ID = WORD : 3",\
 "Type = INT : 16",\
-"Format = STRING : [8] MIDAS",\
 "Trigger mask = WORD : 0",\
 "Buffer = STRING : [32] K600SYSTEMS",\
 "Source = INT : 0",\
