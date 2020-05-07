@@ -1004,8 +1004,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int qdc_counter1;			      // defined; declared in analyzer.c	
    extern int triggerI, triggerU, CII, CIU;           // defined; declared in scaler.c
  
-   std::vector<int> TDCChannelExportStore;
-   std::vector<float> TDCValueExportStore;
+   //std::vector<int> TDCChannelExportStore;
+   //std::vector<float> TDCValueExportStore;
    
    #ifdef _MISALIGNTIME
    if (runtime>misaligntime) {
@@ -1198,8 +1198,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       //offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
       offset_time = ref_time - int(TDCOffsets[channel]);  // in TDCoffset.dat: line nr = y bin nr in hChanVsOffsetTime
 
-      TDCChannelExportStore.push_back(channel);
-      TDCValueExportStore.push_back(offset_time);
+      //TDCChannelExportStore.push_back(channel);
+      //TDCValueExportStore.push_back(offset_time);
 
  
       #ifdef _JJAUTOTRIM  
@@ -1801,7 +1801,8 @@ rn*/
      //printf("made it in main.c to RawDataDump\n");
      raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
     
-     for(int i=0; i<TDCValueExportStore.size(); i++)
+     //for(int i=0; i<TDCValueExportStore.size(); i++)
+     for(int i=0; i<TDCHits; i++)
      {
         for(int j=0; j<sizeof(ADCchannel); j++)
         {
@@ -1913,8 +1914,9 @@ rn*/
    //#define _ADC
    //delete [] TDC_channel_export;
    //delete [] TDC_value_export;
-   TDCChannelExportStore.clear();
-   TDCValueExportStore.clear();
+
+   //TDCChannelExportStore.clear();
+   //TDCValueExportStore.clear();
 
    return SUCCESS;
 }

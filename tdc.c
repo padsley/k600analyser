@@ -1,6 +1,6 @@
 /********************************************************************\
 
-  Name:         tdc.c
+  Name:        tdc.c
   Created by:  Retief Neveling
 
 \********************************************************************/
@@ -118,7 +118,7 @@ INT tdc_init(void)
    hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
    hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
+   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (TDC offsets incl)", 1500, 0, 15000, 896, 0, 896);
 
 
   //====== tdc init routine: filling some histograms ================================================
@@ -180,9 +180,6 @@ INT tdc_event(EVENT_HEADER * pheader, void *pevent)
    polu=0;pold=0;
    pad1hipt=0; pad1lowpt=0; pad2hipt=0; pad2lowpt=0;
    pulser=0;cloverpulser=0; 	
-   // rather define it in Parameters.c
-   //int *TDC_channel_export;
-   //float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
 
    std::vector<int> TDCChannelExportStore;
    std::vector<float> TDCValueExportStore;
