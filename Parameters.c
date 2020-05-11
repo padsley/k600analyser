@@ -719,7 +719,7 @@ void ReadPadOffsets(std::string PadoffsetsFile)
 	  offset = atof(LineBuffer.c_str());
  	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
           RunNrForPadOffsets[counter]=runnr;
-          PadOffsets[counter]= atoi(offset);
+          PadOffsets[counter]= offset;
           counter++;
 	}
       }
