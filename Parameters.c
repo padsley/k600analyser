@@ -92,11 +92,11 @@ double *X1Offsets;
 
 int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
-int *TOFOffsets;
+double *TOFOffsets;
 
 int NrOfRunsForPadOffsets;
 int *RunNrForPadOffsets;
-int *PadOffsets;
+double *PadOffsets;
 
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
