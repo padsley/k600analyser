@@ -965,10 +965,10 @@ INT main_bor(INT run_number)
    extern double *X1Offsets;	        // from Parameters.c 
    extern int *RunNrForX1Offsets;       // from Parameters.c  
    extern int NrOfRunsForX1Offsets;     // nr of runs for which we have x1offsets read it via Parameters.c
-   extern int *TOFOffsets;	        // from Parameters.c 
+   extern double *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
-   extern int *PadOffsets;	        // from Parameters.c 
+   extern double *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
 
