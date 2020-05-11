@@ -727,7 +727,7 @@ void ReadPadOffsets(std::string PadoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d TPadoffsets\n",counter);
+  printf("Finished reading %d Padoffsets\n",counter);
 }
 
 
