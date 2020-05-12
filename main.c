@@ -241,7 +241,7 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-Double_t Padoffset=0;
+Int_t Padoffset=0;
 Double_t Yoffset=0.0;
 
 #ifdef _RAWDATA
