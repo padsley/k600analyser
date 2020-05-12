@@ -2079,6 +2079,7 @@ double CalcTheta(double X1, double ThFP, double Y1)
   double result = -1;
 
   result = sqrt(pow(ThetaSCAT + theta3,2.) + pow(PhiSCAT,2.));
+  return result;
 }
 
 //--------------------------------------------------------------------------------------
