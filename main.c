@@ -152,6 +152,7 @@ Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
 Int_t    t_k600;
+Int_t    t_runnumber=0;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
@@ -424,7 +425,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_pad1hiP=-1;  t_pad1lowP=-1;  t_pad2hiP=-1;  t_pad2lowP=-1;
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
    t_tof=0; t_toftdc1=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
-   t_k600=0; t_runtime=-1;
+   t_k600=0; t_runtime=-1;  t_runnumber=-1;
    t_triggerI=0, t_triggerU=0, t_CII=0, t_CIU=0;
    t_X1hits = -100; t_X2hits = -100; t_U1hits = -100; t_U2hits = -100;
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
@@ -656,6 +657,7 @@ INT main_init(void)
 
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+  t1->Branch("runnumber",&t_runnumber,"t_runnumber/I");
   t1->Branch("runtime",&t_runtime,"t_runtime/I");
   t1->Branch("evtcounter",&t_evtcounter,"t_evtcounter/I");
   t1->Branch("tdcsperevent",&t_tdcsperevent,"t_tdcsperevent/I");
@@ -1003,7 +1005,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int runtime;				      // defined; declared in scaler.c	
    extern int qdc_counter1;			      // defined; declared in analyzer.c	
    extern int triggerI, triggerU, CII, CIU;           // defined; declared in scaler.c
- 
+   extern int RunNumber;             		      // defined in Parameters.c,  the REAL run number you are analyzing
+
    //std::vector<int> TDCChannelExportStore;
    //std::vector<float> TDCValueExportStore;
    
@@ -1081,6 +1084,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    t_pad2hiP=pad2hip;
    t_pad2lowP=pad2lowp;	    
 
+   t_runnumber=RunNumber;
    t_runtime=runtime;
    t_triggerI=triggerI;
    t_triggerU=triggerU;
