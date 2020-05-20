@@ -1173,7 +1173,7 @@ void ReadConfiguration()
 		  NrOfRunsForTOFOffsets = atoi(LineBuffer.c_str());
                   if(NrOfRunsForTOFOffsets<1) NrOfRunsForTOFOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
                   RunNrForTOFOffsets = new int[NrOfRunsForTOFOffsets];
-                  TOFOffsets = new int[NrOfRunsForTOFOffsets];
+                  TOFOffsets = new double[NrOfRunsForTOFOffsets];
 	        }
 	      else if(LineBuffer.compare(0,14,"TOFOffsetsFile") == 0)
 		{
@@ -1188,7 +1188,7 @@ void ReadConfiguration()
 		  NrOfRunsForPadOffsets = atoi(LineBuffer.c_str());
                   if(NrOfRunsForPadOffsets<1) NrOfRunsForPadOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
                   RunNrForPadOffsets = new int[NrOfRunsForPadOffsets];
-                  PadOffsets = new int[NrOfRunsForPadOffsets];
+                  PadOffsets = new double[NrOfRunsForPadOffsets];
 	        }
 	      else if(LineBuffer.compare(0,14,"PadOffsetsFile") == 0)
 		{
