@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <limits>
+#include <vector>
 
 // Originally declared as constants, sinc I tried to make a distinction
 // between things one can change and things one should not change at all ... RN
@@ -49,7 +50,7 @@ void CloverNumberInit();
 void CloverADCChannelsInit(int det, int start, int stop);
 void CloverTDCChannelsInit(int det, int start, int stop);
 
-void ScintillatorInit();
+void ScintillatorNumberInit();
 void ScintillatorADCChannelsInit(int start, int stop);
 void ScintillatorTDCChannelsInit(int start, int stop);
 
@@ -61,8 +62,10 @@ void SetADCChannelCalibration(int channel, double offset, double gain);
 void ADCClear();
 
 void ReadCalibrationParameters(std::string CalibFile);
-void ReadX1offsets(std::string X1offsetsFile);
+void ReadX1Offsets(std::string X1offsetsFile);
 void ReadTOFOffsets(std::string TOFoffsetsFile);
+void ReadPadOffsets(std::string PadoffsetsFile);//hj
+void ReadY1Offsets(std::string Y1offsetsFile); //hj
 
 void TDCInit();
 void TDCOffsetsClear();

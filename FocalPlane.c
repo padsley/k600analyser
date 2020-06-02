@@ -1364,7 +1364,8 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    =4	events with more than 1 drift distance local minimum; a Z
    =5	events with more than 1 drift distance local minimum; a W
    */
-
+   
+   //printf("--------------------------------\n");
    //printevent2(wire_num, wire,dd);
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 1: ID first, last and min dist wires ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -1373,6 +1374,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
    for(i=1;i<wire_num;i++){	                   // Label wire associated with minimum drift distance
      if(dd[wireID_min] > dd[i]) wireID_min = i;    // Note: wireID_min an array index nr, NOT a real wire number
    }
+   //printf("index for min drifttime %i \n", wireID_min); printf("\n");
 
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 2: ID double hits per wire and fix them ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    for(i=0;i<(wire_num-1);i++){
@@ -1401,7 +1403,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
       fixDoubleHit(dd,wire,badwire,&wire_num,&wireID_min,&wireID_last); 
       //printf("Correction after SECOND PASS: double events per wire===========\n"); printevent2(wire_num, wire,dd);  printf("\n");
    }
-   
+
    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~STEP 4: ID and fix Z and W events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
    for(i=1;i<(wire_num-1);i++){
      if( (dd[i]>dd[i-1]) && (dd[i]>dd[i+1]) ) {     
@@ -1588,7 +1590,7 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 
 //--------------------------------------------------------------------------------------
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
-//lineshape correction
+//lineshape correction when you have a well defined thetaSCAT
 {
   double result = 0;
   extern int NXThetaCorr;
@@ -1605,6 +1607,10 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
   //printf("X to start with: %f\n",X);
 
   //printf("X to start with: %f\n",X);
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
 
   *Xcorr = 0;
   for(int i=0;i<NXThetaCorr;i++){
@@ -1638,6 +1644,48 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 }
 
 //--------------------------------------------------------------------------------------
+void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
+//lineshape correction when using only 1 detector
+{
+
+  double result = 0;
+
+  extern int NXY1Corr;
+  extern double *XY1Corr;
+
+  extern int NXTOFCorr;
+  extern double *XTOFCorr;
+  extern double TOF_LSOffset;
+
+  extern double X1_LSOffset;  
+  extern double X1_refnocorr;
+
+ 
+  //printf("XLineshapeOffset = %f\n",X_LSOffset);
+
+  //At this point, result is X1posC after the ThSCAT correction
+  for(int i=0;i<NXY1Corr;i++){
+      if(i==0)result = X;
+      if(i>0)result += XY1Corr[i] * pow(Y,i);
+  }
+
+  //printf("Xcorr from YCorr: %f\n",result);
+  //printf("------------------------------------------\n");
+
+  for(int i=0;i<NXTOFCorr;i++){
+    if(i==0)result = result;
+    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i); //modified by LMD. Must revisit. 
+
+  }
+  
+  //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
+
+  *Xcorr = result;
+}
+
+
+
+//--------------------------------------------------------------------------------------
 double CalcQBrho(double Xcorr)
 {
   //double rig = 3.79765 + 3.24097e-4*Xcorr + 2.40685e-8*Xcorr*Xcorr;
@@ -1663,9 +1711,10 @@ double CalcTfromXcorr(double Xcorr, double mass)
   double T = 0;
 
   double rig = CalcQBrho(Xcorr);
+//  std::cout << "mass: " << mass << std::endl;
 
-  double p = rig * TMath::C()/1e9;
-  //std::cout << "p3: " << p3 << std::endl;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
+ // std::cout << "p3: " << p3 << std::endl;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   //std::cout << "T3: " << T << std::endl;
   return T;
@@ -1676,7 +1725,7 @@ double CalcTfromRigidity(double rig, double mass)
 {
   double T = 0;
 
-  double p = rig * TMath::C()/1e9;
+  double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
   return T;
 }
@@ -1710,6 +1759,7 @@ double CalcEx(double Xcorr)
 
   extern double theta3;
   double theta4 = 0;
+  double Q =0;
 
   extern bool TestInelastic;
   if(TestInelastic)
@@ -1722,22 +1772,32 @@ double CalcEx(double Xcorr)
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   //printf("p1: %f\n",p1);
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
-  //printf("p3: %f\n",p3);
-  //std::cout << "p3: " << p3 << std::endl;
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9; //conversion factor to obtain the momentum in MeV/c if rigidity calculated with SPANC
+
+/*  std::cout << "masses[0]: " << masses[0] << std::endl;
+  std::cout << "masses[1]: " << masses[1] << std::endl;
+  std::cout << "masses[2]: " << masses[2] << std::endl;
+  std::cout << "masses[3]: " << masses[3] << std::endl;
+  std::cout << "p1: " << p1 << std::endl;
+  std::cout << "p2: " << p2 << std::endl;
+  std::cout << "p3: " << p3 << std::endl;
+*/
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
-  //printf("T3: %f\n",T3); 
-  //std::cout << "T3: " << T3 << std::endl;
+//  std::cout << "T3: " << T3 << std::endl;
+  Q = masses[0] + masses[1] - masses[2] -masses[3];
+ // std::cout << "Q: " << Q << std::endl;
+
 
   if(theta3 == 0)
     {
       theta4 = 0;
       
       p4 = p1 - p3;
+    //  std::cout << "p4: " << p4 << std::endl;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-      //printf("T4: %f\n",T4);
-      exE = T1 - T3 - T4;
-      //printf("Ex: %f\n",exE);
+   //   std::cout << "T4: " << T4 << std::endl;
+   //   std::cout << "T1: " << T1 << std::endl;
+      exE = T1 - T3 - T4 + Q;
     }
   else
     {
@@ -1746,11 +1806,9 @@ double CalcEx(double Xcorr)
       p4 = p3 * sin(theta3*TMath::Pi()/180.)/sin(theta4*TMath::Pi()/180.);
       T4 = CalcTfromP(p4,masses[3]);
       //std::cout << "T4: " << T4 << std::endl;
-      exE = T1 - T3 - T4;
+      exE = T1 - T3 - T4 + Q;
     }
   //std::cout << "exE: " << exE << std::endl;
-
-
   if(exE<0)exE=0;
   if(Xcorr>800)exE=0;
   return exE;

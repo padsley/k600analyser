@@ -17,7 +17,7 @@
                 tation which can be used in the db_create_record function
                 to setup an ODB structure which matches the C structure.
 
-  Created on:   Mon Feb  6 16:16:33 2017
+  Created on:   Fri Sep 13 09:43:28 2019
 
 \********************************************************************/
 
@@ -32,6 +32,48 @@ typedef struct {
 "Comment = STRING : [80] Analysis",\
 "",\
 NULL }
+
+#ifndef EXCL_MAIN
+
+#define MAIN_PARAM_DEFINED
+
+typedef struct {
+  INT       x1_driftt_low;
+  INT       x1_driftt_hi;
+  INT       x2_driftt_low;
+  INT       u1_driftt_low;
+  INT       u2_driftt_low;
+  INT       x2_driftt_hi;
+  INT       u2_driftt_hi;
+  INT       u1_driftt_hi;
+  INT       lowtof;
+  INT       hitof;
+  INT       lowpad1;
+  INT       lowpad2;
+  INT       hipad1;
+  INT       hipad2;
+} MAIN_PARAM;
+
+#define MAIN_PARAM_STR(_name) char *_name[] = {\
+"[.]",\
+"x1_driftt_low = INT : 3100",\
+"x1_driftt_hi = INT : 5100",\
+"x2_driftt_low = INT : 3100",\
+"u1_driftt_low = INT : 3100",\
+"u2_driftt_low = INT : 3100",\
+"x2_driftt_hi = INT : 5100",\
+"u2_driftt_hi = INT : 5100",\
+"u1_driftt_hi = INT : 5100",\
+"lowtof = INT : 123",\
+"hitof = INT : 7000",\
+"lowpad1 = INT : 123",\
+"lowpad2 = INT : 0",\
+"hipad1 = INT : 4096",\
+"hipad2 = INT : 4096",\
+"",\
+NULL }
+
+#endif
 
 #ifndef EXCL_GLOBAL
 
@@ -66,8 +108,8 @@ typedef struct {
 "min_u_wires = INT : 3",\
 "max_x_wires = INT : 9",\
 "max_u_wires = INT : 8",\
-"lut_x1_offset = INT : 0",\
-"lut_u1_offset = INT : 0",\
+"lut_x1_offset = INT : 15",\
+"lut_u1_offset = INT : 35",\
 "lut_x2_offset = INT : 0",\
 "lut_u2_offset = INT : 0",\
 "x1_1st_wire_chan = INT : 0",\
@@ -83,69 +125,27 @@ NULL }
 
 #endif
 
-#ifndef EXCL_MAIN
-
-#define MAIN_PARAM_DEFINED
-
-typedef struct {
-  INT       x1_driftt_low;
-  INT       x1_driftt_hi;
-  INT       x2_driftt_low;
-  INT       u1_driftt_low;
-  INT       u2_driftt_low;
-  INT       x2_driftt_hi;
-  INT       u2_driftt_hi;
-  INT       u1_driftt_hi;
-  INT       lowtof;
-  INT       hitof;
-  INT       lowpad1;
-  INT       lowpad2;
-  INT       hipad1;
-  INT       hipad2;
-} MAIN_PARAM;
-
-#define MAIN_PARAM_STR(_name) char *_name[] = {\
-"[.]",\
-"x1_driftt_low = INT : 6100",\
-"x1_driftt_hi = INT : 8050",\
-"x2_driftt_low = INT : 6100",\
-"u1_driftt_low = INT : 6100",\
-"u2_driftt_low = INT : 6100",\
-"x2_driftt_hi = INT : 8050",\
-"u2_driftt_hi = INT : 8050",\
-"u1_driftt_hi = INT : 8050",\
-"lowtof = INT : 2000",\
-"hitof = INT : 6000",\
-"lowpad1 = INT : 1",\
-"lowpad2 = INT : 0",\
-"hipad1 = INT : 4096",\
-"hipad2 = INT : 4096",\
-"",\
-NULL }
-
-#endif
-
 #ifndef EXCL_TRIGGER
 
 #define TRIGGER_COMMON_DEFINED
 
 typedef struct {
+  char      format[80];
   WORD      event_id;
   INT       type;
   INT       log_history;
   char      frontend_name[256];
   WORD      trigger_mask;
-  char      format[80];
 } TRIGGER_COMMON;
 
 #define TRIGGER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [80] MIDAS",\
 "Event ID = WORD : 0",\
 "Type = INT : 2",\
 "Log history = INT : 0",\
 "Frontend name = STRING : [256] K600 frontend",\
 "Trigger mask = WORD : 0",\
-"Format = STRING : [80] MIDAS",\
 "",\
 NULL }
 
@@ -156,12 +156,12 @@ NULL }
 #define SCALER_COMMON_DEFINED
 
 typedef struct {
+  char      format[8];
   WORD      event_id;
   INT       type;
   WORD      trigger_mask;
   char      buffer[32];
   INT       source;
-  char      format[8];
   BOOL      enabled;
   INT       read_on;
   INT       period;
@@ -175,12 +175,12 @@ typedef struct {
 
 #define SCALER_COMMON_STR(_name) char *_name[] = {\
 "[.]",\
+"Format = STRING : [8] MIDAS",\
 "Event ID = WORD : 2",\
 "Type = INT : 33",\
 "Trigger mask = WORD : 0",\
 "Buffer = STRING : [32] SYSTEM",\
 "Source = INT : 0",\
-"Format = STRING : [8] MIDAS",\
 "Enabled = BOOL : y",\
 "Read on = INT : 377",\
 "Period = INT : 1000",\
@@ -210,6 +210,416 @@ typedef struct {
 "[32] scaler6",\
 "[32] scaler7",\
 "[32] scaler8",\
+"",\
+NULL }
+
+#endif
+
+#ifndef EXCL_BEAMLINE
+
+#define BEAMLINE_COMMON_DEFINED
+
+typedef struct {
+  char      format[8];
+  WORD      event_id;
+  INT       type;
+  WORD      trigger_mask;
+  char      buffer[32];
+  INT       source;
+  BOOL      enabled;
+  INT       read_on;
+  INT       period;
+  double    event_limit;
+  DWORD     num_subevents;
+  INT       log_history;
+  char      frontend_host[32];
+  char      frontend_name[32];
+  char      frontend_file_name[256];
+  char      status[256];
+  char      status_color[32];
+} BEAMLINE_COMMON;
+
+#define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
+"[.]",\
+"Format = STRING : [8] MIDAS",\
+"Event ID = WORD : 3",\
+"Type = INT : 16",\
+"Trigger mask = WORD : 0",\
+"Buffer = STRING : [32] K600SYSTEMS",\
+"Source = INT : 0",\
+"Enabled = BOOL : y",\
+"Read on = INT : 121",\
+"Period = INT : 60000",\
+"Event limit = DOUBLE : 0",\
+"Num subevents = DWORD : 0",\
+"Log history = INT : 1",\
+"Frontend host = STRING : [32] xiafe.tlabs.ac.za",\
+"Frontend name = STRING : [32] feEpics",\
+"Frontend file name = STRING : [256] frontend.c",\
+"Status = STRING : [256] Ok",\
+"Status color = STRING : [32] #00FF00",\
+"",\
+NULL }
+
+#define BEAMLINE_SETTINGS_DEFINED
+
+typedef struct {
+  struct {
+    struct {
+      char      epics_gateway[256];
+      INT       gateway_port;
+      char      demand[55][32];
+      char      measured[55][32];
+      INT       device_type[55];
+      char      channel_name[55][32];
+    } beamline;
+  } devices;
+  float     update_threshold_measured[55];
+  char      names[55][32];
+} BEAMLINE_SETTINGS;
+
+#define BEAMLINE_SETTINGS_STR(_name) char *_name[] = {\
+"[Devices/Beamline]",\
+"EPICS Gateway = STRING : [256] epicssvr.tlabs.ac.za",\
+"Gateway port = INT : 5064",\
+"Demand = STRING[55] :",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :refvalue",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"[32] :put-P",\
+"[32] :put-G",\
+"Measured = STRING[55] :",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :actvalue",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"[32] :get-P",\
+"[32] :get-G",\
+"Device type = INT[55] :",\
+"[0] 1",\
+"[1] 1",\
+"[2] 1",\
+"[3] 1",\
+"[4] 1",\
+"[5] 1",\
+"[6] 1",\
+"[7] 1",\
+"[8] 1",\
+"[9] 1",\
+"[10] 1",\
+"[11] 1",\
+"[12] 1",\
+"[13] 1",\
+"[14] 1",\
+"[15] 1",\
+"[16] 1",\
+"[17] 1",\
+"[18] 1",\
+"[19] 1",\
+"[20] 1",\
+"[21] 1",\
+"[22] 1",\
+"[23] 1",\
+"[24] 1",\
+"[25] 1",\
+"[26] 1",\
+"[27] 1",\
+"[28] 1",\
+"[29] 1",\
+"[30] 1",\
+"[31] 1",\
+"[32] 1",\
+"[33] 1",\
+"[34] 1",\
+"[35] 1",\
+"[36] 1",\
+"[37] 1",\
+"[38] 1",\
+"[39] 1",\
+"[40] 1",\
+"[41] 1",\
+"[42] 1",\
+"[43] 1",\
+"[44] 1",\
+"[45] 1",\
+"[46] 1",\
+"[47] 1",\
+"[48] 1",\
+"[49] 1",\
+"[50] 1",\
+"[51] 1",\
+"[52] 1",\
+"[53] 1",\
+"[54] 1",\
+"Channel_name = STRING[55] :",\
+"[32] vartable:quad01pi",\
+"[32] vartable:quad02pi",\
+"[32] vartable:quad03pi",\
+"[32] vartable:quad04pi",\
+"[32] vartable:quad05pi",\
+"[32] vartable:quad06pi",\
+"[32] vartable:quad07pi",\
+"[32] vartable:quad08pi",\
+"[32] vartable:quad09pi",\
+"[32] vartable:quad10pi",\
+"[32] vartable:quad11pi",\
+"[32] vartable:quad12pi",\
+"[32] vartable:quad13pi",\
+"[32] vartable:quad14pi",\
+"[32] vartable:quad15pi",\
+"[32] vartable:quad16pi",\
+"[32] vartable:quad17pi",\
+"[32] vartable:quad18pi",\
+"[32] vartable:quad19pi",\
+"[32] vartable:quad20pi",\
+"[32] vartable:quad21pi",\
+"[32] vartable:bmag01pi",\
+"[32] vartable:bmag03pi",\
+"[32] vartable:quad01si",\
+"[32] vartable:quad02si",\
+"[32] vartable:quad03si",\
+"[32] vartable:quad04si",\
+"[32] vartable:quad05si",\
+"[32] vartable:quad06si",\
+"[32] vartable:quad01sp",\
+"[32] vartable:bmag01sp",\
+"[32] vartable:trim01sp",\
+"[32] vartable:bmag02sp",\
+"[32] vartable:trim02sp",\
+"[32] vartable:hex01spi",\
+"[32] slx09x",\
+"[32] slx09x",\
+"[32] sly09x",\
+"[32] sly09x",\
+"[32] slx12x",\
+"[32] slx12x",\
+"[32] sly12x",\
+"[32] sly12x",\
+"[32] slx01p",\
+"[32] slx01p",\
+"[32] slx02p",\
+"[32] slx02p",\
+"[32] sly18j",\
+"[32] sly18j",\
+"[32] slx18j",\
+"[32] slx18j",\
+"[32] slx02s",\
+"[32] slx02s",\
+"[32] sly02s",\
+"[32] sly02s",\
+"",\
+"[.]",\
+"Update Threshold Measured = FLOAT[55] :",\
+"[0] 1",\
+"[1] 0.01",\
+"[2] 0.01",\
+"[3] 0.01",\
+"[4] 0.01",\
+"[5] 0.01",\
+"[6] 0.01",\
+"[7] 0.01",\
+"[8] 0.01",\
+"[9] 0.01",\
+"[10] 0.01",\
+"[11] 0.01",\
+"[12] 0.01",\
+"[13] 0.01",\
+"[14] 0.01",\
+"[15] 0.01",\
+"[16] 0.01",\
+"[17] 0.01",\
+"[18] 0.01",\
+"[19] 0.01",\
+"[20] 0.01",\
+"[21] 0.01",\
+"[22] 0.01",\
+"[23] 0.01",\
+"[24] 0.01",\
+"[25] 0.01",\
+"[26] 0.01",\
+"[27] 0.01",\
+"[28] 0.01",\
+"[29] 0.01",\
+"[30] 0.01",\
+"[31] 0.01",\
+"[32] 0.01",\
+"[33] 0.01",\
+"[34] 0.01",\
+"[35] 0.01",\
+"[36] 0.01",\
+"[37] 0.01",\
+"[38] 0.01",\
+"[39] 0.01",\
+"[40] 0.01",\
+"[41] 0.01",\
+"[42] 0.01",\
+"[43] 0.01",\
+"[44] 0.01",\
+"[45] 0.01",\
+"[46] 0.01",\
+"[47] 0.01",\
+"[48] 0.01",\
+"[49] 0.01",\
+"[50] 0.01",\
+"[51] 0.01",\
+"[52] 0.01",\
+"[53] 0.01",\
+"[54] 0.01",\
+"Names = STRING[55] :",\
+"[32] Quad 1,P-Line",\
+"[32] Quad 2,P-Line",\
+"[32] Quad 3,P-Line",\
+"[32] Quad 4,P-Line",\
+"[32] Quad 5,P-Line",\
+"[32] Quad 6,P-Line",\
+"[32] Quad 7,P-Line",\
+"[32] Quad 8,P-Line",\
+"[32] Quad 9,P-Line",\
+"[32] Quad 10,P-Line",\
+"[32] Quad 11,P-Line",\
+"[32] Quad 12,P-Line",\
+"[32] Quad 13,P-Line",\
+"[32] Quad 14,P-Line",\
+"[32] Quad 15,P-Line",\
+"[32] Quad 16,P-Line",\
+"[32] Quad 17,P-Line",\
+"[32] Quad 18,P-Line",\
+"[32] Quad 19,P-Line",\
+"[32] Quad 20,P-Line",\
+"[32] Quad 21,P-Line",\
+"[32] Bend Mag 1P",\
+"[32] Bend Mag 3P",\
+"[32] Quad 1,S-Line",\
+"[32] Quad 2,S-Line",\
+"[32] Quad 3,S-Line",\
+"[32] Quad 4,S-Line",\
+"[32] Quad 5,S-Line",\
+"[32] Quad 6,S-Line",\
+"[32] Quad 1,SP-Line",\
+"[32] Bend Mag 1,SP",\
+"[32] Trim Coil H,SP",\
+"[32] Bend Mag 2,SP",\
+"[32] Trim Coil K,SP",\
+"[32] Hexapole 1,SP",\
+"[32] Slit 9x Horz Pos",\
+"[32] Slit 9x Horz Size",\
+"[32] Slit 9x Vert Pos",\
+"[32] Slit 9x Vert Size",\
+"[32] Slit 12x Horz Pos",\
+"[32] Slit 12x Horz Size",\
+"[32] Slit 12x Vert Pos",\
+"[32] Slit 12x Vert Size",\
+"[32] Slit 1P Horz Pos",\
+"[32] Slit 1P Horz Size",\
+"[32] Slit 2P Horz Pos",\
+"[32] Slit 2P Horz Size",\
+"[32] Slit 18J Y Pos",\
+"[32] Slit 18J Y Size",\
+"[32] Slit 18J X Pos",\
+"[32] Slit 18J Y Size",\
+"[32] Slit 2S  X Pos",\
+"[32] Slit 2S  X Size",\
+"[32] Slit 2S  Y Pos",\
+"[32] Slit 2S  Y Size",\
 "",\
 NULL }
 
@@ -2324,22 +2734,6 @@ typedef struct {
 "Frontend host = STRING : [32] vmevmic2",\
 "Frontend name = STRING : [32] K600 frontend",\
 "Frontend file name = STRING : [256] k600frontend.c",\
-"",\
-NULL }
-
-#endif
-
-#ifndef EXCL_BEAMLINE
-
-#define BEAMLINE_COMMON_DEFINED
-
-typedef struct {
-  char      format[80];
-} BEAMLINE_COMMON;
-
-#define BEAMLINE_COMMON_STR(_name) char *_name[] = {\
-"[.]",\
-"Format = STRING : [80] ",\
 "",\
 NULL }
 

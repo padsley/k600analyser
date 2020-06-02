@@ -209,11 +209,11 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    }
 
    pad1hip=QDC[0];  
-   pad1lowp=QDC[1];  
-   pad2hip=QDC[2];  
-   pad2lowp=QDC[3];  
-   pad1=sqrt(QDC[0]*QDC[1]);
-   pad2=sqrt(QDC[2]*QDC[3]);
+   pad1lowp=QDC[2];  
+   pad2hip=QDC[4];  
+   pad2lowp=QDC[6];  
+   pad1=sqrt(QDC[0]*QDC[2]);
+   pad2=sqrt(QDC[4]*QDC[6]);
 
    //printf("ODB test in qdc.c : %d  \n",qdc_param.histogram_threshold);
    return SUCCESS;

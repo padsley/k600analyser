@@ -15,17 +15,23 @@
 
 extern int ADCModules;
 extern int ADCsize;
-// extern int NumberOfScintillator;
+extern int NumberOfScintillator;
 
-extern int *ScintillatorADCChannelLimits;
-extern int *ScintillatorTDCChannelLimits;
+extern int *ScintillatorADCChannels;
+extern int *ScintillatorTDCChannels;
 
 extern double *ADCOffsets;
 extern double *ADCGains;
 
-TRandom3 *randy2 = new TRandom3(0);
+extern double **ADCCalibrationParameters;
 
+extern double *GammaTimeOffsets;	        // from Parameters.c 
+extern int *DetNrForGammaTimeOffsets;       // from Parameters.c  
+extern int NrOfDetForGammaTimeOffsets;     // nr of Det for which we have GammaTimeoffsets read it via Parameters.c
 
+TRandom3 *randyScint = new TRandom3(0);
+
+Double_t GammaTimeScintoffset=0;
 
 //GammaData *ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import)
 void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, float *TDC_value_import, GammaData *gammy)
@@ -42,28 +48,47 @@ void ScintillatorSort(float *ADC_import, int ntdc, int *TDC_channel_import, floa
    {
     if(ScintillatorTDCTest(mTDC->GetChannel(k)))
       {
-		  for(int i=ScintillatorADCChannelLimits[0];i<=ScintillatorADCChannelLimits[1];i++)
+          int DetNum = ScintillatorTDCIdentifyDetector(mTDC->GetChannel(k));
+      
+          if(DetNum>0)
+          	{
+		  for(int i=DetNum-5;i<NumberOfScintillator+1;i=i+5)
 		      {
-			if(ScintillatorADCTDCChannelCheck(i,mTDC->GetChannel(k)))
+		    //  printf("DetNum: %d; \i: %d\n",DetNum,i);
+                       int j = ScintillatorADCChannels[i-1];
+			 //	  printf("Det: %d; \tADCChannel: %d\n",i,j);                       
+			if(ScintillatorADCTDCChannelCheck(j,mTDC->GetChannel(k)))
 			{
-			// 	  printf("ADCChannel: %d \t TDCChannel: %d\n",i,mTDC->GetChannel(n));
-	  			double GammaEnergy = ScintillatorEnergyCalc(i,ADC_import[i]);
+				int label= i; //the detector number starts from 1
+				
+				// alignement of the GammaTime value+++++++++++++++
+				GammaTimeScintoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+				//printf("------------------NrOfDetForGammaTimeOffsets= %d \n",NrOfDetForGammaTimeOffsets); // as defined in Parameter.c 
+				for (int n = 0; n< NrOfDetForGammaTimeOffsets;n++){
+				 if( DetNrForGammaTimeOffsets[n] == (label+100)) GammaTimeScintoffset=GammaTimeOffsets[n];
+			        //printf("------------------GammaTime offset= %f \n",GammaTimeOffsets[n]); // as defined in Parameter.c 
+			        }
+			        //printf("Det Scint %d: GammaTime offset= %f \n",label,GammaTimeScintoffset);
+			        //++++++++++++++++++
+			        
+			 //	  printf("Det: %d; \tADCChannel: %d \t TDCChannel: %d\n",i,j,mTDC->GetChannel(k));
+	  			double GammaEnergy = ScintillatorEnergyCalc(j,ADC_import[j]);
 	  			if(GammaEnergy>0.1)
 	  			{
 	    			gammy->SetEnergy(GammaEnergy);
-	    			gammy->SetTime(mTDC->GetValue(k));
+	    			gammy->SetTime(mTDC->GetValue(k)-GammaTimeScintoffset);	    			  
 				gammy->SetDetectorType("Scintillator"); //the detector type will allow to choose between Hagar, Clover or Scintillator
 
-				int label= 1 + i - ScintillatorADCChannelLimits[0]; //the detector number starts from 1
+				
 				gammy->SetDetectorLabel(label); 
-// 				gammy->SetGammaRawADC(ADC_import[i]);
-// 				gammy->SetGammaADCChannel(i);
-// 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
-// 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
+ 				gammy->SetGammaRawADC(ADC_import[j]);
+ 				gammy->SetGammaADCChannel(j);
+ 				gammy->SetGammaTDCChannel(mTDC->GetChannel(k));
+ 				gammy->SetGammaTDCMultiplicity(mTDC->GetMult(k));
 	  			} 
 			 }
-      		       }
-    		
+      		      }
+    		}
 	}
     }
 
@@ -86,30 +111,58 @@ double ScintillatorPhiCalc(int Channel)
 }
 
 
+//function to identify the clover number
+int ScintillatorTDCIdentifyDetector(int TDCChannel)
+{
+ int testresult = -1;
+ int result=0;
+   for(int i=0;i<NumberOfScintillator;i++)
+    {
+     testresult = -1;
+       if(TDCChannel==ScintillatorTDCChannels[i])
+       	{
+	  		 testresult = i+1;
+				}
+			if(testresult>0) result=testresult;
+		//	printf("TDC Channel: %d\n Scintillatornumber: %d\n ", TDCChannel,i);  
+// 			printf("testresult = %d\n",testresult);
+   }
+//  printf("result = %d\n",result);
+ return result; //WATCHOUT we have the same TDC Channel associated with two ADC Channels. At this point this will always give 3 and 4 as the hit detectors.
+}
+
+
 double ScintillatorEnergyCalc(int Channel, double ADCValue)
 {
 
 		  
-      double randNum = randy2->Rndm();
+  double randNum = randyScint->Rndm();
 
- // printf("Channel: %i \t ADCValue: %f\n",Channel,ADCValue);
- // printf("Offset: %f \t Gain: %f\n",ADCOffsets[Channel],ADCGains[Channel]);
-// double result = ADCOffsets[Channel] + ADCGains[Channel]*ADCValue;
-// double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum-0.5);
-   double result = ADCOffsets[Channel] + ADCGains[Channel]*(ADCValue+randNum);
-// printf("ADCValue: %f \n  rand(): %f \n  result: %f\n", ADCValue, randNum,result);  
+  double RandyADCValue = ADCValue+randNum;
+
+  int npars = ADCCalibrationParameters[Channel][0];
+
+  double result = 0;
+
+  for(int i=1;i<npars+1;i++)
+  {
+    result += ADCCalibrationParameters[Channel][i] * pow(RandyADCValue,(double)i-1.);
+  }
+
   return result;
 }
 
 bool ScintillatorTDCTest(int TDCChannel) // to check if the TDCChannel is the one associated with the Scintillators
 {
   bool result = false;
-      if(TDCChannel>=ScintillatorTDCChannelLimits[0] && TDCChannel<=ScintillatorTDCChannelLimits[1])
+      for(int i=0;i<NumberOfScintillator;i++){
+        if(TDCChannel==ScintillatorTDCChannels[i])
 	{
 	  result = true;
 	}
-      if(ScintillatorTDCChannelLimits[0]==-1)result = true;
-      if(ScintillatorTDCChannelLimits[1]==-1)result = true;
+      }
+      if(ScintillatorTDCChannels[0]==-1)result = true;
+      if(ScintillatorTDCChannels[1]==-1)result = true;
      
   return result;
 }
@@ -119,18 +172,17 @@ bool ScintillatorADCTDCChannelCheck(int ADCChannel, int TDCChannel) // to consid
 { 
   bool result = false;
 //   printf("ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
-    if(ADCChannel>=ScintillatorADCChannelLimits[0] && ADCChannel<=ScintillatorADCChannelLimits[1] && TDCChannel>=ScintillatorTDCChannelLimits[0] && TDCChannel<=ScintillatorTDCChannelLimits[1])//Check to see if the ADC/TDC events are in the same detector
-   {
-     if((ADCChannel-ScintillatorADCChannelLimits[0])==(TDCChannel-ScintillatorTDCChannelLimits[0]))
+
+  for(int i=0;i<NumberOfScintillator;i++)
+    {
+    if(ADCChannel==ScintillatorADCChannels[i] && TDCChannel==ScintillatorTDCChannels[i])//Check to see if the ADC/TDC events are in the same detector
      {
      //   printf("Correlation! ADCChannel: %d \t TDC Channel: %d\n",ADCChannel, TDCChannel);
        result = true;
      }
-   }
-     if(ScintillatorADCChannelLimits[0]==-1)result = true;//If there is no information for some of the MMMs, suppress this test
-     if(ScintillatorADCChannelLimits[1]==-1)result = true;
-     if(ScintillatorTDCChannelLimits[0]==-1)result = true;
-     if(ScintillatorTDCChannelLimits[1]==-1)result = true;
+     if(ScintillatorADCChannels[i]==-1)result = true;//If there is no information for some of the MMMs, suppress this test
+     if(ScintillatorTDCChannels[i]==-1)result = true;
+    }
     
   return result;
 }

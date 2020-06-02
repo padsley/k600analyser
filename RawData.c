@@ -7,6 +7,8 @@ extern int QDCsize;
 extern double *ADCOffsets;
 extern double *ADCGains;
 
+extern double **ADCCalibrationParameters;
+
 RawData::RawData()
 {
   
@@ -62,13 +64,17 @@ void RawData::SetQDCSize(RawData *raw, int qsize)
 
 RawData *RawDataDump(float *ADC_import, int *ADCchan_import,  int ntdc, int *TDC_channel_import, float *TDC_value_import, float *QDC_import)
 {
+  printf("RawDataDump\n");
   RawData *raw = new RawData();
   raw->Init(raw);
   for(int i=0;i<ADCsize;i++)
   {
     raw->SetADCValue(i,ADC_import[i]);
     raw->SetADCChannel(i,ADCchan_import[i]);
-    raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
+    double ADCCalibratedValueCurrent = 0;
+    for(int j=0;j<sizeof(ADCCalibrationParameters[ADCchan_import[i]]);j++)
+      ADCCalibratedValueCurrent += ADCCalibrationParameters[ADCchan_import[i]][j] * pow((double)ADC_import[i],(double)j);
+    raw->SetADCCalibratedValue(i,ADCCalibratedValueCurrent);
   }
   //for(int i=0;i<ADCsize;i++)raw->SetADCCalibratedValue(i,ADCOffsets[i] + ADCGains[i] * ADC_import[i]);
   

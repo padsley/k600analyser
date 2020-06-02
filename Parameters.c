@@ -37,8 +37,8 @@ int ***GateauTDCChannelLimits;
 
 int NumberOfScintillator;
 
-int *ScintillatorADCChannelLimits;
-int *ScintillatorTDCChannelLimits;
+int *ScintillatorADCChannels;
+int *ScintillatorTDCChannels;
 
 double HagarGain[7] = {1,1,1,1,1,1,1};
 double HagarOffset[7] = {0,0,0,0,0,0,0};
@@ -53,6 +53,7 @@ int *PulseLimits;//[2] = {-1e6, 1e6};
 
 double *ADCOffsets;
 double *ADCGains;
+double **ADCCalibrationParameters;
 
 double *TDCOffsets;
 
@@ -64,7 +65,6 @@ bool VDC1_new_UX, VDC2_new_UX;
 
 int NXThetaCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n
 double *XThetaCorr;//pointer array to store the terms from above
-
 int NXThetaXCorr;//Number of terms to correct the X1 position with ThSCAT i.e. (ThSCAT)^n*(X)^n
 double *XThetaXCorr;//pointer array to store the terms from above
 int NXThetaXLoffCorr; //Number of terms to correct the X1 position (with offset) with ThSCAT with power progression for ThSCAT only i.e. ((ThSCAT)^n)*(X-X_LSOffset)
@@ -72,6 +72,12 @@ double *XThetaXLoffCorr; //pointer array to store the terms from above
 double X_LSOffset; //Offset for lineshape correction of the form (ThSCAT^n)*(X-X_loff)
 int NXY1Corr;
 double *XY1Corr;
+int NXTOFCorr; //Number of terms to correct X1pos (with offset) with TOF-TOF_LSOffset
+double *XTOFCorr; //pointer array to store the terms from above
+double TOF_LSOffset; //Offset for TOF to place it around 0
+double X1_LSOffset; //Offset for TOF to place it around 0
+double X1_refnocorr; //X1 reference peak where the correction is not needed
+
 int NThFPSCATOffset;     //Number of terms to convert thetaFP to thetaSCAT
 double *ThFPSCATOffset;  //pointer array to store the terms from above
 int NThFPSCATSlope;    //Number of terms to convert thetaFP to thetaSCAT
@@ -88,9 +94,20 @@ int NrOfRunsForTOFOffsets;
 int *RunNrForTOFOffsets;
 int *TOFOffsets;
 
-int NrOfRunsForYOffsets; // used in main.c
-int *RunNrForYOffsets;   // used in main.c
-double *YOffsets;	 // used in main.c
+int NrOfRunsForPadOffsets;
+int *RunNrForPadOffsets;
+double *PadOffsets;
+
+int NrOfRunsForY1Offsets; // used in main.c
+int *RunNrForY1Offsets;   // used in main.c
+double *Y1Offsets;	 // used in main.c
+
+int NrOfDetForGammaTimeOffsets;
+int *DetNrForGammaTimeOffsets;
+double *GammaTimeOffsets;
+
+int GamTimeMin;
+int GamTimeMax;
 
 bool TestInelastic = true; //Test to see if this is an elastic reaction... default is true as they're the ones that we run the most
 double *masses;
@@ -115,6 +132,7 @@ void ParameterInit()
   QDCInit();
   TDCInit();
   PrintParameters();
+//   printf("ADCCalibrationParameters.size(): %lu\n",ADCCalibrationParameters.size());
   printf("\nFinished initialising parameters - to the sorting!\n");
 }
 
@@ -360,7 +378,7 @@ void CloverTDCChannelsInit(int det, int start, int stop)
     }
   else
     {
-      printf("ADC: Detector number is higher than the number of W1 detectors - skipped enabling this detector\n");
+      printf("TDC: Detector number is higher than the number of Clover detectors - skipped enabling this detector\n");
     }
 }
 
@@ -386,45 +404,64 @@ void GateauSetChannelLimits(int plane, int sector, int start, int stop)
   GateauTDCChannelLimits[plane][sector][0] = start;
   GateauTDCChannelLimits[plane][sector][1] = stop;
 }
+
 void PulseLimitsInit()
 {
   printf("\nPulseLimitsInit\n");
   
   PulseLimits = new int[2];
-  PulseLimits[0] = -100000;
+  PulseLimits[0] = 4000;
   PulseLimits[1] = 100000;
 }
 
 /*-------------------------------------------------*/
-void ScintillatorInit()
+//void ScintillatorInit()
+void ScintillatorNumberInit()
 {
 
   printf("\nScintillatorParameterInit\n");
   
-  ScintillatorADCChannelLimits = new int[2];
-  ScintillatorTDCChannelLimits = new int[2];
+  ScintillatorADCChannels = new int[NumberOfScintillator];
+  ScintillatorTDCChannels = new int[NumberOfScintillator];
 
-    for(int j=0;j<2;j++)
+    for(int j=0;j<NumberOfScintillator;j++)
     {
-      ScintillatorTDCChannelLimits[j] = -1;
-      ScintillatorADCChannelLimits[j] = -1;
+      ScintillatorTDCChannels[j] = -1;
+      ScintillatorADCChannels[j] = -1;
     }  
   
   printf("\nScintillatorParameterInit - end\n");
 }
 
 /*-------------------------------------------------*/
-void ScintillatorADCChannelsInit(int start, int stop)
+void ScintillatorADCChannelsInit(int det, int start)
 {
-  ScintillatorADCChannelLimits[0] = start;
-  ScintillatorADCChannelLimits[1] = stop;
+  if(det<=NumberOfScintillator)
+{
+  ScintillatorADCChannels[det-1] = start;
+//  ScintillatorADCChannelLimits[1] = stop;
+  }
+  else
+  {
+    printf("ADC: Detector number is higher than the number of Scintillator detectors - skipped enabling this detector\n");
+  }
+
+
 }
 
 /*-------------------------------------------------*/
-void ScintillatorTDCChannelsInit(int start, int stop)
+void ScintillatorTDCChannelsInit(int det, int start)
 {
-  ScintillatorTDCChannelLimits[0] = start;
-  ScintillatorTDCChannelLimits[1] = stop;
+  if(det<=NumberOfScintillator)
+{
+  ScintillatorTDCChannels[det-1] = start;
+//  ScintillatorTDCChannelLimits[1] = stop;
+  }
+  else
+  {
+    printf("TDC: Detector number is higher than the number of Scintillator detectors - skipped enabling this detector\n");
+  }
+
 }
 
 /* ----------------------------------------------- */
@@ -435,11 +472,22 @@ void CalibrationParametersInit()
   
   ADCOffsets = new double[32*ADCModules];
   ADCGains = new double[32*ADCModules];
+
+  ADCCalibrationParameters = new double*[32*ADCModules];
   
   for(int i=0;i<32*ADCModules;i++)
   {
     ADCOffsets[i] = 0;//printf("ADCOffsets[%d]: %f\n",i,ADCOffsets[i]);
     ADCGains[i] = 1;//printf("ADCGains[%d]: %f\n",i,ADCGains[i]);
+//     std::vector<double> temp;
+//     temp.push_back(2);
+//     temp.push_back(0);
+//     temp.push_back(1);
+//     ADCCalibrationParameters.push_back(temp);
+    ADCCalibrationParameters[i] = new double[3];
+    ADCCalibrationParameters[i][0] = 2;
+    ADCCalibrationParameters[i][1] = 0;
+    ADCCalibrationParameters[i][2] = 1;
   }
 }
 
@@ -453,8 +501,15 @@ void ReadCalibrationParameters(std::string CalibFile)
   std::ifstream CalibInput;
   if(CalibFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
-    for(int i=0;i<32*ADCModules;i++)printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+    printf("\n ********** Ignoring calibrations: offsets are 0, gains are 1 **********\n");
+    for(int i=0;i<32*ADCModules;i++)
+    {
+      printf("ADCOffsets[%d]: %f\tADCGains[%d]: %f\n",i,ADCOffsets[i],i,ADCGains[i]);
+      printf("ADCCalibrationParameters[%d][1]: %f\tADCCalibrationParameters[%d][2]: %f\n",i,ADCCalibrationParameters[i][1],i,ADCCalibrationParameters[i][2]);
+//       ADCCalibrationParameters.at(i).push_back(0);
+//       ADCCalibrationParameters.at(i).push_back(1);
+    }
+
   }
   else
   {
@@ -466,24 +521,74 @@ void ReadCalibrationParameters(std::string CalibFile)
       {
 	std::string LineBuffer;
 	int channel = -1;
-	double offset = 0, gain = 1;
+	double offset = 0, gain = 1, gain2 = 0;
 	CalibInput >> LineBuffer;
+// 	std::cout << LineBuffer << std::endl;
 	if(LineBuffer.compare(0,3,"eof") == 0)
 	{
 	  CalibRead = false;
 	}
 	else
 	{
+	  int npars = -1;
 	  channel = atoi(LineBuffer.c_str());
+// 	  std::cout << "channel: " << LineBuffer << std::endl;
 	  CalibInput >> LineBuffer;
-	  offset = atof(LineBuffer.c_str());
-	  CalibInput >> LineBuffer;
-	  gain = atof(LineBuffer.c_str());
-	  printf("Channel: %d\tOffset: %f\tGain: %f\n",channel,offset,gain);
+// 	  std::cout << "npars: " << LineBuffer << std::endl;
+	  npars = atoi(LineBuffer.c_str());
+// 	  printf("npars: %d\n",npars);
+	  
+	  if(npars<0)printf("NOT FOUND NUMBER OF PARAMETERS!\n");
+	  
+	  if(npars>0)
+	  {
+	    delete ADCCalibrationParameters[channel];
+	    ADCCalibrationParameters[channel] = new double[npars+1];
+	  }
+	  
+	  ADCCalibrationParameters[channel][0] = (double)npars;
+// 	  printf("ADCCalibrationParameters[channel][0]: %d\n",(int)ADCCalibrationParameters[channel][0]);
+	  
+	  for(int np=0;np<npars;np++)
+	  {
+	   CalibInput >> LineBuffer;
+	   ADCCalibrationParameters[channel][np+1] = atof(LineBuffer.c_str());
+	  }
+	  
+	  if(npars==2)
+	  {
+	    printf("Two calibration parameters - save in the usual linear gain structure\n");
+	    offset = ADCCalibrationParameters[channel][1];
+	    gain = ADCCalibrationParameters[channel][2];
+	    
+	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain);
+	  }
+	  if(npars==3)
+	  {
+	    printf("Three calibration parameters - save in quadratic gain structure\n");
+	    offset = ADCCalibrationParameters[channel][1];
+	    gain = ADCCalibrationParameters[channel][2];
+	    gain2 = ADCCalibrationParameters[channel][3];
+	    
+	    printf("Channel: %d\tnpars: %d\tOffset: %f\tGain: %f\tSecond Order: %f\n",channel,(int)ADCCalibrationParameters[channel][0],offset,gain,gain2);
+	  }
+
+
 	  if(channel!=-1)SetADCChannelCalibration(channel, offset, gain);
+	  }
 	}
       }
     }
+  
+  for(unsigned int i=0;i<32*ADCModules;i++)
+  {
+    printf("Channel: %d\t",i);
+    printf("npars: %d\t",(int)ADCCalibrationParameters[i][0]);
+    for(unsigned int j=0;j<(int)ADCCalibrationParameters[i][0];j++)
+    {
+     printf("parameter %d: %f\t",j,ADCCalibrationParameters[i][j+1]);
+    }
+  printf("\n");
   }
   CalibInput.close();
   printf("Finished Calibration Parameters\n");
@@ -589,26 +694,24 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
   printf("Finished reading %d TOFoffsets\n",counter);
 }
 
-
 /*-------------------------------------------------*/
-
-void ReadYOffsets(std::string YoffsetsFile)
+void ReadPadOffsets(std::string PadoffsetsFile)
 {
-  //printf("Read Y offsets using file %s\n",YoffsetsFile.c_str());
+  //printf("Read PadOffsets using file %s\n",PadoffsetsFile.c_str());
   
   bool FileRead = true;
   int counter=0;  
 
   std::ifstream InputFile;
-  if(YoffsetsFile.compare(0,6,"ignore") == 0)
+  if(PadoffsetsFile.compare(0,6,"ignore") == 0)
   {
-    printf("\n ********** Ignoring: Y offsets for all runs are left at 0 **********\n");
-    RunNrForYOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfYOffsets")"
-    YOffsets[0]= 0;
+    printf("\n ********** Ignoring: Pad offsets for all runs are left at 0 **********\n");
+    RunNrForPadOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfPadOffsets")"
+    PadOffsets[0]= 0;
   }
   else
   {
-    InputFile.open(YoffsetsFile.c_str());
+    InputFile.open(PadoffsetsFile.c_str());
     
     if(InputFile.is_open())
     {
@@ -628,8 +731,8 @@ void ReadYOffsets(std::string YoffsetsFile)
 	  InputFile >> LineBuffer;
 	  offset = atof(LineBuffer.c_str());
  	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
-          RunNrForYOffsets[counter]=runnr;
-          YOffsets[counter]= offset;
+          RunNrForPadOffsets[counter]=runnr;
+          PadOffsets[counter]= offset;
           counter++;
 	}
       }
@@ -637,12 +740,110 @@ void ReadYOffsets(std::string YoffsetsFile)
   }
   InputFile.close();
 
-  printf("Finished reading %d Yoffsets\n",counter);
+  printf("Finished reading %d Padoffsets\n",counter);
 }
-
 
 /*-------------------------------------------------*/
 
+void ReadY1Offsets(std::string Y1offsetsFile)
+{
+  //printf("Read Y1 offsets using file %s\n",Y1offsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(Y1offsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: Y1 offsets for all runs are left at 0 **********\n");
+    RunNrForY1Offsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfY1Offsets")"
+    Y1Offsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(Y1offsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int runnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  runnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+          RunNrForY1Offsets[counter]=runnr;
+          Y1Offsets[counter]= offset;
+          counter++;
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d Y1offsets\n",counter);
+}
+
+/*-------------------------------------------------*/
+void ReadGammaTimeOffsets(std::string GammaTimeoffsetsFile)
+{
+  printf("Read GammaTimeOffsets using file %s\n",GammaTimeoffsetsFile.c_str());
+  
+  bool FileRead = true;
+  int counter=0;  
+
+  std::ifstream InputFile;
+  if(GammaTimeoffsetsFile.compare(0,6,"ignore") == 0)
+  {
+    printf("\n ********** Ignoring: GammaTime offsets for all runs are left at 0 **********\n");
+    DetNrForGammaTimeOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfGammaTimeOffsets")"
+    GammaTimeOffsets[0]= 0;
+  }
+  else
+  {
+    InputFile.open(GammaTimeoffsetsFile.c_str());
+    
+    if(InputFile.is_open())
+    {
+      while(FileRead)
+      {
+	std::string LineBuffer;
+	int detnr = 0;
+	double offset = 0;
+	InputFile >> LineBuffer;
+	if(LineBuffer.compare(0,3,"eof") == 0)
+	{
+	  FileRead = false;
+	}
+	else
+	{
+	  detnr = atoi(LineBuffer.c_str());
+	  InputFile >> LineBuffer;
+	  offset = atof(LineBuffer.c_str());
+ 	  printf("Detnr: %d\tOffset: %f\t \n",detnr,offset);          
+          DetNrForGammaTimeOffsets[counter]=detnr;
+          GammaTimeOffsets[counter]= offset;
+          counter++;
+          
+	}
+      }
+    }
+  }
+  InputFile.close();
+
+  printf("Finished reading %d GammaTimeOffsets\n",counter);
+}
+
+/*-------------------------------------------------*/
 void ExRunCorrectionsInit(int runs)
 {
   ExCorrTerms = new double*[runs];
@@ -750,7 +951,7 @@ void ADCClear()
 }
 
 /*-------------------------------------------------*/
-void TDCInit()
+void TDCInit()//not really initialising the TDC modules - more the TDC offsets
 {
   printf("TDCInit\n");
   TDCOffsets = new double[128*TDCModules];
@@ -843,8 +1044,8 @@ void ReadConfiguration()
   bool ScintillatorTDCChannelRead = false;
   bool ThSCATCorrectionParametersRead = false;
   bool ThSCATXCorrectionParametersRead = false;
-
   bool ThSCATXLoffCorrectionParametersRead = false;
+  bool TOFXCorrectionParametersRead = false;
   bool XRigidityParametersRead = false;
   bool Y1CorrectionParametersRead = false;
   bool GateauRead = false;
@@ -852,6 +1053,10 @@ void ReadConfiguration()
   bool ThFPSCATSlopeParametersRead = false;
   bool X1OffsetParametersRead = false;
   bool TOFOffsetParametersRead = false;
+  bool PadOffsetParametersRead = false;
+  bool Y1OffsetParametersRead = false;
+  bool GammaTimeOffsetParametersRead = false;
+
 
   std::ifstream input;
 
@@ -863,7 +1068,8 @@ void ReadConfiguration()
 	{
 	  std::string LineBuffer;
 
-	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead)
+
+	  if(!MMMADCChannelRead && !MMMTDCChannelRead && !W1ADCChannelRead && !W1TDCChannelRead && !HagarADCChannelRead && !HagarTDCChannelRead && !CloverADCChannelRead && !CloverTDCChannelRead && !ScintillatorADCChannelRead && !ScintillatorTDCChannelRead && !ThSCATCorrectionParametersRead && !ThSCATXCorrectionParametersRead && !XRigidityParametersRead && !Y1CorrectionParametersRead && !GateauRead && !ThFPSCATOffsetParametersRead &&!ThFPSCATSlopeParametersRead && !ThSCATXLoffCorrectionParametersRead && !X1OffsetParametersRead  && !TOFOffsetParametersRead  && !TOFXCorrectionParametersRead  && !PadOffsetParametersRead && !Y1OffsetParametersRead)
 	    {
 	      input >> LineBuffer;
 // 	      printf("Linebuffer: %s\n", LineBuffer.c_str());
@@ -980,7 +1186,7 @@ void ReadConfiguration()
 		  input >> LineBuffer;
 		  if(LineBuffer.compare(0,3,"yes") == 0)
 		    {
-		      ScintillatorInit();
+		    //  ScintillatorInit();
 		      ScintillatorUsed = true;
 		    }
 		  else if(LineBuffer.compare(0,2,"no") == 0)
@@ -992,6 +1198,12 @@ void ReadConfiguration()
 		      printf("Scintillator usage option not recognised\n");
 		    }
 		}
+              else if(LineBuffer.compare(0,20,"NumberOfScintillator") == 0)
+                {
+                  input >> LineBuffer;
+                  NumberOfScintillator = atoi(LineBuffer.c_str());
+                  ScintillatorNumberInit();
+                }
 	      else if(LineBuffer.compare(0,23,"ScintillatorADCChannels") == 0)
 		{
 		  if(ScintillatorADCChannelRead==false)ScintillatorADCChannelRead = true;
@@ -1080,26 +1292,66 @@ void ReadConfiguration()
 		  printf("Using TOFoffsets file: %s\n",LineBuffer.c_str());
 		  ReadTOFOffsets(LineBuffer);
 		}
-//===============================================================================================
-
-	      else if(LineBuffer.compare(0,12,"NrOfYOffsets") == 0)
+	      else if(LineBuffer.compare(0,14,"NrOfPadOffsets") == 0)
                 {
 		  input >> LineBuffer;
-		  printf("Reading %d Yoffsets\n",atoi(LineBuffer.c_str()));
-		  NrOfRunsForYOffsets = atoi(LineBuffer.c_str());
-                  if(NrOfRunsForYOffsets<1) NrOfRunsForYOffsets=1;    //if you put 0 in config, this will create at least 1 entry for safety
-                  RunNrForYOffsets = new int[NrOfRunsForYOffsets];
-                  YOffsets = new double[NrOfRunsForYOffsets];
+		  printf("Reading %d Padoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForPadOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForPadOffsets<1) NrOfRunsForPadOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  RunNrForPadOffsets = new int[NrOfRunsForPadOffsets];
+                  PadOffsets = new double[NrOfRunsForPadOffsets];
 	        }
-	      else if(LineBuffer.compare(0,12,"YOffsetsFile") == 0)
+	      else if(LineBuffer.compare(0,14,"PadOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
-		  printf("Using Yoffsets file: %s\n",LineBuffer.c_str());
-		  ReadYOffsets(LineBuffer);
+		  printf("Using Padoffsets file: %s\n",LineBuffer.c_str());
+		  ReadPadOffsets(LineBuffer);
 		}
 //===============================================================================================
+	      else if(LineBuffer.compare(0,13,"NrOfY1Offsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d Y1offsets\n",atoi(LineBuffer.c_str()));
+		  NrOfRunsForY1Offsets = atoi(LineBuffer.c_str());
+                  if(NrOfRunsForY1Offsets<1) NrOfRunsForY1Offsets=1;    //if you put 0 in config, this will create at least 1 entry for safety
+                  RunNrForY1Offsets = new int[NrOfRunsForY1Offsets];
+                  Y1Offsets = new double[NrOfRunsForY1Offsets];
+	        }
+	      else if(LineBuffer.compare(0,13,"Y1OffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using Y1offsets file: %s\n",LineBuffer.c_str());
+		  ReadY1Offsets(LineBuffer);
+		}
+//===============================================================================================
+	      else if(LineBuffer.compare(0,20,"NrOfGammaTimeOffsets") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Reading %d GammaTimeoffsets\n",atoi(LineBuffer.c_str()));
+		  NrOfDetForGammaTimeOffsets = atoi(LineBuffer.c_str());
+                  if(NrOfDetForGammaTimeOffsets<1) NrOfDetForGammaTimeOffsets=1;    //if you put 0 in config I will create at least 1 entry for safety
+                  DetNrForGammaTimeOffsets = new int[NrOfDetForGammaTimeOffsets];
+                  GammaTimeOffsets = new double[NrOfDetForGammaTimeOffsets];
+	        }
+	      else if(LineBuffer.compare(0,20,"GammaTimeOffsetsFile") == 0)
+		{
+		  input >> LineBuffer;
+		  printf("Using GammaTimeoffsets file: %s\n",LineBuffer.c_str());
+		  ReadGammaTimeOffsets(LineBuffer);
+		}
+	      else if(LineBuffer.compare(0,22,"GammaTimePromptPeakMin") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Setting Addback GammaTime Window min to: %d. \n",atoi(LineBuffer.c_str()));
+		  GamTimeMin = atoi(LineBuffer.c_str());
+	        }
 
-
+	      else if(LineBuffer.compare(0,22,"GammaTimePromptPeakMax") == 0)
+                {
+		  input >> LineBuffer;
+		  printf("Setting Addback GammaTime Window max to: %d. \n",atoi(LineBuffer.c_str()));
+		  GamTimeMax = atoi(LineBuffer.c_str());
+	        }
 	      else if(LineBuffer.compare(0,14,"TDCOffsetsFile") == 0)
 		{
 		  input >> LineBuffer;
@@ -1141,6 +1393,16 @@ void ReadConfiguration()
 			ThSCATXLoffCorrectionParametersRead = true;			
 		}
 
+	      else if(LineBuffer.compare(0,18,"TOFCorrectionTerms") == 0)
+		{		  				
+		  input >> LineBuffer;
+		  printf("Using %d terms for the (TOF-offset) correction\n",atoi(LineBuffer.c_str()));
+		  NXTOFCorr = atoi(LineBuffer.c_str());
+		  XTOFCorr = new double[NXTOFCorr];
+		  for(int c=0;c<NXTOFCorr;c++)XTOFCorr[c] = 0;
+		  TOFXCorrectionParametersRead = true;			
+		}
+
 	      else if(LineBuffer.compare(0,19,"InelasticScattering") ==0)
 		{
 		  input >> LineBuffer;
@@ -1180,7 +1442,6 @@ void ReadConfiguration()
 		  printf("VDCSeparationDistanceX: %f \n",atof(LineBuffer.c_str()));
 		  x_x1x2 = atof(LineBuffer.c_str());
 		}
-
 	      else if(LineBuffer.compare(0,5,"mass1") == 0)
 		{
 		  input >> LineBuffer;
@@ -1276,7 +1537,7 @@ void ReadConfiguration()
 		  XThetaCorr[npar] = valpar;
 		}
 	    }
-	
+
 	  if(ThSCATXCorrectionParametersRead)
 	    {
 	      int npar = -1;
@@ -1323,7 +1584,50 @@ void ReadConfiguration()
 		}
 	     }
 
-	
+
+
+  	  if(TOFXCorrectionParametersRead)
+	    {
+	      int npar = -1;
+	      double valpar = 0;
+	      input >> LineBuffer;
+	      if(LineBuffer.compare(0,21,"EndTOFCorrectionTerms") == 0 && TOFXCorrectionParametersRead) TOFXCorrectionParametersRead = false;
+	      else
+		{ 
+			if(LineBuffer.compare(0,18,"TOFLineshapeOffset") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("TOFLineshapeOffset: %f \n",atof(LineBuffer.c_str()));
+		  			 TOF_LSOffset = atof(LineBuffer.c_str());
+					 //printf("X_LSOffset: %f \n",X_LSOffset);
+			       	}
+			else if(LineBuffer.compare(0,17,"X1LineshapeOffset") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("X1LineshapeOffset: %f \n",atof(LineBuffer.c_str()));
+		  			 X1_LSOffset = atof(LineBuffer.c_str());
+					// printf("X1_LSOffset: %f \n",X1_LSOffset);
+			       	}
+			else if(LineBuffer.compare(0,15,"X1refpeaknocorr") == 0)
+				{
+		 			 input >> LineBuffer;
+		 			 printf("X1refpeaknocorr: %f \n",atof(LineBuffer.c_str()));
+		  			 X1_refnocorr = atof(LineBuffer.c_str());
+					// printf("X1_refnocorr: %f \n",X1_refnocorr);
+			       	}
+
+		 else
+			{
+		  printf("Parameter number: %d\t",atoi(LineBuffer.c_str()));
+		  npar = atoi(LineBuffer.c_str());
+		  input >> LineBuffer;
+		  printf("Parameter value: %e\n",atof(LineBuffer.c_str()));
+		  valpar = atof(LineBuffer.c_str());
+		  XTOFCorr[npar] = valpar;
+			}
+		}
+	     }
+
 	  if(Y1CorrectionParametersRead)
 	    {
 	      int npar = -1;
@@ -1680,9 +1984,30 @@ void ReadConfiguration()
 		}
 	    }
 
+          if(ScintillatorADCChannelRead)
+            {
+              int num = 0, value = -1;
+              std::string side = "";
+              input >> LineBuffer;
+              printf("%s\n",LineBuffer.c_str());
+              if(LineBuffer.compare(0,23,"ScintillatorADCChannels") == 0)
+                {
+                  if(ScintillatorADCChannelRead==true)ScintillatorADCChannelRead = false;
+                }
+              else
+                {
+                  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+                  num = atoi(LineBuffer.c_str());
+                  input>> LineBuffer;
+                  printf("Value: %d\t",atoi(LineBuffer.c_str()));
+                  value = atoi(LineBuffer.c_str());
+                  ScintillatorADCChannelsInit(num, value);
+                }
+            }
+
 	  if(ScintillatorTDCChannelRead)
 	    {
-	      int start = -1, stop = -1;
+	      int num = -1, value = -1;
 	      input >> LineBuffer;
 	      if(LineBuffer.compare(0,23,"ScintillatorTDCChannels") == 0)
 		{
@@ -1690,13 +2015,12 @@ void ReadConfiguration()
 		}
 	      else
 		{
-		  printf("ScintillatorTDCChannelRead: \t");
-		  printf("Start: %d\t",atoi(LineBuffer.c_str()));
-		  start = atoi(LineBuffer.c_str());
-		  input >> LineBuffer;
-		  printf("Stop: %d\n",atoi(LineBuffer.c_str()));
-		  stop = atoi(LineBuffer.c_str());
-		  ScintillatorTDCChannelsInit(start, stop);
+                  printf("\n Detector number %d\t",atoi(LineBuffer.c_str()));
+                  num = atoi(LineBuffer.c_str());
+                  input>> LineBuffer;
+                  printf("Value: %d\t",atoi(LineBuffer.c_str()));
+                  value = atoi(LineBuffer.c_str());
+                  ScintillatorTDCChannelsInit(num, value);
 		}
 	    }
 	    

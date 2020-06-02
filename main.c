@@ -35,6 +35,7 @@
 #include <TFile.h>
 #include <TRandom3.h>
 #include <TMath.h>
+#include "TGraph.h"
 
 /* home-made includes */
 #include "Parameters.h"
@@ -61,10 +62,10 @@
 // #define _SILICONDATA 
 // #define _MMM
 // #define _W1
-// #define _GAMMADATA
+//#define _GAMMADATA
 // #define _HAGAR
 // #define _SCINTILLATOR
-// #define _CLOVER
+//#define _CLOVER
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -136,7 +137,7 @@ VDC U2;
 
 
 // general TDC variables for TTree, all with prefix "t_"
-Double_t t_pad1,t_pad2;        
+Double_t t_pad1=0,t_pad2=0, t_pad1raw=0; //padoffsets correction        
 Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
@@ -159,7 +160,7 @@ Double_t t_X1chisq=15.0,t_X2chisq=15.0, t_U1chisq=15.0, t_U2chisq=15.0;
 Int_t    t_X1flag=-100, t_X2flag=-100,  t_U1flag=-100,  t_U2flag=-100;
 Double_t t_X1effID=0,   t_X2effID=0,    t_U1effID=0,    t_U2effID=0;    // these are at present (31may10) not useful in TREE
 Double_t t_X1posO=-100.0;  // for offset added position
-Double_t t_X1posC=-100.0;  // for lineshape corrected position
+Double_t t_X1posC=-100.0, t_X1posCTOF=-100;
 double t_Ex = -0.;
 double t_ExC = -0.;
 double t_T3 = -0.;
@@ -183,7 +184,7 @@ Double_t t_X1res6,      t_X2res6,       t_U1res6,       t_U2res6;
 Double_t t_X1res7,      t_X2res7,       t_U1res7,       t_U2res7;
 Double_t t_X1res8,      t_X2res8,       t_U1res8,       t_U2res8;
 #endif
-Double_t t_Y1=-100.0,t_Y2=-100.0;
+Double_t t_Y1=-100.0,t_Y1raw=-100.0,t_Y2=-100.0; //HJ-added t_Y1raw for Y1 offset correction
 
 Double_t t_X1effall, t_X1effdt, t_X1effgroup, t_X1effgood;
 Double_t t_U1effall, t_U1effdt, t_U1effgroup, t_U1effgood;
@@ -225,6 +226,7 @@ GammaData *gammy;
 
 
 Int_t t_pulser=0;    // a pattern register equivalent
+Int_t t_cloverpulser=0;
 
 #ifdef _POLARIZATION  
 Int_t t_polu=0, t_pold=0;   // a pattern register equivalent
@@ -249,7 +251,8 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-Double_t Yoffset=0.0; //implemented first in PR210 and now here in PR236 to take into account different y offsets in the FP.
+Double_t Padoffset=0;
+Double_t Y1offset=0; //implemented first in PR210 and now here in PR236 to take into account different y offsets in the FP.
 
 /*-----------------------------------------------------------------------------------*/
 /*--------Histogramming Data Structures ---------------------------------------------*/
@@ -266,6 +269,7 @@ static TH1F *hEventID, *hEventID2;
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
 TH2F **hTDC2DModule;
+TH2F *hADCChannels_vs_TDCChannels;
 
 static TH1F *hTDCPerEventRaw;
 //static TH1F *hTDCPerEvent;
@@ -417,6 +421,7 @@ void ZeroFPWireTimeDist(void)
 void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
 {
    t_tdcsperevent=0;
+   t_pad1=-1;  t_pad2=-1;  t_pad1raw=-1; 
    t_pad1hiP=-1;  t_pad1lowP=-1;  t_pad2hiP=-1;  t_pad2lowP=-1;
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
    t_tof=0; t_toftdc1=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
@@ -426,7 +431,8 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
    t_X1th=-100.;  t_X2th=-100.;  t_U1th=-100.;  t_U2th=-100.;
    t_X1posO=-100.;
-   t_X1posC=-100.;
+   t_X1posC=-100., t_X1posCTOF=-100.;
+
    t_Ex=-1.;
    t_ExC = -1.;
    t_X1chisq=-100.; t_X2chisq=-100.; t_U1chisq=-100.; t_U2chisq=-100.;
@@ -446,7 +452,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_thetaFP=-100; t_thetaFPx=-100; t_phiFP=-100;
    t_thetaSCAT=-100; t_phiSCAT=-100; 
    t_theta=-100;
-   t_Y1=-100.0; t_Y2=-100.0;
+   t_Y1=-100.0; t_Y1raw=-100.0; t_Y2=-100.0; //HJ
 
    t_X1effall=-1; t_X1effdt=-1; t_X1effgroup=-1; t_X1effgood=-1;
    t_U1effall=-1; t_U1effdt=-1; t_U1effgroup=-1; t_U1effgood=-1;
@@ -465,6 +471,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    #endif
 
    t_pulser=0;
+   t_cloverpulser=0;
 
 
    #ifdef _MOVIE 
@@ -685,6 +692,7 @@ INT main_init(void)
 
   t1->Branch("pad1",&t_pad1,"t_pad1/D");
   t1->Branch("pad2",&t_pad2,"t_pad2/D");
+  t1->Branch("pad1raw",&t_pad1raw,"t_pad1raw/D"); //padoffsets correction 
   t1->Branch("pad1hiP",&t_pad1hiP,"t_pad1hiP/D");
   t1->Branch("pad1lowP",&t_pad1lowP,"t_pad1lowP/D");
   t1->Branch("pad2hiP",&t_pad2hiP,"t_pad2hiP/D");
@@ -812,9 +820,12 @@ INT main_init(void)
   t1->Branch("thetaFPx",&t_thetaFPx,"t_thetaFPx/D");
   t1->Branch("phiFP",&t_phiFP,"t_phiFP/D");
   t1->Branch("Y1",&t_Y1,"t_Y1/D");
+  t1->Branch("Y1raw",&t_Y1raw,"t_Y1raw/D"); //HJ-Y1offsets correction
   t1->Branch("Y2",&t_Y2,"t_Y2/D");
   t1->Branch("pulser",&t_pulser,"t_pulser/I");
+  t1->Branch("cloverpulser",&t_cloverpulser,"t_cloverpulser/I");
   t1->Branch("X1posC",&t_X1posC,"t_X1posC/D");
+  t1->Branch("X1posCTOF",&t_X1posCTOF,"t_X1posCTOF/D");
   t1->Branch("X1posO",&t_X1posO,"t_X1posO/D");
   t1->Branch("Ex",&t_Ex,"t_Ex/D");
   t1->Branch("ExC",&t_ExC,"t_ExC/D");
@@ -878,6 +889,9 @@ INT main_init(void)
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
+
+hADCChannels_vs_TDCChannels = new TH2F("hADCChannels_vs_TDCChannels", "hADCChannels_vs_TDCChannels", 128*TDCModules, 0., 128*TDCModules, 32*ADCModules, 0., 32*ADCModules);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
+   
    return SUCCESS;
 }
 
@@ -930,29 +944,39 @@ INT main_bor(INT run_number)
    extern int *TOFOffsets;	        // from Parameters.c 
    extern int *RunNrForTOFOffsets;       // from Parameters.c  
    extern int NrOfRunsForTOFOffsets;     // nr of runs for which we have TOFoffsets read it via Parameters.c
-   extern double *YOffsets;        // defined in Parameters.c
-   extern int *RunNrForYOffsets;	// from Parameters.c   
-   extern int NrOfRunsForYOffsets;	// nr of runs for which we have Yoffsets; read via Parameters.c
+   extern double *PadOffsets;        // from Parameters.c
+   extern int *RunNrForPadOffsets;
+   extern int NrOfRunsForPadOffsets;
+   extern double *Y1Offsets;        // defined in Parameters.c
+   extern int *RunNrForY1Offsets;	// from Parameters.c   
+   extern int NrOfRunsForY1Offsets;	// nr of runs for which we have Yoffsets; read via Parameters.c
    extern double T1;
 
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-   for (int i = 0; i< NrOfRunsForX1Offsets;i++){
+   for (int i = 0; i<NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
    printf("Run %d: X1 offset= %f \n",RunNumber,x1offset);
 
 
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
-   for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
+   for (int i = 0; i<NrOfRunsForTOFOffsets;i++){
        if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
    }
    printf("Run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
-   Yoffset =0.0;   // set it to zero so that if nothing happens inside the IF loop, there is a value already assigned to it
-   for (int i = 0; i<NrOfRunsForYOffsets;i++){
-	if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameters.c
+   Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i<NrOfRunsForPadOffsets;i++){
+       if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i];
+     //  printf("------------------PAD offset= %f \n",PadOffsets[i]); // as defined in Parameter.c 
    }
-   printf("Run %d: Y offset= %f \n",RunNumber,Yoffset);
+   printf("Run %d: Pad offset= %f \n",RunNumber,Padoffset);
+
+   Y1offset =0;   // set it to zero so that if nothing happens inside the IF loop, there is a value already assigned to it
+   for (int i = 0; i<NrOfRunsForY1Offsets;i++){
+	if( RunNrForY1Offsets[i] == RunNumber) Y1offset=Y1Offsets[i]; // as defined in Parameters.c
+   }
+   printf("Run %d: Y1 offset= %f \n",RunNumber,Y1offset);
 
    printf("Beam Energy = %.3f MeV \n",T1);   
 
@@ -983,6 +1007,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
    Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
+   float pad1raw=0; //padoffsets correction
    float PsideTDC[80];
 
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
@@ -1037,8 +1062,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Double_t thetaFP=-100;   
    Double_t thetaFPx=-100;
    Double_t thetaSCAT=-100, phiSCAT=-100;
-   Double_t Y1=-100.0,Y2=-100.0;
-   Double_t Xcorr=-100;
+   Double_t Y1=-100.0,Y1raw=-100.0,Y2=-100.0;
+   Double_t Xcorr=-100, Xcorr2=-100;
    Int_t X1wires_used=0,X2wires_used=0,U1wires_used=0,U2wires_used=0;
    Int_t X1doublewires=0,X2doublewires=0,U1doublewires=0,U2doublewires=0;
    Int_t X1multiplemin=0,X2multiplemin=0,U1multiplemin=0,U2multiplemin=0;
@@ -1067,7 +1092,11 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    ZeroTTreeVariables();         // zero the values to be used in TTree
    ZeroFPWireTimeDist();         // zero the values of the struct X1 X2 U1 U2
 
+   // padoffsets correction the pad1 will be the corrected and pad1raw not
+   pad1raw=pad1; 
+   pad1=pad1raw+Padoffset; 
    t_pad1=pad1;
+   t_pad1raw=pad1raw; 
    t_pad2=pad2;	       
    t_pad1hiP=pad1hip;
    t_pad1lowP=pad1lowp;	    
@@ -1227,6 +1256,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
 		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
 		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
+		case 14: t_cloverpulser=1;break;
 
 		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
 						 tof=ref_time+TOFoffset; 
@@ -1762,10 +1792,12 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
-   Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1+Yoffset;
+   Y1raw=CalcYFP(X1pos,U1pos,X1th);  
+   Y1=Y1raw+Y1offset;
+   t_Y1raw=Y1raw;
+   t_Y1=Y1;
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1+Yoffset);
+   h_Y1->Fill(Y1);
    #endif
 
    Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
@@ -1779,18 +1811,21 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1+Yoffset);
-   t_theta = CalcTheta(Xcorr, thetaFP, Y1+Yoffset);
+   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
+   t_X1posCTOF=Xcorr2;
+
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   t_theta = CalcTheta(Xcorr, thetaFP, Y1);
 
    //t_Ex = CalcExDirect(Xcorr);
-   t_Ex = CalcEx(Xcorr);
+   t_Ex = CalcEx(Xcorr2);
 
    extern double *masses;
-   t_T3 = CalcTfromXcorr(Xcorr, masses[2]);
-   t_rigidity3 = CalcQBrho(Xcorr);
+   t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
+   t_rigidity3 = CalcQBrho(Xcorr2);
 
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
@@ -1855,11 +1890,28 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 gammy = new GammaData();
 #endif
    
+#ifdef _SILICONDATA
+si = new SiliconData();
+#endif
+   
+
 #ifdef _RAWDATA
   if(raw)
   {
     //printf("made it in main.c to RawDataDump\n");
     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+    
+    for(int i=0; i<TDCValueExportStore.size(); i++)
+    {
+        for(int j=0; j<sizeof(ADCchannel); j++)
+        {
+			if(ADC[j]>0.0)
+			{
+				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
+			}
+				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
+        }
+    }
   }
 #endif
   
@@ -1925,6 +1977,8 @@ gammy = new GammaData();
 
 #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
+   delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
+
 #endif
    
 #ifdef _GAMMADATA
@@ -1959,10 +2013,17 @@ gammy = new GammaData();
 //================================================================================================
 INT main_eor(INT run_number)
 {
+  printf("Got to the main_eor routine\n");
+/* 
 #ifdef _SILICONDATA
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
 #endif
+*/
+   delete [] ADC;
+   delete [] ADCchannel;
 
+   //printf("Finishing main_eor routine\n");
+   
    return SUCCESS;
 }
 

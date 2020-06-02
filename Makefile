@@ -23,7 +23,7 @@ ifeq ($(ARCH),Linux)
 OS_DIR = linux
 OSFLAGS = -DOS_LINUX -Dextname
 #CFLAGS = -Wall -lrt
-CFLAGS = -Wno-cpp -lrt -O2
+CFLAGS = -Wno-cpp -lrt -O2 -g
 # add to compile in 32-bit mode
 # OSFLAGS += -m32
 LIBS = -lm -lz -lutil -lnsl -lpthread -lrt #-lgsl -lgslcblas #-lvme
@@ -32,7 +32,7 @@ endif
 ifeq ($(ARCH),Darwin)
 OS_DIR = darwin
 OSFLAGS = -DOS_LINUX -Dextname
-CFLAGS = -Wno-cpp -lrt
+CFLAGS = -Wno-cpp -lrt -g
 LIBS = -lm -lz -lutil
 endif
 
