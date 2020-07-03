@@ -1908,7 +1908,7 @@ double CalcEx(double Xcorr)
       exE = T1 - T3 - T4 + Q;
     }
   //std::cout << "exE: " << exE << std::endl;
-  if(exE<0)exE=0;
+  //if(exE<0)exE=0;
   if(Xcorr>800)exE=0;
   return exE;
 }
