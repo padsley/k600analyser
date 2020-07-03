@@ -1747,7 +1747,7 @@ void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 
   for(int i=0;i<NXThetaXLoffCorr;i++){
     if(i==0)result = result;
-    if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) * (X-X_LSOffset);
+    if(i>0)result += XThetaXLoffCorr[i] * pow(ThetaSCAT,i) * pow((X-X_LSOffset),2);
   }
   //printf("Xcorr from ThetaXLoffCorr: %f\n",result);
 
