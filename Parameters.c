@@ -804,54 +804,51 @@ void ReadTOFOffsets(std::string TOFoffsetsFile)
 
 
 /*-------------------------------------------------*/
-
-//PA commented out the function below when merging HJ's changes - I think that it just repeats a subsequent code
-
-// void ReadPadOffsets(std::string PadoffsetsFile)
-// {
-//   bool FileRead = true;
-//   int counter=0;  
-// 
-//   std::ifstream InputFile;
-//   if(PadoffsetsFile.compare(0,6,"ignore") == 0)
-//   {
-//     printf("\n ********** Ignoring: Pad offsets for all runs are left at 0 **********\n");
-//     RunNrForPadOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfPadOffsets")"
-//     PadOffsets[0]= 0;
-//   }
-//   else
-//   {
-//     InputFile.open(PadoffsetsFile.c_str());
-//     
-//     if(InputFile.is_open())
-//     {
-//       while(FileRead)
-//       {
-// 	std::string LineBuffer;
-// 	int runnr = 0;
-// 	double offset = 0;
-// 	InputFile >> LineBuffer;
-// 	if(LineBuffer.compare(0,3,"eof") == 0)
-// 	{
-// 	  FileRead = false;
-// 	}
-// 	else
-// 	{
-// 	  runnr = atoi(LineBuffer.c_str());
-// 	  InputFile >> LineBuffer;
-// 	  offset = atof(LineBuffer.c_str());
-//  	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
-//           RunNrForPadOffsets[counter]=runnr;
-//           PadOffsets[counter]= offset;
-//           counter++;
-// 	}
-//       }
-//     }
-//   }
-//   InputFile.close();
-// 
-//   printf("Finished reading %d Padoffsets\n",counter);
-// }
+ void ReadPadOffsets(std::string PadoffsetsFile)
+ {
+   bool FileRead = true;
+   int counter=0;  
+ 
+   std::ifstream InputFile;
+   if(PadoffsetsFile.compare(0,6,"ignore") == 0)
+   {
+     printf("\n ********** Ignoring: Pad offsets for all runs are left at 0 **********\n");
+     RunNrForPadOffsets[0]=0;   // for safety, array of 1 created  section "LineBuffer.compare(0,13,"NrOfPadOffsets")"
+     PadOffsets[0]= 0;
+   }
+   else
+   {
+     InputFile.open(PadoffsetsFile.c_str());
+     
+     if(InputFile.is_open())
+     {
+       while(FileRead)
+       {
+ 	std::string LineBuffer;
+ 	int runnr = 0;
+ 	double offset = 0;
+ 	InputFile >> LineBuffer;
+ 	if(LineBuffer.compare(0,3,"eof") == 0)
+ 	{
+ 	  FileRead = false;
+ 	}
+ 	else
+ 	{
+ 	  runnr = atoi(LineBuffer.c_str());
+ 	  InputFile >> LineBuffer;
+ 	  offset = atof(LineBuffer.c_str());
+  	  printf("Runnr: %d\tOffset: %f\t \n",runnr,offset);          
+           RunNrForPadOffsets[counter]=runnr;
+           PadOffsets[counter]= offset;
+           counter++;
+ 	}
+       }
+     }
+   }
+   InputFile.close();
+ 
+   printf("Finished reading %d Padoffsets\n",counter);
+ }
 
 /*HJ-------------------------------------------------*/
 void ReadY1Offsets(std::string Y1offsetsFile)
@@ -902,14 +899,6 @@ void ReadY1Offsets(std::string Y1offsetsFile)
 
 /*-------------------------------------------------HJ*/ 
 void ReadGammaTimeOffsets(std::string GammaTimeOffsetsFile)
-{
-    printf("This function - ReadGammaTimeOffsets - has not been implemented\n");
-}
-
-
-
-/*-------------------------------------------------*/
-void ReadPadOffsets(std::string GammaTimeOffsetsFile)
 {
   printf("Read GammaTimeOffsets using file %s\n",GammaTimeOffsetsFile.c_str());
   
