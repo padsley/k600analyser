@@ -115,3 +115,5 @@ Tue Jan 17 11:02:05 2017 [ODBEdit,ERROR] [system.c:3539:ss_suspend_init_ipc,ERRO
 14:43:19.340 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost started
 14:43:19.758 2017/05/09 [Analyzer,INFO] Set run number 3151 in ODB
 14:44:05.556 2017/05/09 [Analyzer,INFO] Program Analyzer on host localhost stopped
+17:55:05.246 2020/08/22 [ODBEdit,INFO] Program ODBEdit on host localhost started
+17:55:09.705 2020/08/22 [ODBEdit,ERROR] [odb.c:7074:db_load,ERROR] file "PR262.odb" not found
