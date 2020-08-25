@@ -54,11 +54,11 @@
 //#define _POLARIZATION
 //#define _MOVIE
 //#define _JJAUTOTRIM
-#define _PRINTTOSCREEN
+//#define _PRINTTOSCREEN
 //#define _VDCRESCALCS
 #define _FULLANALYSIS
 //#define _MISALIGNTIME
-#define _RAWDATA
+//#define _RAWDATA
 //#define _SILICONDATA 
 //#define _MMM
 //#define _W1
@@ -66,7 +66,7 @@
 // #define _HAGAR
 //#define _SCINTILLATOR
 //#define _CLOVER
-#define _CALCEX
+//#define _CALCEX
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -999,7 +999,7 @@ INT main_bor(INT run_number)
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i];
      //  printf("------------------PAD offset= %f \n",PadOffsets[i]); // as defined in Parameter.c 
    }
-   printf("run %d: PAD offset= %f \n",RunNumber,Padoffset);
+   printf("run %d: Paddle 1 offset= %f \n",RunNumber,Padoffset);
 
 //HJ
    Y1offset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
@@ -1007,10 +1007,10 @@ INT main_bor(INT run_number)
        if( RunNrForY1Offsets[i] == RunNumber) Y1offset=Y1Offsets[i];
        //printf("------------------Y1 offset= %f \n",Y1Offsets[i]); // as defined in Parameter.c 
    }
-
-   
    printf("run %d: Y1 offset= %f \n",RunNumber,Y1offset);
-   printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
+
+
+   //printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
 
 
    return SUCCESS;
