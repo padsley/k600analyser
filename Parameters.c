@@ -132,7 +132,7 @@ void ParameterInit()
   printf("\n ParameterInit\n");
   masses = new double[4];
   ReadConfiguration();
-  //PulseLimitsInit();
+  PulseLimitsInit();
   ADCInit();
   QDCInit();
   //TDCInit();
