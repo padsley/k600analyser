@@ -367,6 +367,119 @@ void setupchannel2wireXoldXU(unsigned int chan2wire[])
 
 }
 
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------*/
+void setupchannel2wireXoldUX(unsigned int chan2wire[])
+// Mapping of wires to channels when using 1 old VDC and 1 new VDC (placed with first wireplane being the X-wires)
+// See camac-vme-cabling.xls
+{
+    printf("setupchannel2wireXoldUX()\n");
+    int input,tdcmodulecounter,preampnum,channelstart,basecount;
+    int preampcount=0;
+    int preampbase=0;
+    int tdcchan;
+    
+    for(input=0;input<896;input++) chan2wire[input]=-1;
+    
+    for(tdcmodulecounter=0;tdcmodulecounter<8;tdcmodulecounter++){
+        for(input=1;input<8;input++){   //input is TDC input, there are 8, 0-7, and input 0 is used for trigger and other things
+            channelstart=0;
+            preampnum=(tdcmodulecounter*7)+input;
+            //printf("tdc %d   input %d   preamp %d  channel %d\n",tdcmodulecounter,input,preampnum,channel);
+            
+            if(preampcount<13) { // wireplane X1  =================================================
+                basecount=8;
+                preampbase=1;
+                channelstart=basecount + (preampcount-preampbase)*16;
+                if(preampcount==0){
+                    chan2wire[24]=0;
+                    chan2wire[25]=1;
+                    chan2wire[26]=2;
+                    chan2wire[27]=3;
+                    chan2wire[28]=4;
+                    chan2wire[29]=5;
+                    chan2wire[30]=6;
+                    chan2wire[31]=7;
+                    for(int i=24;i<32;i++){
+                        tdcchan=i;
+                        //printf("chan2wire[%d]  = %d  \n",tdcchan,chan2wire[tdcchan]);
+                        //printf("channelstart %d;   preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, preampcount, tdcchan, chan2wire[tdcchan]);
+                    }
+                }
+                else{
+                    for(int i=channelstart;i<channelstart+16;i++){
+                        tdcchan=(tdcmodulecounter*128) +  (input*16) +(i-channelstart);
+                        //tdcchan=(tdcmodulecounter*128) +  ((preampcount+1)-7*tdcmodulecounter)*16 +(i-channelstart);
+                        chan2wire[tdcchan]=i;
+                        //printf("channelstart %d;  tdcmodule %d ;  preampcount %d ;   chan2wire[%d] = %d   \n",channelstart, tdcmodulecounter, preampcount, tdcchan, chan2wire[tdcchan]);
+                    }
+                }
+            }
+            else if(preampcount>12 && preampcount <22){ // wireplane U1  =================================================
+                basecount=300;
+                preampbase=13;
+                channelstart=basecount+(preampcount-preampbase)*16;
+                for(int i=channelstart;i<channelstart+16;i++){
+                    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                    chan2wire[tdcchan]=i;
+                    //printf("chan2wire[%d] = %d  \n",tdcchan, chan2wire[tdcchan]);
+                }
+            }
+            else if(preampcount<35){ // wireplane X2  =================================================
+                basecount=500;
+                preampbase=22;
+                channelstart=basecount+(preampcount-preampbase)*16;
+                if(preampcount==22){
+                    chan2wire[416]=510;
+                    chan2wire[417]=511;
+                    chan2wire[418]=512;
+                    chan2wire[419]=513;
+                    chan2wire[420]=514;
+                    chan2wire[421]=515;
+                    for(int i=422;i<431;i++){
+                        chan2wire[i]=0;
+                    }
+                    channelstart=basecount+(preampcount-preampbase)*16;
+                    for(int i=channelstart;i<channelstart+16;i++){
+                        tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                        //printf("tdc %d input %d channel %d wire %d\n",tdcmodulecounter,input,tdcchan,chan2wire[tdcchan]);
+                    }
+                }
+                else {
+                    for(int i=channelstart;i<channelstart+16;i++){
+                        tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                        chan2wire[tdcchan]=i;
+                        //printf("tdc %d input %d channel %d wire %d\n",tdcmodulecounter,input,tdcchan,chan2wire[tdcchan]);
+                    }
+                }	   }
+            else if(preampcount<44){// wireplane U2  =================================================
+                basecount=800;
+                preampbase=35;
+                channelstart=basecount+(preampcount-preampbase)*16;
+                int counter=1;
+                for(int i=channelstart;i<channelstart+16;i++){
+                    tdcchan=(tdcmodulecounter*128) + (input*16) + i-channelstart;
+                    chan2wire[tdcchan]=(channelstart+16) - counter;
+                    counter++;
+                }
+            }
+            preampcount++;
+        }
+    }
+    
+    //for(int i=0;i<300;i++){
+    //     printf("--------------------- chan2wire[%d] = %d   \n",i, chan2wire[i]);
+    //}
+    
+    
+    
+}
+
 /* ---------------------------------------------------------------------------------------*/
 void setupchannel2wireXUXU(unsigned int chan2wire[])
 // hack the mapping of wires to channels when new VDC is placed with first wireplane being the X-wires
@@ -1660,10 +1773,6 @@ void raytrace(Double_t dd[],Int_t wire[],Double_t *_X,Double_t *_Th,Double_t *_c
 void CalcCorrX(Double_t X, Double_t Y, Double_t ThetaSCAT, Double_t *Xcorr)
 //lineshape correction when you have a well defined thetaSCAT
 {
-   //*Xcorr= X - (gates.a0xcorr*ThetaSCAT + gates.a1xcorr*ThetaSCAT*ThetaSCAT + gates.a2xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-  //		+ gates.a3xcorr*ThetaSCAT*ThetaSCAT*ThetaSCAT*ThetaSCAT 
-  //	 	+ gates.b0xcorr*Y + gates.b1xcorr*Y*Y) ;
-
   double result = 0;
   extern int NXThetaCorr;
   extern double *XThetaCorr;
@@ -1735,12 +1844,15 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
   extern int NXY1Corr;
   extern double *XY1Corr;
 
-  extern int NXTOFCorr;
-  extern double *XTOFCorr;
-  extern double TOF_LSOffset;
+  extern int NXTOFCorr1;
+  extern int NXTOFCorr2;
+  extern double *XTOFCorr1;
+  extern double *XTOFCorr2;
+  extern double TOF_LSOffset1;
+  extern double TOF_LSOffset2;
 
   extern double X1_LSOffset;  
-  extern double X1_refnocorr;
+  //extern double X1_refnocorr;
 
  
   //printf("XLineshapeOffset = %f\n",X_LSOffset);
@@ -1766,12 +1878,15 @@ void CalcCorrXTOF(Double_t X, Double_t Y, Double_t TOF, Double_t *Xcorr)
   //printf("Xcorr from YCorr: %f\n",result);
   //printf("------------------------------------------\n");
 
-  for(int i=0;i<NXTOFCorr;i++){
+  for(int i=0;i<NXTOFCorr1;i++){
     if(i==0)result = result;
-    if(i>0)result += XTOFCorr[i] * pow(TOF-TOF_LSOffset,i)*(X-X1_refnocorr)/(X1_LSOffset-X1_refnocorr);
-
+    if(i>0)result += XTOFCorr1[i] * pow(TOF-TOF_LSOffset1,i)*(X);
   }
-  
+  for(int i=0;i<NXTOFCorr2;i++){
+    if(i==0)result = result;
+    if(i>0)result += XTOFCorr2[i] * pow(TOF-TOF_LSOffset2,i)*(X-X1_LSOffset);
+  }
+
 /*  if(X>740) 
      {
        printf("----------------------------> X1posO = : %f\n",X); 
@@ -1816,7 +1931,7 @@ double CalcTfromXcorr(double Xcorr, double mass)
 //  std::cout << "mass: " << mass << std::endl;
 
   double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
- // std::cout << "p3: " << p << std::endl;
+
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
  // std::cout << "T3: " << T << std::endl;
   return T;
@@ -1829,6 +1944,8 @@ double CalcTfromRigidity(double rig, double mass)
 
   double p = rig * TMath::C()/1e9; //to obtain the momentum in MeV/c if rigidity calculated with SPANC
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
+
 }
 
 //--------------------------------------------------------------------------------------
@@ -1836,6 +1953,8 @@ double CalcTfromP(double p, double mass)
 {
   double T = 0;
   T = sqrt(pow(p,2.) + pow(mass,2.)) - mass;
+  return T;
+
 }
 
 //--------------------------------------------------------------------------------------
@@ -1859,7 +1978,6 @@ double CalcEx(double Xcorr)
 
   extern double theta3;
   double theta4 = 0;
-  double Q =0;
 
   extern bool TestInelastic;
   if(TestInelastic)
@@ -1870,20 +1988,13 @@ double CalcEx(double Xcorr)
 
   p1 = sqrt(T1 * (T1 + 2*masses[0]));
   p2 = 0;
-  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9; //concersion factor to obtain the momentum in MeV/c if rigidity calculated with SPANC
 
-/*  std::cout << "masses[0]: " << masses[0] << std::endl;
-  std::cout << "masses[1]: " << masses[1] << std::endl;
-  std::cout << "masses[2]: " << masses[2] << std::endl;
-  std::cout << "masses[3]: " << masses[3] << std::endl;
-  std::cout << "p1: " << p1 << std::endl;
-  std::cout << "p2: " << p2 << std::endl;
-  std::cout << "p3: " << p3 << std::endl;
-*/
+
+  p3 = CalcQBrho(Xcorr) * TMath::C()/1e9;
+  //std::cout << "p3: " << p3 << std::endl;
   T3 = CalcTfromXcorr(Xcorr,masses[2]);
-//  std::cout << "T3: " << T3 << std::endl;
-  Q = masses[0] + masses[1] - masses[2] -masses[3];
- // std::cout << "Q: " << Q << std::endl;
+  //std::cout << "T3: " << T3 << std::endl;
+  double Q = masses[0] + masses[1] - masses[2] -masses[3];
 
 
   if(theta3 == 0)
@@ -1893,8 +2004,6 @@ double CalcEx(double Xcorr)
       p4 = p1 - p3;
     //  std::cout << "p4: " << p4 << std::endl;
       T4 = sqrt(p4*p4 + masses[3]*masses[3]) - masses[3];
-   //   std::cout << "T4: " << T4 << std::endl;
-   //   std::cout << "T1: " << T1 << std::endl;
       exE = T1 - T3 - T4 + Q;
     }
   else
