@@ -1,0 +1,173 @@
+[/Analyzer/Parameters/main]
+x1_driftt_low = INT : 3100
+x1_driftt_hi = INT : 5100
+x2_driftt_low = INT : 3100
+u1_driftt_low = INT : 3100
+u2_driftt_low = INT : 3100
+x2_driftt_hi = INT : 5100
+u2_driftt_hi = INT : 5100
+u1_driftt_hi = INT : 5100
+lowtof = INT : 123
+hitof = INT : 7000
+lowpad1 = INT : 123
+lowpad2 = INT : 0
+hipad1 = INT : 4096
+hipad2 = INT : 4096
+
+[/Analyzer/Parameters/GLOBAL]
+misswires = INT : 2
+max_tdc_channels = INT : 1000
+min_x_wires = INT : 3
+min_u_wires = INT : 3
+max_x_wires = INT : 9
+max_u_wires = INT : 8
+lut_x1_offset = INT : 0
+lut_u1_offset = INT : 0
+lut_x2_offset = INT : 0
+lut_u2_offset = INT : 0
+x1_1st_wire_chan = INT : 0
+x1_last_wire_chan = INT : 200
+x2_1st_wire_chan = INT : 500
+x2_last_wire_chan = INT : 700
+u1_1st_wire_chan = INT : 300
+u1_last_wire_chan = INT : 443
+u2_1st_wire_chan = INT : 800
+u2_last_wire_chan = INT : 943
+
+[/Analyzer/Output]
+Filename = STRING : [256] 
+RWNT = BOOL : n
+Histo Dump = BOOL : y
+Histo Dump Filename = STRING : [256] his%05d.root
+Clear histos = BOOL : y
+Last Histo Filename = STRING : [256] last.root
+Events to ODB = BOOL : y
+Global Memory Name = STRING : [8] ONLN
+
+[/Analyzer/Module switches]
+ADC = BOOL : y
+QDC = BOOL : y
+main = BOOL : y
+Scalers = BOOL : y
+beam = BOOL : y
+focalplane = BOOL : y
+ADC calibration = BOOL : y
+Scaler accumulation = BOOL : y
+ADC summing = BOOL : y
+test space = BOOL : y
+Focal Plane = BOOL : y
+WireChamber = BOOL : y
+ADCcalibration = BOOL : y
+ADCsumming = BOOL : y
+Drift Chambers = BOOL : y
+SIMSORT = BOOL : y
+
+[/Analyzer/Trigger/Common]
+Event ID = INT : 1
+Trigger mask = INT : -1
+Sampling type = INT : 2
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] localhost.localdomain
+
+[/Analyzer/Trigger/Statistics]
+Events received = DOUBLE : 1342115
+Events per sec. = DOUBLE : 4.274417610600556
+Events written = DOUBLE : 0
+
+[/Analyzer/Scaler/Common]
+Event ID = INT : 2
+Trigger mask = INT : -1
+Sampling type = INT : 1
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] localhost.localdomain
+
+[/Analyzer/Scaler/Statistics]
+Events received = DOUBLE : 945
+Events per sec. = DOUBLE : 0
+Events written = DOUBLE : 0
+
+[/Analyzer/Beamline/Common]
+Event ID = INT : 3
+Trigger mask = INT : -1
+Sampling type = INT : 1
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] localhost.localdomain
+
+[/Analyzer/Beamline/Statistics]
+Events received = DOUBLE : 87
+Events per sec. = DOUBLE : 0
+Events written = DOUBLE : 0
+
+[/Analyzer/Bank switches]
+ADC0 = DWORD : 1
+QDC0 = DWORD : 1
+TDC0 = DWORD : 1
+SCLR = DWORD : 1
+MSRD = DWORD : 0
+DMND = DWORD : 0
+PAT0 = DWORD : 1
+ACUM = DWORD : 1
+CADC = DWORD : 1
+ASUM = DWORD : 1
+ETCR = DWORD : 0
+PADD = DWORD : 1
+TDC1 = DWORD : 1
+SCLD = DWORD : 1
+
+[/Analyzer]
+Book TTree = BOOL : n
+ODB Load = BOOL : n
+
+[/Analyzer/WireChamber/Common]
+Event ID = INT : 1
+Trigger mask = INT : -1
+Sampling type = INT : 2
+Buffer = STRING : [32] SYSTEM
+Enabled = BOOL : y
+Client name = STRING : [32] Analyzer
+Host = STRING : [32] k600daq
+
+[/Analyzer/WireChamber/Statistics]
+Events received = DOUBLE : 4366
+Events per sec. = DOUBLE : 49500
+Events written = DOUBLE : 0
+
+[/Analyzer/Tree switches/run]
+Read = BOOL : n
+Write = BOOL : n
+Fill = BOOL : n
+Save Config = BOOL : n
+Compression Level = INT : 0
+Max Entries = INT : 0
+
+[/Analyzer/Tasks/PrintValues]
+Active = BOOL : n
+TaskTestValue = INT : 0
+
+[/Analyzer/Tasks/GenerateRawSpectra]
+Active = BOOL : n
+
+[/Analyzer/Tasks/FillRawSpectra]
+Active = BOOL : n
+
+[/Analyzer/Global Steering Parameters]
+TestValue = INT : 0
+
+[/Analyzer/Tabs/Raw]
+Active = BOOL : n
+
+[/Analyzer/Tabs/Wires]
+Active = BOOL : n
+
+[/Analyzer/Tabs/Mon]
+Active = BOOL : n
+
+[/Analyzer/Tabs/WireHits]
+Active = BOOL : n
+
