@@ -230,6 +230,8 @@ GammaData *gammy;
 
 
 Int_t t_pulser=0;    // a pattern register equivalent
+Int_t t_TAC=0;
+Int_t t_ADCQDCcheck=0;
 Int_t t_cloverpulser=0;
 
 #ifdef _POLARIZATION  
@@ -485,6 +487,8 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    #endif
 
    t_pulser=0;
+   t_TAC=0;
+   t_ADCQDCcheck=0;
    t_cloverpulser=0;
 
 
@@ -915,8 +919,10 @@ INT main_init(void)
 #endif
 
 hADCChannels_vs_TDCChannels = new TH2F("hADCChannels_vs_TDCChannels", "hADCChannels_vs_TDCChannels", 128*TDCModules, 0., 128*TDCModules, 32*ADCModules, 0., 32*ADCModules);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
-
-   
+  	
+   t1->Branch("TAC",&t_TAC,"t_TAC/I");
+   t1->Branch("ADCQDCcheck",&t_ADCQDCcheck,"t_ADCQDCCheck/I");
+ 
    return SUCCESS;
 }
 
@@ -1801,8 +1807,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //--------------------------------------------------------------------------------------------------------
    //thetaFP = CalcThetaFP(X1pos,X2pos);
    //t_thetaFP = thetaFP;
-   thetaFP  = CalcThetaFP(U1pos,U2pos);
-   t_thetaFP   = thetaFP;
+   //thetaFP  = CalcThetaFP(U1pos,U2pos);
+   //t_thetaFP   = thetaFP;
 
 
 /////////hjhjhjhjhjhj///////////////////to edit
@@ -1815,19 +1821,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    #endif
 /////////////hjhjhjhjhjhjhj///////////////
 
-   Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
-   t_Y2=Y2;
+   //Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
+   //t_Y2=Y2;
    #ifdef _FULLANALYSIS
-   h_Y2->Fill(Y2);
+   //h_Y2->Fill(Y2);
    #endif
 
    t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
 
-   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
-   t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
+   //thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   //t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
-   t_X1posC=Xcorr;
+   //CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   //t_X1posC=Xcorr;
 
    CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
@@ -1905,28 +1911,27 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
    //========================================================================================================================
 
+   t_TAC = ADC[88];
+   t_ADCQDCcheck = ADC[84];
 
-#ifdef _GAMMADATA
-gammy = new GammaData();
-#endif
-
-   
-#ifdef _SILICONDATA
-si = new SiliconData();
-#endif
-
-
-#ifdef _SILICONDATA
-si = new SiliconData();
-#endif
-
-
+   #ifdef _GAMMADATA
+   gammy = new GammaData();
+   #endif
 
    
+   #ifdef _SILICONDATA
+   si = new SiliconData();
+   #endif
 
-#ifdef _RAWDATA
-  if(raw)
-  {
+   
+   #ifdef _SILICONDATA
+   si = new SiliconData();
+   #endif
+   
+
+   #ifdef _RAWDATA
+   if(raw)
+   {
     //printf("made it in main.c to RawDataDump\n");
     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
     
@@ -2053,4 +2058,4 @@ INT main_eor(INT run_number)
 }
 
 
-
+	
