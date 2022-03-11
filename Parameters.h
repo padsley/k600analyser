@@ -24,9 +24,9 @@ const int MAX_WIRES_PER_EVENT = 400;  // If more wires than this fire, the event
 				      // to be replaced by something else?!?! really only used for array definition
 				      // MUST FIND A BETTER WAY ... THIS VARIABLE NOT GOOD?
 const int LUT_CHANNELS=9000;
-const int TDC_CHAN_PULSER=2;      // A pulser PR, in absence of pattern register unit
-const int TDC_CHAN_POLU=4;        // May 2016: this was last used in PR153 Oct 2010
-const int TDC_CHAN_POLD=5;        // May 2016: this was last used in PR153 Oct 2010
+const int TDC_CHAN_PULSER=5;      // A pulser PR, in absence of pattern register unit
+const int TDC_CHAN_POLU=6;        // May 2016: this was last used in PR153 Oct 2010
+const int TDC_CHAN_POLD=7;        // May 2016: this was last used in PR153 Oct 2010
 
 
 
@@ -64,6 +64,8 @@ void ADCClear();
 void ReadCalibrationParameters(std::string CalibFile);
 void ReadX1Offsets(std::string X1offsetsFile);
 void ReadTOFOffsets(std::string TOFoffsetsFile);
+void ReadPadOffsets(std::string PadoffsetsFile);
+void ReadYOffsets(std::string YoffsetsFile);
 
 void TDCOffsetsInit();
 void TDCOffsetsClear();

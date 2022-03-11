@@ -53,7 +53,7 @@ bool SiliconData::TestEvent()
   if(TDCValueFront.size() != hits){printf("Mismatched size: TDCValueFront\n"); result = false;}
   if(TDCValueBack.size() != hits){printf("Mismatched size: TDCValueBack\n"); result = false;}
   if(StripFront.size() != hits){printf("Mismatched size: StripFront\n"); result = false;}
-   if(StripBack.size() != hits){printf("Mismatched size: StripBack\n"); result = false;}
+  if(StripBack.size() != hits){printf("Mismatched size: StripBack\n"); result = false;}
   if(EnergyFront.size() != hits){printf("Mismatched size: EnergyFront\n"); result = false;}
   if(EnergyBack.size() != hits){printf("Mismatched size: EnergyBack\n"); result = false;}
   

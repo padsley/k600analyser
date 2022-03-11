@@ -69,15 +69,18 @@ extern int ADCModules;
 extern int ADCsize;
 extern double *ADCOffsets, *ADCGains;
 
-/*------------Declarations of predefined Constants ----------------*/
+// Declarations of predefined Constants 
 //const int ADC_N_BINS = 4096;
 //const int ADC_X_LOW  = 0;
 //const int ADC_X_HIGH = 4095;
+
+// defined in analyzer.c
 extern EXP_PARAM exp_param;
 extern RUNINFO runinfo;
 
-/*-- Histogramming Data Structures ----------------------------------------*/
+// Histogramming Data Structures 
 TH2F **hADC2DModule;
+
 
 
 /*-- init routine --------------------------------------------------*/
@@ -208,7 +211,7 @@ INT adc_event(EVENT_HEADER * pheader, void *pevent)
 
 
 //   printf("Got to SUCCESS in adc.c\n");
-delete adc;
+   delete adc;
    return SUCCESS;
 }
 

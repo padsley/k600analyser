@@ -1,14 +1,11 @@
 
 /********************************************************************************\
   Name:         main.c
-  Created by:   Retief Neveling
+  Created by:   Retief Neveling & Phil Adsley
   Contents:     The central analysis module. 
 
 		Contains the Initialization routine, the Begin-Of-Run routine, 
 		the Event routine, and the End-of-Run routine
-
-		Currently undergoing some changes to take out VDC 
-		stuff from this and leave this as the main routine
 
 \********************************************************************************/
 
@@ -39,34 +36,40 @@
 
 /* home-made includes */
 #include "Parameters.h"
+#include "RawData.h"
+#include "FocalPlane.h"
 #include "SiliconData.h"
 #include "MMM.h"
 #include "W1.h"
 #include "GammaData.h"
 #include "HagarSort.h"
-#include "RawData.h"
-#include "FocalPlane.h"
-
 #include "CloverSort.h"
 #include "ScintillatorSort.h"
 
-/*------------Preprocessor Directives to change analysis------------*/
-//#define _POLARIZATION
-//#define _MOVIE
-//#define _JJAUTOTRIM
-#define _PRINTTOSCREEN
+/*---------------------Preprocessor directives for K600 focal plane detectors----*/
+//#define _FOCALPLANEDATA 
+//#define _VDC                              // not used at the moment?
 //#define _VDCRESCALCS
-#define _FULLANALYSIS
+//#define _JJAUTOTRIM
+//#define _MOVIE
 //#define _MISALIGNTIME
-#define _RAWDATA
+//#define _FULLANALYSIS
+#define _CALCEX
+//---------------------Preprocessor directives: general-------------*/
+//#define _POLARIZATION
+#define _PRINTTOSCREEN
+//#define _RAWDATA
+/*---------------------Preprocessor directives for segmented Si coincidence detection-----------*/
 //#define _SILICONDATA 
 //#define _MMM
 //#define _W1
+/*---------------------Preprocessor directives for gamma coincidence detection-----------*/
 //#define _GAMMADATA
-// #define _HAGAR
+//#define _HAGAR
 //#define _SCINTILLATOR
 //#define _CLOVER
-#define _CALCEX
+
+
 
 /*-- For ODB: from /Analyzer/Parameters and /Equipment/-------------*/
 //FOCALPLANE_PARAM gates;     // these are to be found in experim.h
@@ -103,21 +106,28 @@ ANA_MODULE main_module = {
    main_param_str,        /* initial parameters IN ODB????   */
 };
 
-/*-------------------- defined somewhere else ----------------------*/
+
+/*-------------------- defined in Parameters.c ----------------------*/
 extern float *ADC;
 extern int *ADCchannel;
 extern int ADCModules;
 extern float *QDC;
+extern float *TDC;
+extern int *TDCchannel;
 extern int TDCModules;
+extern int *TDC_channel_export;
+extern float *TDC_value_export;	    //Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
+extern int TDCHits;
+extern double   *TDCOffsets;
+//extern int pulser,cloverpulser; 			 		    // defined, declared and used in tdc.c
+ 
 
 
 /*-------------------- global variables for main --------------------*/
-
 float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
 float lutu1[LUT_CHANNELS];
 float lutu2[LUT_CHANNELS];
-float cableOffset[896];
 char string_var[200];
 
 #ifdef _MISALIGNTIME
@@ -143,6 +153,7 @@ Double_t t_pad1hiP = 0, t_pad1lowP = 0, t_pad2hiP = 0, t_pad2lowP = 0;
 Double_t t_pad1hiPT = 0, t_pad1lowPT = 0, t_pad2hiPT = 0, t_pad2lowPT = 0;
 Int_t    t_tof,t_toftdc1,t_toftdc2,t_toftdc3,t_toftdc4,t_toftdc5,t_toftdc6, t_toftdc7;
 Int_t    t_k600;
+Int_t    t_runnumber=0;
 Int_t    t_runtime=0;
 Int_t    t_evtcounter=0;
 Int_t    t_tdcsperevent=0;
@@ -150,8 +161,6 @@ Int_t    t_triggerI=0;
 Int_t    t_triggerU=0;
 Int_t    t_CII=0;
 Int_t    t_CIU=0;
-
-
 
 // focal plane variables for TTree
 Int_t    t_X1hits = 0,  t_X2hits = 0,   t_U1hits = 0,   t_U2hits = 0;
@@ -208,33 +217,11 @@ Int_t t_U2wireUsed[MAX_WIRES_PER_EVENT];
 Double_t t_X1distUsed[MAX_WIRES_PER_EVENT];
 #endif
 
-
-#ifdef _SILICONDATA
-SiliconData *si;
-#endif
-
-// #ifdef _CLOVERDATA
-// CloverData *clov;
-// #endif
-
-#ifdef _RAWDATA
-RawData *raw;
-#endif
-
-#ifdef _GAMMADATA
-GammaData *gammy;
-#endif
-
-// #ifdef _SCINTILLATOR
-// ScintillatorData *scint;
-// #endif
-
-
 Int_t t_pulser=0;    // a pattern register equivalent
 Int_t t_cloverpulser=0;
 
 #ifdef _POLARIZATION  
-Int_t t_polu=0, t_pold=0;   // a pattern register equivalent
+int t_polu=0, t_pold=0;   // a pattern register equivalent, coming now from tdc.c
 #endif
 
 #ifdef _MOVIE  // if you want to use the 'movie' script
@@ -256,7 +243,20 @@ Double_t U2wirefit[10], U2distfit[10];
 
 Double_t x1offset=0.0;
 Int_t TOFoffset=0;
-Double_t Padoffset=0;
+Int_t Padoffset=0;
+Double_t Yoffset=0.0;
+
+#ifdef _RAWDATA
+RawData *raw;
+#endif
+
+#ifdef _SILICONDATA
+SiliconData *si;
+#endif
+
+#ifdef _GAMMADATA
+GammaData *gammy;
+#endif
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -267,22 +267,16 @@ TFile *f1=new TFile("output.root","RECREATE");
 TTree *t1=new TTree("DATA","K600 data");
 
 static TH1F *hX1_lut, *hX2_lut, *hU1_lut, *hU2_lut;
-static TH1F *hCableOff, *hCableOfftmp;
 
 static TH1F *hEventID, *hEventID2;
 
 static TH2F *hPad1VsTofG, *hPad1Pad2G;
 
-TH2F **hTDC2DModule;
 TH2F *hADCChannels_vs_TDCChannels;
 
-static TH1F *hTDCPerEventRaw;
-//static TH1F *hTDCPerEvent;
-
-static TH2F *hChanVsTimeRef, *hChanVsTimeOffset, *hChanVsTimeOffsetPID;
+static TH2F *hChanVsTimeOffsetPID;
 static TH2F *hWireVsTimeOffset, *hWireVsTimeOffsetPID;
-
-static TH1F *hHitPatternRawTDC, *hHitPatternAll, *hHitPatternPID;
+static TH1F  *hHitPatternAll,  *hHitPatternPID;
 
 static TH1F *hX1_EffID, *hU1_EffID, *hX2_EffID, *hU2_EffID;
 static TH1F *hX1_DriftLength, *hX2_DriftLength, *hU1_DriftLength, *hU2_DriftLength;
@@ -327,7 +321,7 @@ static TH1F *h_Y1, *h_Y2;
 
 #ifdef _JJAUTOTRIM
 const int TDC_CHANNELS=896;
-static TH1F *hTDC_REF[TDC_CHANNELS];   // for use of JJ_autotrim.C
+static TH1F *hTDC_REF[TDC_CHANNELS];   
 #endif
 
 
@@ -432,7 +426,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_pad1hiP=-1;  t_pad1lowP=-1;  t_pad2hiP=-1;  t_pad2lowP=-1;
    t_pad1hiPT=-1; t_pad1lowPT=-1; t_pad2hiPT=-1; t_pad2lowPT=-1;
    t_tof=0; t_toftdc1=0; t_toftdc2=0; t_toftdc3=0; t_toftdc4=0; t_toftdc5=0; t_toftdc6=0; t_toftdc7=0;
-   t_k600=0; t_runtime=-1;
+   t_k600=0; t_runtime=-1; t_runnumber=-1;
    t_triggerI=0, t_triggerU=0, t_CII=0, t_CIU=0;
    t_X1hits = -100; t_X2hits = -100; t_U1hits = -100; t_U2hits = -100;
    t_X1pos=-100.; t_X2pos=-100.; t_U1pos=-100.; t_U2pos=-100.;
@@ -499,6 +493,7 @@ void ZeroTTreeVariables(void)     // Really more an initialization as a zero-ing
    t_polu=0; t_pold=0;
    #endif
 
+
 }
 
 
@@ -557,58 +552,27 @@ INT main_init(void)
    printf("== Misalignment time cutoff (sec): %i ==\n",misaligntime);
    #endif
 
-   read_cable(cableOffset,(char *)"CableLength.dat");
 
-   open_subfolder((char *)"LUT&Cable");
-     hX1_lut = new TH1F("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
-     hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
-     hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
-     hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
-     hCableOff = new TH1F("hCableOff","cable offsets)",896,0,896);
-     hCableOfftmp = new TH1F("hCableOfftmp","cable offset aid: -1000 for all channels)",896,0,896);
-   close_subfolder(); 
+   hX1_lut = new TH1F("hX1_lut","LUT X1",LUT_CHANNELS,0,LUT_CHANNELS);
+   hU1_lut = new TH1F("hU1_lut","LUT U1",LUT_CHANNELS,0,LUT_CHANNELS);
+   hX2_lut = new TH1F("hX2_lut","LUT X2",LUT_CHANNELS,0,LUT_CHANNELS);
+   hU2_lut = new TH1F("hU2_lut","LUT U2",LUT_CHANNELS,0,LUT_CHANNELS);
 
-   for(int j = 0; j < 896; j++) {
-     //printf("cable offset %f \n",cableOffset[j]);
-     //     for(int k = 0; k < (int(cableOffset[j])+ALL_CABLE_OFFSET); k++) {  
-     for(int k = 0; k < (int(cableOffset[j]+1000)); k++) {  
-       hCableOff->Fill(j);                     
-     }
-     for(int k = 0; k < 1000; k++) {  
-       hCableOfftmp->Fill(j);                     
-     }
-   }
-   hCableOff->Add(hCableOfftmp,-1);   //because I do not know how to fill a neg histogram
 
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
    hEventID  = new TH1F("hEventID","each bin represents a type of event",30,0,30);
-   //hEventID  = new TH1F("hEventID","each bin represents a type of event",30,0,30);
    hEventID2  = new TH1F("hEventID2","each bin represents a type of event",30,0,30);
 
    hPad1VsTofG  = new TH2F("hPad1VsTofG","Paddle 1 ave VS TOF (gated)", 2000,TDC_MIN_TIME,TDC_MAX_TIME, 1000, 0, 4095 );
    hPad1Pad2G  = new TH2F("hPad1Pad2G","Pad1(y-axis) vs Pad2(x-axis) (PID gated)",  1024, 0, 4096, 1024,0 , 4096);
 
-   hTDCPerEventRaw = new TH1F("hTDCPerEventRaw","TDC channels/event (All data)",600,0,600);
-   //hTDCPerEvent    = new TH1F("hTDCPerEvent","TDC channels/event (PID selected)",MAX_WIRES_PER_EVENT,0,MAX_WIRES_PER_EVENT);
-
-   hTDC2DModule = new TH2F*[TDCModules];
-   for(int counter=0;counter<TDCModules;counter++){
-	  sprintf(name,"hTDC2DModule%d",counter);
-	  sprintf(title,"hTDC2DModule %d ",counter);
-          hTDC2DModule[counter]=new TH2F(name,title, 4000, -8000, 14999,128,0,128);
-   }
-   
-    
-   hHitPatternRawTDC   = new TH1F("hHitPatternRawTDC","Hits per raw TDC chan",1000,0,1000);
    hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
-   hChanVsTimeRef       = new TH2F("hChanVsRefTime","TDC channel vs time (ref times incl)", 3000, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffset    = new TH2F("hChanVsOffsetTime","TDC channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 896, 0, 896);
-   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 1200, 4000, 10000, 896, 0, 896);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 2000, 2000, 6000, 896, 0, 896);
    hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 1200, 4000, 10000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 2000, 2000, 6000, 1000, 0, 1000);
 
    hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
    hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -676,11 +640,12 @@ INT main_init(void)
    h_Y2   = new TH1F("h_Y2","Y2 ",400,-100,100);
    #endif
 
-   #ifdef _JJAUTOTRIM                           // if you use JJ_autotrim.C
+ 
+   #ifdef _JJAUTOTRIM                           
    open_subfolder("Individual TDC chan");
    open_subfolder("X1_Refs");
    for(int i=0;i<TDC_CHANNELS;i++){
-	sprintf(name,"tdcchan_%d",i); //Was TDCchan
+	sprintf(name,"TDCchan_%d",i);
 	sprintf(title,"TDC channel # %d (reftimes incl) ",i);
    	hTDC_REF[i] = new TH1F(name,title,TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    }
@@ -688,8 +653,13 @@ INT main_init(void)
    close_subfolder();   
    #endif
 
+
+   hADCChannels_vs_TDCChannels = new TH2F("hADCChannels_vs_TDCChannels", "hADCChannels_vs_TDCChannels", 128*TDCModules, 0., 128*TDCModules, 32*ADCModules, 0., 32*ADCModules);  //Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
+
+
    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+  t1->Branch("runnumber",&t_runnumber,"t_runnumber/I");
   t1->Branch("runtime",&t_runtime,"t_runtime/I");
   t1->Branch("evtcounter",&t_evtcounter,"t_evtcounter/I");
   t1->Branch("tdcsperevent",&t_tdcsperevent,"t_tdcsperevent/I");
@@ -879,7 +849,6 @@ INT main_init(void)
   #endif
 
 #ifdef _SILICONDATA
-  //printf("L2108\n");
   gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine("#include \"SiliconData.h\"");
   gROOT->ProcessLine(".L SiliconData.c+");
@@ -891,9 +860,7 @@ INT main_init(void)
   MMMInit();    // At this moment it only sets up the angle definitions
 #endif
 
-
 #ifdef _GAMMADATA
-  //printf("L2108\n");
   gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine("#include \"GammaData.h\"");
   gROOT->ProcessLine(".L GammaData.c+");
@@ -901,19 +868,11 @@ INT main_init(void)
   //MMMLoadCuts(si);
 #endif
 
-// #ifdef _CLOVERDATA
-//   gROOT->ProcessLine(".L Parameters.c+");
-//   gROOT->ProcessLine(".L CloverData.c+");
-//   t1->Branch("CloverInfo","CloverData",&clov);
-// #endif
-  
 #ifdef _RAWDATA
   gROOT->ProcessLine(".L Parameters.c+");
   gROOT->ProcessLine(".L RawData.c+");
   t1->Branch("RawInfo","RawData",&raw);
 #endif
-
-hADCChannels_vs_TDCChannels = new TH2F("hADCChannels_vs_TDCChannels", "hADCChannels_vs_TDCChannels", 128*TDCModules, 0., 128*TDCModules, 32*ADCModules, 0., 32*ADCModules);//Moved declaration of this histogram to not within the main loop -> i.e. don't declare it new each loop.
 
    
    return SUCCESS;
@@ -971,25 +930,38 @@ INT main_bor(INT run_number)
    extern int *PadOffsets;	        // from Parameters.c 
    extern int *RunNrForPadOffsets;       // from Parameters.c  
    extern int NrOfRunsForPadOffsets;     // nr of runs for which we have Padoffsets read it via Parameters.c
+   extern double *YOffsets;	        // from Parameters.c 
+   extern int *RunNrForYOffsets;       // from Parameters.c  
+   extern int NrOfRunsForYOffsets;     // nr of runs for which we have Yoffsets read it via Parameters.c
 
+   //============
    x1offset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForX1Offsets;i++){
        if( RunNrForX1Offsets[i] == RunNumber) x1offset=X1Offsets[i];  
    }
    printf("run %d: x1 offset= %f \n",RunNumber,x1offset);
 
-
+   //============
    TOFoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForTOFOffsets;i++){
        if( RunNrForTOFOffsets[i] == RunNumber) TOFoffset=TOFOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: TOF offset= %d \n",RunNumber,TOFoffset);
 
+   //============
    Padoffset =0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
    for (int i = 0; i< NrOfRunsForPadOffsets;i++){
        if( RunNrForPadOffsets[i] == RunNumber) Padoffset=PadOffsets[i]; // as defined in Parameter.c 
    }
    printf("run %d: Paddle offset= %d \n",RunNumber,Padoffset);
+
+   //============
+   Yoffset =0.0;   // set it to zero, so that if nothing happens inside IF loop you have a value for it
+   for (int i = 0; i< NrOfRunsForYOffsets;i++){
+       if( RunNrForYOffsets[i] == RunNumber) Yoffset=YOffsets[i]; // as defined in Parameter.c 
+   }
+   printf("run %d: Y offset= %f \n",RunNumber,Yoffset);
+
 
    return SUCCESS;
 }
@@ -1011,14 +983,18 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    Int_t tdcmodule, wire;
    Int_t ref_time, offset_time;
    Int_t reftimes[10]; 
-   Int_t tof=0,toftdc1=0,toftdc2=0,toftdc3=0,toftdc4=0,toftdc5=0,toftdc6=0,toftdc7=0;
    Double_t resolution[10];                 // a array of numbers used in res plots
    Int_t tdcevtcount = 0;
    Int_t addwiregap=0;
-   Double_t pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;
    float pad1raw=0; //padoffsets correction
    float PsideTDC[80];
 
+   extern int tof,toftdc1,toftdc2,toftdc3,toftdc4,toftdc5,toftdc6,toftdc7;  // defined, declared and used in tdc.c
+   extern int pad1hipt, pad1lowpt, pad2hipt, pad2lowpt;  		    // defined, declared and used in tdc.c
+   extern int pulser,cloverpulser; 			 		    // defined, declared and used in tdc.c
+   #ifdef _POLARIZATION  
+   extern int polu,pold;						    // defined, declared and used in tdc.c
+   #endif
    extern float pad1,pad2;                            // defined, declared and used in qdc.c
    extern float pad1hip,pad1lowp,pad2hip,pad2lowp;    // defined, declared and used in qdc.c
    extern int qdcevtcount;   			      // defined, declared and used in qdc.c
@@ -1029,12 +1005,10 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    extern int trailer_triglost_counter;               // defined; declared in analyzer.c	
    extern int trailer_bufoverflow_counter;            // defined; declared in analyzer.c	
    extern int runtime;				      // defined; declared in scaler.c	
-   extern int qdc_counter1;
-   extern int triggerI, triggerU, CII, CIU;   
+   extern int qdc_counter1;			      // defined; declared in analyzer.c	
+   extern int triggerI, triggerU, CII, CIU;           // defined; declared in scaler.c
+   extern int RunNumber;             		      // defined in Parameters.c,  the REAL run number you are analyzing
  
-   int *TDC_channel_export;
-   float *TDC_value_export;	//Defined here. Storage structure for TDC information to be exported to be used for ancillary detectors. Filled below.
-
    std::vector<int> TDCChannelExportStore;
    std::vector<float> TDCValueExportStore;
    
@@ -1081,8 +1055,6 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //---------------------------------------------------------------------
    // Start analysis
    t_evtcounter=qdc_counter1;
-   //printf("main.c L1046: Event nr : %d\n",qdc_counter1);
-   
 
 //   Int_t PaddlePIDGatesFlagb=0;
 //   if(pad1>gates.lowpad1b && pad1< gates.hipad1b && pad2>gates.lowpad2b && pad2< gates.hipad2b){   
@@ -1104,63 +1076,48 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // padoffsets correction the pad1 will be the corrected and pad1raw not
    pad1raw=pad1; 
    pad1=pad1raw+Padoffset; 
+
    t_pad1=pad1;
    t_pad1raw=pad1raw; 
-
-
-//   t_pad1=pad1;
    t_pad2=pad2;	       
+
    t_pad1hiP=pad1hip;
    t_pad1lowP=pad1lowp;	    
    t_pad2hiP=pad2hip;
    t_pad2lowP=pad2lowp;	    
+
+   t_runnumber=RunNumber;
    t_runtime=runtime;
    t_triggerI=triggerI;
    t_triggerU=triggerU;
    t_CII=CII;
    t_CIU=CIU;
    
+   t_pulser=pulser; 		// from tdc.c
+   t_pad1hiPT=pad1hipt; 
+   t_pad1lowPT=pad1lowpt; 
+   t_pad2hiPT=pad2hipt;
+   t_pad2lowPT=pad2lowpt;
+   t_tof=tof+TOFoffset;
+   t_toftdc1=toftdc1;
+   t_toftdc2=toftdc2;
+   t_toftdc3=toftdc3;
+   t_toftdc4=toftdc4;
+   t_toftdc5=toftdc5;
+   t_toftdc6=toftdc6;
+   t_toftdc7=toftdc7;
+   #ifdef _POLARIZATION  		
+   t_polu=polu; 
+   t_pold=pold; 
+   #endif
 
    //----------------------------------------------------------------------
    // look for TDC0 bank 
 
    ntdc = bk_locate(pevent, "TDC0", &ptdc);  // TDC bank in analyzer.c defined as TDC0. ntdc is nr of values in the bank
-   //printf("nr of TDC datawords:                    %d words\n",ntdc);
-   tdc_counter++;
-   hTDCPerEventRaw->Fill(ntdc);    
    t_tdcsperevent=ntdc;
-   //if (ntdc == 0){                      // events with no TDC data. Ignore the event
-        //hEmptyTDCBankRaw->Fill(2);
-   //	#ifdef _PRINTTOSCREEN
-     //   printf("Event with no TDC datawords. Data ignored:  %i \n",empty_tdc_counter);
-   //	#endif
-     //   hEventID->Fill(ev_id_noTDC);          
-   //	empty_tdc_counter++;
-	//return 1;
-   //}
-   //else
-   //{
-       tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
-       //}
 
-   // test for misaligned events in the MIDAS bank. The QDC and TDC event nr must agree. --> there are problems with QDC evtcounter from board?!
-   //printf("tdc event nr from trailer:  %i\n",(ptdc[1]>>5)&0xfffff); 
-   //printf("qdc event nr: %i\n",qdcevtcount);
-   //if (tdcevtcount!=qdcevtcount) {
-   //	printf("Event misaligment: tdc evt nr =  %i,  qdc evt nr  %i  \n",tdcevtcount,qdcevtcount);
-   //	//exit(1);
-   //}
-
-   if(qdc_counter1 != tdc_counter) printf("qdc and tdc event counters out of sync: qdccounter=%i     tdccounter=%i\n",qdc_counter1,tdc_counter);
-
-   //if (tdcevtcount==75778) {			// see run 30315. For some reason there is a seg fault when going ahead with event 75778
-   //	printf("at the problematic event  \n"); 
-   //	//return 1;				// here I simply ignore that event. Still do not underestand why that event is problematic...
-   //}
-   // test to see that the nr of tdc datawords are not too many. Since if they are, the analyzer will crash. 
-   // See e.g. PR183 run 30315. If you look at the dmp file, then there are 58 tdc words for event 75778.
-   // But the "ntdc = bk_locate(pevent, "TDC0", &ptdc)" yields 795.
-   // So the test should actually be to see that these 2 nrs agree, and not simply if the valye of ntdc is too big.
+   tdcevtcount=(ptdc[1]>>5)&0xfffff;  // the 'evtnr' 
 
    if (ntdc>MAX_WIRES_PER_EVENT) {      // if too many tdc words per event, ignore the event
         toolarge_tdc_event_counter++; 
@@ -1182,12 +1139,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    getRefTimes(reftimes,ntdc,ptdc);       // reftimes[i] is copy of trigger in TDC i. Each TDC should only have 1 value/event
  
-   // ===loop through all the TDC datawords================================================================================================
-
-   //hTDCPerEvent->Fill(ntdc);          // a diagnostic: to see how many TDC channels per event    
-   //TDC_channel_export = new int[ntdc]; //<- Declare the size of the array for the TDC data to go to any external sorts
-   //TDC_value_export = new float[ntdc];
-   
+   // ===loop through all the TDC datawords================================================================================================   
    for(int i = 0; i < ntdc; i++) {
       if((((ptdc[i])>>27)&0x1f)==0x1f){      // to determine TDC module nr. the frontend creates a dataword that
         tdcmodule=(ptdc[i])&0xf;             // has bits 27-31 =1. Then ch nr goes into bits 1-5.
@@ -1241,71 +1193,27 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
       }
   
       if(tdc1190datacode!=0) continue;       //ignore rest of for loop if we only have header/trailer word, BUT for valid measurent word, continue
+
       channel = (0x7F&((ptdc[i])>>19));      // channel is per TDC; i.e. 0-127
       time = 0x7FFFF&(ptdc[i]);
 
- 
       ref_time = reftimes[tdcmodule] - time;     // to get accurate time info that does not suffer from trigger jitter
-      
-      if(tdcmodule<TDCModules){
-	hTDC2DModule[tdcmodule]->Fill(ref_time,channel); 		
-      }
+      //printf("--->  main.c  tdcmodule= %i,  channel= %i, time= %i   \n",tdcmodule,channel,ref_time); 
 
       channel = channel+tdcmodule*128;                     // convert channel nr to nr in range: 0-(nr_of_tdcs)*128
-      
-      offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
+      //offset_time = ref_time - int(cableOffset[channel]);  // in CableLength.dat: line nr = y bin nr in hChanVsOffsetTime
+      offset_time = ref_time - int(TDCOffsets[channel]);  // in TDCoffset.dat: line nr = y bin nr in hChanVsOffsetTime
 
-/*
-      if(channel>=432 && channel<440)
-	{
-	  printf("channel: %d\n",channel);
-	  printf("ref_time: %d\n",ref_time);
-	  printf("int(cableOffset[channel]): %d\n",int(cableOffset[channel]));
-	  printf("offset_time: %d\n",offset_time);
-	}
-*/
-
-
-      //printf("ntdc: %d \t tdc_counter: %d \t channel: %d \t value: %d \n",ntdc,tdc_counter,channel,offset_time);
-      //TDC_channel_export[i] = channel;
-      //TDC_value_export[i] = offset_time;
       TDCChannelExportStore.push_back(channel);
       TDCValueExportStore.push_back(offset_time);
 
-      switch(channel){
-		case (TDC_CHAN_PULSER): t_pulser=1; break;            // see Parameters.h. The chan = 2
-
-		case 9:  pad1hipt=ref_time;t_pad1hiPT=pad1hipt; break;
-		case 10: pad1lowpt=ref_time;t_pad1lowPT=pad1lowpt; break;
-		case 11: pad2hipt=ref_time; t_pad2hiPT=pad2hipt;break;
-		case 12: pad2lowpt=ref_time; t_pad2lowPT=pad2lowpt;break;
-		case 14: t_cloverpulser=1;break;
-
-		case TOF_TDC_CHAN: if(t_tof==0) {toftdc1=ref_time; 
-						 tof=ref_time+TOFoffset; 
-						 t_tof=tof;
-						 t_toftdc1=toftdc1;} break;  // this ensures only the 1st signal, not last of multiple hits, gets digitized
-		case (TOF_TDC_CHAN+1*128): if(t_toftdc2==0) toftdc2=ref_time; t_toftdc2=toftdc2; break;
-		case (TOF_TDC_CHAN+2*128): if(t_toftdc3==0) toftdc3=ref_time; t_toftdc3=toftdc3; break;
-		case (TOF_TDC_CHAN+3*128): if(t_toftdc4==0) toftdc4=ref_time; t_toftdc4=toftdc4; break;
-		case (TOF_TDC_CHAN+4*128): if(t_toftdc5==0) toftdc5=ref_time; t_toftdc5=toftdc5; break;
-		case (TOF_TDC_CHAN+5*128): if(t_toftdc6==0) toftdc6=ref_time; t_toftdc6=toftdc6; break;
-		case (TOF_TDC_CHAN+6*128): if(t_toftdc7==0) toftdc7=ref_time; t_toftdc7=toftdc7; break;
-		#ifdef _POLARIZATION  		
-		case (TDC_CHAN_POLU): t_polu=1; break;  // for polarized beam
-		case (TDC_CHAN_POLD): t_pold=1; break;  // for polarized beam
-		#endif
-      }
-
-      hHitPatternRawTDC->Fill(channel);            
-      hChanVsTimeRef->Fill(ref_time,channel);        // 2D: chan vs reference times
-      hChanVsTimeOffset->Fill(offset_time,channel);  // 2D: chan vs offset corrected times
-
+ 
       #ifdef _JJAUTOTRIM  
       if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 && channel<TDC_CHANNELS){		// if you want to use JJ_autotrim.C
          hTDC_REF[channel]->Fill(ref_time);                                     // fill spectra for individual wires   	
       }											
       #endif
+
 
       //continue;  // If you analyze the pulser-only data uncomment this line otherwise you have a segmentation fault
  
@@ -1396,7 +1304,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	  U1hits_dt++;
 	}
       }
-      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=604) ) {   //only for X2 wireplane
+      else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan) && (channelnew!=596) ) {   //only for X2 wireplane
       //else if ((channelnew >= globals.x2_1st_wire_chan) && (channelnew < globals.x2_last_wire_chan)) {   //only for X2 wireplane
 						// chan 482 looks suspicious in white tune run 23088
 	//if(channelnew >= globals.x2_1st_wire_chan+15) t_X2effall=1; 	// SPECIFIC for ZERO DEGREE EXPERIMENT PR183/PR184
@@ -1791,14 +1699,16 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    // Note that if X1flag==0 then the event passed all gates: pid, dt, group. It is for good events only
    //--------------------------------------------------------------------------------------------------------
    thetaFP = CalcThetaFP(X1pos,X2pos);
+   //printf("thetaFP= %f \n",thetaFP);
    //t_thetaFP = thetaFP;
-   //thetaFP  = CalcThetaFP(U1pos,U2pos);
+   
+   //rn thetaFP  = CalcThetaFP(U1pos,U2pos);
    t_thetaFP   = thetaFP;
 
    Y1=CalcYFP(X1pos,U1pos,X1th);  
-   t_Y1=Y1;
+   t_Y1=Y1+Yoffset; 
    #ifdef _FULLANALYSIS
-   h_Y1->Fill(Y1);
+   h_Y1->Fill(Y1+Yoffset);
    #endif
 
    Y2=CalcYFP(X2pos,U2pos,thetaFP);  // I get funny double locus if I use calc theta // changed by AT to be used 
@@ -1812,20 +1722,19 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
 
-   CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
+   CalcCorrX(X1pos+x1offset, Y1+Yoffset, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
 
-   CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
+   CalcCorrXTOF(X1pos+x1offset, Y1+Yoffset, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
 
 
-   t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   t_phiSCAT = CalcPhiScat(Xcorr,thetaSCAT,Y1+Yoffset);
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
-
 
    #ifdef _CALCEX
    //t_Ex = CalcExDirect(Xcorr);
-   t_Ex = CalcEx(Xcorr2);
+   t_Ex = CalcEx(Xcorr);
 
    extern double *masses;
    t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
@@ -1872,6 +1781,8 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
      hEventID2->Fill(ev_id_X1U1X2);
    }
 
+
+/*rn     // now happening in tdc.c
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];
    //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());
@@ -1884,33 +1795,21 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 
    for(unsigned int p=0;p<TDCChannelExportStore.size();p++)TDC_channel_export[p] = TDCChannelExportStore[p];
    for(unsigned int p=0;p<TDCValueExportStore.size();p++)TDC_value_export[p] = TDCValueExportStore[p];
-
+rn*/
   
    
    //========================================================================================================================
    //Now, process ADC and TDC_export through any ancillary sorts to get silicon/NaI/HPGe data into the output ROOT TTree
    //========================================================================================================================
-
-
-#ifdef _GAMMADATA
-gammy = new GammaData();
-#endif
-
-
-#ifdef _SILICONDATA
-si = new SiliconData();
-#endif
-
-
    
-#ifdef _RAWDATA
-  if(raw)
-  {
-    //printf("made it in main.c to RawDataDump\n");
-    raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
+   #ifdef _RAWDATA
+   if(raw)
+   {
+     //printf("made it in main.c to RawDataDump\n");
+     raw = RawDataDump(ADC,ADCchannel,TDCHits,TDC_channel_export, TDC_value_export, QDC);
     
-    for(int i=0; i<TDCValueExportStore.size(); i++)
-    {
+     for(int i=0; i<TDCValueExportStore.size(); i++)
+     {
         for(int j=0; j<sizeof(ADCchannel); j++)
         {
 			if(ADC[j]>0.0)
@@ -1919,55 +1818,62 @@ si = new SiliconData();
 			}
 				//hADCChannels_vs_TDCChannels->Fill(TDC_channel_export[i], ADCchannel[j]);
         }
-    }
-  }
-  
-#endif
-  
-#ifdef _MMM
-    if(si)
-    {
+     }
+   }
+   #endif
+
+
+   #ifdef _SILICONDATA
+   si = new SiliconData();
+   #endif
+
+   #ifdef _MMM
+   if(si)
+   {
       MMMSiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
-    }
-#endif
+   }
+   #endif
 
-#ifdef _W1
-    if(si)
-    {
+   #ifdef _W1
+   if(si)
+   {
       W1SiliconSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, si);
-    }
-#endif
+   }
+   #endif
 
-#ifdef _HAGAR
-    if(gammy)
-    {
-      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
-      HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
-    }
-#endif
+   #ifdef _GATEAU
+   if(fatty)
+   {
+      GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
+   }
+   #endif
 
-#ifdef _CLOVER
-    if(gammy)
-    {
-      //gammy = CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+
+
+   #ifdef _GAMMADATA
+   gammy = new GammaData();
+   #endif
+
+   #ifdef _CLOVER
+   if(gammy)
+   {
       CloverSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
-    }
-#endif
+   }
+   #endif
 
-#ifdef _GATEAU
-  if(fatty)
-  {
-    GateauSort(TDCHits, TDC_channel_export, TDC_value_export, fatty);
-  }
-#endif
-
-#ifdef _SCINTILLATOR
-    if(gammy)
-    {
-      //gammy = HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export);
+   #ifdef _SCINTILLATOR
+   if(gammy)
+   {
       ScintillatorSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
-    }
-#endif
+   }
+   #endif
+
+   #ifdef _HAGAR
+   if(gammy)
+   {
+      HagarSort(ADC, TDCHits, TDC_channel_export, TDC_value_export, gammy);
+   }
+   #endif
 
    //========================================================================================================================
    // Fill TTrees
@@ -1984,31 +1890,36 @@ si = new SiliconData();
    
    t1->Fill();    // fill the tree t1
 
-#ifdef _SILICONDATA
+
+   //========================================================================================================================
+   //Now do some cleanup
+   //========================================================================================================================
+
+   #ifdef _RAWDATA
+   delete raw;
+   #endif
+
+   #ifdef _SILICONDATA
    si->ClearEvent(); //Clear the SiliconData gubbins at the end of the event in order to make sure that we don't fill the disk up with bollocks
    delete si;        //Delete the pointer otherwise we lose access to the memory and start to crash the machine
-#endif
+   #endif
    
-#ifdef _GAMMADATA
+   #ifdef _GAMMADATA
    gammy->ClearEvent();//See comment above about GammaData::ClearEvent()
    delete gammy;//See comment above about deleting *gammy
-#endif
+   #endif
    
-#ifdef _RAWDATA
-   delete raw;
-#endif
-   
-#ifdef _GATEAU
+   #ifdef _GATEAU
    fatty->ClearEvent();
-#endif
+   #endif
    
-//#ifdef _ADC
+   //#ifdef _ADC
    if(ADCModules>0) ADCClear();
-//#endif
+   //#endif
         
-//#define _ADC
-   delete [] TDC_channel_export;
-   delete [] TDC_value_export;
+   //#define _ADC
+   //delete [] TDC_channel_export;
+   //delete [] TDC_value_export;
    TDCChannelExportStore.clear();
    TDCValueExportStore.clear();
 

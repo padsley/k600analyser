@@ -184,8 +184,8 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    }
    for (i = 0; i < nwords; i++){
 	if(((pqdc[i]>>24)&0x7) ==0){// continue; // not data but header words.
- 	  //qdcchan=((pqdc[i])>>17)&0x1f;  // for 16 chan NIM QDC
-  	  qdcchan=((pqdc[i])>>16)&0x1f;  // for 32 chan ECL QDC
+ 	  qdcchan=((pqdc[i])>>17)&0x1f;  // for 16 chan NIM QDC
+  	  //qdcchan=((pqdc[i])>>16)&0x1f;  // for 32 chan ECL QDC
           //printf("qdc data %d %d from 0x%08x number of words is : %d\n",qdcchan,(pqdc[i]&0x0fff),pqdc[i],nwords); 
       	  QDC[qdcchan] =(float)(pqdc[i]&0x0fff);
 
@@ -212,8 +212,8 @@ INT qdc_event(EVENT_HEADER * pheader, void *pevent)
    pad1lowp=QDC[1];  
    pad2hip=QDC[2];  
    pad2lowp=QDC[3];  
-   pad1=sqrt(QDC[0]*QDC[2]);
-   pad2=sqrt(QDC[4]*QDC[6]);
+   pad1=sqrt(QDC[0]*QDC[1]);
+   pad2=sqrt(QDC[2]*QDC[3]);
 
    //printf("ODB test in qdc.c : %d  \n",qdc_param.histogram_threshold);
    return SUCCESS;
