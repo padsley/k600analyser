@@ -1,52 +1,128 @@
 #!/bin/bash
 
-#for COUNT in {1069,1070,1071,1072,1076,1077,1078,1082,1084,1085,1087,1088,1090,1091,1092,1093,1098,1099,1100}
-for COUNT in {61,62}
- # {48,49,50,51,52,53,54,57,58,59,61,62,63,64,65,66,77,78,79,80,81,82,83,84,85,86,87,88,89,90,95,96,97,98,99,100,101,102,103,104,105,106,107,110,112,115,116,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,135,140,141,142,143,144,145,146,147,151,152,153,154,208,209,210,211,212,213,214,215,216,217,218,219,220,221,223,224,225,226,228,232,233,234,235,236,2237,238,239,240,250,251,252,254,257,258,260,261,263,266,268,269,271,273,275,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,320,321,322,323,324,325}
+
+# PEPPERPOT =============================================================================
+#
+#   pp', Jan 2022
+#   8 degr, 12C?, 2 new VDCs; PEPPERPOT, 
+#for COUNT in {1020,1021,1022,1023,1024,1025,1026}
+#
+#   pp', Febr 2022
+#   8 degr, 24Mg, 2 new VDCs; PEPPERPOT, 
+#for COUNT in {2019,2020}
+#
+#   pp' , March/April 2022
+#   4 degr, 24Mg, 2 new VDCs; PEPPERPOT, bad X2 preamp
+#for COUNT in {3038,3039,3040}
 
 
+# pd natCa, 2nd field (Exp field) =======================================================
+#
+#   4 degr, natCa, 2 new VDCs;    		Ca Experimental Field, March/Apr 2022
+#for COUNT in {3050,3051,3053,3054,3055,3075,3076,3077}
+#
+#   8 degr natCa			       	Ca Experimental Field, Febr 2022
+#for COUNT in {2026,2030,2031,2032,2033,2035,2036,2038,2039,2041,2042}
+#
+#   12 degr, natCa			       	Ca Experimental Field, Febr 2022
+#for COUNT in {2049,2050,2052,2053,2055,2056}
+#
+#   16 degr, natCa			       	Ca Experimental Field, Febr 2022
+for COUNT in {2062,2063,2065,2069,2071,2072,2074,2075,2077,2078}
+#
+#   20 degr, natCa			       	Ca Experimental Field, Febr 2022
+#for COUNT in {2087,2088,2089,2091,2092,2093,2095,2096,2100,2101,2103,2104,2107,2108,2110}
+#
+#   26 degr, natCa, 2 new VDCs; bad X2 preamp	Ca Experimental Field, March/Apr 2022
+#for COUNT in {3014,3015,3016,3019,3020,3021,3023,3024,3026,3027,3032}
+
+
+# pd natCa, 1st field (GS field) =======================================================
+#
+#   4 degr, natCa, 1 new VDC & 1 old VDC  		Ca G.S. Field, March/April 2022
+#for COUNT in {3089,3090}
+#
+#   8 degr, natCa,  1 new VDC & 1 old VDC  		Ca G.S. Field, March/April 2022
+#for COUNT in {3091,3092,3093,3095,3096,3097}
+#	
+#   12 degr, natCa,  1 new VDC & 1 old VDC 		Ca G.S. Field, March/April 2022
+#for COUNT in {3108,3109,3110,3114}
+#
+#   16 degr, natCa,  1 new VDC & 1 old VDC 		Ca G.S. Field, March/April 2022
+#for COUNT in {3119,3120}
+#
+#   26 degr, natCa, 2 new VDCs, bad X2 preamp		Ca G.S. Field, March/April 2022
+#for COUNT in {3013,3028,3029,3030,3031}
+
+
+# pd 119Sn, GS field, which is different to Ca gs field=======================================================
+#
+#   4 degr, 119Sn, 2 new VDCs, bad X2 preamp  		Sn G.S. Field, March/April 2022
+#for COUNT in {3046}
+
+
+#----------------------------------------------------------------------------------------------------
+# All Febr 2022 runs 
+#for COUNT in {2026,2030,2031,2032,2033,2035,2036,2038,2039,2041,2042,2049,2050,2052,2053,2055,2056,2062,2063,2065,2069,2071,2072,2074,2075,2077,2078,2087,2088,2089,2091,2092,2093,2095,2096,2100,2101,2103,2104,2107,2108,2110}
+
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------
 
 do
   echo $COUNT
   if [ $COUNT -lt 10 ]
   then
-      FILE="/experiment-online-data-smstore1/PR315/run0000"$COUNT".mid.gz"
+      #FILE="/home/neveling/DATA/MID/PR333/run0000"$COUNT".mid.gz"
+      FILE="/run/media/neveling/a32d8cab-46f8-4a87-9254-323414cb72a7/DATA/MID/PR333/run0000"$COUNT".mid.gz"
   elif [ $COUNT -lt 100 ]
   then
-      FILE="/experiment-online-data-smstore1/PR315/run000"$COUNT".mid.gz"
+      #FILE="/home/neveling/DATA/MID/PR333/run000"$COUNT".mid.gz"
+      FILE="/run/media/neveling/a32d8cab-46f8-4a87-9254-323414cb72a7/DATA/MID/PR333/run000"$COUNT".mid.gz"
   elif [ $COUNT -lt 1000 ]
   then
-      FILE="/experiment-online-data-smstore1/PR315/run00"$COUNT".mid.gz"
+      #FILE="/home/neveling/DATA/MID/PR333/run00"$COUNT".mid.gz"
+      FILE="/run/media/neveling/a32d8cab-46f8-4a87-9254-323414cb72a7/DATA/MID/PR333/run00"$COUNT".mid.gz"
   elif [ $COUNT -lt 10000 ]
   then
-      FILE="/experiment-online-data-smstore1/PR315/run0"$COUNT".mid.gz"
+      #FILE="/home/neveling/DATA/MID/PR333/run0"$COUNT".mid.gz"
+      FILE="/run/media/neveling/a32d8cab-46f8-4a87-9254-323414cb72a7/DATA/MID/PR333/run0"$COUNT".mid.gz"
   elif [ $COUNT -lt 100000 ]
   then
-      FILE="/experiment-online-data-smstore1/PR315/run"$COUNT".mid.gz"
+      #FILE="/home/neveling/DATA/MID/PR333/run"$COUNT".mid.gz"
+      FILE="/run/media/neveling/a32d8cab-46f8-4a87-9254-323414cb72a7/DATA/MID/PR333/run"$COUNT".mid.gz"
   else
       echo "This might not work"
   fi
   echo $FILE
   if [ $COUNT -lt 10 ]
   then
-#      FILE2="/vicepda/althome/k600user/PR315//sorted/sorted0000"$COUNT".root"
-      FILE2="../sorted/sorted0000"$COUNT".root"
+      FILE2="/home/neveling/DATA/ROOT/PR333/sorted0000"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/33Srigidity/sorted0000"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/31Srigidity/sorted0000"$COUNT".root"
   elif [ $COUNT -lt 100 ]
   then
-#      FILE2="/vicepda/althome/k600user/PR315//sorted/sorted000"$COUNT".root"
-      FILE2="../sorted/sorted000"$COUNT".root"
+      FILE2="/home/neveling/DATA/ROOT/PR333/sorted000"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/33Srigidity/sorted000"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/31Srigidity/sorted000"$COUNT".root"
   elif [ $COUNT -lt 1000 ]
   then
-#      FILE2="/vicepda/althome/k600user/PR315//sorted/sorted00"$COUNT".root"
-      FILE2="../sorted/sorted00"$COUNT".root"
+      FILE2="/home/neveling/DATA/ROOT/PR333/sorted00"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/33Srigidity/sorted00"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/31Srigidity/sorted00"$COUNT".root"
   elif [ $COUNT -lt 10000 ]
   then
-#      FILE2="/vicepda/althome/k600user/PR315//sorted/sorted0"$COUNT".root"
-      FILE2="../sorted/sorted0"$COUNT".root"
+      FILE2="/home/neveling/DATA/ROOT/PR333/sorted0"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/33Srigidity/sorted0"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/31Srigidity/sorted0"$COUNT".root"
   elif [ $COUNT -lt 100000 ]
   then
-#      FILE2="/vicepda/althome/k600user/PR315//sorted/sorted"$COUNT".root"
-      FILE2="../sorted/sorted"$COUNT".root"
+      FILE2="/home/neveling/DATA/ROOT/PR333/sorted"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/33Srigidity/sorted"$COUNT".root"
+      #FILE2="/home/neveling/DATA/ROOT/PR333/31Srigidity/sorted"$COUNT".root"
   else
       echo "This might not work"
   fi
