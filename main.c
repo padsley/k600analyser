@@ -1790,6 +1790,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    //thetaFP = CalcThetaFP(X1pos,X2pos);
    //t_thetaFP = thetaFP;
    thetaFP  = CalcThetaFP(U1pos,U2pos);
+   
    t_thetaFP   = thetaFP;
 
    Y1raw=CalcYFP(X1pos,U1pos,X1th);  
@@ -1807,26 +1808,28 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    #endif
 
    t_phiFP=CalcPhiFP(X1pos,Y1,X2pos,Y2,thetaFP);
-
-   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore 
+   
+   thetaSCAT = CalcThetaScat(X1pos,thetaFP);   //NOTE: we need thetaSCAT for the calculation of corrX. Therefore
+   
    t_thetaSCAT = thetaSCAT;		       // we can only use X1pos in the thetaSCAT calculation.
-
+   
    CalcCorrX(X1pos+x1offset, Y1, thetaSCAT, &Xcorr);
    t_X1posC=Xcorr;
-
+   
    CalcCorrXTOF(X1pos+x1offset, Y1, tof, &Xcorr2);
    t_X1posCTOF=Xcorr2;
-
+   
    t_phiSCAT = CalcPhiScat(Xcorr,thetaFP,Y1);
+   
    t_theta = CalcTheta(Xcorr, thetaFP, Y1);
-
+   
    //t_Ex = CalcExDirect(Xcorr);
    t_Ex = CalcEx(Xcorr2);
-
+   
    extern double *masses;
    t_T3 = CalcTfromXcorr(Xcorr2, masses[2]);
    t_rigidity3 = CalcQBrho(Xcorr2);
-
+   
    //--------------------------------------------------------------------------------------------------------
    // Calculate and plot wirechamber efficiencies
    //--------------------------------------------------------------------------------------------------------
@@ -1865,7 +1868,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    if(X1flag==0 && U1flag==0 && X2flag==0){
      hEventID2->Fill(ev_id_X1U1X2);
    }
-
+   
    TDC_channel_export = new int[TDCChannelExportStore.size()];
    TDC_value_export = new float[TDCValueExportStore.size()];
    //printf("\n TDCValueExportStore.size(): %d \n",TDCValueExportStore.size());

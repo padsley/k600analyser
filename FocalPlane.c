@@ -1889,7 +1889,7 @@ double CalcThetaScat(double X1, double ThFP)
   extern int NThFPSCATSlope;
   extern double *ThFPSCATSlope;
 
-  //printf("anglefp = %f\n",ThFP);  
+  //  printf("anglefp = %f\n",ThFP);  
 
   for(int i=0;i<NThFPSCATOffset;i++)
   {
@@ -1905,7 +1905,7 @@ double CalcThetaScat(double X1, double ThFP)
     //printf("NTHFPSCATSlope  %i  and parameter %f  and result %f at X1 = %f \n",i, ThFPSCATSlope[i],result,X1);
   }
 
-  //printf("\n\n");
+  //  printf("End of CalcThetaScat\n");
   return result;
 
 
@@ -1932,6 +1932,8 @@ double CalcTheta(double X1, double ThFP, double Y1)
   double result = -1;
 
   result = sqrt(pow(ThetaSCAT + theta3,2.) + pow(PhiSCAT,2.));
+
+  return result;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1944,8 +1946,9 @@ double CalcThetaFP(double X1, double X2)
 
    x=(X2 + x_x1x2) - X1 ;               
    result=57.29578*atan(z_x1x2/x);
-   //printf("z_x1x2=%f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
-  
+   //printf("Checking the result = %f\n",result);
+   //printf("CalcThetaFP in FocalPlane.c: z_x1x2 = %f x_x1x2 = %f  \n",z_x1x2,x_x1x2);
+   //printf("test line\n");
    return result;
 }
 
