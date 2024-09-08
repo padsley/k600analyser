@@ -53,7 +53,7 @@
 //#define _JJAUTOTRIM
 //#define _MOVIE
 //#define _MISALIGNTIME
-//#define _FULLANALYSIS
+#define _FULLANALYSIS
 #define _CALCEX
 //---------------------Preprocessor directives: general-------------*/
 //#define _POLARIZATION
@@ -1265,6 +1265,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	t_X1effall=1;         
 	#ifdef _FULLANALYSIS
 	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
+	//if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 && channelnew<155){  // for lut creation from 27alpp run 1047
 	  hX1_DriftTimeRef->Fill(ref_time);	
 	  hX1_DriftTimeOffset->Fill(offset_time);	
 	}
@@ -1287,6 +1288,7 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
 	t_U1effall=1;        
 	#ifdef _FULLANALYSIS
 	if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1){
+	//if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1 && channelnew<426){
 	  hU1_DriftTimeRef->Fill(ref_time);	
 	  hU1_DriftTimeOffset->Fill(offset_time);	
 	}
@@ -1424,22 +1426,22 @@ INT main_event(EVENT_HEADER * pheader, void *pevent)
    for(int i = 0; i < X1hits_dt ; i++) { 
      drifttime=X1.time[i];
      X1.dist[i]=lutx1[drifttime]*DRIFTLENGTH;     //X1.dist is driftlength in actual mm
-     hX1_DriftLength->Fill(X1.dist[i]);
+     if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX1_DriftLength->Fill(X1.dist[i]);
    }
    for(int i = 0; i < X2hits_dt ; i++) { 
      drifttime=X2.time[i];
      X2.dist[i]=lutx2[drifttime]*DRIFTLENGTH;
-     hX2_DriftLength->Fill(X2.dist[i]);
+     if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hX2_DriftLength->Fill(X2.dist[i]);
    }
    for(int i = 0; i < U1hits_dt ; i++) { 
      drifttime=U1.time[i];
      U1.dist[i]=lutu1[drifttime]*DRIFTLENGTH;
-     hU1_DriftLength->Fill(U1.dist[i]);
+     if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hU1_DriftLength->Fill(U1.dist[i]);
    }
    for(int i = 0; i < U2hits_dt ; i++) { 
      drifttime=U2.time[i];
      U2.dist[i]=lutu2[drifttime]*DRIFTLENGTH;
-     hU2_DriftLength->Fill(U2.dist[i]);
+     if(tof>gates.lowtof && tof<gates.hitof && PaddlePIDGatesFlag==1) hU2_DriftLength->Fill(U2.dist[i]);
    }
    
    //printf("min x wires %i,  max x wires %i \n",globals.min_x_wires, globals.max_x_wires);
