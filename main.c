@@ -55,7 +55,7 @@
 //#define _MISALIGNTIME
 #define _FULLANALYSIS
 #define _CALCEX
-//---------------------Preprocessor directives: general-------------*/
+//---------------------Preprocessor directives: general-------------
 //#define _POLARIZATION
 #define _PRINTTOSCREEN
 //#define _RAWDATA
@@ -128,6 +128,7 @@ float lutx1[LUT_CHANNELS];
 float lutx2[LUT_CHANNELS];
 float lutu1[LUT_CHANNELS];
 float lutu2[LUT_CHANNELS];
+//float cableOffset[896]; //Added back by LMD on 07/10/2024
 char string_var[200];
 
 #ifdef _MISALIGNTIME
@@ -570,9 +571,9 @@ INT main_init(void)
    hHitPatternAll   = new TH1F("hHitPatternAll","Hits/Chan (ALL data)",1000,0,1000);
    hHitPatternPID   = new TH1F("hHitPatternPID","Hits/Chan (PID selected)",1000,0,1000);
   
-   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelenghts offsets incl)", 2000, 2000, 6000, 896, 0, 896);
-   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelenghts offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
-   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelenghts offsets incl) PID selected", 2000, 2000, 6000, 1000, 0, 1000);
+   hChanVsTimeOffsetPID = new TH2F("hChanVsOffsetTimePID","TDC channel vs time (cablelengths offsets incl)", 3000, 0, 6000, 896, 0, 896);
+   hWireVsTimeOffset    = new TH2F("hWireVsOffsetTime","Wire channel vs time (cablelengths offsets incl)", 1500, 0, 15000, 1000, 0, 1000);
+   hWireVsTimeOffsetPID = new TH2F("hWireVsOffsetTimePID","Wire channel vs time (cablelengths offsets incl) PID selected", 3000, 0, 6000, 1000, 0, 1000);
 
    hX1_EffID    = new TH1F("hX1_EffID","VDC efficiency calculation: X1 ",20,0,20);
    hU1_EffID    = new TH1F("hU1_EffID","VDC efficiency calculation: U1 ",20,0,20);
@@ -591,17 +592,17 @@ INT main_init(void)
 
    #ifdef _FULLANALYSIS
    hDriftTimeRawAll  = new TH1F("hDriftTimeRawAll","All drifttimes (before subtracting ref times), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hDriftTimeOffsetAll  = new TH1F("hDriftTimeOffsetAll","All drifttimes (cablelenghts offsets included), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hDriftTimeOffsetAll  = new TH1F("hDriftTimeOffsetAll","All drifttimes (cablelength offsets included), 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
    hX1_DriftTimeRef  = new TH1F("hX1_DriftTimeRef","X1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hX2_DriftTimeRef  = new TH1F("hX2_DriftTimeRef","X2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hU1_DriftTimeRef  = new TH1F("hU1_DriftTimeRef","U1 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
    hU2_DriftTimeRef  = new TH1F("hU2_DriftTimeRef","U2 drifttimes (ref time corrected) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
-   hX1_DriftTimeOffset = new TH1F("hX1_DriftTimeOff","X1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hX2_DriftTimeOffset = new TH1F("hX2_DriftTimeOff","X2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU1_DriftTimeOffset = new TH1F("hU1_DriftTimeOff","U1 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
-   hU2_DriftTimeOffset = new TH1F("hU2_DriftTimeOff","U2 drifttimes (cablelenghts offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX1_DriftTimeOffset = new TH1F("hX1_DriftTimeOff","X1 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hX2_DriftTimeOffset = new TH1F("hX2_DriftTimeOff","X2 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU1_DriftTimeOffset = new TH1F("hU1_DriftTimeOff","U1 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
+   hU2_DriftTimeOffset = new TH1F("hU2_DriftTimeOff","U2 drifttimes (cablelengths offsets incl) 100ps/bin",TDC_N_BINS,TDC_MIN_TIME,TDC_MAX_TIME);
 
    hX1_Hits  = new TH1F("hX1_Hits","X1 wires/event (all X1 events)",20,0,20);
    hX2_Hits  = new TH1F("hX2_Hits","X2 wires/event (all U1 events)",20,0,20);
