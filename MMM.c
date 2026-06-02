@@ -118,7 +118,7 @@ void MMMSiliconSort(float *ADC_import, int ntdc, int *TDC_channel_import, float 
 						si->SetTimeFront(mTDC.GetValue(k));
 						//si->SetTimeBack(mTDC.GetValue(l));
 
-						si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
+						//si->SetOffsetTime(mTDC.GetValue(k) - TDCOffsets[mTDC.GetChannel(k)]);
 					
 						si->SetDetectorHit(MMMDetHitNumber(i,j));
 						si->SetADCChannelFront(i);
